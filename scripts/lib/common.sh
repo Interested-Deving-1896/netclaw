@@ -94,6 +94,14 @@ _set_env_var() {
     printf '%s' "$val" | python3 "$_NETCLAW_ENV_WRITER" "$env_file" "$key"
 }
 
+# Bootstrap user-owned locations without replacing explicit operator choices.
+_set_env_default() {
+    local key="$1" val="$2"
+    if ! grep -Eq "^[[:space:]]*(export[[:space:]]+)?${key}[[:space:]]*=" "$RUNTIME_ENV" 2>/dev/null; then
+        _set_env_var "$key" "$val"
+    fi
+}
+
 # ───────────────────────────────────────────
 # Canonical install locations for every MCP.
 # Defined up front so deploy/verify/setup work no matter which

@@ -72,8 +72,23 @@ void main() {
         },
       );
       expect(result, same(fakeClient));
+      expect(fakeClient.closeCount, 0);
       expect(seenMemberId, 'phone-1');
       expect(seenKeyFingerprint, 'fp-abc');
+    });
+
+    test('closes a client that connects after the caller timed out', () async {
+      final pending = Completer<EdgeClient>();
+      final client = _FakeEdgeClient();
+      final result = connectHeadless(
+        directory: tempDir,
+        timeout: const Duration(milliseconds: 10),
+        reconnect: (payload, {required memberId, required keyFingerprint, required identity}) => pending.future,
+      );
+      await expectLater(result, throwsA(isA<ConnectTimeoutError>()));
+      pending.complete(client);
+      await Future<void>.delayed(Duration.zero);
+      expect(client.closeCount, 1);
     });
 
     test('rethrows a non-timeout connect failure as-is', () async {
@@ -95,6 +110,9 @@ void main() {
 }
 
 class _FakeEdgeClient implements EdgeClient {
+  int closeCount = 0;
+  @override
+  Future<void> close() async { closeCount++; }
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

@@ -26,6 +26,16 @@ def test_invalid_linked_scope_never_ingests(server, monkeypatch, mime, body):
     assert ingested == []
 
 
+def test_failed_chroma_count_is_not_an_empty_corpus(server, monkeypatch):
+    def unavailable(*args):
+        raise OSError('synthetic private storage details')
+    monkeypatch.setattr(server.chroma, '_collection', unavailable)
+    result = server._do_search('route evidence')
+    assert result['error']['code'] == 'STORAGE_UNAVAILABLE'
+    assert 'corpus_empty' not in str(result)
+    assert 'private storage details' not in str(result)
+
+
 def test_valid_scope_preserves_linked_ingestion(server, monkeypatch):
     body = b'<a href="/next">next</a>'
     monkeypatch.setattr(server, 'fetch', lambda *args, **kwargs: (body, 'text/html'))

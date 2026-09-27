@@ -352,7 +352,9 @@ async def handle_n2n(method, path, body):
             return 200, {"pending": fed.authz.pending_approvals()}
 
         if len(parts) == 3 and parts[1] == "approvals" and method == "POST":
-            fed.authz.resolve_approval(int(parts[2]), body.get("action", "deny"), body.get("via", "cli"))
+            result = fed.authz.resolve_approval(int(parts[2]), body.get("action", "deny"), body.get("via", "cli"))
+            if not result["resolved"]:
+                return 409, {"error": "approval expired or unknown; start a new invocation", **result}
             return 200, {"resolved": int(parts[2]), "action": body.get("action")}
 
         if path == "/n2n/audit" and method == "GET":

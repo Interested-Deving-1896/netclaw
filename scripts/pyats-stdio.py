@@ -58,7 +58,9 @@ def stop_process(proc):
 
 def main():
     python = Path(os.environ.get('PYATS_VENV', str(Path.home()/'.openclaw/pyats-venv'))) / 'bin/python'
-    script = Path(os.environ.get('PYATS_UPSTREAM_SCRIPT', str(ROOT/'mcp-servers/pyATS_MCP/pyats_mcp_server.py')))
+    managed = python.parent.parent/'upstream/pyats_mcp_server.py'
+    fallback = managed if managed.is_file() else ROOT/'mcp-servers/pyATS_MCP/pyats_mcp_server.py'
+    script = Path(os.environ.get('PYATS_UPSTREAM_SCRIPT', str(fallback)))
     if not python.is_file() or not script.is_file():
         print('pyATS HTTP runtime missing. Run scripts/install.sh --add pyats.', file=sys.stderr)
         return 1

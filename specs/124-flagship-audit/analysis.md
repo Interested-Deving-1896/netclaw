@@ -1,5 +1,35 @@
 # Specification analysis — September26–27,2026
 
+T110/A124-070 maps FR-004/005/014: demonstrate late future completion through the
+real headless helper, close the abandoned client and retain timely client ownership.
+No enrollment schema or signing change; Flutter verification is available on WSL,
+but iOS/watch signed-build and actual-device evidence remains the prior Mac boundary.
+
+T109 extends confirmed writer/failure findings A124-067/061 to the N2N component:
+its nested sed writer repeats the demonstrated corruption and hardcodes OpenClaw;
+required dependency failures end in a successful echo. Actual component fixtures
+must prove failure propagation and runtime-local writes before closing this scope.
+
+T108/A124-069 maps FR-003/004/005: enforce the existing approval expiry contract
+at write/read boundaries without changing valid approval wire behavior or schema.
+Expired requests require a new invocation, never retroactive authorization.
+
+T107/A124-068 maps FR-003/005: authorization cannot infer standalone privileges
+from missing role state. Fail-closed behavior requires no data conversion; recovery
+is repair/restoration of the role store followed by the existing reconnect path.
+
+T106/A124-067 extends FR-005/007/009/010: shell and systemd environment formats
+must round-trip literal data without sourcing or variable expansion. Test actual
+CLI helper functions and a real systemd EnvironmentFile in the Docker fixture.
+Existing corrupted names require operator correction; no guessed reconstruction.
+
+WSL batch T104/T105 maps reproduced A124-065/066 to FR-003/004/005/010.
+Repairs preserve valid budgets and stored memory metadata; unavailable searches
+change from success-with-note to explicit failure. Filtered candidate truncation
+must be visible and must not claim a complete absence finding. No external writes
+or automatic corpus migration are required. Add real-store and invalid-input
+regressions before closing these findings.
+
 Analysis was read-only; remediation followed separately under the user's explicit instruction to fix all analysis findings. Re-analysis below reflects the corrected artifacts.
 
 | ID | Category | Severity | Location | Finding | Resolution |
@@ -149,3 +179,26 @@ T094 preserves the existing mcp-call.py string interface, but quotes every argv 
 ## Current checkpoint re-analysis
 
 94tasks,83checked; all14functional requirements remain mapped, with current evidence and limitations in requirement-evidence.md. All confirmed design-analysis issues A1–A3 and repair-batch decisions are resolved. This does not close T007–014, T021 or T026–027. Those11 broad tasks cover remaining semantic review, newly discovered repairs, full-host install/upgrade and final phase closure. Apple review is user-declared nonblocking; real device/provider acceptance remains unverified. No phase125/126 implementation is authorized by task completion accounting alone; preserve the agreed phase order.
+# WSL continuation repair analysis
+
+A124-064/T103 extends FR-007/FR-009: pyATS gets the same staged-generation safety
+as GAIT, including source code so a failed package update cannot change the old
+server beneath it. Default to a dedicated Python3.12 because ambient WSL3.14 is
+not the verified Cisco runtime. Keep legacy source directories untouched. Add an
+optional upstream argument to the existing environment migration while retaining
+its existing defaults for compatibility; modern bridge defaults prefer managed
+source. Restore preserves the failed/new generation rather than deleting it.
+
+A124-063/T102 implements existing configured document limits across Office formats (FR-003 resource bounds). Compressed size and aggregate declared uncompressed ZIP size share the configured cap. This does not claim hard process CPU/RSS isolation for third-party parsers. Inputs exceeding the published limit now fail explicitly; raise the existing setting only for a trusted large document.
+
+A124-062/T101 covers FR-007 preserved replicated knowledge. Chroma has no transactional multi-collection rename; preserve an old generation, roll back a failed rename, and recover an interrupted gap before ordinary collection access. Test with actual persistent Chroma and injected rename failure, not only a mock replica transport. Never silently replace an existing rollback generation.
+
+A124-061/T100 covers FR-004/FR-005 truthful installer failure. Test the actual CLI flow in a copied fixture with only package/runtime side effects stubbed: component failure despite an existing artifact, verification failure, token failure, and success. Exit status changes intentionally correct a false success; there is no persisted format migration.
+
+A124-060/T099 implements FR-004/FR-005 failed-versus-empty semantics with the existing error response envelope. No persisted state or valid success response changes. Boundary review also checked hybrid metadata filtering: BM25 candidates are post-filtered by `_do_search`, so the missing `where` on the BM25 leg is not a demonstrated disclosure bypass.
+
+A124-059/T098 corrects fixture availability detection (FR-008), not Redfish production transport. A configurable test URL permits an audit-owned loopback port. The standard runner retains its documented default capability probe; alternate-port fixture execution is separately recorded with its explicit environment.
+
+A124-058/T097 extends FR-003 secret handling: the scrubber must consume an entire enable credential, including explicit plaintext type and spaces. This is compatible output hardening, not a database schema change. Existing indexed snapshots require review/re-ingestion from trusted originals; no destructive automated purge is authorized.
+
+A124-056/T095 and A124-057/T096 are within FR-007/FR-009 safe upgrade and FR-003 literal/private configuration scope. Exercise `core_deploy` itself, not a duplicated helper. Preserve operator files and configured data locations; fresh destinations still receive defaults. Existing deployments require no destructive migration; future installs stop overwriting user state. Historical lost content requires an operator backup. No device writes, provider calls or live installation migration are part of these regression fixtures.

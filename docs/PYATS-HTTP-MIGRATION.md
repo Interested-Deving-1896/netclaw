@@ -7,21 +7,24 @@ separate environment so other MCP 1.x integrations keep working.
 
 ## Install and migrate
 
-Use a Python interpreter supported by the pinned pyATS package for your platform.
+The staged installer defaults to Python 3.12 via uv. Use `PYATS_PYTHON` only to
+select another interpreter supported by the pinned pyATS package for your platform.
 An unsupported wheel/interpreter fails installation; there is no unbounded package
 fallback. macOS and Linux are supported host targets; use Linux inside WSL2 on
 Windows. Native Windows is not a full pyATS host.
 
 ```bash
 ./scripts/install.sh --add pyats
-python3 scripts/migrate-pyats-http.py --env-file ~/.openclaw/.env
-python3 scripts/migrate-pyats-http.py --env-file ~/.openclaw/.env --apply
+python3 scripts/migrate-pyats-http.py --env-file ~/.openclaw/.env \
+  --upstream ~/.openclaw/pyats-venv/upstream/pyats_mcp_server.py
+python3 scripts/migrate-pyats-http.py --env-file ~/.openclaw/.env \
+  --upstream ~/.openclaw/pyats-venv/upstream/pyats_mcp_server.py --apply
 ```
 
 The installer writes the new runtime variables. The explicit migration command is
 for existing/custom environment files: preview first, then apply. It preserves
 unrelated settings and `PYATS_TESTBED_PATH`, creates a mode-0600
-`.env.pre-pyats-http` recovery file before changes, and is safe to repeat when
+`.env.pre-pyats-managed` recovery file (preserving earlier `.pre-pyats-http` backups) before changes, and is safe to repeat when
 already migrated. Reload the runtime environment after changes. For Hermes,
 supply its environment path and `--venv ~/.hermes/pyats-venv`.
 
@@ -62,8 +65,11 @@ local; use an authenticated tunnel for remote access.
 ## Recovery
 
 ```bash
-python3 scripts/migrate-pyats-http.py --env-file ~/.openclaw/.env --restore
-python3 scripts/migrate-pyats-http.py --env-file ~/.openclaw/.env --restore --apply
+python3 scripts/migrate-pyats-http.py --env-file ~/.openclaw/.env --restore \
+  --upstream ~/.openclaw/pyats-venv/upstream/pyats_mcp_server.py
+python3 scripts/migrate-pyats-http.py --env-file ~/.openclaw/.env --restore --apply \
+  --upstream ~/.openclaw/pyats-venv/upstream/pyats_mcp_server.py
+python3 scripts/setup-pyats-runtime.py --restore
 ```
 
 Restoring the environment alone does not turn an HTTP-only upstream into a STDIO
@@ -71,3 +77,6 @@ server. To return to the old runtime, also restore your recorded previous clone
 revision and its compatible isolated Python environment. Keep both until you have
 verified the new inventory and read-only commands. Do not reinstall older packages
 into the shared environment. The migration does not modify the testbed or devices.
+
+Managed generations retain the previous runtime at `pyats-venv.previous` and
+leave legacy source clones intact. See [preservation and recovery details](AUDIT124-MIGRATIONS.md).

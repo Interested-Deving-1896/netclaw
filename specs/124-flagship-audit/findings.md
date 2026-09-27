@@ -4,7 +4,15 @@ Baseline: ad6a4a8. Inventory coverage is not completed review. Confirmed finding
 
 ## Current status — authoritative checkpoint
 
-Phase 1 is **in progress**, with 83/94 tasks complete (88% by task count, not percentage of source reviewed). All 55 confirmed findings have implemented repairs and passing relevant Mac verification. Broad review tasks and required host/provider acceptance remain open. Apple 1.0.2 (4) was uploaded and submitted for automatic release after review; Apple processing is explicitly nonblocking. Source/evidence checkpoint `826a40e` is pushed and remote-verified; see handoff.md for WSL continuation. No production device configuration changed.
+Phase 1 remains **in progress**. The WSL continuation adds findings056–070;
+056–070 have implemented repairs and passing targeted verification, including
+431 Flutter tests and clean analysis on WSL. 99/110 tasks are checked; broad semantic coverage and
+final gates remain open. Linux systemd Docker fresh/upgrade, WSL pyATS recovery,
+Windows Edge HUD/Canvas fixture chats, a separate real model request, CML read-only
+pCalls and Docker network fixtures have evidence. Docker proves Debian userspace
+and systemd on its shared kernel, not bare-metal Linux. Operator migration and
+merge remain deferred until completion and return to main. Apple processing is
+nonblocking; its last verified state remains the Mac checkpoint.
 
 | IDs | Current disposition |
 |---|---|
@@ -28,10 +36,47 @@ Phase 1 is **in progress**, with 83/94 tasks complete (88% by task count, not pe
 |051–052|HUD HTML sanitization and literal/private atomic config/testbed/layout writes verified with adversarial DOM, filesystem and browser checks|
 |053–054|Federation pending-call cleanup and global dispatch admission verified;490 n2n tests pass|
 |055|HUD RAG command construction preserves spaces, quotes and metacharacters through the actual Python parser|
+|056–057,061|Actual installer/deployment preservation, literal writes and failure exits verified; N2N component failure propagation covered|
+|058,060,062–063|Snapshot credentials, false-empty RAG errors, recoverable Chroma promotion and Office expansion/page limits verified|
+|059|Redfish wrong-service probe corrected; isolated fixture15/15 passes|
+|064|Staged pyATS runtime/source adoption and rollback verified on WSL; Docker Linux installer adoption passes|
+|065–067|Budget validation, memory filter/error semantics and CLI/systemd literal configuration verified|
+|068–069|Fail-closed federation role admission and approval expiry verified at real service/SQLite boundaries|
+|070|Mobile late headless connection cleanup verified;431 Flutter tests and clean analyze on WSL|
 
-Open completion work: remaining broad source/skill review, full-host install/upgrade acceptance, final report/handoff. Required Linux/WSL and unavailable device/provider checks remain explicitly unverified. No full-audit completion is claimed. Descriptions below retain discovery-time observations; this table supersedes historical status checkpoints.
+Open completion work: remaining broad source/skill review, remaining full-host acceptance and final report/handoff. Specific Linux/WSL checks now have evidence in wsl-review.md; unavailable provider/device checks remain unverified. No full-audit completion is claimed. Descriptions below retain discovery-time observations; this table supersedes historical status checkpoints.
 
 ## Trust boundaries
+
+### WSL continuation findings
+
+- **A124-070 — Medium — mobile headless timeout leaves late connections unowned.** `connectHeadless` wraps reconnect in `Future.timeout`, which stops waiting but does not cancel the underlying future. A later successful reconnect produces a live authenticated client that no caller receives or closes. T110 closes late results while preserving normal ownership on timely success; no enrollment-data change.
+
+- **A124-069 — Medium — approval resolution ignores its expiry.** Expiry is updated only when `approval_status` polls a pending row. Resolving an elapsed pending row first changes it to approved, and subsequent status checks no longer examine expiry. Listing also includes elapsed rows. This is a proven approval-state/audit defect; task execution after expiry is not claimed because the waiter has a separate deadline. T108 enforces expiry at resolution/list boundaries and reports refusal to HTTP/mobile callers.
+
+- **A124-068 — High — unavailable role state admits external federation.** `FederationService._en2n_allowed` catches any role-store failure and returns true, violating member isolation exactly when its role cannot be established. T107 permits only known standalone/border roles and refuses incoming/outgoing external peering on error. It does not change valid member/internal routing.
+
+- **A124-067 — Medium — CLI role persistence corrupts names and misreads hardened environment files.** Actual `env_set` given `lab & primary` stores `lab N2N_RISK_NAME=old primary` through sed replacement expansion. `env_get` returns literal quote wrappers and reads stale dotenv ahead of the systemd file the writer prefers. T106 uses shared atomic updates with explicit systemd-compatible quoting and matching decoded read precedence; unrelated settings remain intact.
+
+- **A124-065 — High — non-finite budget configuration disables the cost ceiling.** `float('nan')` is accepted as the session cap, so even a million-dollar spend never compares above it. Invalid config values also crash loading; boolean fields enter integer coercion first. T104 preserves valid lower-layer settings on invalid input and validates finite nonnegative limits and explicit booleans.
+- **A124-066 — High (correctness) — memory filters return false empty success.** Real Chroma rejects `$gte` on the stored ISO timestamp; `$contains` on comma-separated topic strings produces no match even for the stored topic. Errors and unavailable embedding/storage are reported as success. T105 uses bounded retrieval with compatible metadata filtering, explicit partial-search disclosure and typed failure results; existing corpus bytes remain unchanged.
+
+- **A124-064 — High — failed pyATS update invalidates the working runtime.** A real isolated Python3.12 venv could import its sentinel before install; the existing component recreated it under ambient Python3.14 before a synthetic pip failure, after which the sentinel was no longer importable. The installer also switches its upstream clone before verifying dependencies. T103 stages a pinned source checkout and dedicated Python3.12 environment, verifies them before promotion, and retains the previous runtime. Evidence: private `pyats-failure-before.txt` (no operator state touched).
+
+- **A124-063 — High (availability) — Office ingestion bypasses expanded-size and page limits.** The dispatch checks compressed file bytes only; modern Office parsers never receive `max_pages` and their resulting page counts are not checked. Small ZIP-backed inputs can expand far beyond the configured document cap. T102 preflights declared ZIP expansion and enforces sheet/slide/page counts before extraction, with a final dispatch check.
+
+- **A124-062 — High — replica promotion removes the previous corpus before replacement succeeds.** `ChromaStore.promote_staging` deletes the stable collection, ignores deletion errors, then creates/renames staging. A rename failure loses the old corpus; missing staging can even be created empty. T101 requires existing staging, retains the prior collection under a rollback name, and restores it on promotion failure. Abrupt process interruption must leave recoverable data and explicit guidance.
+
+- **A124-061 — High (reliability) — installer reports success after failed installation.** Final problem reporting never exits nonzero; `core_tokens` also swallows dependency failure and claims readiness after trying an unrelated `toon-format` fallback. Automation can proceed on a broken installation even when component logs identify failure. T100 propagates dependency failure and returns a failed overall result while retaining component logs and successful components.
+
+- **A124-060 — High — failed RAG storage reported as empty corpus.** `ChromaStore.count` catches every exception and returns zero; `_do_search` translates that into successful `corpus_empty: true`. An unavailable/corrupt index becomes a false absence finding. T099 preserves storage failure and emits a sanitized `STORAGE_UNAVAILABLE` response without embedding work or an empty-corpus success.
+
+- **A124-059 — Medium — Redfish harness treats HTTP errors as a fixture.** WSL's occupied port 8000 returns 404 for `/redfish/v1`; `curl -s` still exits zero and the harness enters live tests, failing 1/15 while the runner correctly marks the service unavailable. T098 requires successful HTTP and permits a dedicated fixture URL so acceptance never displaces an operator listener. Evidence: private WSL contract baseline.
+
+- **A124-058 — High — snapshot scrubber retains explicit plaintext enable credentials.** The enable-secret regex recognizes types 5/7/8/9 but not explicit type 0, so `enable secret 0 synthetic-secret` redacts the `0` and leaves the credential in content sent to indexing. Single-token matching also leaves multiword enable-password suffixes. Repair T097 covers both forms; old snapshots are not silently rewritten or claimed safe.
+
+- **A124-056 — High — deployment bypasses literal environment writer.** Source review found `core_deploy` redefining `_set_env_var` with sed interpolation, overriding common.sh's atomic private writer. Paths containing `&`, `|`, spaces or quotes can corrupt runtime assignments, and fresh files inherit umask. Existing writer tests exercise only common.sh, missing the actual caller. T095 adds deployment-level regression coverage before repair.
+- **A124-057 — High — upgrade overwrites operator workspace state.** `core_deploy` unconditionally copies USER/TOOLS/persona files and replaces the workspace testbed link, also resetting configured RAG/Memory directories. Re-running install can lose user notes or hide existing knowledge/testbed state. T096 changes these bootstrap operations to preserve existing operator state and documents adoption; it must not pretend overwritten historical data can be recovered without a prior backup.
 
 Review sequence: install/supply chain and local configuration → HUD HTTP/WebSocket/process/filesystem → Border/member/peer identity and tool execution → RAG/memory ingestion and replication → mobile/watch approval/enrollment → voice/Zoom external input → remaining per-vendor tool boundaries → skills and public claims.
 

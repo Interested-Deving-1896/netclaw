@@ -49,13 +49,25 @@ Future<EdgeClient> connectHeadless({
   final dir = directory ?? await getApplicationDocumentsDirectory();
   final stored = await EnrollmentStore(dir).load();
   if (stored == null) throw const NotEnrolledError();
+  var timedOut = false;
   try {
     return await reconnect(
       stored.toPayload(),
       memberId: stored.memberId,
       keyFingerprint: stored.keyFingerprint,
       identity: const EdgeIdentity(),
-    ).timeout(timeout);
+    ).then((client) async {
+      // Future.timeout doesn't cancel reconnect. Its late result still owns
+      // a socket, so release it when no caller can receive that client.
+      if (timedOut) {
+        await client.close();
+        throw const ConnectTimeoutError();
+      }
+      return client;
+    }).timeout(timeout, onTimeout: () {
+      timedOut = true;
+      throw const ConnectTimeoutError();
+    });
   } on TimeoutException {
     throw const ConnectTimeoutError();
   }

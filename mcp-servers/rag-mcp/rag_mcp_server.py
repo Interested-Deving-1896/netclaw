@@ -542,7 +542,11 @@ def _do_search(
 ) -> Dict[str, Any]:
     start = time.monotonic()
     try:
-        if chroma.count(collection) == 0:
+        corpus_count = chroma.count(collection)
+    except Exception:
+        return error_response("STORAGE_UNAVAILABLE", "Cannot read the collection index; corpus contents are unknown.")
+    try:
+        if corpus_count == 0:
             registry.log_retrieval(query, collection, filters, k, [], [], 0, 0, round, sub_query_id)
             return success_response(
                 {

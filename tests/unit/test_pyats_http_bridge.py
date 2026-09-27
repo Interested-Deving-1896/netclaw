@@ -76,6 +76,19 @@ def test_migration_refuses_symlinks_missing_runtime_and_existing_backup(tmp_path
     backup.unlink();backup.symlink_to(path)
     with pytest.raises(ValueError):migration.migrate(path,root,venv,apply=True)
 
+def test_managed_adoption_preserves_legacy_recovery_point(tmp_path):
+    root,venv,path,original=fixture_runtime(tmp_path)
+    migration.migrate(path,root,venv,apply=True)
+    legacy_state=path.read_bytes()
+    managed=venv/'upstream/pyats_mcp_server.py'
+    managed.parent.mkdir();managed.touch()
+    migration.migrate(path,root,venv,apply=True,upstream=managed)
+    assert path.with_name('.env.pre-pyats-http').read_bytes()==original
+    assert path.with_name('.env.pre-pyats-managed').read_bytes()==legacy_state
+    migration.migrate(path,root,venv,apply=True,upstream=managed)
+    migration.migrate(path,root,venv,apply=True,restore=True,upstream=managed)
+    assert path.read_bytes()==legacy_state
+
 def test_mcp_client_does_not_deadlock_on_chatty_server(tmp_path):
     server=tmp_path/'server.py'
     server.write_text('''import sys,json

@@ -20,31 +20,43 @@
       "path": ".github/workflows/mcp-reconciliation.yml",
       "subsystem": ".github",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": ".github/workflows/mobile-ci.yml",
       "subsystem": ".github",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": ".github/workflows/skill-review.yml",
       "subsystem": ".github",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": ".gitignore",
@@ -440,11 +452,15 @@
       "path": "blender_addon.py",
       "subsystem": "root",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "captures/N2N-Capture-Analysis-20260714.pdf",
@@ -2092,15 +2108,17 @@
       "path": "mcp-servers/azure-network-mcp/clients/azure_client.py",
       "subsystem": "mcp-servers/azure-network-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/azure-network-mcp/compliance/__init__.py",
@@ -2382,15 +2400,17 @@
       "path": "mcp-servers/azure-network-mcp/utils/pagination.py",
       "subsystem": "mcp-servers/azure-network-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/azure-network-mcp/utils/rate_limiter.py",
@@ -3194,43 +3214,49 @@
       "path": "mcp-servers/document-mcp/guards.py",
       "subsystem": "mcp-servers/document-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/document-mcp/outcomes.py",
       "subsystem": "mcp-servers/document-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/document-mcp/output.py",
       "subsystem": "mcp-servers/document-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/document-mcp/provenance.py",
@@ -3260,15 +3286,17 @@
       "path": "mcp-servers/document-mcp/sanitize.py",
       "subsystem": "mcp-servers/document-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/document-mcp/server.py",
@@ -4023,15 +4051,17 @@
       "path": "mcp-servers/halo-mcp/clients/halo_client.py",
       "subsystem": "mcp-servers/halo-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/halo-mcp/halo_mcp_server.py",
@@ -4187,15 +4217,17 @@
       "path": "mcp-servers/halo-mcp/tools/tickets.py",
       "subsystem": "mcp-servers/halo-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/halo-mcp/utils/__init__.py",
@@ -4229,15 +4261,17 @@
       "path": "mcp-servers/halo-mcp/utils/pagination.py",
       "subsystem": "mcp-servers/halo-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/halo-mcp/utils/rate_limiter.py",
@@ -4607,15 +4641,17 @@
       "path": "mcp-servers/memory-mcp/storage/chroma_store.py",
       "subsystem": "mcp-servers/memory-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/memory-mcp/storage/schema.sql",
@@ -4631,15 +4667,17 @@
       "path": "mcp-servers/memory-mcp/storage/sqlite_store.py",
       "subsystem": "mcp-servers/memory-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/multivendor-cli-mcp/README.md",
@@ -5776,15 +5814,17 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/authorization.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/certs.py",
@@ -5863,14 +5903,16 @@
       "ownership": "first-party",
       "review_state": "targeted-review",
       "methods": [
-        "Source review of the finding-specific changed boundary; not full-file certification"
+        "Source review of the finding-specific changed boundary; not full-file certification",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
         "specs/124-flagship-audit/findings.md",
-        "specs/124-flagship-audit/verification.md"
+        "specs/124-flagship-audit/verification.md",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Unrelated behavior and live/provider/platform acceptance remain outside this evidence."
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/edge_queue.py",
@@ -5969,15 +6011,17 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/invocation.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/knowledge.py",
@@ -6127,15 +6171,17 @@
       "review_state": "targeted-review",
       "methods": [
         "local structural/AST/security-pattern triage",
-        "Source review of changed boundary; not full-file certification"
+        "Source review of changed boundary; not full-file certification",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
         "evidence/skill-mcp-static-review.json",
         "specs/124-flagship-audit/findings.md",
-        "specs/124-flagship-audit/verification.md"
+        "specs/124-flagship-audit/verification.md",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Targeted changed behavior reviewed; unrelated behavior and unavailable provider/platform acceptance remain outside this evidence."
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/tasks.py",
@@ -6775,15 +6821,17 @@
       "path": "mcp-servers/rag-mcp/config.py",
       "subsystem": "mcp-servers/rag-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/rag-mcp/embeddings/__init__.py",
@@ -6803,15 +6851,17 @@
       "path": "mcp-servers/rag-mcp/embeddings/embedder.py",
       "subsystem": "mcp-servers/rag-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/rag-mcp/ingestion/__init__.py",
@@ -6831,29 +6881,33 @@
       "path": "mcp-servers/rag-mcp/ingestion/chunker.py",
       "subsystem": "mcp-servers/rag-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/rag-mcp/ingestion/parsers.py",
       "subsystem": "mcp-servers/rag-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/rag-mcp/ingestion/url_fetcher.py",
@@ -6922,43 +6976,49 @@
       "path": "mcp-servers/rag-mcp/retrieval/hybrid.py",
       "subsystem": "mcp-servers/rag-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/rag-mcp/retrieval/reranker.py",
       "subsystem": "mcp-servers/rag-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/rag-mcp/scrubber.py",
       "subsystem": "mcp-servers/rag-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/rag-mcp/storage/__init__.py",
@@ -6995,15 +7055,17 @@
       "path": "mcp-servers/rag-mcp/storage/chroma_store.py",
       "subsystem": "mcp-servers/rag-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "local structural/AST/security-pattern triage",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "evidence/skill-mcp-static-review.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mcp-servers/rag-mcp/storage/registry.py",
@@ -9431,11 +9493,15 @@
       "path": "mobile/netclaw-mobile/ios/Runner/ApprovalActionIntent.swift",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mobile/netclaw-mobile/ios/Runner/AskBorderIntent.swift",
@@ -9869,11 +9935,15 @@
       "path": "mobile/netclaw-mobile/ios/Runner/EdgeIdentityPlugin.swift",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mobile/netclaw-mobile/ios/Runner/HeadlessEngineRunner.swift",
@@ -10029,11 +10099,15 @@
       "path": "mobile/netclaw-mobile/ios/WatchApp Watch App/ApprovalsView.swift",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mobile/netclaw-mobile/ios/WatchApp Watch App/AskView.swift",
@@ -10271,31 +10345,43 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/app_lock.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/approval_client.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/approval_confirmation.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/ask_border_headless.dart",
@@ -10361,11 +10447,15 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/capture_client.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/conversation_search.dart",
@@ -10446,41 +10536,57 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/edge_identity.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/enrollment_flow.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/enrollment_qr_payload.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/enrollment_store.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/haptics.dart",
@@ -10496,11 +10602,15 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/headless_connect.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/heartbeat.dart",
@@ -10646,11 +10756,15 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/watch_relay.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/widget_data.dart",
@@ -11558,11 +11672,15 @@
       "path": "scripts/gait-stdio.py",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "scripts/gait-venv-setup.sh",
@@ -11653,11 +11771,15 @@
       "path": "scripts/install.sh",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "scripts/ipfabric-enable.sh",
@@ -11800,14 +11922,16 @@
       "ownership": "first-party",
       "review_state": "targeted-review",
       "methods": [
-        "Source review of changed boundary; not full-file certification"
+        "Source review of changed boundary; not full-file certification",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
         "specs/124-flagship-audit/findings.md",
-        "specs/124-flagship-audit/verification.md"
+        "specs/124-flagship-audit/verification.md",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Targeted changed behavior reviewed; unrelated behavior and unavailable provider/platform acceptance remain outside this evidence."
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "scripts/lib/fetch-lego.sh",
@@ -11835,14 +11959,16 @@
       "ownership": "first-party",
       "review_state": "targeted-review",
       "methods": [
-        "Source review of changed boundary; not full-file certification"
+        "Source review of changed boundary; not full-file certification",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
         "specs/124-flagship-audit/findings.md",
-        "specs/124-flagship-audit/verification.md"
+        "specs/124-flagship-audit/verification.md",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Targeted changed behavior reviewed; unrelated behavior and unavailable provider/platform acceptance remain outside this evidence."
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "scripts/lib/make-logo-art.py",
@@ -11870,14 +11996,16 @@
       "ownership": "first-party",
       "review_state": "targeted-review",
       "methods": [
-        "Source review of changed boundary; not full-file certification"
+        "Source review of changed boundary; not full-file certification",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
         "specs/124-flagship-audit/findings.md",
-        "specs/124-flagship-audit/verification.md"
+        "specs/124-flagship-audit/verification.md",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Targeted changed behavior reviewed; unrelated behavior and unavailable provider/platform acceptance remain outside this evidence."
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "scripts/lib/render_md.py",
@@ -11953,11 +12081,15 @@
       "path": "scripts/netclaw",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "scripts/netclaw-secure-start.sh",
@@ -22776,11 +22908,15 @@
       "path": "src/netclaw_tokens/budget_policy.py",
       "subsystem": "src",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "src/netclaw_tokens/cost_calculator.py",
@@ -22806,11 +22942,15 @@
       "path": "src/netclaw_tokens/footer.py",
       "subsystem": "src",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "src/netclaw_tokens/gcf_serializer.py",
@@ -22818,14 +22958,16 @@
       "ownership": "first-party",
       "review_state": "targeted-review",
       "methods": [
-        "Source review of changed boundary; not full-file certification"
+        "Source review of changed boundary; not full-file certification",
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
       ],
       "evidence": [
         "specs/124-flagship-audit/findings.md",
-        "specs/124-flagship-audit/verification.md"
+        "specs/124-flagship-audit/verification.md",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Targeted changed behavior reviewed; unrelated behavior and unavailable provider/platform acceptance remain outside this evidence."
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "src/netclaw_tokens/gcf_wrapper.py",
@@ -22851,11 +22993,15 @@
       "path": "src/netclaw_tokens/session_ledger.py",
       "subsystem": "src",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "WSL targeted semantic boundary review; exact scope and limitations in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted boundary review, not full-file certification; provider/hardware behavior remains distinct from source and fixtures."
     },
     {
       "path": "testbed/testbed-zoom-demo.yaml",

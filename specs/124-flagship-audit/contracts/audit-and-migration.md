@@ -45,3 +45,23 @@ RAG/GCF/client lifecycle fixes preserve persisted schemas and need no user-data 
 A124-049 test preparation is an internal runtime-isolation change: old operator .venv directories stay untouched. Only explicitly owned test caches are refreshed, with recovery on failure. A124-046 adds a private local telemetry history rather than converting past log output into fictitious historical commits; old logs/data remain untouched. A124-045/047 enforce finite transport admission without changing existing stored schemas or valid message formats.
 
 A124-050 adds after-state recovery journals to the existing environment migrations; legacy backups without a matching journal are preserved and require manual comparison. A124-051 sanitizes rendering without changing saved chat data. A124-052 adds `migrate-local-file-permissions.py` (preview, `--apply`, `--restore`, optional `--path`): owned regular files only, original modes/digests in a private journal, later changes refuse restore. HUD config/testbed/layout writes are private and atomic. A124-053/054/055 change only RPC resource lifecycle, dispatch admission and command construction, with no persisted-data conversion.
+
+## WSL continuation interfaces (056–070)
+
+`setup-pyats-runtime.py --preview` is read-only. Normal setup stages pinned source
+and Python3.12 dependencies, verifies imports, atomically adopts a symlink and
+retains a previous target; `--restore` restores it while retaining the replacement.
+Repeat validates a managed generation; `--rebuild` refuses an existing recovery
+point. The installer supplies the managed server path to `migrate-pyats-http.py
+--upstream PATH`; that adoption uses `.pre-pyats-managed` independently of the
+legacy HTTP migration backup and keeps conflict-detecting restore behavior.
+
+Deployment now preserves persona/testbed/custom-store choices and uses the literal
+writer. CLI systemd writes use its explicit `--systemd` codec, validated against a
+real EnvironmentFile. Failed required component/token installation exits nonzero.
+No data conversion accompanies snapshot redaction, memory error/filter correctness,
+budget validation, input limits, role fail-closed behavior, approval expiry or mobile
+late-client cleanup. Existing affected snapshots/names require informed review, not
+automatic guessed rewriting. Chroma promotion retains/recoverably renames the prior
+collection before adopting staging; interruption limits are documented in
+[the migration guide](../../../docs/AUDIT124-MIGRATIONS.md).

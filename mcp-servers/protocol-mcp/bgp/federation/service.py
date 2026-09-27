@@ -616,9 +616,10 @@ class FederationService:
         """FR-014: only a Border (or a standalone claw) runs the external eN2N
         stack. A Member never federates externally — it talks only to its Border."""
         try:
-            return self.risk.role() != "member"
+            return self.risk.role() in ("standalone", "border")
         except Exception:
-            return True  # fail open to pre-056 behavior if risk state is unavailable
+            logger.warning("External federation refused: role state unavailable")
+            return False
 
     async def accept_channel(self, peer_as: int, router_id: str, reader, writer):
         if not self._en2n_allowed():
@@ -1671,6 +1672,8 @@ class FederationService:
             raise RpcError(-32602, "approval_id and action ('approve'|'deny') required")
         confirmation_method = params.get("confirmation_method", "biometric")
         result = self.authz.resolve_approval(int(approval_id), action, via=confirmation_method)
+        if not result["resolved"]:
+            raise RpcError(-32602, "approval expired or unknown; start a new invocation")
         # already_resolved (073/FR-005, research D6): additive field -- a
         # caller that only checks "resolved" sees identical behavior to
         # before this existed.

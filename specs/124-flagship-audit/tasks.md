@@ -62,6 +62,29 @@ T001–T003 precede T004–T006. Review work T007–T013 can be interleaved once
 
 ## Parallel opportunities
 
+- [x] T110 [US2] Reproduce/fix A124-070 mobile headless reconnect leaking a client that finishes after the caller times out in lib/ncfed/headless_connect.dart; verify late completion closes once and ordinary success remains open in test/headless_connect_test.dart, then run Flutter tests/analyze serially.
+
+- [x] T109 [US3] Extend A124-067/A124-061 repair to component_install_n2n in scripts/lib/install-steps.sh: use runtime-aware private literal defaults/updates and propagate failed required dependencies; test actual component without network calls in tests/unit/test_n2n_install_preservation.py.
+
+- [x] T108 [US1] Fix A124-069 expired federation approvals being recorded as approved before polling; enforce expiry during resolve/list in authorization.py, expose refusals in service.py/bgp-daemon-v2.py and test actual SQLite expiry and unchanged live approval behavior.
+
+- [x] T107 [US1] Fix A124-068 federation service role-read failure opening external peering in service.py; fail closed for unavailable/unknown roles and test incoming/outgoing admission before network I/O in tests/n2n/test_en2n_regression.py.
+
+- [x] T106 [US3] Repair A124-067 scripts/netclaw role persistence corrupting literal values and reading quoted values incorrectly; extend scripts/write-env.py with explicit systemd encoding, use atomic writes/decoded reads and test real shell functions plus systemd acceptance.
+
+- [x] T104 [US1] Repair A124-065 non-finite/invalid budget configuration in src/netclaw_tokens/budget_policy.py, preserve last valid layered limits, parse boolean values deliberately and verify tests/test_budget_policy.py negative cases.
+- [x] T105 [US1] Repair A124-066 memory semantic filtering and false-success errors in mcp-servers/memory-mcp/storage/chroma_store.py; test real persistent Chroma date/topic filters and backend/embedder failure, document bounded candidate retrieval and preserve existing stored metadata.
+
+- [x] T095 [US3] Reproduce and repair A124-056 deployment overriding the literal dotenv writer in scripts/lib/install-steps.sh; exercise actual core_deploy with metacharacter paths and pre-existing assignments in tests/unit/test_core_deploy_preservation.py.
+- [x] T096 [US3] Reproduce and repair A124-057 workspace deployment overwriting operator persona files and testbed; preserve existing files/links and custom data-directory settings, test fresh/repeat deployment, and document upgrade behavior in docs/AUDIT124-MIGRATIONS.md.
+- [x] T097 [US1] Reproduce and repair A124-058 explicit plaintext enable secrets leaking through mcp-servers/rag-mcp/scrubber.py; verify type-0, privilege-level and multiword values in tests/unit/test_rag_scrubber.py; document existing snapshot review.
+- [x] T098 [US2] Fix A124-059 tests/redfish/run-tests.sh mistaking an unrelated HTTP 404 service for its fixture; require successful HTTP response, support isolated REDFISH_TEST_URL, verify absent/wrong-service and digest-pinned mock cases.
+- [x] T099 [US1] Reproduce and fix A124-060 Chroma count failures reported as an empty RAG corpus in storage/chroma_store.py and rag_mcp_server.py; test actual store-to-search error propagation in tests/unit/test_rag_ingest_guards.py.
+- [x] T100 [US2] Reproduce/fix A124-061 installer success exit after component or required token dependency failure in scripts/install.sh and scripts/lib/install-steps.sh; add isolated CLI regressions in tests/unit/test_installer_exit_status.py and retain all failure details.
+- [x] T101 [US1] Reproduce/fix A124-062 RAG replica promotion deleting stable data before staging rename; retain rollback collection, restore on rename failure and test real Chroma state in tests/unit/test_rag_replica_promotion.py. Document interrupted promotion recovery limits.
+- [x] T102 [US1] Reproduce/fix A124-063 RAG Office expansion/page caps bypass in ingestion/parsers.py; add compressed-archive and Office page-count regressions in tests/unit/test_rag_parser_limits.py and document input-limit semantics.
+- [x] T103 [US3] Fix A124-064 pyATS in-place runtime replacement after reproduced package failure breaks the old interpreter: add scripts/setup-pyats-runtime.py staged source/venv generations, preview/repeat/restore/failure tests in tests/unit/test_pyats_runtime_recovery.py; wire installer, bridge and migrate-pyats-http.py to the managed source path and document recovery.
+
 Independent read-only scans or separate isolated suites can run concurrently; shared-file edits remain sequential. Examples: US1 installer versus RAG review; US2 token-budget versus HUD tests; US3 migrations against separate temporary fixtures; US4 link checking versus count reconciliation. No sub-agents are requested or spawned.
 
 ## Implementation strategy

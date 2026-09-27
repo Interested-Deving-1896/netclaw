@@ -59,3 +59,35 @@ Mac installed gateway acceptance: the initial health check failed because the ga
 Before staging, diagnostic text logs had trailing whitespace normalized; substantive output and outcomes were preserved. The staged diff passes whitespace checks. Secret-pattern scanning of additions found no private-key, GitHub-token, AWS-key or JWT matches; private runtime files and signing artifacts are excluded. This is a scoped scan, not a guarantee against arbitrary secret formats.
 
 Git transfer: source/evidence commit `826a40e8f45f69345d8a38d08cf0222a71a08c8a` pushed to origin/124-flagship-audit and independently matched with git ls-remote. The following commit updates only the handoff/verification documentation. Working tree was clean after the source commit. The task/finding inventory check passes94unique tasks,83checked and55unique findings; its first attempt matched only level-three headings and was corrected to include existing level-two finding headings. No finding was missing.
+
+## WSL continuation milestone (September27,2026)
+
+The audit is still open. `evidence/wsl/acceptance-milestone.json` records the broad
+24-suite run:22 passed,2 failed because their memory-unavailability assertions
+required the old false-success behavior. Both affected suites pass after the new
+contract assertions (`contract-memory-corrected.json`, `integration-memory-corrected.json`).
+The n2n follow-up passes with role/expiry fixes (`contracts-followup.json`; the
+runner accepts one `--suite`, so that file contains n2n only). All six reconciliation
+surfaces and spec-artifact validation pass at this milestone.
+
+431 Flutter tests and clean `flutter analyze` pass under WSL after reproducing and
+repairing headless late-client cleanup. This is not a new signed iOS/watch build.
+Prior Mac signing/release evidence remains separately scoped.
+
+Docker Debian systemd fresh install, repeat upgrade, staged pyATS adoption, GAIT
+rebuild/repeat/restore and restored imports pass. Four operator fixture hashes
+remain unchanged after both upgrades. PEP668 refuses the real distro Python
+install. A real systemd EnvironmentFile preserves quotes/metacharacters/tabs.
+A gateway restart was immediately process-active but not ready; subsequent
+authenticated health returned true. Readiness must be verified separately.
+
+WSL managed pyATS inventory, preview/apply/repeat/restore and restored imports
+pass; separate CML native-pCall evidence records12/12 read-only show checks.
+Windows Edge exercises HTTP/WebSocket plus HUD/Canvas fixture submissions; a
+separate real model request returns the expected marker. Docker NSM19 checks,
+Redfish15 checks and FRR trusted/unknown/mismatched-key cases pass. Raw device
+outputs, tokens, provider results and operator configuration stay private.
+
+Coverage now records44 additional targeted semantic dispositions, with1124
+baseline paths still pending. This is not100% review, and merge/operator migration
+have not occurred. See wsl-review.md for exact reviewed boundaries and limitations.

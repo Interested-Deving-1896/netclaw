@@ -470,26 +470,23 @@ component_install_pyats() {
 log_step "Installing pyATS MCP Server..."
 echo "  Source: https://github.com/automateyournetwork/pyATS_MCP"
 
-# Tested HTTP-only upstream revision; never float a breaking transport update.
-local pyats_revision="d4971436328369ef0a581ca5359dc8700fb2939b"
-local pyats_python="${PYATS_PYTHON:-$(command -v python3)}"
-PYATS_MCP_DIR="$MCP_DIR/pyATS_MCP"
-if [ ! -d "$PYATS_MCP_DIR/.git" ]; then
-    git clone https://github.com/automateyournetwork/pyATS_MCP.git "$PYATS_MCP_DIR" || return 1
-fi
-if [ -n "$(git -C "$PYATS_MCP_DIR" status --porcelain)" ]; then
-    log_error "pyATS clone has local changes; preserve them before upgrading."
+local pyats_venv="${PYATS_VENV:-$RUNTIME_HOME/pyats-venv}"
+local previous_existed=0
+if [ -e "$pyats_venv.previous" ] || [ -L "$pyats_venv.previous" ]; then previous_existed=1; fi
+# Source and dependencies are staged together. Keep legacy clones untouched.
+python3 "$NETCLAW_DIR/scripts/setup-pyats-runtime.py" --target "$pyats_venv" || return 1
+PYATS_MCP_DIR="$pyats_venv/upstream"
+mkdir -p "$RUNTIME_HOME"
+if ! python3 "$NETCLAW_DIR/scripts/migrate-pyats-http.py" \
+    --env-file "$RUNTIME_ENV" --repo "$NETCLAW_DIR" --venv "$pyats_venv" \
+    --upstream "$PYATS_MCP_DIR/pyats_mcp_server.py" --apply; then
+    # Roll back only the generation this invocation displaced, never an older
+    # retained backup on an idempotent rerun.
+    if [ "$previous_existed" -eq 0 ] && { [ -e "$pyats_venv.previous" ] || [ -L "$pyats_venv.previous" ]; }; then
+        python3 "$NETCLAW_DIR/scripts/setup-pyats-runtime.py" --target "$pyats_venv" --restore || return 1
+    fi
     return 1
 fi
-git -C "$PYATS_MCP_DIR" fetch origin "$pyats_revision" || return 1
-git -C "$PYATS_MCP_DIR" checkout --detach "$pyats_revision" || return 1
-local pyats_venv="${PYATS_VENV:-$RUNTIME_HOME/pyats-venv}"
-NETCLAW_PY="$pyats_python" netclaw_venv_create "$pyats_venv" || return 1
-NETCLAW_VENV="$pyats_venv" netclaw_pip_install -r "$PYATS_MCP_DIR/requirements.txt" || return 1
-"$pyats_venv/bin/python" -c 'import pyats, genie, unicon; from mcp.client.client import Client' || return 1
-mkdir -p "$RUNTIME_HOME"
-"$pyats_python" "$NETCLAW_DIR/scripts/migrate-pyats-http.py" \
-    --env-file "$RUNTIME_ENV" --repo "$NETCLAW_DIR" --venv "$pyats_venv" --apply || return 1
 log_info "pyATS stateless HTTP runtime ready, with NetClaw compatibility launcher."
 
 echo ""
@@ -1968,9 +1965,10 @@ if [ -d "$N2N_MCP_DIR" ]; then
     log_info "Installing n2n-mcp dependencies..."
     netclaw_pip_install -r "$N2N_MCP_DIR/requirements.txt" || \
         netclaw_pip_install httpx fastmcp || \
-        log_warn "n2n-mcp deps install failed — install httpx + fastmcp manually"
+        { log_warn "n2n-mcp deps install failed — install httpx + fastmcp manually"; return 1; }
 else
     log_warn "n2n-mcp not found — it should be bundled at mcp-servers/n2n-mcp/"
+    return 1
 fi
 
 # Spec 105: N2N declares "Requires the mesh" above, and the mesh daemon IS
@@ -1990,21 +1988,13 @@ if [ -f "$PROTOCOL_MCP_REQS" ]; then
     log_info "Ensuring mesh daemon (protocol-mcp) dependencies — N2N runs on it..."
     netclaw_pip_install -r "$PROTOCOL_MCP_REQS" || \
         netclaw_pip_install websockets qrcode httpx h2 || \
-        log_warn "mesh daemon deps install failed — the NCFED edge listener will not bind"
+        { log_warn "mesh daemon deps install failed — the NCFED edge listener will not bind"; return 1; }
 fi
 
 # Enable the federation layer in the OpenClaw .env
-OPENCLAW_ENV_N2N="$HOME/.openclaw/.env"
-[ -f "$OPENCLAW_ENV_N2N" ] || touch "$OPENCLAW_ENV_N2N"
-if ! grep -q "^N2N_ENABLED=" "$OPENCLAW_ENV_N2N" 2>/dev/null; then
-    {
-        echo "N2N_ENABLED=true"
-        echo "N2N_DISPLAY_NAME=$(hostname)"
-    } >> "$OPENCLAW_ENV_N2N"
-    log_info "Set N2N_ENABLED=true in $OPENCLAW_ENV_N2N"
-else
-    log_info "N2N already configured in $OPENCLAW_ENV_N2N"
-fi
+_set_env_default N2N_ENABLED true || return 1
+_set_env_default N2N_DISPLAY_NAME "$(hostname)" || return 1
+log_info "N2N settings preserved/configured in $RUNTIME_ENV"
 
 log_info "N2N Federation installed. Next:"
 echo "      1. Ensure the mesh is up (./scripts/peering-setup.sh start)"
@@ -2013,13 +2003,8 @@ echo "      3. Reload MCP servers (openclaw mcp reload) to pick up n2n-mcp"
 echo "      4. Mutually consent with a peer — see N2N-PEERING-NETCLAWS.md"
 
 # ── iN2N (feature 056): standalone vs part of a "risk" ──────────────
-_in2n_setenv() {  # _in2n_setenv KEY VALUE — upsert into ~/.openclaw/.env
-    local key="$1" val="$2" f="$HOME/.openclaw/.env"
-    if grep -q "^${key}=" "$f" 2>/dev/null; then
-        sed -i "s|^${key}=.*|${key}=${val}|" "$f"
-    else
-        echo "${key}=${val}" >> "$f"
-    fi
+_in2n_setenv() {
+    _set_env_var "$1" "$2"
 }
 
 if declare -f tui_menu >/dev/null 2>&1; then
@@ -2032,7 +2017,7 @@ if declare -f tui_menu >/dev/null 2>&1; then
         "Part of a risk — Member Claw (focused specialist; dials the Border)"
     case "$TUI_CHOICE" in
         0)
-            _in2n_setenv N2N_ROLE standalone
+            _in2n_setenv N2N_ROLE standalone || return 1
             log_info "Configured as standalone NetClaw."
             ;;
         1)
@@ -2046,10 +2031,10 @@ if declare -f tui_menu >/dev/null 2>&1; then
                 0) _stacks=both ;; 1) _stacks=in2n ;; *) _stacks=en2n ;;
             esac
             read -r -p "  iN2N listener port for member dial-ins [11790]: " _p
-            _in2n_setenv N2N_ROLE border
-            _in2n_setenv N2N_RISK_NAME "${_risk_name:-my-risk}"
-            _in2n_setenv N2N_ENABLED_STACKS "$_stacks"
-            _in2n_setenv N2N_IN2N_PORT "${_p:-11790}"
+            _in2n_setenv N2N_ROLE border || return 1
+            _in2n_setenv N2N_RISK_NAME "${_risk_name:-my-risk}" || return 1
+            _in2n_setenv N2N_ENABLED_STACKS "$_stacks" || return 1
+            _in2n_setenv N2N_IN2N_PORT "${_p:-11790}" || return 1
             log_info "Configured as Border Claw of risk '${_risk_name:-my-risk}' (stacks=$_stacks)."
             echo "      Add members with: netclaw risk add <profile|custom> <name>"
             echo "      Profiles available: $(python3 "${NETCLAW_DIR:-.}/scripts/in2n-profiles.py" list 2>/dev/null | awk '{printf "%s ", $1}')"
@@ -2059,10 +2044,10 @@ if declare -f tui_menu >/dev/null 2>&1; then
             read -r -p "  This member's name (member_id will be <risk>/<name>): " _mname
             read -r -p "  Border endpoint (host:port the member dials): " _bep
             read -r -p "  Enrollment token from the Border: " _tok
-            _in2n_setenv N2N_ROLE member
-            _in2n_setenv N2N_RISK_NAME "${_risk_name:-my-risk}"
-            _in2n_setenv N2N_BORDER_ENDPOINT "$_bep"
-            _in2n_setenv N2N_MEMBER_ID "${_risk_name:-my-risk}/${_mname:-member}"
+            _in2n_setenv N2N_ROLE member || return 1
+            _in2n_setenv N2N_RISK_NAME "${_risk_name:-my-risk}" || return 1
+            _in2n_setenv N2N_BORDER_ENDPOINT "$_bep" || return 1
+            _in2n_setenv N2N_MEMBER_ID "${_risk_name:-my-risk}/${_mname:-member}" || return 1
             [ -n "$_tok" ] && _in2n_setenv N2N_ENROLLMENT_TOKEN "$_tok"
             log_info "Configured as Member Claw ${_risk_name}/${_mname}. It will dial the Border on start."
             ;;
@@ -2520,13 +2505,13 @@ TOKEN_LIB_DIR="$NETCLAW_DIR/src/netclaw_tokens"
 if [ -d "$TOKEN_LIB_DIR" ]; then
     log_info "Installing netclaw_tokens dependencies..."
     netclaw_pip_install -r "$TOKEN_LIB_DIR/requirements.txt" || {
-            log_warn "netclaw_tokens pip install failed — trying individual packages"
-            netclaw_pip_install anthropic toon-format || \
-                    log_warn "Token optimization deps failed. Install manually: pip3 install anthropic toon-format"
+            log_error "Token optimization dependencies failed; fix the reported interpreter/dependency error and rerun the installer."
+            return 1
         }
     log_info "netclaw_tokens library ready at $TOKEN_LIB_DIR"
 else
-    log_warn "Token optimization library not found at $TOKEN_LIB_DIR"
+    log_error "Token optimization library not found at $TOKEN_LIB_DIR"
+    return 1
 fi
 
 echo ""
@@ -2718,14 +2703,9 @@ if [[ "$enable_forward" =~ ^[Yy]$ ]]; then
     OPENCLAW_ENV="$RUNTIME_ENV"
 
     forward_set_env_var() {
-        local key="$1" val="$2" tmp
-        [ -z "$val" ] && return
-        mkdir -p "$(dirname "$OPENCLAW_ENV")"
-        [ -f "$OPENCLAW_ENV" ] || touch "$OPENCLAW_ENV"
-        tmp="$(mktemp)"
-        grep -v "^${key}=" "$OPENCLAW_ENV" > "$tmp" 2>/dev/null || true
-        printf '%s=%s\n' "$key" "$val" >> "$tmp"
-        mv "$tmp" "$OPENCLAW_ENV"
+        local key="$1" val="$2"
+        [ -z "$val" ] && return 0
+        _set_env_var "$key" "$val"
     }
 
     forward_set_env_placeholder() {
@@ -2932,47 +2912,31 @@ if [ "$_state_base" != ".openclaw" ]; then
     log_info "Rewrote .openclaw → ${_state_base} in deployed skills"
 fi
 
-if [ "$RUNTIME" = "hermes" ]; then
-    # Hermes reads a single SOUL.md at the top of its state dir.
-    if [ -f "$NETCLAW_DIR/SOUL.md" ]; then
-        cp "$NETCLAW_DIR/SOUL.md" "$RUNTIME_HOME/SOUL.md"
-        log_info "Deployed SOUL.md to $RUNTIME_HOME/"
+# Both runtimes keep operator-edited persona files in RUNTIME_WORKSPACE.
+# These are bootstrap defaults, never an upgrade payload.
+mkdir -p "$RUNTIME_WORKSPACE"
+for mdfile in SOUL.md AGENTS.md IDENTITY.md USER.md TOOLS.md HEARTBEAT.md; do
+    if [ -e "$RUNTIME_WORKSPACE/$mdfile" ] || [ -L "$RUNTIME_WORKSPACE/$mdfile" ]; then
+        log_info "Preserved operator $mdfile"
+    elif [ -f "$NETCLAW_DIR/$mdfile" ]; then
+        cp "$NETCLAW_DIR/$mdfile" "$RUNTIME_WORKSPACE/$mdfile"
+        log_info "Bootstrapped $mdfile to workspace"
     fi
-    # Keep the other persona files alongside skills for reference.
-    for mdfile in AGENTS.md IDENTITY.md USER.md TOOLS.md HEARTBEAT.md; do
-        [ -f "$NETCLAW_DIR/$mdfile" ] && cp "$NETCLAW_DIR/$mdfile" "$RUNTIME_HOME/$mdfile"
-    done
-else
-    # Deploy OpenClaw workspace MD files (SOUL, AGENTS, IDENTITY, USER, TOOLS, HEARTBEAT)
-    for mdfile in SOUL.md AGENTS.md IDENTITY.md USER.md TOOLS.md HEARTBEAT.md; do
-        if [ -f "$NETCLAW_DIR/$mdfile" ]; then
-            cp "$NETCLAW_DIR/$mdfile" "$RUNTIME_WORKSPACE/$mdfile"
-            log_info "Deployed $mdfile to workspace"
-        fi
-    done
-    log_info "Deployed workspace files to $RUNTIME_WORKSPACE/"
-fi
+done
 
 # Symlink testbed into the workspace so the agent can find it
 mkdir -p "$RUNTIME_WORKSPACE/testbed"
-ln -sf "$NETCLAW_DIR/testbed/testbed.yaml" "$RUNTIME_WORKSPACE/testbed/testbed.yaml"
-log_info "Symlinked testbed.yaml into $RUNTIME_WORKSPACE/testbed/"
+if [ ! -e "$RUNTIME_WORKSPACE/testbed/testbed.yaml" ] && [ ! -L "$RUNTIME_WORKSPACE/testbed/testbed.yaml" ]; then
+    ln -s "$NETCLAW_DIR/testbed/testbed.yaml" "$RUNTIME_WORKSPACE/testbed/testbed.yaml"
+    log_info "Symlinked testbed.yaml into $RUNTIME_WORKSPACE/testbed/"
+else
+    log_info "Preserved operator workspace testbed"
+fi
 
 # Set ALL environment variables in the runtime .env
 OPENCLAW_ENV="$RUNTIME_ENV"
-[ -f "$OPENCLAW_ENV" ] || touch "$OPENCLAW_ENV"
-
-# Write env vars to OpenClaw .env (portable — no associative arrays for macOS bash 3.2)
-_set_env_var() {
-    local key="$1" val="$2"
-    if grep -q "^${key}=" "$OPENCLAW_ENV" 2>/dev/null; then
-        sed -i.bak "s|^${key}=.*|${key}=${val}|" "$OPENCLAW_ENV" && rm -f "$OPENCLAW_ENV.bak"
-    else
-        echo "${key}=${val}" >> "$OPENCLAW_ENV"
-    fi
-}
-
-_set_env_var "PYATS_TESTBED_PATH"       "$TESTBED_PATH"
+# Use common.sh's literal, atomic, private writer throughout deployment.
+_set_env_default "PYATS_TESTBED_PATH"   "$RUNTIME_WORKSPACE/testbed/testbed.yaml"
 _set_env_var "PYATS_MCP_SCRIPT"         "$PYATS_SCRIPT"
 _set_env_var "MCP_CALL"                 "$NETCLAW_DIR/scripts/mcp-call.py"
 _set_env_var "MARKMAP_MCP_SCRIPT"       "$MARKMAP_INNER/dist/index.js"
@@ -3001,8 +2965,8 @@ _set_env_var "HUMANRAIL_MCP_URL"       "http://127.0.0.1:8100/mcp"
 # Stateful data dirs — pin to the active runtime's home so RAG/Memory stores
 # land under ~/.hermes on Hermes instead of the servers' ~/.openclaw defaults.
 # No-op for OpenClaw ($RUNTIME_HOME is ~/.openclaw, same as the built-in default).
-_set_env_var "RAG_DATA_DIR"            "$RUNTIME_HOME/rag"
-_set_env_var "MEMORY_DATA_DIR"         "$RUNTIME_HOME/memory"
+_set_env_default "RAG_DATA_DIR"         "$RUNTIME_HOME/rag"
+_set_env_default "MEMORY_DATA_DIR"      "$RUNTIME_HOME/memory"
 
 # gtrace is a Go binary, not a Python script — just record the path
 if command -v gtrace &> /dev/null; then

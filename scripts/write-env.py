@@ -45,7 +45,13 @@ def values(text):
     return result
 
 
-def update(path, key, value):
+def systemd_quote(value):
+    # EnvironmentFile double quotes preserve whitespace and dollar signs;
+    # unlike dotenv/JSON, backslash-t is not a tab escape here.
+    return '"' + value.replace('\\', '\\\\').replace('"', '\\"') + '"'
+
+
+def update(path, key, value, systemd=False):
     path = Path(path).absolute()
     if not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', key):
         raise ValueError('Invalid environment variable name')
@@ -57,7 +63,7 @@ def update(path, key, value):
     original = path.read_text() if path.exists() else ''
     assignment = re.compile(r'^\s*(?:export\s+)?' + re.escape(key) + r'\s*=')
     lines = [line for line in original.splitlines() if not assignment.match(line)]
-    lines.append(key + '=' + quote(value))
+    lines.append(key + '=' + (systemd_quote(value) if systemd else quote(value)))
     data = '\n'.join(lines) + '\n'
     fd, temporary = tempfile.mkstemp(prefix='.netclaw-env-', dir=path.parent)
     try:
@@ -74,10 +80,13 @@ def update(path, key, value):
 
 if __name__ == '__main__':
     try:
+        systemd = '--systemd' in sys.argv
+        if systemd:
+            sys.argv.remove('--systemd')
         if sys.argv[1] == '--get':
             print(values(Path(sys.argv[2]).read_text()).get(sys.argv[3], ''), end='')
         else:
-            update(sys.argv[1], sys.argv[2], sys.stdin.read())
+            update(sys.argv[1], sys.argv[2], sys.stdin.read(), systemd=systemd)
     except (ValueError, OSError, IndexError) as error:
         # Do not print supplied values or file contents.
         print('Cannot update environment file: ' + type(error).__name__, file=sys.stderr)

@@ -448,7 +448,9 @@
           "flask>=3,<4",
           "twilio>=9,<10",
           "pytz>=2024.1",
-          "gait-ai>=0.0.9,<1"
+          "gait-ai>=0.0.9,<1",
+          "openpyxl>=3.1,<4",
+          "python-pptx>=1.0,<2"
         ],
         "required_imports": [
           "pytest",
@@ -463,7 +465,9 @@
           "fastmcp",
           "flask",
           "twilio",
-          "pytz"
+          "pytz",
+          "openpyxl",
+          "pptx"
         ],
         "prepend_path": true
       },

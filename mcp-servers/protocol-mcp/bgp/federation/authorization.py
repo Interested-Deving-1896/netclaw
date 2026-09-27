@@ -166,11 +166,20 @@ class Authorizer:
         no behavior change, since `resolve_approval(...)` truthy-checked as a
         dict is still truthy either way.
         """
+        if action not in ("approve", "deny"):
+            raise ValueError("Approval action must be approve or deny")
+        self._expire_pending()
+        if self.approval_status(approval_id) in ("expired", "unknown"):
+            return {"resolved": False, "already_resolved": False,
+                    "expired": self.approval_status(approval_id) == "expired"}
         status = "approved" if action == "approve" else "denied"
         cur = self.manager._conn.execute(
             "UPDATE approval_request SET status=?, resolved_at=?, resolved_via=? "
-            "WHERE id=? AND status='pending'", (status, _now(), via, approval_id))
+            "WHERE id=? AND status='pending' AND expires_at>?", (status, _now(), via, approval_id, _now()))
         self.manager._conn.commit()
+        if cur.rowcount == 0 and self.approval_status(approval_id) in ("expired", "unknown"):
+            return {"resolved": False, "already_resolved": False,
+                    "expired": self.approval_status(approval_id) == "expired"}
         return {"resolved": True, "already_resolved": cur.rowcount == 0}
 
     def approval_status(self, approval_id: int) -> str:
@@ -178,14 +187,20 @@ class Authorizer:
             "SELECT status, expires_at FROM approval_request WHERE id=?", (approval_id,)).fetchone()
         if not row:
             return "unknown"
-        if row["status"] == "pending" and row["expires_at"] < _now():
+        if row["status"] == "pending" and row["expires_at"] <= _now():
             self.manager._conn.execute(
                 "UPDATE approval_request SET status='expired' WHERE id=?", (approval_id,))
             self.manager._conn.commit()
             return "expired"
         return row["status"]
 
+    def _expire_pending(self):
+        self.manager._conn.execute(
+            "UPDATE approval_request SET status='expired' WHERE status='pending' AND expires_at<=?", (_now(),))
+        self.manager._conn.commit()
+
     def pending_approvals(self) -> list:
+        self._expire_pending()
         rows = self.manager._conn.execute(
             "SELECT a.*, r.peer_identity, r.target_type, r.target_name "
             "FROM approval_request a LEFT JOIN remote_invocation_record r ON a.invocation_id=r.id "

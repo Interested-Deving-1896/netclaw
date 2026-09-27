@@ -11,9 +11,11 @@ _helpers = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_helpers)
 
 
-def migrate(path, root, venv, apply=False, restore=False):
+def migrate(path, root, venv, apply=False, restore=False, upstream=None):
     path, root, venv = (Path(p).absolute() for p in (path, root, venv))
-    backup = path.with_name(path.name + '.pre-pyats-http')
+    # Managed-source adoption is a separate migration from the original HTTP
+    # bridge. Preserve that earlier recovery point on an existing installation.
+    backup = path.with_name(path.name + ('.pre-pyats-managed' if upstream else '.pre-pyats-http'))
     _helpers.regular_file(path)
     _helpers.regular_file(backup)
     original = path.read_bytes() if path.exists() else b''
@@ -23,7 +25,7 @@ def migrate(path, root, venv, apply=False, restore=False):
         print('Restored environment.' if apply else 'Preview: restore environment backup.')
         return
     updates = {'PYATS_MCP_SCRIPT': str(root/'scripts/pyats-stdio.py'),
-               'PYATS_UPSTREAM_SCRIPT': str(root/'mcp-servers/pyATS_MCP/pyats_mcp_server.py'),
+               'PYATS_UPSTREAM_SCRIPT': str(Path(upstream).absolute() if upstream else root/'mcp-servers/pyATS_MCP/pyats_mcp_server.py'),
                'PYATS_VENV': str(venv)}
     if any('\n' in v or '\r' in v for v in updates.values()):raise ValueError('Invalid path')
     if not apply:
@@ -52,9 +54,10 @@ def main():
     ap.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))
     ap.add_argument('--repo',default=str(Path(__file__).resolve().parents[1]))
     ap.add_argument('--venv',default=str(Path.home()/'.openclaw/pyats-venv'))
+    ap.add_argument('--upstream',help='Explicit verified managed server script; legacy repo path remains the default')
     ap.add_argument('--apply',action='store_true');ap.add_argument('--restore',action='store_true')
     args=ap.parse_args()
-    try:migrate(args.env_file,args.repo,args.venv,args.apply,args.restore)
+    try:migrate(args.env_file,args.repo,args.venv,args.apply,args.restore,args.upstream)
     except (OSError,ValueError):
         print('Migration stopped; check paths, installed runtime and existing backup. No secret values printed.')
         return 1
