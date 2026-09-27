@@ -81,13 +81,17 @@ def test_registered_command_launches_real_mcp_with_selected_env(fixture, tmp_pat
     import asyncio
     import os
     import sys
+    import shlex
     from mcp import ClientSession, StdioServerParameters
     from mcp.client.stdio import stdio_client
     config, env_file, repo, _ = fixture
     server = repo/'mcp-servers/jev-mcp/server.py'
     server.unlink(); server.symlink_to(ROOT/'mcp-servers/jev-mcp/server.py')
     python = repo/'mcp-servers/jev-mcp/.venv/bin/python'
-    python.unlink(); python.symlink_to(sys.executable)
+    # A symlink outside the test venv loses pyvenv.cfg on Linux. Execute the
+    # original interpreter path so the registered fixture retains its dependencies.
+    python.write_text('#!/bin/sh\nexec ' + shlex.quote(sys.executable) + ' "$@"\n')
+    python.chmod(0o700)
     env_file.write_text('JEV_ENABLED=false\nJEV_DATA_DIR='+str(tmp_path/'private-jev')+'\nJEV_TASK_ID=adoption-fixture\nTYPESAFE_API_KEY=fixture-only-not-real\n')
     adoption.adopt(config, env_file, repo, apply=True)
     entry = json.loads(config.read_text())['mcp']['servers']['jev-mcp']
