@@ -34,6 +34,20 @@ SUPPORT_FILES = ["AGENTS.md", "MEMORY.md", "USER.md", "HEARTBEAT.md", "TOOLS.md"
                  "TOOLS-REFERENCE.md", "SKILL-SCHEMA.md", "memory", "testbed"]
 
 
+DEVICE_ROUTING_SECTION = """## Device work inside a lab
+Route by the operation, not by the lab platform name. CML capabilities own lab,
+node and link lifecycle through the CML API. Device CLI baselines, VLAN/trunk,
+OSPF/BGP/STP configuration, rollback and device verification belong to the
+advertised pyATS capabilities (such as pyats-config-mgmt), even inside CML.
+Inspect n2n_member_list and split mixed workflows across their actual owners;
+pass captured evidence between phases. A diagram belongs to the eligible
+visualization member. Never treat a change-policy refusal as a reason to select
+a different member. Carry the same approved change or explicitly authorized,
+applicable exception with the deployment. Recording a memory does not create
+approval, and a prior reset exception does not authorize a new deployment.
+"""
+
+
 JEV_ADVISOR_SECTION = """## Optional Science Officer — Jev
 Jev is your dedicated **Science Officer**, a read-only advisory service in the
 RISK, not an enrolled execution member or a conversational replacement for you.
@@ -99,6 +113,8 @@ Infrahub, Infoblox, GitHub, or visualization yourself. **A member does.**
    `n2n_route(request_text, target_hint=<capability>)`, poll `n2n_task_status` /
    `n2n_task_result`, assess and summarize the member's answer. Never claim to run a domain
    skill directly, never list a flat 190-skill catalog — describe the members.
+
+{DEVICE_ROUTING_SECTION}
 
 {JEV_ADVISOR_SECTION}
 

@@ -87,7 +87,11 @@ def test_private_approval_exact_scope_expiry_and_replay(config):
     ledger.approve(preview["request_digest"], config.task_id, config.endpoint)
     assert call(config, **{**args, "state": {"observation": "changed private observation"}})["status"] == "approval_required"
     assert call(replace(config, task_id="task-b"), **args)["status"] == "approval_required"
-    assert call(config, **args)["status"] == "ok"
+    admitted = call(config, **args)
+    assert admitted["status"] == "ok"
+    assert admitted["approval_required"] is False
+    assert admitted["disclosure_status"] == "approved_consumed"
+    assert "disclosure_approval" not in admitted
     assert call(config, **args)["status"] == "approval_required"
     ledger.approve(preview["request_digest"], config.task_id, config.endpoint)
     with ledger.connect() as db:
@@ -110,6 +114,25 @@ def test_disclosure_guidance_records_grant_for_exact_retry(config):
     assert command[command.index("--task") + 1] == config.task_id
     subprocess.run(command, check=True, capture_output=True, text=True)
     assert call(config, **args)["status"] == "ok"
+    assert call(config, **args)["status"] == "approval_required"
+
+
+def test_legacy_assessment_readback_does_not_request_repeat_approval(config):
+    args = {"state": "private synthetic observation", "data_classification": "private"}
+    preview = call(config, **args, prepare_only=True)
+    ledger = jev.Ledger(config.data_dir)
+    ledger.approve(preview["request_digest"], config.task_id, config.endpoint)
+    result = call(config, **args)
+    legacy = {**result, "approval_required": True, "disclosure_approval": preview["disclosure_approval"]}
+    ledger.finish(result["assessment_id"], legacy)
+    before = ledger.totals(config.task_id)
+    readback = ledger.assessment(result["assessment_id"], config.task_id)
+    assert readback["approval_required"] is False
+    assert readback["disclosure_status"] == "approved_consumed"
+    assert "disclosure_approval" not in readback
+    assert readback["answers"] == result["answers"]
+    assert ledger.totals(config.task_id) == before
+    assert ledger.assessment(result["assessment_id"], "different-task") is None
     assert call(config, **args)["status"] == "approval_required"
 
 

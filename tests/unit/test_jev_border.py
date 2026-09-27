@@ -28,3 +28,5 @@ def test_border_generation_preserves_routing_and_includes_jev_procedures(tmp_pat
                  "deterministic routing", "Never send credentials"]:
         assert rule in persona
     assert "Always-on: pyats" in persona
+    assert "pyats-config-mgmt" in persona
+    assert "prior reset exception does not authorize a new deployment" in persona
