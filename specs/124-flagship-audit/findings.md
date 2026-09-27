@@ -402,6 +402,10 @@ Auditor.store_result derives a shared filename from request_id and overwrites it
 
 The Azure wrapper only calls logger.info but labels entries GAIT. It also logs success whenever a function returns, including returned error envelopes. Correct the logging/documentation claim: these are ordinary operation logs, not persisted GAIT commits. Mark normal returns as returned; session workflows retain the separate GAIT obligation. This correction does not invent server-side GAIT persistence.
 
-### A124-087 — Medium — Floating mobile CI SDK fails clean dependency preparation
+### A124-087 — Medium — Clean mobile CI lacks SwiftPM plugin source directory
 
-PR265 mobile CI selected Flutter3.47.5 instead of the locally verified3.44.8, changed four locked dependencies and failed copying firebase_messaging into an absent SourcePackages directory. Pin the tested SDK and run the complete macOS job; workflow-only changes must also trigger that job. Native build acceptance remains pending until CI succeeds.
+PR265 mobile CI selected Flutter3.47.5 instead of the locally verified3.44.8, changed four locked dependencies and failed copying firebase_messaging into an absent SourcePackages directory. Pinning3.44.8 removes dependency drift but run36323404710 reproduces the same missing-parent failure, so SDK drift was not the root cause. Create build/ios/SourcePackages before pub get and run the complete macOS job; workflow-only changes must also trigger that job. Native build acceptance remains pending until CI succeeds.
+
+### A124-088 — High — Standalone setup bypasses credential and preservation fixes
+
+CheckPoint/IPFabric/Forward retain delimiter-based or raw dotenv writes; peering prompts evaluate input, and dotenv launch loses spaces/quotes. Twitter/Twilio standalone scripts duplicate unsafe credential writes, and Twilio replaces the whitelist policy. OAuth setup prints tokens and overwrites dotenv without private atomic persistence. IPFabric also references an undefined writer variable. Extend the shared safe writer and profile updater across these entrypoints; retain private configuration recovery and explicit failure.
