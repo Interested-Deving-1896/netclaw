@@ -733,21 +733,29 @@
       "path": "config/openclaw.json.twitter-mcp-example",
       "subsystem": "config",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source and fixture boundary review; exact scope recorded in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "No live lab network mutation; examples/default lab accounts and floating images are not production acceptance."
     },
     {
       "path": "config/twilio-voice.json.example",
       "subsystem": "config",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source and fixture boundary review; exact scope recorded in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "No live lab network mutation; examples/default lab accounts and floating images are not production acceptance."
     },
     {
       "path": "docs/.nojekyll",
@@ -1597,11 +1605,15 @@
       "path": "lab/frr-testbed/README.md",
       "subsystem": "lab",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source and fixture boundary review; exact scope recorded in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "No live lab network mutation; examples/default lab accounts and floating images are not production acceptance."
     },
     {
       "path": "lab/frr-testbed/configs/core/daemons",
@@ -1667,41 +1679,57 @@
       "path": "lab/frr-testbed/docker-compose.yml",
       "subsystem": "lab",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source and fixture boundary review; exact scope recorded in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "No live lab network mutation; examples/default lab accounts and floating images are not production acceptance."
     },
     {
       "path": "lab/frr-testbed/scripts/setup-gre.sh",
       "subsystem": "lab",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source and fixture boundary review; exact scope recorded in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "No live lab network mutation; examples/default lab accounts and floating images are not production acceptance."
     },
     {
       "path": "lab/frr-testbed/scripts/teardown-gre.sh",
       "subsystem": "lab",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source and fixture boundary review; exact scope recorded in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "No live lab network mutation; examples/default lab accounts and floating images are not production acceptance."
     },
     {
       "path": "lab/frr-testbed/scripts/verify.sh",
       "subsystem": "lab",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source and fixture boundary review; exact scope recorded in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "No live lab network mutation; examples/default lab accounts and floating images are not production acceptance."
     },
     {
       "path": "labs/multivendor-r1/README.md",
@@ -1722,41 +1750,57 @@
       "path": "labs/multivendor-r1/frr-ssh/Dockerfile",
       "subsystem": "labs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source and fixture boundary review; exact scope recorded in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "No live lab network mutation; examples/default lab accounts and floating images are not production acceptance."
     },
     {
       "path": "labs/multivendor-r1/frr-ssh/start.sh",
       "subsystem": "labs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source and fixture boundary review; exact scope recorded in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "No live lab network mutation; examples/default lab accounts and floating images are not production acceptance."
     },
     {
       "path": "labs/multivendor-r1/inventory.yaml",
       "subsystem": "labs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source and fixture boundary review; exact scope recorded in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "No live lab network mutation; examples/default lab accounts and floating images are not production acceptance."
     },
     {
       "path": "labs/multivendor-r1/srl-lab.clab.yml",
       "subsystem": "labs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source and fixture boundary review; exact scope recorded in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "No live lab network mutation; examples/default lab accounts and floating images are not production acceptance."
     },
     {
       "path": "mcp-servers/README.md",
@@ -5978,15 +6022,16 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/acme.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Semantic lifecycle and boundary source review; details in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/n2n-inventory.json"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Offline source and fixture evidence; no live DNS/FCM/provider acceptance or host-owner tamper-proof storage claim."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/audit.py",
@@ -6022,15 +6067,16 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/certs.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Semantic lifecycle and boundary source review; details in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/n2n-inventory.json"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Offline source and fixture evidence; no live DNS/FCM/provider acceptance or host-owner tamper-proof storage claim."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/channel.py",
@@ -6125,15 +6171,16 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/gait.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Semantic lifecycle and boundary source review; details in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/n2n-inventory.json"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Offline source and fixture evidence; no live DNS/FCM/provider acceptance or host-owner tamper-proof storage claim."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/gateway.py",
@@ -6190,15 +6237,16 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/inventory.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Semantic lifecycle and boundary source review; details in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/n2n-inventory.json"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Offline source and fixture evidence; no live DNS/FCM/provider acceptance or host-owner tamper-proof storage claim."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/invocation.py",
@@ -6220,15 +6268,16 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/knowledge.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Semantic lifecycle and boundary source review; details in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/n2n-inventory.json"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Offline source and fixture evidence; no live DNS/FCM/provider acceptance or host-owner tamper-proof storage claim."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/logfilter.py",
@@ -6263,15 +6312,16 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/negotiate.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Semantic lifecycle and boundary source review; details in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/n2n-inventory.json"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Offline source and fixture evidence; no live DNS/FCM/provider acceptance or host-owner tamper-proof storage claim."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/posture.py",
@@ -6291,29 +6341,30 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/push_notify.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Semantic lifecycle and boundary source review; details in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/n2n-inventory.json"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Offline source and fixture evidence; no live DNS/FCM/provider acceptance or host-owner tamper-proof storage claim."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/replication.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source and fixture boundary review; exact scope recorded in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "No live lab network mutation; examples/default lab accounts and floating images are not production acceptance."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/risk.py",
@@ -6333,15 +6384,16 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/rotation.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Semantic lifecycle and boundary source review; details in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/n2n-inventory.json"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Offline source and fixture evidence; no live DNS/FCM/provider acceptance or host-owner tamper-proof storage claim."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/router.py",

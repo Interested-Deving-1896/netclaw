@@ -1,12 +1,10 @@
 # Spec 124 — Active WSL continuation
 
-**Spec124 is not complete.** Pushed checkpoint12775a3 contains fixes001–086; all24 contract families pass.
-Subsequent c290869/e463e63 repair Mac CI; native build rerun pending.
-Pushed e5d3774 includes088–089/standalone failure fixes;20 regressions and unit family pass.
-Fixes090–093 now verified:24/24 families after090, then ANTA/Redfish/n2n follow-ups.
-T010 memory/GCF review is closed; remaining broad review and Mac native CI still open.
-123/134 tasks are checked; T007–014,T021,T026–027 and new macOS CI T127 remain.
-Coverage:414 targeted,240 execution,40 generated inventories,8 generated boundaries,912 reference,92 asset,14 external and834 pending baseline paths.
+**Spec124 is not complete.** Latest pushed source f4fdd5a includes fixes001–096.
+097 inventory/098 replication/099 optional GRE lab fixes now pass regression checks and are awaiting the next commit.
+Latest federation suite542 PASS; full unit family PASS after replication, plus GRE scope test PASS.
+129/140 tasks checked; broad review, final acceptance/report and Mac native CI remain open.
+Coverage: 814 baseline paths pending; preserve exact dispositions in coverage.json.
 Do not relabel pending paths without supporting review.
 
 Draft PR: https://github.com/automateyournetwork/netclaw/pull/265 . At f04714b,
@@ -27,7 +25,7 @@ capabilities remain explicitly unverified; contract status is not live acceptanc
 
 Private fixtures ~/.openclaw/audit124-wsl; audit containers netclaw-audit124-linux,
 netclaw-audit124-frr, netclaw-audit124-redfish remain available. Preserve unrelated services.
-GAIT branch audit124-wsl-completion-2026-09-27, last recorded milestone1be93e75.
+GAIT branch audit124-wsl-completion-2026-09-27, last recorded milestonebb8713d0.
 Next: complete remaining source/skills/docs dispositions and reproduction-first repairs;
 resolve Mac CI; final gates/report; merge/main; back up/apply operator migrations and verify.
 Standalone credential/failure/OAuth repairs are now verified; source review remains active.

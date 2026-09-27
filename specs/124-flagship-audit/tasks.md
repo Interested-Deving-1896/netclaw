@@ -242,3 +242,9 @@ Batch dependencies: T028 → T029 → T030 security verification; T031 precedes 
 - [x] T136 [US1] Fix A124-095 ACME subprocess surviving timeout/cancellation in federation/acme.py; isolate the child process group, terminate/reap on failure and verify real local subprocess timeout/cancel/success cases without ACME or DNS calls.
 
 - [x] T137 [US1/US3] Fix A124-096 automatic host certificate renewal replacing the pinned key without a working successor handler in federation/rotation.py/certs.py; renew the certificate with the existing key, atomically preserve installed identity and test a real remote pin across renewal. Correct key-rollover claims; deliberate key replacement continues to require operator re-verification.
+
+- [x] T138 [US1/US2] Fix A124-097 inventory advertisement visibility/escaped secret bypass and unsafe cache path/freshness; verify actual encoded credentials, aggregate visibility, filesystem boundaries and UTC timestamps, then full federation contracts.
+
+- [x] T139 [US1/US3] Fix A124-098 replication repeat-start/promotion data loss across replication.py, registry.py and chroma_store.py; stage every transfer, validate page cardinality/uniqueness, transactionally publish registry and retain/restore prior vectors on callback failure. Prove real retained corpus and registry after failures and successful replacement; document cross-store interruption recovery.
+
+- [x] T140 [US1/US4] Fix A124-099 GRE lab scripts changing unrelated bridges/routes in lab/frr-testbed/scripts; remove global bridge mutation, bind route removal to lab tunnel, correct IPv6/failed-convergence diagnostics and stale README. Verify actual scripts with isolated command recorders and bash syntax checks.

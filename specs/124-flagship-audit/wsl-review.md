@@ -222,3 +222,15 @@ Next source candidates, not yet closed findings: inventory cache paths/staleness
 ### Certificate lifecycle review (094–096)
 
 Read renewal, certificate persistence, ACME process execution and heartbeat status paths. Real registry fixtures reproduce unchanged/same-key false success, two-service pins reproduce broken successor identity, and actual local subprocesses reproduce cancellation/timeout leakage. Fixes retain routine private keys, validate changed/current certificates, report registry health, atomically write certificates and terminate/reap owned processes. The pinned lego v4.19.2 official cmd/cmd_renew.go confirms --reuse-key support. CA/hub issuance remains create-once; automatic successor-key overlap is not implemented and its public claim is corrected. Full federation contracts:528 passed (n2n-renewal.json). No live ACME/DNS or operator credential rotation occurred.
+
+
+### Inventory and supporting federation modules (097)
+
+Read inventory.py completely and traced service cache callers. Fixed aggregate visibility, literal/effective secret matching, safe cache components/private writes, UTC and missing/future timestamp freshness.15 targeted regressions pass; n2n-inventory.json records full538-test pass. Read gait.py append/commit/failure and recent paths, negotiate.py legacy/possession boundary, push_notify.py FCM credential/signing/token/platform/fallback paths, knowledge.py readonly content-free registry aggregation and routing, and replication.py lifecycle. GAIT git storage is append-only by application convention, not tamper-proof against the host owner; FCM runtime remains outside offline source acceptance. Replication source exposed a possible repeated-start/promotion registry-loss case still being reproduced; its disposition remains pending.
+
+
+### Replication and lab execution scope (098–099)
+
+Replication transfer/publication source and real Chroma/SQLite failure paths reviewed:10 focused cases,542 federation tests, and full unit family pass (n2n-replication.json,unit-replication.json). Cross-store abrupt-process recovery is explicitly documented, with retained rollback protection rather than a distributed atomicity claim.
+
+Read FRR compose service capabilities/networks/mounts, setup/teardown/verify scripts and corrected README. Actual shell command-recorder fixture fails on old broad bridge/route scope and passes after repair; all three scripts pass bash syntax. Read multivendor lab Dockerfile/start/topology/inventory: lab-only default credentials, floating images and reserved/local sample addresses are explicit fixture boundaries, not production recommendations. Read Twitter registration and Twilio voice JSON examples; credentials are placeholders and controls are examples, not live setup evidence. No GRE lab host changes were made.

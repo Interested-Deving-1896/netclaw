@@ -14,7 +14,7 @@ tmp_path = PosixPath('/tmp/pytest-of-johncapobianco/pytest-355/test_host_certifi
             new,new_key=svc.host_credential()
 >           assert peer.risk.check_peer_pin(svc.local_identity,new)=='match'
 E           AssertionError: assert 'mismatch' == 'match'
-E             
+E
 E             - match
 E             + mismatch
 E             ? +++

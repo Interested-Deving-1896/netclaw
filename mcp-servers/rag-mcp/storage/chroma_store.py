@@ -191,7 +191,7 @@ class ChromaStore:
             ids=ids, embeddings=embeddings, documents=texts, metadatas=clean
         )
 
-    def promote_staging(self, staging_name: str, stable_name: str) -> None:
+    def promote_staging(self, staging_name: str, stable_name: str, on_promote=None) -> None:
         """Retain the previous corpus until an existing staging corpus promotes."""
         if staging_name == stable_name:
             raise ValueError('Staging and stable collections must differ')
@@ -207,7 +207,11 @@ class ChromaStore:
                 previous.modify(name=rollback)
             try:
                 staging.modify(name=stable_name)
+                if on_promote is not None:
+                    on_promote()
             except BaseException:
+                if self._existing_collection(stable_name) is not None:
+                    staging.modify(name=staging_name)
                 if previous is not None:
                     previous.modify(name=stable_name)
                 raise

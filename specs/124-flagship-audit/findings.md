@@ -441,3 +441,15 @@ The ACME wrapper cancels communicate on timeout/cancellation but never terminate
 ### A124-096 — High — Automatic certificate renewal breaks established peer pins
 
 Host renewal generates a new key, then sends an unacknowledged n2n/cert/update notification for which no handler exists. A remote authoritative file pin rejects the renewed host, although rotation reports success. Renew the certificate using the installed key and preserve pin identity; refuse registry/key inconsistency before writes. Remove claims of automatic successor-key overlap. Deliberate key replacement requires the existing operator verification/re-pin workflow.
+
+### A124-097 — High — Inventory advertisement bypasses visibility and escaped-secret checks
+
+Member aggregate skills bypass per-peer visibility. Secret scanning compares raw dotenv text against JSON-escaped output, missing quoted, backslashed and Unicode credentials. Remote cache filenames accept path components; absent metadata incorrectly reports fresh and UTC timestamps are parsed in local time. Eight initial regressions reproduce these boundaries. Filter aggregate capabilities, decode configured/effective secrets and compare decoded strings, constrain cache filenames and refuse links, persist privately/atomically and fail stale on missing/invalid/future timestamps.
+
+### A124-098 — High — Failed replication overwrites or unregisters a retained replica
+
+Repeated start writes directly into the stable vector collection and deletes it on failure; resync deletes registry rows before vector promotion, losing the prior registry if promotion fails. Two real Chroma/SQLite cases reproduce data loss. Stage every transfer, reject duplicate/oversized/misaligned pages before writes, prepare pending registry rows and publish them transactionally only after vector promotion. Retain the old vector generation until the registry callback succeeds and restore it on callback failure. Multi-store abrupt-process recovery remains an explicit operator inspection boundary, not a distributed atomicity claim.
+
+### A124-099 — High — Optional GRE lab scripts mutate unrelated host networking
+
+Lab setup adds IPv4 addresses to every bridge, including unrelated host networks; teardown removes routes by destination without constraining the lab interface. Remove the global workaround and constrain route removal to gre-netclaw. Correct the stale IPv4 README to the actual IPv6 fixture and document disposable-host/reserved-resource prerequisites. Command-recorder execution verifies scope without host network changes. Verification also now recognizes OpenConfirm as non-established, handles zero OSPF neighbors without malformed numeric input, and queries IPv6 tunnels correctly.
