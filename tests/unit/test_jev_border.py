@@ -19,6 +19,8 @@ def test_border_generation_preserves_routing_and_includes_jev_procedures(tmp_pat
     assert not (out / "skills/pyats-network").exists()
     assert (out.parent / "docs/JEV-SCIENCE-OFFICER.md").read_text() == (
         ROOT / "docs/JEV-SCIENCE-OFFICER.md").read_text()
+    assert (out / "docs/JEV-SCIENCE-OFFICER.md").read_text() == (
+        ROOT / "docs/JEV-SCIENCE-OFFICER.md").read_text()
     persona = (out / "SOUL.md").read_text()
     for rule in ["jev_status", "jev_evaluate", "before final operational summaries",
                  "Never invent task IDs", "at most one bounded reconsideration",

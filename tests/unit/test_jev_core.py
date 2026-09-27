@@ -4,6 +4,8 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 import importlib.util
 import json
+import shlex
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -90,6 +92,24 @@ def test_private_approval_exact_scope_expiry_and_replay(config):
     ledger.approve(preview["request_digest"], config.task_id, config.endpoint)
     with ledger.connect() as db:
         db.execute("UPDATE grants SET expires_at=?", (time.time() - 1,))
+    assert call(config, **args)["status"] == "approval_required"
+
+
+def test_disclosure_guidance_records_grant_for_exact_retry(config):
+    args = {"state": "private synthetic observation", "data_classification": "private"}
+    blocked = call(config, **args)
+    assert blocked["status"] == "approval_required"
+    guidance = blocked["disclosure_approval"]
+    assert guidance["gate"] == "local_operator_ledger"
+    assert "Slack confirmation" in guidance["instructions"]
+    assert jev.Ledger(config.data_dir).totals(config.task_id) == (0, 0)
+    command = shlex.split(guidance["operator_command"])
+    assert command[command.index("--data-dir") + 1] == str(config.data_dir)
+    assert command[command.index("approve-disclosure") + 1] == blocked["request_digest"]
+    assert command[command.index("--endpoint") + 1] == config.endpoint
+    assert command[command.index("--task") + 1] == config.task_id
+    subprocess.run(command, check=True, capture_output=True, text=True)
+    assert call(config, **args)["status"] == "ok"
     assert call(config, **args)["status"] == "approval_required"
 
 

@@ -38,6 +38,7 @@ def test_preview_apply_repeat_and_restore_preserve_existing_risk(tmp_path, capsy
     assert stat.S_IMODE(backups[0].stat().st_mode) == 0o600
     assert stat.S_IMODE(backups[0].parent.stat().st_mode) == 0o700
     assert (workspace.parent/'docs/JEV-SCIENCE-OFFICER.md').is_file()
+    assert (workspace/'docs/JEV-SCIENCE-OFFICER.md').read_bytes() == (ROOT/'docs/JEV-SCIENCE-OFFICER.md').read_bytes()
     assert adopt.main(['--workspace', str(workspace), '--apply']) == 0
     assert len(list(backups[0].parent.glob('*.json'))) == 1
     assert adopt.main(['--workspace', str(workspace), '--restore', str(backups[0])]) == 0
