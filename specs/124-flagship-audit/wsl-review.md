@@ -234,3 +234,17 @@ Read inventory.py completely and traced service cache callers. Fixed aggregate v
 Replication transfer/publication source and real Chroma/SQLite failure paths reviewed:10 focused cases,542 federation tests, and full unit family pass (n2n-replication.json,unit-replication.json). Cross-store abrupt-process recovery is explicitly documented, with retained rollback protection rather than a distributed atomicity claim.
 
 Read FRR compose service capabilities/networks/mounts, setup/teardown/verify scripts and corrected README. Actual shell command-recorder fixture fails on old broad bridge/route scope and passes after repair; all three scripts pass bash syntax. Read multivendor lab Dockerfile/start/topology/inventory: lab-only default credentials, floating images and reserved/local sample addresses are explicit fixture boundaries, not production recommendations. Read Twitter registration and Twilio voice JSON examples; credentials are placeholders and controls are examples, not live setup evidence. No GRE lab host changes were made.
+
+
+### Canvas, chart presentation and native CI (100/087)
+
+Canvas request/session/autosave/import/export paths reviewed, plus React entrypoint and upstream notice. Production handler tests reproduce deleted-session resurrection and swallowed save/delete failures. Request/session admission prevents async replies crossing reused node IDs. HUD224 tests and production build pass; actual WSL Chromium against isolated HUD/gateway passes HTTP200, WebSocket, both chat fixture replies and a refused New-chat action during the delayed Canvas reply, with no JS exceptions. Windows recheck could not launch because WSLInterop binfmt registration is absent (Exec format error); earlier Windows acceptance is historical, and host interop repair remains deferred to the post-main local repair phase.
+
+Read chart normalize/categorize/ordering/presets/force-layout/layout/peer-detail/layout-store modules, saved-layout validation/application boundary, camera/expansion/accessibility modules, and renderer disposal/event cleanup in nodes/links/bands/index/drag. These are presentation/state boundaries, not authority to execute provider operations. HUD tests cover finite coordinates, preserved presets, liveness distinctions and DOM-safe labels; no full animation/performance certification is claimed. Canonical HUD README now points to the real IPv6 lab/shared Python installer and removes stale inventory counts/Python OpenClaw installation advice.
+
+macOS run36325037956 (f4fdd5a) passed Flutter3.44.8 analysis/tests, config-only preparation, iOS Runner simulator and WatchApp simulator builds on macos26/Xcode26.6. macos-native-ci.json records all steps. Firebase plist is explicitly non-production CI data; this is compilation acceptance, not live push or a signed/physical-device release. T127 is closed.
+
+
+### Optional Zoom panel and UI asset boundary (101)
+
+Read overlay.js, manifest scope/host declarations and panel.html; traced the toggle in panel.js. The optional overlay module is not loaded by shipped HTML, so the UI now reports unavailable instead of enabled. Two production-handler failure fixtures and a mocked SDK partial-start cleanup fixture pass; HUD227 tests pass. Live Zoom Layers entitlement/frame submission remains unverified and is not enabled by this fix. CSS files were checked for external-resource/executable sinks; HUD CSS compiles in the production build. The public fixtures symlink resolves to tracked spec072 static fixtures; licensing notice retains upstream MIT text.

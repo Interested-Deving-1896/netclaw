@@ -4,7 +4,7 @@
 
 # NetClaw Visual HUD
 
-A Three.js 3D network operations dashboard for [NetClaw](https://github.com/automateyournetwork/netclaw). Visualizes all 43 MCP servers, 179 skills, your device fleet, and live BGP peering topology in a real-time interactive scene. Includes a chat terminal wired directly to the OpenClaw gateway for live tool execution from the browser. Supports bidirectional Slack and WebEx channels.
+A Three.js 3D network operations dashboard for [NetClaw](https://github.com/automateyournetwork/netclaw). Visualizes the registered MCP integrations, deployed skills, your device fleet, and live BGP peering topology in a real-time interactive scene. Includes a chat terminal wired directly to the OpenClaw gateway for live tool execution from the browser. Supports bidirectional Slack and WebEx channels.
 
 ---
 
@@ -29,9 +29,9 @@ Before running the HUD, you need a working NetClaw installation with the OpenCla
 
 ### Prerequisites
 
-- **Node.js** 18+ and npm
+- **Node.js** compatible with the installed OpenClaw release (Node22 used in spec124 acceptance), and npm
 - **Python** 3.10+
-- **OpenClaw** CLI (`pip install openclaw` or via the install script)
+- **OpenClaw** CLI installed through the NetClaw installer (the gateway is a Node application, not a Python package)
 
 ### Clone and Install
 
@@ -105,66 +105,16 @@ fully offline gateway.
 
 NetClaw includes a pure-Python BGP daemon (AS 65001) and a Docker-based FRR router lab. When running, the HUD automatically discovers BGP peers and renders them as equal core nodes alongside the local NetClaw in the 3D scene.
 
-### A. Start the FRR Router Lab
+Use the [canonical IPv6 FRR lab procedure](../../lab/frr-testbed/README.md) on a disposable lab host. It defines the required Docker networks, IPv6 GRE addresses and route checks. Root-level setup changes host networking; preserve its baseline and required authorization. A fixed delay does not prove routing convergence.
 
-The lab creates three FRR routers (Edge1, Core route reflector, Edge2) in AS 65000 with OSPF + iBGP, connected to your host via a GRE tunnel.
-
-```bash
-cd netclaw/lab/frr-testbed
-docker compose up -d
-sleep 15                          # wait for OSPF/BGP convergence
-sudo bash scripts/setup-gre.sh   # create GRE tunnel from host to Edge1
-bash scripts/verify.sh            # confirm everything is up
-```
-
-```
-Topology:
-
-NetClaw (AS 65001)     Edge1 (AS 65000)     Core (RR)     Edge2 (AS 65000)
-  host / WSL           1.1.1.1              2.2.2.2       3.3.3.3
-  172.16.0.2 ──GRE──── 172.16.0.1
-                       eBGP ↔ NetClaw       iBGP hub      iBGP spoke
-```
-
-### B. Start the BGP Daemon
+The protocol daemon is installed through the NetClaw installer/shared Python environment. Configure peering through the [peering guide](../../N2N-PEERING-NETCLAWS.md); do not install its dependencies into the OS-managed Python environment. The local read-only API can be inspected with:
 
 ```bash
-cd netclaw/mcp-servers/protocol-mcp
-pip install -r requirements.txt
-
-export NETCLAW_ROUTER_ID="4.4.4.4"
-export NETCLAW_LOCAL_AS="65001"
-export NETCLAW_BGP_PEERS='[{"address":"172.16.0.1","remote_as":65000}]'
-
-python bgp-daemon-v2.py
+curl -fsS http://localhost:8179/peers | python3 -m json.tool
+curl -fsS http://localhost:8179/rib | python3 -m json.tool
 ```
 
-The daemon exposes an HTTP API on `localhost:8179`:
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/peers` | GET | BGP peer state (ASN, router-id, state, timers) |
-| `/rib` | GET | Full RIB (Adj-RIB-In from all peers) |
-| `/status` | GET | Daemon status and uptime |
-| `/inject` | POST | Inject a route: `{"network":"10.99.99.0/24","next_hop":"172.16.0.2"}` |
-| `/withdraw` | POST | Withdraw a route: `{"network":"10.99.99.0/24"}` |
-
-### C. Verify Peering
-
-```bash
-# Check peering is Established
-curl -s http://localhost:8179/peers | python3 -m json.tool
-
-# Check received routes
-curl -s http://localhost:8179/rib | python3 -m json.tool
-```
-
-### D. Teardown
-
-```bash
-sudo bash scripts/teardown-gre.sh
-docker compose down
-```
+Route injection and withdrawal are network changes, not HUD health checks. Follow the approved change workflow before invoking them.
 
 ---
 
@@ -184,7 +134,7 @@ On the local NetClaw, add the ngrok endpoint as a BGP peer:
 
 ```bash
 export NETCLAW_BGP_PEERS='[
-  {"address":"172.16.0.1","remote_as":65000},
+  {"address":"fd00:ee::0","remote_as":65000},
   {"address":"X.tcp.ngrok.io","remote_as":65002,"remote_port":NNNNN}
 ]'
 python bgp-daemon-v2.py
@@ -196,7 +146,7 @@ If both NetClaws are on the same network or have direct IP connectivity:
 
 ```bash
 export NETCLAW_BGP_PEERS='[
-  {"address":"172.16.0.1","remote_as":65000},
+  {"address":"fd00:ee::0","remote_as":65000},
   {"address":"192.168.1.50","remote_as":65002}
 ]'
 python bgp-daemon-v2.py
@@ -267,7 +217,7 @@ The center of the HUD is a Three.js 3D scene. Use your mouse to navigate:
 
 The scene displays up to three central core nodes in a triangular arrangement:
 
-- **NetClaw (Local)** — your local instance, with all 43 integrations orbiting around it as colored spheres connected by animated data-flow tubes
+- **NetClaw (Local)** — your local instance, with its registered integrations orbiting around it as colored spheres connected by animated data-flow tubes
 - **Peer NetClaw** — another NetClaw instance you're peered with via BGP (magenta tint), with received routes fanning out as dendrite wires
 - **Router** — a traditional router peer like FRR Edge1 (cyan tint), also showing its advertised routes
 
@@ -275,7 +225,7 @@ All core nodes have the same visual treatment: icosahedron shell, glowing nucleu
 
 ### Integration Nodes
 
-Each of the 43 MCP integrations is rendered as a sphere orbiting the local core, color-coded by category:
+Each registered MCP integration is rendered as a sphere orbiting the local core, color-coded by category:
 
 | Color | Categories |
 |-------|-----------|
@@ -492,8 +442,8 @@ Browser (Visual HUD + Canvas Chat @ localhost:3000)
     |
     +-- OpenClaw Gateway (@ localhost:18789)
           +-- Anthropic Claude (agent model)
-          +-- 43 MCP integrations (pyATS, ACI, ISE, NetBox, GitHub, Slack, ...)
-          +-- 179 skills (health checks, troubleshooting, auditing, ...)
+          +-- Registered MCP integrations (pyATS, ACI, ISE, NetBox, GitHub, Slack, ...)
+          +-- Deployed skills (health checks, troubleshooting, auditing, ...)
 ```
 
 ---
@@ -528,7 +478,7 @@ Browser (Visual HUD + Canvas Chat @ localhost:3000)
 **No BGP peers in the visualization**
 - Verify the BGP daemon is running: `curl http://localhost:8179/peers`
 - Check that peers show `"state": "Established"`
-- If using the FRR lab, ensure GRE tunnel is up: `ping 172.16.0.1`
+- If using the FRR lab, ensure GRE tunnel is up: `ping -6 fd00:ee::0`
 
 **Integrations show zero tools**
 - Run `./scripts/setup.sh` to configure integration credentials

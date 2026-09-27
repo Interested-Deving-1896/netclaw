@@ -453,3 +453,11 @@ Repeated start writes directly into the stable vector collection and deletes it 
 ### A124-099 — High — Optional GRE lab scripts mutate unrelated host networking
 
 Lab setup adds IPv4 addresses to every bridge, including unrelated host networks; teardown removes routes by destination without constraining the lab interface. Remove the global workaround and constrain route removal to gre-netclaw. Correct the stale IPv4 README to the actual IPv6 fixture and document disposable-host/reserved-resource prerequisites. Command-recorder execution verifies scope without host network changes. Verification also now recognizes OpenConfirm as non-established, handles zero OSPF neighbors without malformed numeric input, and queries IPv6 tunnels correctly.
+
+### A124-100 — High — Canvas session changes lose or misattribute conversation state
+
+Async replies append by node id while sessions reuse root/numeric ids. Session switches can redirect completion into another conversation; save/delete failures are swallowed, and deleting the active session calls newSession which saves the deleted record again. Serialize request/session-change admission, show storage/busy errors, retain current session on failed save/delete, reset a deleted session without saving it, clear per-session drafts and cancel pending autosave on effect cleanup. Production-handler fixtures reproduce all three persistence defects; asynchronous gate tests exercise both directions of admission.
+
+### A124-101 — Medium — Zoom overlay toggle claims success before an available/successful implementation
+
+Panel changes enabled state before checking whether the optional overlay module exists or whether SDK calls succeed. The shipped HTML does not load overlay.js, yet the button reports enabled. Refuse unavailable/failed changes, update state only after an explicit true result, serialize button actions and clean up a controller after failed camera startup. Stop attempts cover both layers, retaining failure visibility. The optional module remains unloaded pending real Zoom Layers entitlement/API acceptance; no live overlay success is claimed.

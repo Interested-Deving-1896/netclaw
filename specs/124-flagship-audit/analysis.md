@@ -268,3 +268,7 @@ A124-097 added after complete inventory.py source review: actual fixture reprodu
 A124-098 replication preservation confirmed with actual Chroma/SQLite: failed repeat-start deletes old corpus, failed promotion loses old registry.10 focused lifecycle/regression tests now pass including registry-callback failure and duplicate chunks; full federation and RAG/storage checks follow.
 
 A124-099 found during lab asset/source boundary review. Three shell scripts and compose/lab inventory were inspected. Scope regression runs actual setup/teardown with executable command recorders; no host/network command is executed. Source repairs and disposable-host documentation constrain the optional lab workflow.
+
+A124-100 Canvas source review covers API request completion, IndexedDB session handlers, import/export and autosave lifecycle. Three baseline production-handler fixtures fail on deletion recreation and swallowed save/delete errors; repaired handlers plus request/switch concurrency gate are under HUD validation. Live-provider behavior is distinct from these browser-storage boundaries.
+
+A124-101 two production-panel VM fixtures reproduce unavailable/failed overlay reported enabled. Fix panel result-gating and optional module process lifecycle, with mocked SDK cleanup acceptance. This does not claim Zoom review entitlement or camera-frame API acceptance.

@@ -222,7 +222,7 @@ Batch dependencies: T028 → T029 → T030 security verification; T031 precedes 
 
 - [x] T126 [US4] Correct A124-086 Azure ordinary logger mislabeled GAIT persistence in azure_network_mcp_server.py and README.md; name emitted records operation logs and use returned rather than success for functions that return error envelopes. Preserve tool registration and explicitly require session GAIT recording.
 
-- [ ] T127 [US2] Fix A124-087 floating Flutter CI toolchain changing locked SDK dependencies and failing clean plugin preparation; pin the verified Flutter 3.44.8 in .github/workflows/mobile-ci.yml, trigger CI on workflow edits and validate actual macOS analysis/tests/native builds.
+- [x] T127 [US2] Fix A124-087 floating Flutter CI toolchain changing locked SDK dependencies and failing clean plugin preparation; pin the verified Flutter 3.44.8 in .github/workflows/mobile-ci.yml, trigger CI on workflow edits and validate actual macOS analysis/tests/native builds.
 
 - [x] T128 [US1] Fix A124-088 standalone credential writers in checkpoint-enable.sh, ipfabric-enable.sh, forward-enable.sh, twilio_install.sh, twitter_install.sh and twitter_oauth2_setup.py; replace peering prompt eval/literal decoding and patch-claw-certs env writes; reuse safe writer/profile preservation and prove actual helper/interactive fixture behavior.
 
@@ -248,3 +248,7 @@ Batch dependencies: T028 → T029 → T030 security verification; T031 precedes 
 - [x] T139 [US1/US3] Fix A124-098 replication repeat-start/promotion data loss across replication.py, registry.py and chroma_store.py; stage every transfer, validate page cardinality/uniqueness, transactionally publish registry and retain/restore prior vectors on callback failure. Prove real retained corpus and registry after failures and successful replacement; document cross-store interruption recovery.
 
 - [x] T140 [US1/US4] Fix A124-099 GRE lab scripts changing unrelated bridges/routes in lab/frr-testbed/scripts; remove global bridge mutation, bind route removal to lab tunnel, correct IPv6/failed-convergence diagnostics and stale README. Verify actual scripts with isolated command recorders and bash syntax checks.
+
+- [x] T141 [US1/US2] Fix A124-100 Canvas conversation/session crossing and persistence false success in App.jsx and session-gate.js; verify production session handlers plus pending-request/save admission, retain state on storage failures and prevent deleted-session recreation. Run HUD tests/build and record browser acceptance scope.
+
+- [x] T142 [US2] Fix A124-101 ui/netclaw-zoom-app panel/overlay false enabled state and partial-start cleanup; verify actual panel click handlers and mocked SDK failure cleanup, retain explicit live entitlement gap.

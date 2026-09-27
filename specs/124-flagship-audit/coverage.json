@@ -27273,41 +27273,61 @@
       "path": "ui/netclaw-visual/README.md",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/THIRD_PARTY_NOTICES.md",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/canvas.html",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/index.html",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/logos/netclaw.png",
@@ -27379,11 +27399,15 @@
       "path": "ui/netclaw-visual/public/fixtures",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "asset-boundary",
+      "methods": [
+        "CSS external-resource/executable sink scan; HUD production build; fixture symlink destination inspected"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation asset boundary, not pixel-by-pixel visual acceptance; fixtures link to tracked spec072 static data."
     },
     {
       "path": "ui/netclaw-visual/public/logos/netclaw.png",
@@ -27428,31 +27452,46 @@
       "path": "ui/netclaw-visual/src/canvas-chat/App.jsx",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/canvas-chat/LICENSE",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/canvas-chat/main.jsx",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/main.js",
@@ -27473,81 +27512,121 @@
       "path": "ui/netclaw-visual/src/orgchart-render/a11y.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart-render/bands.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart-render/camera.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart-render/drag.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart-render/expansion.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart-render/index.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart-render/links.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart-render/nodes.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart-render/peer-treatments.test.js",
@@ -27581,11 +27660,16 @@
       "path": "ui/netclaw-visual/src/orgchart/categorize.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/categorize.test.js",
@@ -27633,11 +27717,16 @@
       "path": "ui/netclaw-visual/src/orgchart/force-layout.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/force-layout.test.js",
@@ -27713,11 +27802,16 @@
       "path": "ui/netclaw-visual/src/orgchart/layout-payload.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/layout-payload.test.js",
@@ -27737,11 +27831,16 @@
       "path": "ui/netclaw-visual/src/orgchart/layout-store.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/layout-store.test.js",
@@ -27761,11 +27860,16 @@
       "path": "ui/netclaw-visual/src/orgchart/layout.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/layout.test.js",
@@ -27813,11 +27917,16 @@
       "path": "ui/netclaw-visual/src/orgchart/normalize.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/normalize.test.js",
@@ -27837,11 +27946,16 @@
       "path": "ui/netclaw-visual/src/orgchart/ordering.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/ordering.test.js",
@@ -27861,11 +27975,16 @@
       "path": "ui/netclaw-visual/src/orgchart/peer-detail.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/peer-detail.test.js",
@@ -27885,11 +28004,16 @@
       "path": "ui/netclaw-visual/src/orgchart/presets.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/presets.test.js",
@@ -27909,11 +28033,15 @@
       "path": "ui/netclaw-visual/src/panels/KnowledgePanel.css",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "asset-boundary",
+      "methods": [
+        "CSS external-resource/executable sink scan; HUD production build; fixture symlink destination inspected"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation asset boundary, not pixel-by-pixel visual acceptance; fixtures link to tracked spec072 static data."
     },
     {
       "path": "ui/netclaw-visual/src/panels/KnowledgePanel.js",
@@ -27934,11 +28062,15 @@
       "path": "ui/netclaw-visual/src/panels/TwitterPanel.css",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "asset-boundary",
+      "methods": [
+        "CSS external-resource/executable sink scan; HUD production build; fixture symlink destination inspected"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation asset boundary, not pixel-by-pixel visual acceptance; fixtures link to tracked spec072 static data."
     },
     {
       "path": "ui/netclaw-visual/src/panels/TwitterPanel.js",
@@ -27959,11 +28091,15 @@
       "path": "ui/netclaw-visual/src/styles.css",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "asset-boundary",
+      "methods": [
+        "CSS external-resource/executable sink scan; HUD production build; fixture symlink destination inspected"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation asset boundary, not pixel-by-pixel visual acceptance; fixtures link to tracked spec072 static data."
     },
     {
       "path": "ui/netclaw-visual/vite.config.js",
@@ -27984,41 +28120,60 @@
       "path": "ui/netclaw-zoom-app/manifest.json",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-zoom-app/overlay.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-zoom-app/panel.css",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "asset-boundary",
+      "methods": [
+        "CSS external-resource/executable sink scan; HUD production build; fixture symlink destination inspected"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation asset boundary, not pixel-by-pixel visual acceptance; fixtures link to tracked spec072 static data."
     },
     {
       "path": "ui/netclaw-zoom-app/panel.html",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "UI source trust/persistence/presentation boundaries and fixtures; scoped evidence in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/hud-overlay-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Presentation source/fixture review; optional Zoom Layers SDK and live meeting entitlement remain unverified. Renderer review targeted cleanup, not full-file certification."
     },
     {
       "path": "ui/netclaw-zoom-app/panel.js",

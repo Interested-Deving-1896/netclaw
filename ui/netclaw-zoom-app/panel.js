@@ -104,16 +104,28 @@ function handleServerMessage(msg) {
 }
 
 overlayBtn.addEventListener("click", async () => {
-  overlayEnabled = !overlayEnabled;
-  overlayBtn.textContent = overlayEnabled ? "Disable camera overlay" : "Enable camera overlay";
-  overlayBtn.className = overlayEnabled ? "enabled" : "";
-  send({
-    type: overlayEnabled ? "camera_overlay_enable" : "camera_overlay_disable",
-    meeting_uuid: meetingUuid, participant_id: participantId,
-  });
-  if (window.NetClawOverlay) {
-    if (overlayEnabled) await window.NetClawOverlay.enable();
-    else await window.NetClawOverlay.disable();
+  if (overlayBtn.disabled) return;
+  if (!window.NetClawOverlay) {
+    statusEl.textContent = "Camera overlay unavailable in this build.";
+    return;
+  }
+  overlayBtn.disabled = true;
+  const next = !overlayEnabled;
+  try {
+    const ok = next ? await window.NetClawOverlay.enable() : await window.NetClawOverlay.disable();
+    if (ok !== true) throw new Error("Camera overlay change was not confirmed.");
+    overlayEnabled = next;
+    overlayBtn.textContent = overlayEnabled ? "Disable camera overlay" : "Enable camera overlay";
+    overlayBtn.className = overlayEnabled ? "enabled" : "";
+    send({
+      type: overlayEnabled ? "camera_overlay_enable" : "camera_overlay_disable",
+      meeting_uuid: meetingUuid, participant_id: participantId,
+    });
+  } catch (error) {
+    statusEl.textContent = "Camera overlay unavailable or change failed.";
+    console.warn("NetClaw overlay change failed", error);
+  } finally {
+    overlayBtn.disabled = false;
   }
 });
 

@@ -1,11 +1,11 @@
 # Spec 124 — Active WSL continuation
 
-**Spec124 is not complete.** Latest pushed source f4fdd5a includes fixes001–096.
-097 inventory/098 replication/099 optional GRE lab fixes now pass regression checks and are awaiting the next commit.
-Latest federation suite542 PASS; full unit family PASS after replication, plus GRE scope test PASS.
-129/140 tasks checked; broad review, final acceptance/report and Mac native CI remain open.
-Coverage: 814 baseline paths pending; preserve exact dispositions in coverage.json.
-Do not relabel pending paths without supporting review.
+**Spec124 is not complete.** Latest pushed source d305d50 includes fixes001–099.
+100Canvas session/101Zoom overlay fixes pass227HUD tests/build, actual Chromium fixture/browser check and spec-artifact validation; next commit pending.
+macOS run36325037956 passed Flutter431/analyze and native iOS Runner+WatchApp builds; T127closed.
+132/142tasks checked; broad review and final gates/report remain open.
+Coverage:461targeted,240execution,40generated-inventory,8generated-boundary,912reference,97asset,14external,782pending baseline paths.
+No relabeling without evidence. Current WSLInterop registration absent prevents new Windows executable launch; historical Windows acceptance remains valid for its checkpoint. Defer host repair to post-main phase.
 
 Draft PR: https://github.com/automateyournetwork/netclaw/pull/265 . At f04714b,
 contract/HUD/skill checks passed; mobile failed Flutter3.47.5 plugin preparation.
@@ -25,7 +25,7 @@ capabilities remain explicitly unverified; contract status is not live acceptanc
 
 Private fixtures ~/.openclaw/audit124-wsl; audit containers netclaw-audit124-linux,
 netclaw-audit124-frr, netclaw-audit124-redfish remain available. Preserve unrelated services.
-GAIT branch audit124-wsl-completion-2026-09-27, last recorded milestonebb8713d0.
+GAIT branch audit124-wsl-completion-2026-09-27, last recorded milestonec50adadf.
 Next: complete remaining source/skills/docs dispositions and reproduction-first repairs;
 resolve Mac CI; final gates/report; merge/main; back up/apply operator migrations and verify.
 Standalone credential/failure/OAuth repairs are now verified; source review remains active.
