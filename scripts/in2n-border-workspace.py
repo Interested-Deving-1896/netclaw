@@ -160,6 +160,12 @@ def main():
         guide_out = os.path.join(docs_out, "JEV-SCIENCE-OFFICER.md")
         if not os.path.lexists(guide_out):
             os.symlink(guide, guide_out)
+        # SOUL also links to docs/ relative to the workspace itself.
+        local_docs = os.path.join(out, "docs")
+        os.makedirs(local_docs, exist_ok=True)
+        local_guide = os.path.join(local_docs, "JEV-SCIENCE-OFFICER.md")
+        if not os.path.lexists(local_guide):
+            os.symlink(guide, local_guide)
 
     # support/identity files symlinked; SOUL*/IDENTITY overridden with the persona
     for f in SUPPORT_FILES:

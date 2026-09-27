@@ -12,6 +12,7 @@ import json
 import math
 import os
 import re
+import shlex
 import sqlite3
 import subprocess
 import sys
@@ -388,6 +389,16 @@ async def evaluate(state: str | dict, questions: dict, purpose: str, evidence_me
         preview = {"status": "prepared", "advisory_only": True, "request_digest": digest,
                    "endpoint": config.endpoint, "task_id": config.task_id, "approval_required": approval,
                    "reserved_input_tokens": reserved_tokens, "reserved_cost_usd": reserved_cost}
+        if approval:
+            command = [sys.executable, str(Path(__file__).resolve().parents[2] / "scripts/jev-settings.py"),
+                       "--data-dir", str(config.data_dir), "approve-disclosure", digest,
+                       "--endpoint", config.endpoint, "--task", config.task_id]
+            preview["disclosure_approval"] = {
+                "gate": "local_operator_ledger", "operator_command": shlex.join(command),
+                "instructions": "Operator must record the exact disclosure grant locally. A Slack confirmation "
+                "alone does not record it. Preserve all tool arguments, including metadata, and resend unchanged "
+                "once after approval is recorded. Do not request repeated confirmations or change the payload.",
+            }
         if prepare_only:
             return preview
         if not config.enabled:
@@ -427,6 +438,8 @@ async def evaluate(state: str | dict, questions: dict, purpose: str, evidence_me
         return record
     except Refused as exc:
         return {"status": exc.status, "message": exc.message, "advisory_only": True,
-                **({"request_digest": record["request_digest"], "task_id": config.task_id, "endpoint": config.endpoint} if record else {})}
+                **({"request_digest": record["request_digest"], "task_id": config.task_id, "endpoint": config.endpoint} if record else {}),
+                **({"disclosure_approval": record["disclosure_approval"]}
+                   if record and exc.status == "approval_required" and "disclosure_approval" in record else {})}
     except (OSError, sqlite3.Error):
         return {"status": "unavailable", "message": "Local Jev ledger or settings unavailable; assessment stopped.", "advisory_only": True}

@@ -40,6 +40,8 @@ python3 scripts/jev-settings.py approve-disclosure REQUEST_DIGEST --endpoint EXA
 
 Consent expires (five minutes by default), is single-use and binds the exact payload, destination and task. A changed request requires new consent. There is no MCP approve button/boolean the model can set. Credentials remain excluded even with consent. Do not claim this mechanism cryptographically distinguishes a human from an agent with unrestricted local shell access; trusted operator execution is the boundary.
 
+This is NetClaw's **local** consent gate, not an approval API at the hosted provider. A Slack reply alone does not write the grant. When reporting `approval_required`, present the returned operator command and explain that it must be recorded locally; do not repeatedly ask for confirmation that the runtime cannot consume. Preserve the exact tool arguments, including provenance timestamps and questions. After the operator records approval, resend those unchanged arguments once. Do not regenerate the request, rotate the task ID, or treat private RFC1918 addresses as anonymized evidence. Prefer genuinely abstracted evidence without real names, addresses or topology when private disclosure is unnecessary.
+
 ## Reading and communicating assessments
 
 - Noul: probability of yes for the exact proposition.

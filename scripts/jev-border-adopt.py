@@ -22,7 +22,7 @@ START = '<!-- netclaw-jev-advisor:start -->'
 END = '<!-- netclaw-jev-advisor:end -->'
 SKILLS = ('jev-evidence-review', 'jev-specialist-advice', 'jev-answer-review',
           'jev-diagnostic-advice', 'jev-change-review', 'jev-incident-triage')
-ALLOWED = {'SOUL.md', '../docs/JEV-SCIENCE-OFFICER.md'} | {f'skills/{name}/SKILL.md' for name in SKILLS}
+ALLOWED = {'SOUL.md', '../docs/JEV-SCIENCE-OFFICER.md', 'docs/JEV-SCIENCE-OFFICER.md'} | {f'skills/{name}/SKILL.md' for name in SKILLS}
 
 
 def module(name, filename):
@@ -91,6 +91,9 @@ def planned_changes(workspace):
     for name in SKILLS:
         desired[f'skills/{name}/SKILL.md'] = (ROOT/'workspace/skills'/name/'SKILL.md').read_bytes()
     desired['../docs/JEV-SCIENCE-OFFICER.md'] = (ROOT/'docs/JEV-SCIENCE-OFFICER.md').read_bytes()
+    # SOUL's docs/ link is workspace-relative; the skills' ../../../docs link
+    # resolves beside the workspace. Support both without changing old backups.
+    desired['docs/JEV-SCIENCE-OFFICER.md'] = desired['../docs/JEV-SCIENCE-OFFICER.md']
     changes = []
     for relative, after in desired.items():
         path = workspace/relative

@@ -86,7 +86,9 @@ def serve():
         Choice requires 2–255 labeled criteria; Score requires 2–10 ordered levels.
         Do not use text, options, output, or scale_levels as question fields.
         prepare_only returns the exact request digest for operator disclosure approval
-        without sending. Use at most one reconsideration of a successful initial result.
+        without sending. approval_required is a local ledger gate: show its operator
+        command, retain the exact arguments, and do not claim a Slack confirmation
+        alone records the grant. Use at most one reconsideration of a successful initial result.
         """
         return await core.evaluate(state, questions, purpose, evidence_metadata,
                                    data_classification, prepare_only, reconsideration_of)
