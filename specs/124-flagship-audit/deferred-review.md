@@ -75,7 +75,7 @@ Future review should prioritize authorization/identity and persistence boundarie
 - Credentialed vendor/cluster integrations and exact-record ServiceNow lookup remain unverified. Contracts exercise defined fixtures only.
 - RAG model retrieval quality and abrupt-process cross-store replication recovery require a dedicated corpus/recovery campaign; retained rollback inspection is documented in AUDIT124-MIGRATIONS.md.
 - Fresh wiped macOS and bare-metal Linux boot acceptance were not performed. Historical Mac runtime/LaunchAgent acceptance plus native CI, Docker Debian real systemd, and isolated WSL fresh/upgrade are the available evidence.
-- Windows Edge acceptance is historical at its recorded checkpoint. WSL Chromium exercised the latest Canvas session change. Current host WSLInterop absence is an operator-repair item after returning to main, not a claim of current Windows-browser success.
+- Windows Edge acceptance is historical at its recorded checkpoint. WSL Chromium exercised the latest Canvas session change. The earlier WSLInterop absence is resolved in the current environment without a host write; post-main Windows Edge fixture acceptance passed (operator-adoption.json).
 - Dependency modernization, comprehensive docs/skill semantics and remaining source review stay in this backlog. Do not move these into spec125 by implication.
 
 - Siri fast-result subscription begins after pending-turn persistence. A result arriving during that write can require existing stale-turn reconciliation; investigate buffered delivery in a follow-up. Fast-window tests now explicitly synchronize after persistence instead of assuming disk I/O finishes in10ms. This is a recoverable delivery limitation, not a confirmed safe-use release blocker.

@@ -6,7 +6,7 @@ Baseline: ad6a4a8. Inventory coverage is not completed review. Confirmed finding
 
 The user bounded closeout on2026-09-27. Confirmed001–103 repairs are implemented; all final local and native103 checks passed. All751 previously pending baseline paths are explicitly deferred in [deferred-review.md](deferred-review.md), not passed.461 paths have targeted review and271 measured execution; neither is full-file certification. Existing finding/acceptance evidence yielded no further confirmed safe-use release blocker during bounded triage.
 
-Completed acceptance includes Docker Debian real systemd fresh/upgrade, isolated WSL fresh/upgrade and recovery, historical Windows Edge chat, current WSL Chromium Canvas checks, a separate real model request, CML12/12 read-only checks, NSM19 and Redfish15 fixtures. Historical Mac runtime and native CI evidence remains valid at its recorded checkpoint. Physical phone/watch, live optional providers, wiped Mac and bare-metal Linux acceptance remain unverified. Actual local migration follows merge and return to main.
+Completed acceptance includes Docker Debian real systemd fresh/upgrade, isolated WSL fresh/upgrade and recovery, historical Windows Edge chat, current WSL Chromium Canvas checks, a separate real model request, CML12/12 read-only checks, NSM19 and Redfish15 fixtures. Historical Mac runtime and native CI evidence remains valid at its recorded checkpoint. Physical phone/watch, live optional providers, wiped Mac and bare-metal Linux acceptance remain unverified. Actual local migration completed after merge and return to main; evidence/wsl/operator-adoption.json records outcomes and optional gaps.
 
 | IDs | Current disposition |
 |---|---|

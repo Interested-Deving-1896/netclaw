@@ -1,6 +1,21 @@
 # Return to the Mac development box
 
-Spec124 is in bounded closeout under explicit user direction. This handoff will record the merged main revision after PR265 closes. Do not resume the former open-ended audit. Spec125 remains the HUD redesign; deferred review belongs in deferred-review.md.
+## Completed merge and operator adoption —2026-09-27
+
+PR265 merged as `ee7b025607d052b3b4230a06da927e9393fcaced`; feature branch deleted locally/remotely; checkout returned to main before operator work. All144bounded task dispositions and103confirmed repairs are complete. Final PR-head native CI36327193441 at4fc65a4 also passed Flutter/analyze and both Runner/WatchApp builds; see evidence/wsl/macos-closeout-ci.json.751deferred paths remain unreviewed, not passed.
+
+Private backup: `~/netclaw-backups/spec124-20260927T144807Z/` (`local-state.tar`, plus `root-owned-lab.tar` for two protected lab files). Both archives list successfully; backup-summary.json records the supplement's restore base. Keep both archives together. Recovery originals/journals remain beside migrated environments and in skill-deployment-backups; the previous GAIT generation is retained. Do not replace live state wholesale without stopping affected services and preserving subsequent edits.
+
+Managed pinned pyATS runtime/HTTP bridge, GAIT generation, applicable TLS registration, strict existing SSH trust, loopback internal transport and file permissions passed preview/apply/repeat checks. Skills updated with recovery originals; all replaced originals match historical Git blobs.36Border links and its curated skill selection were preserved, updating only existing regular skills separately. Existing explicit lab mode was preserved; no production promotion or device change occurred.
+
+Verification:666/666knowledge/workspace/testbed/Prisma preservation hashes unchanged, all28existing credential settings unchanged, gateway config structurally unchanged.11services running with0restart loops; authenticated gateway health and real no-tool model marker return passed; actual HUD/Canvas/API HTTP200; managed pyATS inventory5devices; federation enabled with4active members.11/12configured MCP discovery passed; PagerDuty lacks an API key. Twilio inbound Auth Token and Zoom OAuth panel credentials remain absent; those optional functions are not claimed working. No substitute credentials or external messages were created.
+
+Current Windows interop is available and a fresh Windows Edge→WSL isolated HUD/Canvas HTTP/WebSocket/chat fixture check passes with no JS errors. No host interop write was needed. Historical missing-interop evidence remains a checkpoint, not current status. Audit containers from earlier acceptance are not present in the current Docker context; unrelated running containers were preserved.
+
+Exact sanitized outcomes: [operator-adoption.json](evidence/wsl/operator-adoption.json). Raw configuration, device names, credentials and model output stay in the private backup/evidence directories. mac-handoff.md is the Mac return entry point. Mobile rebuild/install remains required to adopt the changed client; no reset or new App Store release was performed here.
+
+
+Spec124 bounded closeout is complete; PR265 is merged and the actual WSL installation is migrated and verified as recorded above. Do not resume the former open-ended audit. Spec125 remains the HUD redesign; deferred review belongs in deferred-review.md.
 
 ## Completed platform evidence
 
