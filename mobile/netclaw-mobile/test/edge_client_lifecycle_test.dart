@@ -6,12 +6,14 @@ import 'package:netclaw_mobile/ncfed/edge_client.dart';
 
 class TestSink implements WebSocketSink {
   final sent = <dynamic>[];
+  final firstSend = Completer<void>();
   bool closed = false;
   bool failSend = false;
   @override
   void add(dynamic data) {
     if (failSend) throw StateError('fixture send failure');
     sent.add(jsonDecode(data as String));
+    if (!firstSend.isCompleted) firstSend.complete();
   }
   @override
   Future<void> close([int? closeCode, String? closeReason]) async { closed = true; }
@@ -75,7 +77,7 @@ void main() {
   test('handler failure returns sanitized RPC error without unhandled future', () async {
     client.on('broken', (_) => throw StateError('private fixture detail'));
     channel.input.add(jsonEncode({'id': 'peer:1', 'method': 'broken', 'params': {}}));
-    await Future<void>.delayed(const Duration(milliseconds: 10));
+    await channel.sink.firstSend.future.timeout(const Duration(seconds: 5));
     expect(channel.sink.sent.single['error']['code'], -32603);
     expect(jsonEncode(channel.sink.sent), isNot(contains('private fixture detail')));
     expect(client.isClosed, isFalse);
