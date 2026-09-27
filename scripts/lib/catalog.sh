@@ -121,6 +121,7 @@ CATALOG=(
     "document|Platform Services|Document Generation|Change-record .docx, audit .xlsx, exec .pptx and PDF form filling from real NetClaw data — per-element provenance, never fabricates a blank"
     "rag-mcp|Platform Services|RAG Knowledge Base|Offline document knowledge base — hybrid retrieval, citations, opt-in snapshots (ChromaDB + BM25 + local reranker)"
     "ollama|Platform Services|Ollama Domain Experts|Delegates structured tasks to local Ollama models on your own GPU (10 tools)"
+    "jev|Platform Services|Jev Science Officer|Optional probabilistic advisor — dynamic Noul, Choice and Score assessments; explicit activation, bounded budgets"
     "humanrail|Platform Services|HumanRail|Human-in-the-loop escalation and approvals"
 )
 
@@ -153,7 +154,7 @@ catalog_has() {
 PROFILE_MINIMAL="pyats gait subnet-calc drawio-rfc"
 
 PROFILE_RECOMMENDED="bgp-intel pyats gait netbox servicenow nvd-cve subnet-calc wikipedia markmap \
-drawio-rfc uml packet-buddy nmap gtrace globalping suzieq batfish protocol n2n tts chrome-devtools rag-mcp document"
+drawio-rfc uml packet-buddy nmap gtrace globalping suzieq batfish protocol n2n tts chrome-devtools rag-mcp document jev"
 
 PROFILE_CISCO="pyats gait netbox servicenow aci ise catc meraki sdwan cml fmc \
 radkit te-community te-official nvd-cve cisco-psirt subnet-calc drawio-rfc uml packet-buddy"

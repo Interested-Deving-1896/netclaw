@@ -1305,6 +1305,28 @@
         "ANALYSIS_MAX_RESULT_ROWS": "${ANALYSIS_MAX_RESULT_ROWS:-500}",
         "ANALYSIS_EXTRA_ROOTS": "${ANALYSIS_EXTRA_ROOTS:-}"
       }
+    },
+    "jev-mcp": {
+      "command": "mcp-servers/jev-mcp/.venv/bin/python",
+      "args": [
+        "-u",
+        "mcp-servers/jev-mcp/server.py"
+      ],
+      "env": {
+        "JEV_ENABLED": "${JEV_ENABLED:-false}",
+        "TYPESAFE_API_KEY": "${TYPESAFE_API_KEY:-}",
+        "JEV_API_KEY": "${JEV_API_KEY:-}",
+        "JEV_BASE_URL": "${JEV_BASE_URL:-https://api.typesafe.ai}",
+        "JEV_MODEL": "${JEV_MODEL:-jev-1.13.0}",
+        "JEV_DAILY_LIMIT_USD": "${JEV_DAILY_LIMIT_USD:-5}",
+        "JEV_CASE_LIMIT_USD": "${JEV_CASE_LIMIT_USD:-0.25}",
+        "JEV_INPUT_PRICE_PER_MILLION": "${JEV_INPUT_PRICE_PER_MILLION:-}",
+        "JEV_DATA_DIR": "${JEV_DATA_DIR:-~/.openclaw/jev}",
+        "JEV_TIMEOUT_SECONDS": "${JEV_TIMEOUT_SECONDS:-5}",
+        "JEV_TASK_ID": "${JEV_TASK_ID:-}",
+        "JEV_COMPATIBLE_API_KEY": "${JEV_COMPATIBLE_API_KEY:-}",
+        "JEV_COMPATIBLE_KEY_ENDPOINT": "${JEV_COMPATIBLE_KEY_ENDPOINT:-}"
+      }
     }
   }
 }
