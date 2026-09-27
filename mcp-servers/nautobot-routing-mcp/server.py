@@ -7,7 +7,7 @@ Environment Variables:
     NAUTOBOT_URL          — Nautobot instance URL (required)
     NAUTOBOT_TOKEN        — Nautobot API token (required)
     NAUTOBOT_TIMEOUT      — API request timeout in seconds (default: 60)
-    NAUTOBOT_VERIFY_SSL   — Verify SSL certificates (default: false)
+    NAUTOBOT_VERIFY_SSL   — Verify SSL certificates (default: true)
     ITSM_ENABLED          — Require ServiceNow CR for write ops (default: false)
     ITSM_LAB_MODE         — Bypass ITSM in lab mode (default: true)
 """

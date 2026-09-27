@@ -43,13 +43,15 @@ are each reported as coverage gaps in `gaps`, never as "no problem found".
 
 ## TLS
 
-Verification defaults **off** because BMCs ship self-signed certificates, and every response says
-so. Set `REDFISH_VERIFY_TLS=true` where the BMC has a real certificate.
+Verification defaults **on**. For private or self-signed BMC certificates, set
+`REDFISH_CA_BUNDLE` to the trusted PEM CA bundle. `REDFISH_VERIFY_TLS=false` is an
+explicit lab-only opt-out, disclosed in results. Redirects are refused; configure
+the final trusted BMC URL. See [migration guide](../../docs/REDFISH-TLS-MIGRATION.md).
 
 ## Environment
 
 `REDFISH_URL` (never guessed), `REDFISH_USERNAME`, `REDFISH_PASSWORD`, `REDFISH_VERIFY_TLS`,
-`REDFISH_TIMEOUT`. **BMC credentials are root-equivalent on the host** — use Vault where available.
+`REDFISH_CA_BUNDLE`, `REDFISH_TIMEOUT`. **BMC credentials are root-equivalent on the host** — use Vault where available.
 
 ## Tests
 

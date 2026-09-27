@@ -100,17 +100,21 @@ def error_response(code: str, message: str) -> Dict[str, Any]:
     return {"success": False, "data": None, "error": {"code": code, "message": message}}
 
 
-def gait_log(operation: str, identifier: str) -> None:
-    """Log operation to GAIT (if available)."""
+def gait_log(operation: str, identifier: str) -> Dict[str, Any]:
+    """Record through the supported SDK; never imply an unavailable audit succeeded."""
     try:
-        # Try to import and use GAIT
         from gait.repo import GaitRepo
-        repo = GaitRepo.open_cwd()
-        if repo:
-            repo.log_event(f"memory_{operation}: {identifier}")
-    except Exception:
-        # GAIT not available, log to stderr instead
-        log.info(f"GAIT: memory_{operation}: {identifier}")
+        from gait.schema import Turn
+
+        repo = GaitRepo.discover()
+        turn = Turn.v0(user_text=f"memory_{operation}",
+                       assistant_text=identifier, visibility="private")
+        _, commit_id = repo.record_turn(turn, message=f"memory_{operation}")
+        return {"status": "recorded", "commit": commit_id}
+    except Exception as exc:
+        log.warning("GAIT audit unavailable for memory_%s (%s)", operation, type(exc).__name__)
+        return {"status": "unavailable", "reason": type(exc).__name__,
+                "warning": "The data operation completed, but its GAIT event was not recorded. Do not repeat the data write solely to retry audit logging."}
 
 
 # ---------------------------------------------------------------------
@@ -141,7 +145,7 @@ def memory_record_fact(
     result = sqlite_store.insert_fact(entity, key, value, metadata)
 
     if result.get("success"):
-        gait_log("record_fact", f"{entity}/{key}")
+        result["audit"] = gait_log("record_fact", f"{entity}/{key}")
 
     return result
 
@@ -188,7 +192,7 @@ def memory_invalidate(
     result = sqlite_store.invalidate_fact(fact_id, reason)
 
     if result.get("success"):
-        gait_log("invalidate", fact_id)
+        result["audit"] = gait_log("invalidate", fact_id)
 
     return result
 
@@ -244,7 +248,7 @@ def memory_store_session(
 
     if result.get("success"):
         session_ref = session_id or result.get("data", {}).get("id", "unknown")
-        gait_log("store_session", session_ref)
+        result["audit"] = gait_log("store_session", session_ref)
 
     return result
 
@@ -308,7 +312,7 @@ def memory_record_decision(
 
     if result.get("success"):
         decision_id = result.get("data", {}).get("id", "unknown")
-        gait_log("record_decision", decision_id)
+        result["audit"] = gait_log("record_decision", decision_id)
 
     return result
 
@@ -369,7 +373,7 @@ def memory_link_entities(
     result = sqlite_store.insert_link(subject, predicate, object, metadata)
 
     if result.get("success"):
-        gait_log("link_entities", f"{subject} {predicate} {object}")
+        result["audit"] = gait_log("link_entities", f"{subject} {predicate} {object}")
 
     return result
 

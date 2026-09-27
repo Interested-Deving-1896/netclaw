@@ -24,8 +24,8 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 async def main():
     env = dict(os.environ)
-    env.setdefault("ZABBIX_URL", "http://127.0.0.1:1")
-    env.setdefault("ZABBIX_TOKEN", "placeholder")
+    env["ZABBIX_URL"] = "http://127.0.0.1:1"
+    env["ZABBIX_TOKEN"] = "placeholder"
     env["READ_ONLY"] = "true"
     p = StdioServerParameters(command=sys.executable,
                               args=["-m", "zabbix_mcp_server.server"], env=env)
@@ -44,12 +44,12 @@ def _probe():
         return None
     out = subprocess.run([VENV_PY, "-c", PROBE], capture_output=True, text=True, timeout=120)
     if out.returncode != 0:
-        return None
+        raise RuntimeError(f"Installed Zabbix MCP manifest probe failed (exit {out.returncode})")
     import json
     for line in reversed(out.stdout.strip().splitlines()):
         if line.startswith("{"):
             return json.loads(line)
-    return None
+    raise RuntimeError("Installed Zabbix MCP manifest probe returned no JSON")
 
 _CACHE = {}
 

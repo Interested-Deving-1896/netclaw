@@ -77,7 +77,7 @@ it solves.
 |---|---|
 | `ANTA_USERNAME` / `ANTA_PASSWORD` | device credentials — **environment only**, never tool arguments, never returned |
 | `ANTA_ENABLE_PASSWORD` | optional, for tests needing enable mode |
-| `ANTA_VERIFY_TLS` | default `false` (lab switches ship self-signed certs) — **always disclosed** in output as `tls_verified` |
+| `ANTA_VERIFY_TLS` | default `true` (certificate and hostname verification) — **always disclosed** in output as `tls_verified` |
 | `ANTA_TIMEOUT` | per-device timeout, default 30s |
 
 ## Install and test
@@ -92,3 +92,5 @@ bash tests/anta/run-tests.sh         # 21 assertions; live ones skip without ANT
 EOS only — this is not multivendor validation. `arista-cvp-mcp` is the management plane, pyATS and
 the multivendor CLI driver are the device-CLI plane, and this is the validation plane. Use it to
 assert, not to fetch.
+
+For private CA trust use `ANTA_CA_BUNDLE`; see [transport migration](../../docs/INTEGRATION-TLS-MIGRATION.md). SSH host-key checks remain enabled independently.

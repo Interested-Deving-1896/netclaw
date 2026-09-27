@@ -25,6 +25,7 @@ requires-python = ">=3.10"
 # nothing and WRITES these formats. Two servers declaring different requirements for one
 # shared install is not an acceptable end state, so the bounds are identical in both.
 dependencies = [
+    "gait-ai>=0.0.9,<1",
     "mcp>=1.2.0,<2",
     "fastmcp>=2.0,<3",
     "chromadb>=0.4.0,<2",

@@ -6,5 +6,5 @@
 #
 # Bounds are mandatory where a submodule is imported (spec 077): `from mcp.server.fastmcp import
 # FastMCP` means mcp MUST be bounded, because mcp 2.0.0 removed that submodule.
-anta>=1.9.0,<2
+anta>=1.10.0,<2
 mcp>=1.2.0,<2

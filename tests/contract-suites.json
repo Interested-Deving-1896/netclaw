@@ -29,7 +29,7 @@
         "tests/anta/run-tests.sh"
       ],
       "environment": {
-        "path": "mcp-servers/anta-mcp/.venv",
+        "path": ".contract-test-envs/anta",
         "requirements": [
           "mcp-servers/anta-mcp/requirements.txt"
         ],
@@ -244,6 +244,20 @@
           "destination": "mcp-servers/k8s-mcp/kubernetes-mcp-server",
           "sha256": "692a7b283a96140311fd46f13b8373657b2e9bfe660a36bb6434e8c42d899dbc",
           "executable": true
+        },
+        {
+          "platform": "darwin-arm64",
+          "url": "https://github.com/containers/kubernetes-mcp-server/releases/download/v0.0.66/kubernetes-mcp-server-darwin-arm64",
+          "destination": "mcp-servers/k8s-mcp/kubernetes-mcp-server",
+          "sha256": "51ea2d7f452cfa2f930425e3b1870233beaf9f92e2105fc92305565f293c922a",
+          "executable": true
+        },
+        {
+          "platform": "darwin-x86_64",
+          "url": "https://github.com/containers/kubernetes-mcp-server/releases/download/v0.0.66/kubernetes-mcp-server-darwin-amd64",
+          "destination": "mcp-servers/k8s-mcp/kubernetes-mcp-server",
+          "sha256": "9f3a7a8b71587725f996ac2411f5287ceeab3714bd7d1533aac9b3c107a0b38b",
+          "executable": true
         }
       ],
       "live": {
@@ -263,7 +277,7 @@
         "tests/multivendor/run-tests.sh"
       ],
       "environment": {
-        "path": "mcp-servers/multivendor-cli-mcp/.venv",
+        "path": ".contract-test-envs/multivendor",
         "requirements": [
           "mcp-servers/multivendor-cli-mcp/requirements.txt"
         ],
@@ -358,7 +372,7 @@
         "tests/zabbix/run-tests.sh"
       ],
       "environment": {
-        "path": "mcp-servers/zabbix-mcp/.venv",
+        "path": ".contract-test-envs/zabbix",
         "requirements": [
           "mcp-servers/zabbix-mcp/requirements.txt"
         ],
@@ -425,22 +439,36 @@
           "Pillow>=10,<12",
           "numpy>=1.26,<3",
           "httpx>=0.27,<1",
-          "chromadb>=0.5,<2"
+          "chromadb>=0.5,<2",
+          "mcp>=1.2.0,<2",
+          "networkx>=3,<4",
+          "rank_bm25>=0.2,<1",
+          "beautifulsoup4>=4.12,<5",
+          "fastmcp>=2.0,<3",
+          "flask>=3,<4",
+          "twilio>=9,<10",
+          "pytz>=2024.1",
+          "gait-ai>=0.0.9,<1"
         ],
         "required_imports": [
           "pytest",
           "PIL",
           "numpy",
           "httpx",
-          "chromadb"
+          "chromadb",
+          "mcp",
+          "networkx",
+          "rank_bm25",
+          "bs4",
+          "fastmcp",
+          "flask",
+          "twilio",
+          "pytz"
         ],
         "prepend_path": true
       },
-      "ci": {
-        "include": false,
-        "reason": "greenness unverified; its chromadb dependency has never been installed by any workflow"
-      },
-      "timeout_seconds": 900
+      "timeout_seconds": 900,
+      "isolate_files": true
     },
     "integration": {
       "kind": "pytest",
@@ -454,13 +482,30 @@
           "pytest>=8,<9",
           "httpx>=0.27,<1",
           "playwright>=1.47,<2",
-          "PyYAML>=6,<7"
+          "PyYAML>=6,<7",
+          "Pillow>=10,<12",
+          "numpy>=1.26,<3",
+          "chromadb>=0.5,<2",
+          "mcp>=1.2.0,<2",
+          "networkx>=3,<4",
+          "rank_bm25>=0.2,<1",
+          "beautifulsoup4>=4.12,<5",
+          "fastmcp>=2.0,<3",
+          "flask>=3,<4",
+          "twilio>=9,<10",
+          "pytz>=2024.1",
+          "pytest-asyncio>=0.24,<2"
         ],
         "required_imports": [
           "pytest",
           "httpx",
           "playwright",
-          "yaml"
+          "yaml",
+          "chromadb",
+          "fastmcp",
+          "rank_bm25",
+          "bs4",
+          "pytest_asyncio"
         ],
         "prepend_path": true
       },
@@ -468,7 +513,8 @@
         "include": false,
         "reason": "requires Playwright browser binaries, which this workflow does not install"
       },
-      "timeout_seconds": 900
+      "timeout_seconds": 900,
+      "isolate_files": true
     },
     "n2n": {
       "kind": "pytest",
@@ -482,18 +528,16 @@
         ],
         "packages": [
           "pytest>=8,<9",
-          "cryptography>=43,<45"
+          "cryptography>=43,<45",
+          "chromadb>=0.5,<2"
         ],
         "required_imports": [
           "pytest",
           "websockets",
-          "cryptography"
+          "cryptography",
+          "chromadb"
         ],
         "prepend_path": true
-      },
-      "ci": {
-        "include": false,
-        "reason": "greenness unverified; no workflow has ever executed this suite"
       },
       "timeout_seconds": 900
     },
@@ -518,10 +562,6 @@
         ],
         "prepend_path": true
       },
-      "ci": {
-        "include": false,
-        "reason": "greenness unverified; its dependency set is still being established"
-      },
       "timeout_seconds": 600
     },
     "halo-mcp": {
@@ -545,10 +585,6 @@
         ],
         "prepend_path": true
       },
-      "ci": {
-        "include": false,
-        "reason": "greenness unverified; its dependency set is still being established"
-      },
       "timeout_seconds": 600
     },
     "token-budget": {
@@ -562,18 +598,76 @@
         "path": ".contract-test-envs/token-budget",
         "requirements": [],
         "packages": [
-          "pytest>=8,<9"
+          "pytest>=8,<9",
+          "gcf-python==2.2.1"
         ],
         "required_imports": [
-          "pytest"
+          "pytest",
+          "gcf"
         ],
         "prepend_path": true
       },
-      "ci": {
-        "include": false,
-        "reason": "greenness unverified; tests/test_gcf_serializer.py currently fails"
+      "timeout_seconds": 300
+    },
+    "first-party-mcp": {
+      "kind": "pytest",
+      "paths": [
+        "mcp-servers/protocol-mcp/tests",
+        "mcp-servers/zoom-rtms-mcp/tests",
+        "mcp-servers/gns3-mcp-server/tests"
+      ],
+      "isolate_files": true,
+      "environment": {
+        "path": ".contract-test-envs/first-party-mcp",
+        "requirements": [],
+        "packages": [
+          "pytest>=8,<9",
+          "pytest-asyncio>=0.24,<2",
+          "mcp>=1.13,<2",
+          "websockets>=14,<16",
+          "httpx>=0.27,<1",
+          "python-dotenv>=1,<2",
+          "cryptography>=46,<51",
+          "fastmcp>=2,<3"
+        ],
+        "required_imports": [
+          "pytest",
+          "pytest_asyncio",
+          "mcp",
+          "websockets",
+          "httpx",
+          "dotenv",
+          "cryptography",
+          "fastmcp"
+        ],
+        "prepend_path": true
       },
       "timeout_seconds": 300
+    },
+    "telemetry": {
+      "kind": "pytest",
+      "paths": [
+        "tests/telemetry"
+      ],
+      "environment": {
+        "path": ".contract-test-envs/telemetry",
+        "requirements": [
+          "mcp-servers/syslog-mcp/requirements.txt",
+          "mcp-servers/snmptrap-mcp/requirements.txt",
+          "mcp-servers/ipfix-mcp/requirements.txt"
+        ],
+        "packages": [],
+        "required_imports": [
+          "pytest",
+          "mcp",
+          "gait",
+          "pysnmp",
+          "netflow",
+          "syslog_rfc5424_parser"
+        ],
+        "prepend_path": true
+      },
+      "timeout_seconds": 180
     }
   }
 }

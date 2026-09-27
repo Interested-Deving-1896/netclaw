@@ -210,9 +210,20 @@ class Registry:
         chunk_count: int,
         page_count: Optional[int] = None,
         redaction_counts: Optional[Dict[str, int]] = None,
+        content_hash: Optional[str] = None,
+        replace_ids: tuple = (),
     ) -> None:
         """Flip a document to 'ready' in one transaction (atomic commit point)."""
         with self._lock, self._conn:
+            # Staged replacement hashes avoid the (content_hash, kind) unique
+            # constraint while the previous ready version remains available.
+            # Retire old registry rows and publish the real hash atomically.
+            if replace_ids:
+                self._conn.executemany("DELETE FROM documents WHERE id = ? AND id != ?",
+                                       [(old_id, doc_id) for old_id in replace_ids])
+            if content_hash is not None:
+                self._conn.execute("UPDATE documents SET content_hash = ? WHERE id = ?",
+                                   (content_hash, doc_id))
             self._conn.execute(
                 """UPDATE documents
                    SET ingest_status = 'ready', chunk_count = ?, page_count = ?,

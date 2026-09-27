@@ -63,6 +63,24 @@ def _inside_repo(root: Path, value: str, label: str) -> Path:
     return path
 
 
+def _environment_path(root: Path, value: str, label: str) -> Path:
+    path = _inside_repo(root, value, label)
+    relative = Path(value)
+    parts = relative.parts
+    allowed = (len(parts) == 2 and parts[0] == '.contract-test-envs'
+               and parts[1] not in ('.', '..')) or (
+        len(parts) == 3 and parts[0] == 'mcp-servers' and parts[-1] == '.venv'
+        and parts[1] not in ('.', '..'))
+    if relative.is_absolute() or not allowed:
+        raise ManifestError(f"{label}: use .contract-test-envs/<suite> or mcp-servers/<component>/.venv")
+    candidate = root
+    for part in parts:
+        candidate = candidate / part
+        if candidate.is_symlink():
+            raise ManifestError(f"{label}: symlink environment paths are refused")
+    return path
+
+
 def _string_list(value, label: str, *, allow_empty: bool = True) -> list[str]:
     if not isinstance(value, list) or (not allow_empty and not value):
         qualifier = "non-empty " if not allow_empty else ""
@@ -98,6 +116,24 @@ def suite_command(suite_id: str, config: dict, repo_root: Path) -> list[str]:
     interpreter = _venv_python(_inside_repo(repo_root, env_path, f"suite {suite_id}.environment.path")) \
         if env_path is not None else Path(sys.executable)
     return [str(interpreter), "-m", "pytest", *config["paths"], *config.get("args", [])]
+
+
+def suite_commands(suite_id: str, config: dict, repo_root: Path) -> list[list[str]]:
+    """Isolate legacy plugins that use identical top-level Python module names."""
+    repo_root = repo_root.resolve()
+    base = suite_command(suite_id, config, repo_root)
+    if not config.get("isolate_files", False):
+        return [base]
+    files = set()
+    for relative in config["paths"]:
+        path = _inside_repo(repo_root, relative, f"suite {suite_id}.paths")
+        candidates = path.rglob("test_*.py") if path.is_dir() else [path]
+        for item in candidates:
+            resolved = _inside_repo(repo_root, str(item.relative_to(repo_root)), "test file")
+            files.add(str(resolved.relative_to(repo_root)))
+    if not files:
+        raise ManifestError(f"{suite_id}: isolated suite has no test files")
+    return [base[:3] + [name] + config.get("args", []) for name in sorted(files)]
 
 
 def discover_suites(repo_root: Path) -> set[str]:
@@ -186,6 +222,10 @@ def load_manifest(path: Path, repo_root: Path) -> dict:
             if any(not arg.startswith("-") for arg in extra_args):
                 raise ManifestError(f"{prefix}.args must contain pytest flags")
 
+        if "isolate_files" in config:
+            if kind != "pytest" or not isinstance(config["isolate_files"], bool):
+                raise ManifestError(f"{prefix}.isolate_files requires a boolean on a pytest suite")
+
         ci = config.get("ci")
         if ci is not None:
             if not isinstance(ci, dict):
@@ -204,7 +244,7 @@ def load_manifest(path: Path, repo_root: Path) -> dict:
             raise ManifestError(f"{prefix}.environment must be an object")
         env_path = env.get("path")
         if env_path is not None:
-            _inside_repo(root, env_path, f"{prefix}.environment.path")
+            _environment_path(root, env_path, f"{prefix}.environment.path")
         requirements = _string_list(env.get("requirements"), f"{prefix}.environment.requirements")
         _string_list(env.get("packages"), f"{prefix}.environment.packages")
         _string_list(env.get("required_imports"), f"{prefix}.environment.required_imports")
@@ -586,7 +626,7 @@ def _prepare_artifacts(suite_id: str, config: dict, root: Path) -> None:
                 Path(temp_name).unlink(missing_ok=True)
 
 
-def prepare_suite(suite_id: str, config: dict, manifest: dict, root: Path) -> None:
+def _build_suite_environment(suite_id: str, config: dict, manifest: dict, root: Path) -> None:
     """Create or refresh a suite's declared environment and artifacts."""
     _prepare_artifacts(suite_id, config, root)
     env = config["environment"]
@@ -602,8 +642,6 @@ def prepare_suite(suite_id: str, config: dict, manifest: dict, root: Path) -> No
     interpreter = _venv_python(env_path)
     if existing.get("fingerprint") == fingerprint and interpreter.is_file():
         return
-    if env_path.exists():
-        shutil.rmtree(env_path)
     env_path.parent.mkdir(parents=True, exist_ok=True)
 
     python_version = config.get("python", manifest["default_python"])
@@ -649,6 +687,48 @@ def prepare_suite(suite_id: str, config: dict, manifest: dict, root: Path) -> No
     }, indent=2, sort_keys=True) + "\n")
 
 
+def prepare_suite(suite_id: str, config: dict, manifest: dict, root: Path) -> None:
+    """Refresh only owned test environments, preserving a working one on failure."""
+    value = config['environment']['path']
+    if value is None:
+        _prepare_artifacts(suite_id, config, root)
+        return
+    env_path = _environment_path(root, value, f'suite {suite_id}.environment.path')
+    marker = env_path / MARKER_NAME
+    previous = None
+    if env_path.exists():
+        try:
+            existing = json.loads(marker.read_text())
+        except (OSError, ValueError) as exc:
+            raise RuntimeError(f'{suite_id}: refusing to replace unowned runtime {value}; '
+                               'preserve it at a separate path before --prepare') from exc
+        definition = existing.get('definition', {}) if isinstance(existing, dict) else {}
+        if (definition.get('suite') != suite_id or
+                definition.get('environment', {}).get('path') != value or
+                not (env_path / 'pyvenv.cfg').is_file()):
+            raise RuntimeError(f'{suite_id}: runtime ownership metadata does not match {value}')
+        fingerprint, _ = _fingerprint(suite_id, config, manifest, root)
+        if existing.get('fingerprint') == fingerprint and _venv_python(env_path).is_file():
+            _prepare_artifacts(suite_id, config, root)
+            return
+        # The old virtualenv is a recovery point, not a runnable relocated venv.
+        previous = Path(tempfile.mkdtemp(prefix=env_path.name + '.previous-', dir=env_path.parent))
+        previous.rmdir()
+        env_path.rename(previous)
+    try:
+        _build_suite_environment(suite_id, config, manifest, root)
+    except BaseException:
+        # Only the new directory created by this invocation is removed.
+        if env_path.exists():
+            shutil.rmtree(env_path)
+        if previous is not None:
+            previous.rename(env_path)
+        raise
+    else:
+        if previous is not None:
+            shutil.rmtree(previous)
+
+
 def run_suite(suite_id: str, config: dict, manifest: dict, root: Path) -> dict:
     started = time.monotonic()
     result = preflight_suite(suite_id, config, root, manifest)
@@ -668,21 +748,34 @@ def run_suite(suite_id: str, config: dict, manifest: dict, root: Path) -> dict:
         environment["NETCLAW_PY"] = str(interpreter)
         if config["environment"]["prepend_path"]:
             environment["PATH"] = str(interpreter.parent) + os.pathsep + environment.get("PATH", "")
+    runs = []
     try:
-        completed = subprocess.run(suite_command(suite_id, config, root), cwd=root, env=environment,
-                                   text=True, capture_output=True, timeout=config["timeout_seconds"])
-        result["exit_code"] = completed.returncode
+        commands = suite_commands(suite_id, config, root)
+        failed_output = []
+        deadline = time.monotonic() + config["timeout_seconds"]
+        for command in commands:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise subprocess.TimeoutExpired(command, config["timeout_seconds"])
+            completed = subprocess.run(command, cwd=root, env=environment,
+                                       text=True, capture_output=True, timeout=remaining)
+            output = _redact((completed.stdout + completed.stderr).strip(), config)
+            runs.append({"command": command, "exit_code": completed.returncode,
+                         "output": output[-MAX_OUTPUT:]})
+            if completed.returncode:
+                failed_output.append(output)
+        result["test_runs"] = runs
+        result["exit_code"] = next((run["exit_code"] for run in runs if run["exit_code"]), 0)
         result["duration_seconds"] = time.monotonic() - started
-        output = (completed.stdout + completed.stderr).strip()
-        output = _redact(output, config)
-        if completed.returncode == 0:
+        if result["exit_code"] == 0:
             result["status"] = "PASS"
             result["detail"] = "offline contracts passed"
         else:
             result["status"] = "FAIL"
-            result["detail"] = f"harness exited {completed.returncode}"
-            result["output"] = output[-MAX_OUTPUT:]
+            result["detail"] = f"harness exited {result['exit_code']}"
+            result["output"] = "\n".join(failed_output)[-MAX_OUTPUT:]
     except subprocess.TimeoutExpired as exc:
+        result["test_runs"] = runs
         result["status"] = "ERROR"
         result["duration_seconds"] = time.monotonic() - started
         result["detail"] = f"harness timed out after {config['timeout_seconds']}s"

@@ -32,17 +32,27 @@ def verify_scope_token(token: str, url: str, linked_urls: List[str]) -> bool:
     return hmac.compare_digest(token or "", scope_token(url, linked_urls))
 
 
-def fetch(url: str, timeout: float = 30.0) -> Tuple[bytes, str]:
-    """Fetch a URL. Returns (content_bytes, content_type). Errors verbatim."""
+def fetch(url: str, timeout: float = 30.0, max_bytes: int = 100 * 1024 * 1024) -> Tuple[bytes, str]:
+    """Fetch under a decoded-byte cap, including chunked/compressed responses."""
     import httpx
 
+    if max_bytes <= 0:
+        raise FetchError("Document byte limit must be positive")
     try:
-        resp = httpx.get(url, timeout=timeout, follow_redirects=True)
-        resp.raise_for_status()
+        with httpx.stream("GET", url, timeout=timeout, follow_redirects=True) as resp:
+            resp.raise_for_status()
+            content_type = resp.headers.get("content-type", "").split(";")[0].strip().lower()
+            chunks, size = [], 0
+            for chunk in resp.iter_bytes(chunk_size=min(65536, max_bytes + 1)):
+                size += len(chunk)
+                if size > max_bytes:
+                    raise FetchError(f"Document exceeds the {max_bytes}-byte download limit")
+                chunks.append(chunk)
+            return b"".join(chunks), content_type
+    except FetchError:
+        raise
     except Exception as exc:
         raise FetchError(f"Could not fetch {url}: {exc}")
-    content_type = resp.headers.get("content-type", "").split(";")[0].strip().lower()
-    return resp.content, content_type
 
 
 def discover_links(html: str, base_url: str, max_pages: int) -> Dict:

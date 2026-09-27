@@ -238,3 +238,11 @@ If sentence-transformers is unavailable:
 - `memory_store_session` will fail with `EMBEDDINGS_UNAVAILABLE` error
 - `memory_recall` returns empty results with a note explaining unavailability
 - All SQLite-based tools (facts, decisions, links) continue to work normally
+
+## Mutation audit status
+
+Mutation responses now include an `audit` object: `recorded` with a GAIT commit
+reference, or `unavailable` with a warning. An unavailable audit does not undo a
+completed data write; do not repeat the write solely to retry logging. These
+components declare `gait-ai` in their own runtime and require an initialized
+GAIT repository discoverable from the server working directory.

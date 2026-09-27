@@ -85,18 +85,13 @@ define_runtime() {
     NETCLAW_MANIFEST="${_NETCLAW_MANIFEST_ENV:-$RUNTIME_HOME/netclaw-components.conf}"
 }
 
-# Write KEY=VALUE into the runtime .env (create or update in place).
+# Write literal dotenv KEY=VALUE into the runtime .env (atomic and private).
 # Portable — no associative arrays for macOS bash 3.2.
+_NETCLAW_ENV_WRITER="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/write-env.py"
 _set_env_var() {
     local key="$1" val="$2"
     local env_file="${RUNTIME_ENV:-${OPENCLAW_ENV:-$HOME/.openclaw/.env}}"
-    mkdir -p "$(dirname "$env_file")"
-    [ -f "$env_file" ] || touch "$env_file"
-    if grep -q "^${key}=" "$env_file" 2>/dev/null; then
-        sed -i.bak "s|^${key}=.*|${key}=${val}|" "$env_file" && rm -f "$env_file.bak"
-    else
-        echo "${key}=${val}" >> "$env_file"
-    fi
+    printf '%s' "$val" | python3 "$_NETCLAW_ENV_WRITER" "$env_file" "$key"
 }
 
 # ───────────────────────────────────────────

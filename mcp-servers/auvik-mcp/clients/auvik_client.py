@@ -107,10 +107,18 @@ class AuvikClient:
             or
             {"success": False, "data": None, "error": "<message>"}
         """
+        client = self._get_client()
+        try:
+            target = client.build_request('GET', path, params=params).url
+            origin = client.base_url
+            if (target.scheme, target.host, target.port) != (origin.scheme, origin.host, origin.port) or target.userinfo:
+                return {'success': False, 'data': None,
+                        'error': 'Refused Auvik request outside the configured origin or containing URL credentials.'}
+        except (TypeError, ValueError, httpx.InvalidURL):
+            return {'success': False, 'data': None, 'error': 'Invalid Auvik request URL; no request sent.'}
+
         if self._rate_limiter is not None:
             await self._rate_limiter.acquire()
-
-        client = self._get_client()
 
         attempt = 0
         while True:
@@ -227,4 +235,3 @@ class AuvikClient:
         """Close the underlying HTTP client."""
         if self._client is not None and not self._client.is_closed:
             await self._client.aclose()
-

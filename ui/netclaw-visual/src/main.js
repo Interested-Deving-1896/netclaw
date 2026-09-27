@@ -1,3 +1,4 @@
+import { setSafeHtml, appendSafeHtml } from './security/safe-html.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -341,7 +342,7 @@ function resetChatSession() {
   }
 
   // Clear chat messages
-  dom.chatMessages.innerHTML = '';
+  setSafeHtml(dom.chatMessages, '');
 }
 
 // ── Activation beam lines (reusable pool) ──────────────────────────
@@ -844,18 +845,18 @@ function deduplicatePeers(peers) {
 
 
 function renderSidebar(graph) {
-  dom.categoryList.innerHTML = '';
+  setSafeHtml(dom.categoryList, '');
   graph.categories.forEach((category) => {
     state.filters.categories.add(category.name);
 
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'toggle-item';
-    button.innerHTML = `
+    setSafeHtml(button, `
       <span class="swatch" style="color:${category.color}; background:${category.color};"></span>
       <span>${category.name}</span>
       <span class="toggle-meta">${category.count}</span>
-    `;
+    `);
     button.addEventListener('click', () => {
       if (state.filters.categories.has(category.name)) {
         state.filters.categories.delete(category.name);
@@ -869,9 +870,9 @@ function renderSidebar(graph) {
     dom.categoryList.appendChild(button);
   });
 
-  dom.settingsList.innerHTML = graph.settings
+  setSafeHtml(dom.settingsList, graph.settings
     .map((item) => `<div class="info-card"><div class="eyebrow">${item.label}</div><strong>${item.value}</strong></div>`)
-    .join('');
+    .join(''));
 }
 
 function renderMetrics(graph) {
@@ -1173,9 +1174,9 @@ function wireFederationChat(peer) {
   const send = async () => {
     const text = input.value.trim();
     if (!text) return;
-    log.innerHTML += `<div class="n2n-msg n2n-me"><strong>you:</strong> ${text}</div>`;
+    appendSafeHtml(log, `<div class="n2n-msg n2n-me"><strong>you:</strong> ${text}</div>`);
     input.value = '';
-    log.innerHTML += `<div class="n2n-msg n2n-pending" id="n2n-pending">…</div>`;
+    appendSafeHtml(log, `<div class="n2n-msg n2n-pending" id="n2n-pending">…</div>`);
     log.scrollTop = log.scrollHeight;
     try {
       const r = await fetch('/api/n2n/chat', {
@@ -1186,11 +1187,11 @@ function wireFederationChat(peer) {
       sessionId = data.session_id || sessionId;
       document.getElementById('n2n-pending')?.remove();
       const reply = data.text || data.error || '(no response)';
-      log.innerHTML += `<div class="n2n-msg n2n-peer"><strong>${fp.display_name || fp.identity}:</strong> ${reply}</div>`;
+      appendSafeHtml(log, `<div class="n2n-msg n2n-peer"><strong>${fp.display_name || fp.identity}:</strong> ${reply}</div>`);
       log.scrollTop = log.scrollHeight;
     } catch (e) {
       document.getElementById('n2n-pending')?.remove();
-      log.innerHTML += `<div class="n2n-msg n2n-err">error: ${e.message}</div>`;
+      appendSafeHtml(log, `<div class="n2n-msg n2n-err">error: ${e.message}</div>`);
     }
   };
   btn.addEventListener('click', send);
@@ -1222,14 +1223,14 @@ function renderStaleBanner(ind) {
 
 function setDetail(kind, payload, related = []) {
   if (kind === 'local-core') {
-    dom.detailPanel.innerHTML = `
+    setSafeHtml(dom.detailPanel, `
       <h2>This NetClaw</h2>
       <p>${state.n2n?.identity || 'local claw'}</p>
       ${renderRiskSection()}
       ${renderReplicationJobs()}
       ${renderEdgeNodes()}
       ${renderRecentPushes()}
-    `;
+    `);
     return;
   }
 
@@ -1240,7 +1241,7 @@ function setDetail(kind, payload, related = []) {
       : (st === 'quarantined' || st === 'removed') ? 'not-federated' : 'consent-pending-local';
     const skills = (m.skills || []).map((s) => `<li>${s}</li>`).join('')
       || '<li class="n2n-muted">—</li>';
-    dom.detailPanel.innerHTML = `
+    setSafeHtml(dom.detailPanel, `
       <h2>Member Claw</h2>
       <p>${m.member_id || '—'}</p>
       <div class="detail-grid">
@@ -1254,12 +1255,12 @@ function setDetail(kind, payload, related = []) {
         <h4>Scope (${(m.skills || []).length})</h4>
         <ul class="n2n-list">${skills}</ul>
         <p class="n2n-muted">Delegated to over the internal transport; runs its own scoped model. No external comms.</p>
-      </div>`;
+      </div>`);
     return;
   }
 
   if (kind === 'integration') {
-    dom.detailPanel.innerHTML = `
+    setSafeHtml(dom.detailPanel, `
       <h2>${payload.name}</h2>
       <p>${payload.description}</p>
       <div class="detail-grid">
@@ -1275,13 +1276,13 @@ function setDetail(kind, payload, related = []) {
         <h3>Configuration</h3>
         <div id="config-fields">Loading env vars...</div>
       </div>
-    `;
+    `);
     loadEnvConfig(payload.id);
     return;
   }
 
   if (kind === 'device') {
-    dom.detailPanel.innerHTML = `
+    setSafeHtml(dom.detailPanel, `
       <h2>${payload.name}</h2>
       <p>${payload.alias}</p>
       <div class="detail-grid">
@@ -1295,13 +1296,13 @@ function setDetail(kind, payload, related = []) {
         <h3>Testbed Config</h3>
         <p class="config-notes">Device defined in testbed/testbed.yaml. Edit the testbed to add/change devices, credentials, and connection settings.</p>
       </div>
-    `;
+    `);
     return;
   }
 
   if (kind === 'skill') {
     // Phase 1: Immediate render with available data
-    dom.detailPanel.innerHTML = `
+    setSafeHtml(dom.detailPanel, `
       <div class="skill-dashboard">
         <div class="skill-header">
           <h2>${payload.name}</h2>
@@ -1316,7 +1317,7 @@ function setDetail(kind, payload, related = []) {
           <div class="skill-loading-text">Loading SKILL.md...</div>
         </div>
       </div>
-    `;
+    `);
     // Phase 2: Async fetch and render
     loadSkillDashboard(payload.id, payload.integrationId);
     return;
@@ -1335,7 +1336,7 @@ function setDetail(kind, payload, related = []) {
       </tr>`
     ).join('');
 
-    dom.detailPanel.innerHTML = `
+    setSafeHtml(dom.detailPanel, `
       <h2>${isClaw ? 'Peer Claw' : 'Peer Router'}</h2>
       <p>${peer.peer}</p>
       <div class="detail-grid">
@@ -1356,7 +1357,7 @@ function setDetail(kind, payload, related = []) {
           </table>
         </div>
       ` : ''}
-    `;
+    `);
     if (isClaw) wireFederationChat(peer);
     return;
   }
@@ -1388,7 +1389,7 @@ function setDetail(kind, payload, related = []) {
         <strong>${t.state || '—'}${t.progress ? ` · ${t.progress}` : ''}</strong></div>
     `).join('');
 
-    dom.detailPanel.innerHTML = `
+    setSafeHtml(dom.detailPanel, `
       <h2>Peer Claw</h2>
       <p>${v.heading}</p>
       ${v.notInFeedNotice
@@ -1404,7 +1405,7 @@ function setDetail(kind, payload, related = []) {
         <div class="detail-row"><span>In-flight tasks</span><strong>${v.inFlightText}</strong></div>
       </div>
       ${taskRows ? `<div class="detail-grid">${taskRows}</div>` : ''}
-    `;
+    `);
     return;
   }
 
@@ -1434,7 +1435,7 @@ function setDetail(kind, payload, related = []) {
     </div>
   ` : '';
 
-  dom.detailPanel.innerHTML = `
+  setSafeHtml(dom.detailPanel, `
     <h2>${state.graph.identity.name}</h2>
     <p>${state.graph.identity.summary}</p>
     <div class="detail-grid">
@@ -1444,7 +1445,7 @@ function setDetail(kind, payload, related = []) {
       <div class="detail-row"><span>Devices</span><strong>${state.graph.stats.deviceCount}</strong></div>
     </div>
     ${bgpSummary}
-  `;
+  `);
 }
 
 // ── Config Editor: load env vars for an integration ────────────────
@@ -1455,13 +1456,13 @@ async function loadEnvConfig(integrationId) {
   try {
     const res = await fetch(`/api/env/${integrationId}`);
     if (!res.ok) {
-      container.innerHTML = '<p class="config-notes">No env mapping for this integration.</p>';
+      setSafeHtml(container, '<p class="config-notes">No env mapping for this integration.</p>');
       return;
     }
     const data = await res.json();
 
     if (data.fields.length === 0) {
-      container.innerHTML = `<p class="config-notes">${data.notes}</p>`;
+      setSafeHtml(container, `<p class="config-notes">${data.notes}</p>`);
       return;
     }
 
@@ -1478,7 +1479,7 @@ async function loadEnvConfig(integrationId) {
          </div>`
       : '';
 
-    container.innerHTML = data.fields.map((field) => `
+    setSafeHtml(container, data.fields.map((field) => `
       <div class="config-field">
         <label>${field.key}</label>
         <input class="env-input" data-key="${field.key}" type="text"
@@ -1493,7 +1494,7 @@ async function loadEnvConfig(integrationId) {
         <button class="config-save-btn" type="button" id="config-save">Save Changes</button>
         <span class="config-save-status" id="config-save-status">Saved</span>
       </div>
-    `;
+    `);
 
     // Wire testbed editor toggle + save
     const testbedToggle = document.getElementById('testbed-toggle');
@@ -1567,7 +1568,7 @@ async function loadEnvConfig(integrationId) {
       } catch { /* save failed silently */ }
     });
   } catch {
-    container.innerHTML = '<p class="config-notes">Could not load config.</p>';
+    setSafeHtml(container, '<p class="config-notes">Could not load config.</p>');
   }
 }
 
@@ -1583,13 +1584,13 @@ async function loadSkillDashboard(skillId, integrationId) {
   try {
     const res = await fetch(`/api/skill/${skillId}`);
     if (!res.ok) {
-      container.innerHTML = '<p class="config-notes">No SKILL.md found for this skill.</p>';
+      setSafeHtml(container, '<p class="config-notes">No SKILL.md found for this skill.</p>');
       return;
     }
     const data = await res.json();
     renderSkillDashboard(container, data, integrationId);
   } catch {
-    container.innerHTML = '<p class="config-notes">Could not load skill details.</p>';
+    setSafeHtml(container, '<p class="config-notes">Could not load skill details.</p>');
   }
 }
 
@@ -1691,7 +1692,7 @@ function renderSkillDashboard(container, data, integrationId) {
     `;
   }
 
-  container.innerHTML = html;
+  setSafeHtml(container, html);
   container.classList.remove('skill-loading');
 
   // Wire the raw markdown toggle
@@ -1727,7 +1728,7 @@ function addChatMessage(role, text, activations) {
       });
       header = `<div style="margin-bottom:6px">${[...tags, ...deviceTags].join(' ')}</div>`;
     }
-    msg.innerHTML = header + text;
+    setSafeHtml(msg, header + text);
   } else {
     msg.textContent = text;
   }
@@ -2263,7 +2264,7 @@ function onPointerMove(event) {
       subtitle = `${p.state} • ${p.routesReceived} routes`;
     }
   }
-  dom.tooltip.innerHTML = `<strong>${title}</strong><br>${subtitle}`;
+  setSafeHtml(dom.tooltip, `<strong>${title}</strong><br>${subtitle}`);
   dom.tooltip.style.left = `${event.clientX + 18}px`;
   dom.tooltip.style.top = `${event.clientY + 18}px`;
   dom.tooltip.classList.add('visible');
@@ -2781,10 +2782,10 @@ function showTerminalCard(toolName, output, integrationId) {
   // Truncate output to 4 lines
   const lines = (output || '').split('\n').slice(0, 4).join('\n');
   const truncated = lines.length > 200 ? lines.slice(0, 200) + '...' : lines;
-  card.element.innerHTML = `
+  setSafeHtml(card.element, `
     <div style="color: #65c3ff; margin-bottom: 4px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; font-size: 9px;">${toolName}</div>
     <pre style="margin:0; white-space: pre-wrap; word-break: break-all; opacity: 0.8; line-height: 1.4;">${truncated || 'executing...'}</pre>
-  `;
+  `);
 
   // Animate along the tube curve from core outward
   const duration = 2500;

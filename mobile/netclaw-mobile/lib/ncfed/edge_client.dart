@@ -100,10 +100,21 @@ class EdgeClient implements EdgeRpcSource {
     _listen();
   }
 
+  @visibleForTesting
+  EdgeClient.forTesting(WebSocketChannel channel)
+      : this._(channel, const EdgeIdentity());
+
   void _listen() {
     debugPrint('[edge-diag] dial ${DateTime.now().toIso8601String()}');
     _sub = _channel.stream.listen(
-      _onMessage,
+      (raw) {
+        try {
+          _onMessage(raw);
+        } catch (_) {
+          _failAll('Invalid peer message');
+          _channel.sink.close(1002, 'Invalid RPC message').catchError((Object _) {});
+        }
+      },
       onError: (Object error) =>
           _failAll('error: $error (${DateTime.now().toIso8601String()})'),
       onDone: () => _failAll(
@@ -119,7 +130,7 @@ class EdgeClient implements EdgeRpcSource {
     _handlers[method] = handler;
   }
 
-  void _failAll(Object error) {
+  void _failAll(Object error, {bool notify = true}) {
     if (_closed) return;
     debugPrint('[edge-diag] failAll: $error');
     _closed = true; // the connection is no longer usable either way
@@ -131,7 +142,7 @@ class EdgeClient implements EdgeRpcSource {
     for (final c in _connectionWaiters) {
       if (!c.isCompleted) c.completeError(err);
     }
-    onDisconnected?.call();
+    if (notify) onDisconnected?.call();
   }
 
   /// Re-dials the Border and re-proves possession of the pinned key, reusing
@@ -188,6 +199,7 @@ class EdgeClient implements EdgeRpcSource {
       enrollFingerprint = keyFingerprint;
     } catch (e) {
       _failAll(e); // the redial itself failed -- let the caller's retry loop handle it
+      await close();
       rethrow;
     } finally {
       _connectionWaiters.remove(challenge);
@@ -195,6 +207,7 @@ class EdgeClient implements EdgeRpcSource {
   }
 
   void _onMessage(dynamic raw) {
+    if (_closed) return;
     final msg = jsonDecode(raw as String) as Map<String, dynamic>;
     if (msg.containsKey('method')) {
       final method = msg['method'] as String;
@@ -203,15 +216,23 @@ class EdgeClient implements EdgeRpcSource {
       debugPrint('[edge-diag] inbound $method handler=${handler != null} '
           '${DateTime.now().toIso8601String()}');
       if (handler == null) return; // unknown method — silently dropped, mirrors EdgeChannel
-      Future(() async {
-        final result = await handler(params);
+      final origin = _channel;
+      Future<void>(() async {
         final id = msg['id'];
-        if (id != null) {
-          _channel.sink.add(jsonEncode({'jsonrpc': '2.0', 'id': id, 'result': result}));
+        try {
+          final result = await handler(params);
+          if (id != null && !_closed && identical(origin, _channel)) {
+            origin.sink.add(jsonEncode({'jsonrpc': '2.0', 'id': id, 'result': result}));
+          }
+        } catch (_) {
+          if (id != null && !_closed && identical(origin, _channel)) {
+            origin.sink.add(jsonEncode({'jsonrpc': '2.0', 'id': id,
+              'error': {'code': -32603, 'message': 'Mobile handler failed'}}));
+          }
         }
-      });
+      }).catchError((Object _) => _failAll('Reply transport failed'));
     } else if (msg.containsKey('id')) {
-      final completer = _pending.remove(msg['id']);
+      final completer = _pending[msg['id']];
       if (completer == null || completer.isCompleted) return;
       if (msg.containsKey('error')) {
         final err = msg['error'] as Map<String, dynamic>;
@@ -219,26 +240,40 @@ class EdgeClient implements EdgeRpcSource {
       } else {
         completer.complete((msg['result'] as Map<String, dynamic>?) ?? <String, dynamic>{});
       }
+      _pending.remove(msg['id']);
     }
   }
 
   @override
   Future<Map<String, dynamic>> call(String method, Map<String, dynamic> params,
-      {Duration timeout = const Duration(seconds: 30)}) {
+      {Duration timeout = const Duration(seconds: 30)}) async {
+    if (_closed) throw EdgeClientException('connection_error', 'Connection is closed');
+    final encoded = jsonEncode({'jsonrpc': '2.0', 'id': 'phone:${_nextId + 1}', 'method': method, 'params': params});
     _nextId += 1;
     final id = 'phone:$_nextId';
     final completer = Completer<Map<String, dynamic>>();
     _pending[id] = completer;
     debugPrint('[edge-diag] outbound $method ${DateTime.now().toIso8601String()}');
-    _channel.sink.add(jsonEncode({'jsonrpc': '2.0', 'id': id, 'method': method, 'params': params}));
-    return completer.future.timeout(timeout, onTimeout: () {
+    try {
+      try {
+        _channel.sink.add(encoded);
+      } catch (_) {
+        // This future has not yet acquired a listener: remove it before
+        // failing the other calls so no unobserved error is created.
+        _pending.remove(id);
+        _failAll('Request transport failed');
+        throw EdgeClientException('connection_error', 'Request transport failed');
+      }
+      return await completer.future.timeout(timeout, onTimeout: () {
+        throw EdgeClientException('timeout', '$method timed out');
+      });
+    } finally {
       _pending.remove(id);
-      throw EdgeClientException('timeout', '$method timed out');
-    });
+    }
   }
 
   Future<void> close() async {
-    _closed = true;
+    _failAll('Client closed', notify: false);
     await _sub?.cancel();
     await _channel.sink.close();
   }
@@ -285,6 +320,9 @@ class EdgeClient implements EdgeRpcSource {
       });
       client.enrollFingerprint = result['enroll_fingerprint'] as String?;
       return client;
+    } catch (_) {
+      await client.close();
+      rethrow;
     } finally {
       client._connectionWaiters.remove(challenge);
     }
@@ -325,6 +363,9 @@ class EdgeClient implements EdgeRpcSource {
       });
       client.enrollFingerprint = keyFingerprint;
       return client;
+    } catch (_) {
+      await client.close();
+      rethrow;
     } finally {
       client._connectionWaiters.remove(challenge);
     }

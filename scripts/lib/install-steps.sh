@@ -187,14 +187,11 @@ fi
 
 log_info "All prerequisites satisfied."
 
-# PEP 668: modern distros (Debian 12+, Ubuntu 23.04+, Fedora 38+) mark the
-# system Python "externally managed" and every bare `pip3 install` fails
-# with "externally-managed-environment". NetClaw's MCP servers install into
-# the system Python by design, so opt back in for this run.
-if python3 -c 'import os,sys,sysconfig; sys.exit(0 if os.path.exists(os.path.join(sysconfig.get_path("stdlib"), "EXTERNALLY-MANAGED")) else 1)' 2>/dev/null; then
-    export PIP_BREAK_SYSTEM_PACKAGES=1
-    log_warn "This system's Python is externally managed (PEP 668)."
-    log_info "Setting PIP_BREAK_SYSTEM_PACKAGES=1 for this run so MCP server pip installs can proceed."
+# PEP 668 is a protection, not an installation error to override globally.
+# Shared MCP dependencies require an explicitly selected compatible runtime.
+if python3 -c 'import os,sys,sysconfig; sys.exit(0 if sys.prefix == sys.base_prefix and os.path.exists(os.path.join(sysconfig.get_path("stdlib"), "EXTERNALLY-MANAGED")) else 1)' 2>/dev/null; then
+    log_warn "System Python is externally managed. Select an isolated runtime before shared MCP installs."
+    log_info "See docs/PYTHON-RUNTIME-MIGRATION.md; system package protection remains enabled."
 fi
 
 echo ""
@@ -473,49 +470,27 @@ component_install_pyats() {
 log_step "Installing pyATS MCP Server..."
 echo "  Source: https://github.com/automateyournetwork/pyATS_MCP"
 
-# pyATS ships wheels for Python 3.9–3.13 only — on newer Pythons the pip
-# install fails, so check up front and give a real path forward.
-PY_MAJOR=$(python3 -c 'import sys; print(sys.version_info.major)' 2>/dev/null || echo 0)
-PY_MINOR=$(python3 -c 'import sys; print(sys.version_info.minor)' 2>/dev/null || echo 0)
-if [ "$PY_MAJOR" -ne 3 ] || [ "$PY_MINOR" -lt 9 ] || [ "$PY_MINOR" -gt 13 ]; then
-    log_error "pyATS supports Python 3.9–3.13 — found $(python3 --version 2>/dev/null || echo 'no python3')."
-    ALT_PY=""
-    for v in 3.13 3.12 3.11 3.10; do
-        if command -v "python$v" &> /dev/null; then ALT_PY="python$v"; break; fi
-    done
-    if [ -n "$ALT_PY" ]; then
-        log_warn "This system has $ALT_PY — install pyATS into a venv with:"
-        echo "    $ALT_PY -m venv ~/.openclaw/pyats-venv"
-        echo "    ~/.openclaw/pyats-venv/bin/pip install 'pyats[full]' mcp pydantic python-dotenv"
-    else
-        log_warn "Install Python 3.13 first (e.g. 'sudo apt install python3.13 python3.13-venv', or pyenv), then re-run:"
-        echo "    ./scripts/install.sh --components pyats"
-    fi
-    echo ""
-    return 1
-fi
-
+# Tested HTTP-only upstream revision; never float a breaking transport update.
+local pyats_revision="d4971436328369ef0a581ca5359dc8700fb2939b"
+local pyats_python="${PYATS_PYTHON:-$(command -v python3)}"
 PYATS_MCP_DIR="$MCP_DIR/pyATS_MCP"
-clone_or_pull "$PYATS_MCP_DIR" "https://github.com/automateyournetwork/pyATS_MCP.git"
-
-log_info "Installing Python dependencies..."
-if ! netclaw_pip_install -r "$PYATS_MCP_DIR/requirements.txt" 2>/dev/null; then
-    log_warn "requirements.txt install failed — trying the direct package set..."
-    if ! netclaw_pip_install "pyats[full]" mcp pydantic python-dotenv; then
-        log_error "pyATS Python dependencies failed to install (see pip output above)."
-        log_warn "Fix the pip error, then retry with: ./scripts/install.sh --add \"pyats\""
-        echo ""
-        return 1
-    fi
+if [ ! -d "$PYATS_MCP_DIR/.git" ]; then
+    git clone https://github.com/automateyournetwork/pyATS_MCP.git "$PYATS_MCP_DIR" || return 1
 fi
-
-if [ -f "$PYATS_MCP_DIR/pyats_mcp_server.py" ]; then
-    log_info "pyATS MCP ready: $PYATS_MCP_DIR/pyats_mcp_server.py"
-else
-    log_error "pyats_mcp_server.py not found after clone"
-    echo ""
+if [ -n "$(git -C "$PYATS_MCP_DIR" status --porcelain)" ]; then
+    log_error "pyATS clone has local changes; preserve them before upgrading."
     return 1
 fi
+git -C "$PYATS_MCP_DIR" fetch origin "$pyats_revision" || return 1
+git -C "$PYATS_MCP_DIR" checkout --detach "$pyats_revision" || return 1
+local pyats_venv="${PYATS_VENV:-$RUNTIME_HOME/pyats-venv}"
+NETCLAW_PY="$pyats_python" netclaw_venv_create "$pyats_venv" || return 1
+NETCLAW_VENV="$pyats_venv" netclaw_pip_install -r "$PYATS_MCP_DIR/requirements.txt" || return 1
+"$pyats_venv/bin/python" -c 'import pyats, genie, unicon; from mcp.client.client import Client' || return 1
+mkdir -p "$RUNTIME_HOME"
+"$pyats_python" "$NETCLAW_DIR/scripts/migrate-pyats-http.py" \
+    --env-file "$RUNTIME_ENV" --repo "$NETCLAW_DIR" --venv "$pyats_venv" --apply || return 1
+log_info "pyATS stateless HTTP runtime ready, with NetClaw compatibility launcher."
 
 echo ""
 }
@@ -673,7 +648,7 @@ GAIT_MCP_DIR="$MCP_DIR/gait_mcp"
 clone_or_pull "$GAIT_MCP_DIR" "https://github.com/automateyournetwork/gait_mcp.git"
 
 log_info "Installing GAIT dependencies..."
-netclaw_pip_install mcp fastmcp gait-ai 2>/dev/null || log_warn "Some GAIT deps failed"
+bash "$NETCLAW_DIR/scripts/gait-venv-setup.sh" || return 1
 
 [ -f "$GAIT_MCP_DIR/gait_mcp.py" ] && \
     log_info "GAIT MCP ready: $GAIT_MCP_DIR/gait_mcp.py (runs via gait-stdio.py wrapper)" || \
@@ -2888,7 +2863,7 @@ echo ""
 core_deploy() {
 log_step "Deploying skills and configuration..."
 
-PYATS_SCRIPT="$PYATS_MCP_DIR/pyats_mcp_server.py"
+PYATS_SCRIPT="$NETCLAW_DIR/scripts/pyats-stdio.py"
 TESTBED_PATH="$NETCLAW_DIR/testbed/testbed.yaml"
 
 # Bootstrap the runtime state dir (create if it doesn't exist)
@@ -3592,7 +3567,7 @@ for pair in "SNMP trap:snmptrap-mcp" "Syslog:syslog-mcp" "IPFIX/NetFlow:ipfix-mc
     fi
 done
 
-log_info "All three receivers ready — deduplication, rate limiting, and GAIT audit logging built in"
+log_info "Receiver dependency installation attempted — verify each startup and audit persistence counters"
 
 echo ""
 }
@@ -3698,9 +3673,9 @@ if [[ "$enable_comfyui_viz" =~ ^[Yy]$ ]]; then
     cd "$NETCLAW_DIR"
 
     log_info "Installing topology-diagram-mcp and image-style-mcp dependencies (spec 121)..."
-    python3 -m pip install --user --break-system-packages -r "$MCP_DIR/topology-diagram-mcp/requirements.txt" 2>/dev/null \
+    netclaw_pip_install -r "$MCP_DIR/topology-diagram-mcp/requirements.txt" 2>/dev/null \
         || log_warn "pip install failed for topology-diagram-mcp"
-    python3 -m pip install --user --break-system-packages -r "$MCP_DIR/image-style-mcp/requirements.txt" 2>/dev/null \
+    netclaw_pip_install -r "$MCP_DIR/image-style-mcp/requirements.txt" 2>/dev/null \
         || log_warn "pip install failed for image-style-mcp"
 
     if command -v openclaw &> /dev/null; then

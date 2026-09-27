@@ -125,7 +125,7 @@ echo "=== Empty results must not read as good news ==="
 
 py "TLS verification being off is disclosed, not silent" '
 import os; os.environ["REDFISH_URL"] = "http://x"
-os.environ.pop("REDFISH_VERIFY_TLS", None)
+os.environ["REDFISH_VERIFY_TLS"] = "false"
 import importlib, client; importlib.reload(client)
 n = client.RedfishClient().tls_note()
 print("PASS" if n and "DISABLED" in n else n)'

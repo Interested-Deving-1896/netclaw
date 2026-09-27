@@ -1,27 +1,33 @@
+import { parseEnvData, updateEnvironment, writePrivateAtomic } from './src/security/private-files.js';
 import express from 'express';
 import { WebSocketServer } from 'ws';
 import http from 'http';
-import cors from 'cors';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import yaml from 'js-yaml';
-import multer from 'multer';
 import { execFile } from 'child_process';
 import { fileURLToPath } from 'url';
+import { hudPorts, createLocalAccess, localAccessMiddleware } from './src/security/local-access.js';
+import { createRagUpload, cleanupRagUpload } from './src/security/rag-upload.js';
+import { mcpCommand } from './src/security/command.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
 const app = express();
-
-app.use(cors());
+const ports = hudPorts();
+const allowedLocalRequest = createLocalAccess(ports);
+app.use(localAccessMiddleware(allowedLocalRequest));
 // The branching canvas can include a compact image or an attached text file in
 // its context. Keep the cap explicit so those requests work without making the
 // API an unbounded JSON sink.
 app.use(express.json({ limit: '4mb' }));
 
 const server = http.createServer(app);
-const wss = new WebSocketServer({ server, path: '/ws' });
+const wss = new WebSocketServer({
+  server, path: '/ws', maxPayload: 64 * 1024,
+  verifyClient: ({ req }, done) => done(allowedLocalRequest(req), 403, 'Forbidden'),
+});
 
 const SKILLS_DIR = path.join(ROOT, 'workspace/skills');
 const TESTBED_FILE = path.join(ROOT, 'testbed/testbed.yaml');
@@ -554,19 +560,7 @@ const ROOT_ENV = path.join(ROOT, '.env');
 const ENV_FILES = [OPENCLAW_ENV, ROOT_ENV];
 
 function parseOneEnvFile(filePath) {
-  const text = readText(filePath);
-  if (!text) return {};
-  const vars = {};
-  for (const line of text.split('\n')) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-    const eqIndex = trimmed.indexOf('=');
-    if (eqIndex < 1) continue;
-    const key = trimmed.slice(0, eqIndex).trim();
-    const value = trimmed.slice(eqIndex + 1).trim();
-    vars[key] = value;
-  }
-  return vars;
+  return parseEnvData(readText(filePath) || '');
 }
 
 function parseEnvFile() {
@@ -579,22 +573,8 @@ function parseEnvFile() {
 }
 
 function writeEnvFile(updates) {
-  // Write to the OpenClaw .env (primary config) — fall back to root .env
   const targetFile = fs.existsSync(OPENCLAW_ENV) ? OPENCLAW_ENV : ROOT_ENV;
-  let text = readText(targetFile);
-  if (!text) text = '';
-
-  for (const [key, value] of Object.entries(updates)) {
-    const regex = new RegExp(`^${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*=.*$`, 'm');
-    const newLine = `${key}=${value}`;
-    if (regex.test(text)) {
-      text = text.replace(regex, newLine);
-    } else {
-      text = text.trimEnd() + '\n' + newLine + '\n';
-    }
-  }
-
-  fs.writeFileSync(targetFile, text, 'utf8');
+  updateEnvironment(targetFile, updates);
 }
 
 function maskValue(value) {
@@ -1314,7 +1294,7 @@ app.put('/api/budget/config', (req, res) => {
       }
     }
 
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
+    writePrivateAtomic(configPath, JSON.stringify(config, null, 2) + '\n');
     broadcastWS('config:updated', { keys: ['budget'], generatedAt: new Date().toISOString() });
     res.json({ ok: true, budget: config.agents.defaults.budget, interfaceDefaults: config.agents.defaults.interfaceDefaults });
   } catch (err) {
@@ -1445,10 +1425,7 @@ app.put('/api/layout', (req, res) => {
   // Validate before touching disk, then write atomically: a crash mid-write must not
   // leave a truncated file that fails every subsequent read.
   try {
-    fs.mkdirSync(path.dirname(LAYOUT_FILE), { recursive: true });
-    const tmp = `${LAYOUT_FILE}.tmp`;
-    fs.writeFileSync(tmp, JSON.stringify(body, null, 2), 'utf8');
-    fs.renameSync(tmp, LAYOUT_FILE);
+    writePrivateAtomic(LAYOUT_FILE, JSON.stringify(body, null, 2));
     return res.json({ saved: true, savedAt: new Date().toISOString() });
   } catch (e) {
     return res.status(507).json({ error: `write failed: ${e.message}` });
@@ -1472,7 +1449,7 @@ app.put('/api/testbed/raw', (req, res) => {
 
   try {
     yaml.load(content); // validate it's valid YAML
-    fs.writeFileSync(TESTBED_FILE, content, 'utf8');
+    writePrivateAtomic(TESTBED_FILE, content);
     broadcastWS('config:updated', { keys: ['testbed'], generatedAt: new Date().toISOString() });
     res.json({ ok: true });
   } catch (err) {
@@ -1897,12 +1874,12 @@ function buildChatResponse(message, activations, graph, gatewayMessage) {
 // mcp-call.py child-process helper (one uniform access path).
 // ============================================================
 const RAG_MCP_CALL = path.join(ROOT, 'scripts', 'mcp-call.py');
-const RAG_SERVER_CMD = `python3 -u ${path.join(ROOT, 'mcp-servers', 'rag-mcp', 'rag_mcp_server.py')}`;
+const RAG_SERVER_CMD = mcpCommand(['python3', '-u', path.join(ROOT, 'mcp-servers', 'rag-mcp', 'rag_mcp_server.py')]);
 const RAG_DATA_DIR = process.env.RAG_DATA_DIR
   ? process.env.RAG_DATA_DIR.replace(/^~/, os.homedir())
   : path.join(os.homedir(), '.openclaw', 'rag');
 const RAG_INTAKE_DIR = path.join(RAG_DATA_DIR, 'intake');
-const RAG_MAX_DOC_MB = parseInt(process.env.RAG_MAX_DOC_MB || '100', 10);
+const RAG_MAX_DOC_MB = Number(process.env.RAG_MAX_DOC_MB || '100');
 const RAG_SUPPORTED_EXT = ['.pdf', '.md', '.markdown', '.html', '.htm', '.txt',
   '.docx', '.xlsx', '.pptx', '.vsdx', '.doc', '.xls', '.ppt', '.vsd'];
 
@@ -1990,20 +1967,12 @@ app.get('/api/rag/stats', async (req, res) => {
   }
 });
 
-const ragUpload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      fs.mkdirSync(RAG_INTAKE_DIR, { recursive: true });
-      cb(null, RAG_INTAKE_DIR);
-    },
-    filename: (req, file, cb) => cb(null, path.basename(file.originalname)),
-  }),
-  limits: { fileSize: RAG_MAX_DOC_MB * 1024 * 1024 },
-});
+const ragUpload = createRagUpload(RAG_INTAKE_DIR, RAG_MAX_DOC_MB);
 
 app.post('/api/rag/upload', (req, res) => {
-  ragUpload.single('file')(req, res, async (err) => {
+  ragUpload(req, res, async (err) => {
     if (err) {
+      cleanupRagUpload(req);
       if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(413).json({
           error: `File exceeds the ${RAG_MAX_DOC_MB} MB cap. Raise RAG_MAX_DOC_MB in .env to override.`,
@@ -2015,7 +1984,7 @@ app.post('/api/rag/upload', (req, res) => {
 
     const ext = path.extname(req.file.originalname).toLowerCase();
     if (!RAG_SUPPORTED_EXT.includes(ext)) {
-      fs.unlink(req.file.path, () => {});
+      cleanupRagUpload(req);
       return res.status(415).json({
         error: `'${ext}' is not supported. Supported: ${RAG_SUPPORTED_EXT.join(', ')}`,
       });
@@ -2055,6 +2024,8 @@ app.post('/api/rag/upload', (req, res) => {
         status: 'error',
         error: ingestErr.message,
       });
+    } finally {
+      cleanupRagUpload(req);
     }
     broadcastWS('rag_update', { documents_changed: true });
   });
@@ -2131,8 +2102,8 @@ wss.on('connection', (socket) => {
   });
 });
 
-const PORT = process.env.HUD_PORT || 3001;
-server.listen(PORT, () => {
+const PORT = ports.api;
+server.listen(PORT, '127.0.0.1', () => {
   console.log(`NetClaw visual API listening on http://localhost:${PORT}`);
   console.log(`WebSocket available at ws://localhost:${PORT}/ws`);
 });

@@ -147,10 +147,11 @@ echo ""
 
 log_step "3/4 Verifying IP Fabric MCP connectivity..."
 
-# Load the configured values
-source "$OPENCLAW_ENV" 2>/dev/null || true
+# Parse configuration as data; credentials must never execute shell syntax.
+IPFABRIC_HOST="$(python3 "$_NETCLAW_ENV_WRITER" --get "$OPENCLAW_ENV" IPFABRIC_HOST)"
+IPFABRIC_API_TOKEN="$(python3 "$_NETCLAW_ENV_WRITER" --get "$OPENCLAW_ENV" IPFABRIC_API_TOKEN)"
 
-if [ "${IPFABRIC_HOST:-}" != "https://ipfabric.example.com" ] && [ "${IPFABRIC_API_TOKEN:-}" != "your-api-token-here" ]; then
+if [ -n "$IPFABRIC_HOST" ] && [ -n "$IPFABRIC_API_TOKEN" ] && [ "$IPFABRIC_HOST" != "https://ipfabric.example.com" ] && [ "$IPFABRIC_API_TOKEN" != "your-api-token-here" ]; then
     # Try to reach the MCP endpoint
     MCP_URL="${IPFABRIC_HOST}/mcp"
     log_info "Testing connection to $MCP_URL..."
