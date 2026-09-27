@@ -260,3 +260,7 @@ IndexedDB session formats are unchanged. Canvas now requires pending replies or 
 ### Mobile device links (102)
 
 Automatic device-status links now accept exactly one inventory identifier of1–128 ASCII letters/digits/dots/underscores/colons/hyphens, starting with a letter or digit, and no user-info, port, query or fragment. Regenerate an old incompatible QR/link with a valid identifier, or type the intended request manually in Chat. Existing enrollment, conversation and device data are unchanged; no stored-state conversion is needed. This bounds untrusted link input and does not replace the Border's execution authorization.
+
+### Mobile lifecycle (103)
+
+Install the rebuilt mobile app to adopt owned connection/listener cleanup and selective background-engine plugin registration. Enrollment, credentials and conversations retain their formats; no data reset is required. Simulator compilation does not prove background execution on a physical phone.

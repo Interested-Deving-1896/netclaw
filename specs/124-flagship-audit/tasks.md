@@ -16,14 +16,14 @@
 
 Independent test: coverage inventory has every baseline tracked path and every confirmed finding has reproduction, impact and evidence.
 
-- [ ] T007 [US1] Review install/CLI/dependency/CI boundaries in scripts/, config/, .github/workflows/, .env.example and dependency manifests; record findings in specs/124-flagship-audit/findings.md (FR-003, FR-004).
-- [ ] T008 [US1] Review HTTP/WebSocket/auth/upload/process boundaries in ui/netclaw-visual/server.js and ui/netclaw-visual/src/; reproduce confirmed defects in targeted tests (FR-003, FR-004).
-- [ ] T009 [US1] Review peer identity, authorization, grants, execution and audit paths in mcp-servers/protocol-mcp/bgp/federation/ and mcp-servers/n2n-mcp/; record evidence (FR-003, FR-004).
+- [x] T007 [US1] Review install/CLI/dependency/CI boundaries in scripts/, config/, .github/workflows/, .env.example and dependency manifests; record findings in specs/124-flagship-audit/findings.md (FR-003, FR-004). **Bounded disposition:** targeted evidence retained; remaining review explicitly deferred in deferred-review.md by user direction, not passed.
+- [x] T008 [US1] Review HTTP/WebSocket/auth/upload/process boundaries in ui/netclaw-visual/server.js and ui/netclaw-visual/src/; reproduce confirmed defects in targeted tests (FR-003, FR-004). **Bounded disposition:** targeted evidence retained; remaining review explicitly deferred in deferred-review.md by user direction, not passed.
+- [x] T009 [US1] Review peer identity, authorization, grants, execution and audit paths in mcp-servers/protocol-mcp/bgp/federation/ and mcp-servers/n2n-mcp/; record evidence (FR-003, FR-004). **Bounded disposition:** targeted evidence retained; remaining review explicitly deferred in deferred-review.md by user direction, not passed.
 - [x] T010 [US1] Review ingestion/retrieval/replication, persistence, GCF correctness and resource limits in mcp-servers/rag-mcp/, mcp-servers/memory-mcp/ and src/netclaw_tokens/ (FR-003, FR-004).
-- [ ] T011 [US1] Review remaining MCP servers and workspace/skills/ against actual tool schemas, read/write enforcement and transport/dependency behavior; record per-server coverage in coverage.json (FR-003, FR-004).
-- [ ] T012 [US1] Review mobile enrollment, approvals, capture, watch relay, voice and Zoom boundaries in mobile/netclaw-mobile/, mcp-servers/twilio-voice-mcp/ and mcp-servers/protocol-mcp/bgp/federation/zoom_channel.py (FR-003, FR-004).
-- [ ] T013 [US1] Review docs/, specs/, examples/, lab/, labs/, captures/, benchmarks/, root operating files and asset/generated boundaries; complete coverage dispositions in coverage.json (FR-001, FR-004).
-- [ ] T014 [US1] Add finding-specific remediation tasks with exact source/test paths to this tasks.md and rerun cross-artifact analysis before each repair batch; implement and verify all confirmed defects, retaining blockers in findings.md (FR-005, FR-013).
+- [x] T011 [US1] Review remaining MCP servers and workspace/skills/ against actual tool schemas, read/write enforcement and transport/dependency behavior; record per-server coverage in coverage.json (FR-003, FR-004). **Bounded disposition:** targeted evidence retained; remaining review explicitly deferred in deferred-review.md by user direction, not passed.
+- [x] T012 [US1] Review mobile enrollment, approvals, capture, watch relay, voice and Zoom boundaries in mobile/netclaw-mobile/, mcp-servers/twilio-voice-mcp/ and mcp-servers/protocol-mcp/bgp/federation/zoom_channel.py (FR-003, FR-004). **Bounded disposition:** targeted evidence retained; remaining review explicitly deferred in deferred-review.md by user direction, not passed.
+- [x] T013 [US1] Review docs/, specs/, examples/, lab/, labs/, captures/, benchmarks/, root operating files and asset/generated boundaries; complete coverage dispositions in coverage.json (FR-001, FR-004). **Bounded disposition:** targeted evidence retained; remaining review explicitly deferred in deferred-review.md by user direction, not passed.
+- [x] T014 [US1] Add finding-specific remediation tasks with exact source/test paths to this tasks.md and rerun cross-artifact analysis before each repair batch; implement and verify all confirmed defects, retaining blockers in findings.md (FR-005, FR-013).
 
 ## Phase 4 — US2: Trustworthy normal/failure behavior
 
@@ -40,7 +40,7 @@ Independent test: every breaking change has verified preview/apply/repeat/failur
 
 - [x] T019 [US3] Classify each repair as compatible or breaking in findings.md; for breaking changes extend contracts/audit-and-migration.md with exact CLI/state behavior and add source/test tasks before implementation (FR-007).
 - [x] T020 [US3] Implement and verify all required finding-specific migration scripts under scripts/ and corresponding tests/; record backup, state-preservation and recovery evidence in verification.md (FR-007).
-- [ ] T021 [US3] Exercise isolated install/upgrade smoke tests for required platforms using scripts/install.sh and scripts/lib/; only if host replacement is needed, preserve/verify local state and restore a working installation (FR-009, FR-014).
+- [x] T021 [US3] Exercise isolated install/upgrade smoke tests for required platforms using scripts/install.sh and scripts/lib/; only if host replacement is needed, preserve/verify local state and restore a working installation (FR-009, FR-014).
 
 ## Phase 6 — US4: Coherence and handoff
 
@@ -53,8 +53,8 @@ Independent test: another session can resume from handoff without conversation h
 
 ## Final phase — Completion
 
-- [ ] T026 Re-run required checks after final fixes and complete severity-sorted audit report in specs/124-flagship-audit/findings.md, with every gap visible (FR-001–FR-014).
-- [ ] T027 Write local milestone blog draft in specs/124-flagship-audit/blog-draft.md, final handoff.md, daily log and GAIT summary; provide next phase entry point before /clear (FR-011).
+- [x] T026 Re-run required checks after final fixes and complete severity-sorted audit report in specs/124-flagship-audit/findings.md, with every gap visible (FR-001–FR-014).
+- [x] T027 Write local milestone blog draft in specs/124-flagship-audit/blog-draft.md, final handoff.md, daily log and GAIT summary; provide next phase entry point before /clear (FR-011).
 
 ## Dependencies and execution
 
@@ -255,4 +255,8 @@ Batch dependencies: T028 → T029 → T030 security verification; T031 precedes 
 
 - [x] T143 [US1/US3] Fix A124-102 mobile device-deep-link automatic prompt text injection in lib/ncfed/device_deep_link.dart; constrain URI and decoded identifier, test no RPC for hostile links and valid existing links, document QR/manual-query adoption.
 
-- [ ] T144 [US1/US2] Fix A124-103 mobile lifecycle client/listener ownership in main.dart, background_refresh.dart, deep-link listeners and AppDelegate.swift; verify actual widget late completion, late/error headless cleanup and native simulator compilation after selective grouped engine registration.
+- [x] T144 [US1/US2] Fix A124-103 mobile lifecycle client/listener ownership in main.dart, background_refresh.dart, deep-link listeners and AppDelegate.swift; verify actual widget late completion, late/error headless cleanup and native simulator compilation after selective grouped engine registration.
+
+T021 bounded acceptance disposition: completed Docker Debian/systemd, isolated WSL and historical macOS runtime/native CI evidence accepted per explicit user instruction. No bare-metal Linux boot or wiped-Mac installation claim; limitations in deferred-review.md.
+
+Final bounded gate:144/144task dispositions complete under the scope amendment; this is not100% semantic review. Native CI36326574760 validates103 production source;1709ddc only changes test synchronization. Operator migration is the separately ordered post-main execution phase.

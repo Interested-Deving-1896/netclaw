@@ -78,3 +78,7 @@ The contract runner advertises 22 suites, six explicitly held out of CI. All are
 ## Complexity Tracking
 
 No added framework or datastore. The broad scope is managed by evidence and tasks, not by a blanket claim that every line or integration has been exercised.
+
+## Bounded closeout amendment — 2026-09-27
+
+Explicit user direction supersedes exhaustive-review scope: finish confirmed001–103 repairs and final checks, triage remaining evidence for safe-use blockers, and defer unreviewed paths in [deferred-review.md](deferred-review.md). Only confirmed security, data-loss or installation/runtime failures preventing safe use extend this phase. Spec125 remains the HUD redesign. Merge PR265 and return to main before backing up and migrating the actual local runtime. Completion means this bounded scope, not100% source certification.

@@ -255,3 +255,7 @@ Read overlay.js, manifest scope/host declarations and panel.html; traced the tog
 Read device_deep_link.dart, notification_deep_link.dart, push_message_ingest.dart, pending_open_intent.dart, pending_approvals_headless.dart, border_health_headless.dart; read Swift HeadlessEngineRunner, WidgetDataStore and WatchRelayPlugin. Device-link hostile input reached an actual recording RPC before repair and now yields zero calls. Full Flutter432/analyze pass. Native background/foreground disposal paths exposed further lifecycle candidates and remain under review.
 
 Instrumented actual N2N542 and Flutter432 runs. measured-execution-102.json records covered source line numbers, measured totals and source hashes, explicitly including import execution. Only pending paths with at least10 covered lines and50% measured statements receive execution-coverage, not semantic-review status. This is line evidence, never a claim of100% branch or device coverage.
+
+## Bounded closeout
+
+Explicit user amendment ends broad review. All103confirmed repairs verified: final24contract families,434Flutter/analyze,227HUD/build/audit0,6reconciliation/spec gates; macOSCI36326574760 Runner+WatchApp success on production source identical to1709ddc.751unreviewed paths are deferred-review, not passes. See deferred-review.md, handoff.md and mac-handoff.md.

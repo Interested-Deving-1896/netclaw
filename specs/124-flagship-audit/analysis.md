@@ -276,3 +276,7 @@ A124-101 two production-panel VM fixtures reproduce unavailable/failed overlay r
 A124-102 mobile deep-link trust boundary found during source review and instrumented Flutter tests. Actual handler regression calls the recording EdgeRpcSource before the fix; invalid input must now produce zero RPC calls. Ordinary hyphenated names and unknown valid inventory IDs remain supported.
 
 A124-103 lifecycle review: actual EnrollmentGate widget fixture completes reconnect after unmount; baseline must close the returned fake client but does not. Background refresh and HomeShell ownership paths traced for timeout/error/disposal followthrough before repair.
+
+## Bounded closeout amendment — 2026-09-27
+
+Explicit user direction supersedes exhaustive-review scope: finish confirmed001–103 repairs and final checks, triage remaining evidence for safe-use blockers, and defer unreviewed paths in [deferred-review.md](deferred-review.md). Only confirmed security, data-loss or installation/runtime failures preventing safe use extend this phase. Spec125 remains the HUD redesign. Merge PR265 and return to main before backing up and migrating the actual local runtime. Completion means this bounded scope, not100% source certification.

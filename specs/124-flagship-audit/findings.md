@@ -1,18 +1,12 @@
-# Flagship audit findings — in progress
+# Flagship audit findings — bounded closeout
 
 Baseline: ad6a4a8. Inventory coverage is not completed review. Confirmed findings receive stable A124 IDs and exact remediation tasks before fixes. Severity and verification status are separate.
 
 ## Current status — authoritative checkpoint
 
-Phase 1 remains **in progress**. The WSL continuation adds findings056–079;
-056–079 have implemented repairs and passing targeted verification, including
-431 Flutter tests and clean analysis on WSL. 108/119 tasks are checked; broad semantic coverage and
-final gates remain open. Linux systemd Docker fresh/upgrade, WSL pyATS recovery,
-Windows Edge HUD/Canvas fixture chats, a separate real model request, CML read-only
-pCalls and Docker network fixtures have evidence. Docker proves Debian userspace
-and systemd on its shared kernel, not bare-metal Linux. Operator migration and
-merge remain deferred until completion and return to main. Apple processing is
-nonblocking; its last verified state remains the Mac checkpoint.
+The user bounded closeout on2026-09-27. Confirmed001–103 repairs are implemented; all final local and native103 checks passed. All751 previously pending baseline paths are explicitly deferred in [deferred-review.md](deferred-review.md), not passed.461 paths have targeted review and271 measured execution; neither is full-file certification. Existing finding/acceptance evidence yielded no further confirmed safe-use release blocker during bounded triage.
+
+Completed acceptance includes Docker Debian real systemd fresh/upgrade, isolated WSL fresh/upgrade and recovery, historical Windows Edge chat, current WSL Chromium Canvas checks, a separate real model request, CML12/12 read-only checks, NSM19 and Redfish15 fixtures. Historical Mac runtime and native CI evidence remains valid at its recorded checkpoint. Physical phone/watch, live optional providers, wiped Mac and bare-metal Linux acceptance remain unverified. Actual local migration follows merge and return to main.
 
 | IDs | Current disposition |
 |---|---|
@@ -44,7 +38,17 @@ nonblocking; its last verified state remains the Mac checkpoint.
 |068–069|Fail-closed federation role admission and approval expiry verified at real service/SQLite boundaries|
 |070|Mobile late headless connection cleanup verified;431 Flutter tests and clean analyze on WSL|
 
-Open completion work: remaining broad source/skill review, remaining full-host acceptance and final report/handoff. Specific Linux/WSL checks now have evidence in wsl-review.md; unavailable provider/device checks remain unverified. No full-audit completion is claimed. Descriptions below retain discovery-time observations; this table supersedes historical status checkpoints.
+Bounded scope supersedes the former open-ended review requirement. Deferred semantic review and optional acceptance remain explicitly unverified; final checks govern merge readiness. Descriptions below retain discovery-time observations.
+
+## Severity index — closeout triage
+
+Severity describes pre-fix impact, not residual known exposure. All listed findings have implemented repairs;103 native verification passed. Original discovery wording below is retained as history.
+
+| Severity | Findings |
+|---|---|
+| Critical | 018, 037, 038 |
+| High | 001, 003, 007, 011, 013, 019, 021, 022, 025, 026, 027, 028, 029, 030, 031, 033, 035, 036, 039, 044, 045, 047, 051, 053, 054, 056, 057, 058, 060, 061, 062, 063, 064, 065, 066, 068, 071, 072, 075, 080, 081, 082, 085, 088, 089, 090, 091, 093, 094, 095, 096, 097, 098, 099, 100, 102, 103 |
+| Medium | 002, 004, 005, 006, 008, 009, 010, 012, 014, 015, 016, 017, 020, 023, 024, 032, 034, 040, 041, 042, 043, 046, 048, 049, 050, 052, 055, 059, 067, 069, 070, 073, 074, 076, 077, 078, 079, 083, 084, 086, 087, 092, 101 |
 
 ## Trust boundaries
 

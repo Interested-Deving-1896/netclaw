@@ -1,3 +1,15 @@
+# Spec124 bounded closeout verification —2026-09-27
+
+Final local code checkpoint1709ddc: all24 contract families PASS,0 FAIL/ERROR/dependency blockers;434 Flutter tests PASS and clean analyze;227 HUD tests PASS and production build PASS; all six reconciliation surfaces and spec-artifact validation PASS. Exact sanitized outputs: evidence/wsl/{contracts-final.json,flutter-final.txt,flutter-analyze-final.txt,hud-final.txt,hud-build-final.txt,reconcile-final.txt,spec-final.txt}. Mobile103 native compilation passed in macOS CI36326574760 at e008464 (iOS Runner and WatchApp). The1709ddc change only synchronizes test fixtures; native and Dart production source is identical.
+
+The matrix reports2 optional Docker and7 credentialed capability gaps separately. Completed targeted NSM19/Redfish15 Docker and CML12/12 read-only evidence remains valid at its recorded checkpoint; it does not turn every live integration green. Linux Debian/systemd Docker and isolated WSL fresh/upgrade/recovery preserved fixture configuration, testbed, knowledge and persona hashes. Historical macOS runtime/LaunchAgent and run36325037956 native Runner/WatchApp builds passed. Docker uses the WSL kernel; no bare-metal boot or wiped-Mac claim.
+
+Canvas100 was exercised in actual WSL Chromium with a delayed synthetic response; historical Windows Edge acceptance is distinct. Current WSLInterop absence prevents new Windows-executable acceptance and is reserved for post-main operator repair. Physical phone/watch background behavior, live Zoom Layers/Twilio/ServiceNow/vendor flows and model retrieval quality remain unverified. See deferred-review.md for exact bounded dispositions and751 unreviewed paths in coverage.json.
+
+The two timing-sensitive mobile fixtures now await actual send/persistence completion instead of assuming10ms scheduling. The Siri early-delivery recovery limitation is explicitly deferred; the fast-window test verifies its stated post-persistence scenario. No additional production behavior was silently certified.
+
+All following sections are chronological acceptance history; newer evidence above supersedes old pending statements without retroactively changing what was tested.
+
 # Verification — current WSL continuation and historical Mac checkpoint
 
 Historical Mac checkpoint: host macOS arm64; baselinead6a4a8; branch124-flagship-audit. Local test results do not establish remote appliance/provider acceptance. No private configuration or credentials are retained in this report.
