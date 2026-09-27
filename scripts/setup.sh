@@ -39,22 +39,22 @@ OPENCLAW_ENV="$RUNTIME_ENV"
 # ───────────────────────────────────────────
 
 prompt() {
-    local var="$1" prompt_text="$2" default="${3:-}"
+    local var="$1" prompt_text="$2" default="${3:-}" input
     if [ -n "$default" ]; then
         echo -ne "${CYAN}${prompt_text}${NC} ${DIM}[${default}]${NC}: "
     else
         echo -ne "${CYAN}${prompt_text}${NC}: "
     fi
     read -r input
-    eval "$var=\"${input:-$default}\""
+    printf -v "$var" '%s' "${input:-$default}"
 }
 
 prompt_secret() {
-    local var="$1" prompt_text="$2"
+    local var="$1" prompt_text="$2" input
     echo -ne "${CYAN}${prompt_text}${NC}: "
     read -rs input
     echo ""
-    eval "$var=\"$input\""
+    printf -v "$var" '%s' "$input"
 }
 
 yesno() {
@@ -85,13 +85,7 @@ want() {
 set_env() {
     local key="$1" value="$2"
     [ -z "$value" ] && return
-    if grep -q "^${key}=" "$OPENCLAW_ENV" 2>/dev/null; then
-        sed -i "s|^${key}=.*|${key}=${value}|" "$OPENCLAW_ENV"
-    elif grep -q "^# ${key}=" "$OPENCLAW_ENV" 2>/dev/null; then
-        sed -i "s|^# ${key}=.*|${key}=${value}|" "$OPENCLAW_ENV"
-    else
-        echo "${key}=${value}" >> "$OPENCLAW_ENV"
-    fi
+    _set_env_var "$key" "$value"
 }
 
 section() {
@@ -120,7 +114,7 @@ if [ ! -d "$OPENCLAW_DIR" ]; then
     exit 1
 fi
 
-[ -f "$OPENCLAW_ENV" ] || touch "$OPENCLAW_ENV"
+[ -f "$OPENCLAW_ENV" ] || (umask 077; touch "$OPENCLAW_ENV")
 
 # ───────────────────────────────────────────
 # Welcome
@@ -770,52 +764,9 @@ if want "twilio" "Configure Twilio Voice?"; then
         # Create config directory if needed
         mkdir -p "$NETCLAW_DIR/config"
         TWILIO_CONFIG="$NETCLAW_DIR/config/twilio-voice.json"
-        cat > "$TWILIO_CONFIG" << TWILIOEOF
-{
-  "whitelist": [
-    {
-      "phone_number": "$TWILIO_WHITELIST_PHONE",
-      "label": "$TWILIO_WHITELIST_NAME",
-      "can_receive_calls": true,
-      "can_initiate_calls": true,
-      "added_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-      "added_by": "setup.sh"
-    }
-  ],
-  "quiet_hours": [
-    {
-      "id": "default",
-      "start_time": "22:00",
-      "end_time": "07:00",
-      "timezone": "America/Toronto",
-      "days_of_week": [],
-      "p1_override": true,
-      "enabled": true
-    }
-  ],
-  "emergency_categories": [
-    {
-      "category_name": "pagerduty_p1",
-      "description": "PagerDuty P1 Critical Incidents",
-      "source": "pagerduty",
-      "match_pattern": "severity:P1",
-      "enabled": true
-    },
-    {
-      "category_name": "core_device_down",
-      "description": "Core router, firewall, or WAN link failure",
-      "source": "netclaw_monitoring",
-      "match_pattern": "device_type:(core_router|firewall|wan_link) AND status:down",
-      "enabled": true
-    }
-  ],
-  "rate_limits": {
-    "hourly_max": 3,
-    "daily_max": 10
-  },
-  "voice": "Polly.Matthew"
-}
-TWILIOEOF
+        printf '%s\0' "$TWILIO_WHITELIST_PHONE" "$TWILIO_WHITELIST_NAME" | \
+            python3 "$SCRIPT_DIR/setup-profile.py" voice "$TWILIO_CONFIG" \
+                --template "$NETCLAW_DIR/config/twilio-voice.json.example"
         ok "Whitelist configured: $TWILIO_WHITELIST_NAME ($TWILIO_WHITELIST_PHONE)"
     fi
     ok "Twilio Voice configured"
@@ -857,24 +808,8 @@ prompt USER_TZ "Your timezone (e.g., US/Eastern, UTC)" ""
 USER_MD="$RUNTIME_WORKSPACE/USER.md"
 if [ -n "$USER_NAME" ] || [ -n "$USER_ROLE" ] || [ -n "$USER_TZ" ]; then
     mkdir -p "$RUNTIME_WORKSPACE"
-    cat > "$USER_MD" << USEREOF
-# About My Human
-
-## Identity
-- **Name:** ${USER_NAME:-[your name]}
-- **Role:** ${USER_ROLE:-Network Engineer}
-- **Timezone:** ${USER_TZ:-[your timezone]}
-
-## Preferences
-- Communication style: technical, direct
-- Output format: structured tables and bullet points preferred
-- Change management: always require ServiceNow CR before config changes
-- Escalation: alert me for P1/P2, queue P3/P4 for next business day
-
-## Network
-- Edit TOOLS.md with your device IPs, sites, and Slack channels
-- Edit testbed/testbed.yaml with your pyATS device inventory
-USEREOF
+    printf '%s\0' "$USER_NAME" "$USER_ROLE" "$USER_TZ" | \
+        python3 "$SCRIPT_DIR/setup-profile.py" identity "$USER_MD"
     ok "USER.md personalized"
 fi
 

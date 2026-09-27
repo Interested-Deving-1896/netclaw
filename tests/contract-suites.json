@@ -450,7 +450,8 @@
           "pytz>=2024.1",
           "gait-ai>=0.0.9,<1",
           "openpyxl>=3.1,<4",
-          "python-pptx>=1.0,<2"
+          "python-pptx>=1.0,<2",
+          "PyYAML>=6,<7"
         ],
         "required_imports": [
           "pytest",
@@ -467,7 +468,8 @@
           "twilio",
           "pytz",
           "openpyxl",
-          "pptx"
+          "pptx",
+          "yaml"
         ],
         "prepend_path": true
       },

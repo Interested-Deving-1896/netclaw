@@ -137,3 +137,70 @@ A124-076 corrects edge queue TTL enforcement when a phone reconnects without a n
 A124-077 validates optional pricing override shapes and numeric ranges. Invalid entries now warn and use default pricing. If direct usage accounting supplies an invalid/non-finite cost, the session ledger halts with `invalid_cost`, reports its total as incomplete and refuses a budget override. Correct the usage source before starting a new ledger. Valid zero/positive costs and existing stored data are unchanged. Estimates are not provider invoices.
 
 A124-078 adds Fortinet `request_failed` for malformed/error JSON-RPC replies. Consumers must treat it as an unavailable answer, not a successful empty inventory. Valid empty lists remain `empty_result`. A124-079 supports fractional `BGP_INTEL_MAX_RPS` below1 with a longer pacing window; no state migration.
+
+### Production model routing (A124-080)
+
+Production delegation now requires DefenseClaw mode and a configured model route
+through the local guard provider. Proxy reachability alone is insufficient.
+Primary models, embedded `--model` overrides and configured fallbacks must use
+`defenseclaw/<model>`, and that provider's `baseUrl` must use the configured
+loopback guard port. The effective `OPENCLAW_CONFIG_PATH` (or state directory)
+and selected `N2N_AGENT_ID` are inspected. Direct-provider members created by
+`in2n-member-home.py` remain suitable for explicitly unguarded testing; they do
+not satisfy production admission without reviewed provider configuration.
+
+Preview the current admission decision without changing configuration:
+
+```bash
+PYTHONPATH=mcp-servers/protocol-mcp python3 -c \
+  'import asyncio; from bgp.federation.controls import defenseclaw_available; print(asyncio.run(defenseclaw_available()))'
+```
+
+Before adopting production, retain private copies of the effective member/gateway
+config and `~/.openclaw/config/openclaw.json`. Configure the intended DefenseClaw
+provider, primary and fallback routes, and guard mode using the existing local
+setup workflow. Run the preflight again, then verify an actual guarded model turn
+with your provider. Recover mistaken configuration edits from those private copies;
+the admission check does not write files or credentials. Do not automatically
+switch to testing to bypass a failed production check. A successful preflight
+establishes configured routing and local proxy liveness, not an end-to-end proof
+of the external guard's content decisions.
+
+A124-081 rechecks grants, federation status, knowledge visibility and budgets after
+approval/guard waits. An approval cannot authorize a revoked or replaced grant.
+Request allowance is reserved before skill execution and now includes replication
+reads; already admitted work is not cancelled by later revocation. Successful skill
+completion adds actual tokens without charging a second request. Existing SQLite
+rows need no conversion. Review daily limits if a deployment previously depended
+on uncounted replication calls; do not raise limits automatically.
+
+A124-082 makes platform setup prompts literal and uses the same private atomic
+writer as installation. Hermes conversion decodes quoted dotenv correctly and
+writes generated config/sidecars privately; MCP cwd normalization also writes
+atomically. Re-enter any credential previously corrupted by the old setup writer
+from its trusted original. Regenerate Hermes MCP YAML into its sidecar and merge
+it deliberately with existing server configuration. The existing local-file
+permission migration remains available for older credential-bearing files.
+
+A124-083 rejects malformed Claroty/Halo/Auvik list responses. Halo/Auvik keep
+already collected items with explicit error/truncated fields; Claroty reports an
+error through its existing tool handler. Valid empty arrays remain valid, as does
+Halo's explicit zero-count metadata response. No stored data conversion is needed.
+
+A124-084 changes repeat platform setup to preserve operator content. Identity
+fields occupy a delimited managed section in USER.md; prose outside it remains
+untouched. Voice setup merges the requested phone entry, preserves existing call
+permissions and unrelated quiet-hours/rate policy, and never activates the example
+phone number. Changed original files are retained privately in `.setup-backups`
+beside each target, named by filename and original content digest. Compare the
+original with the current file before manually recovering it, preserving any later
+edits. Repeated identical updates do not create additional copies. Malformed state
+and linked destinations are refused instead of overwritten. No call is initiated.
+
+A124-085 stores each federation result in a unique private file independent of
+peer-chosen request ids. Existing database references and old filenames remain
+readable; no conversion is required. Missing payloads are explicitly unavailable,
+and persistence failure produces a failed task even if its error payload cannot
+be saved. An execution may already have happened before persistence failed:
+inspect the target state before retrying a mutating task. Older results already
+overwritten by an id collision can only be recovered from an earlier backup.

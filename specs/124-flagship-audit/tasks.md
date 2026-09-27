@@ -207,3 +207,19 @@ Batch dependencies: T028 → T029 → T030 security verification; T031 precedes 
 
 - [x] T118 [US2] Reproduce/fix A124-078 malformed/error Fortinet JSON-RPC envelopes reported as successful empty data in transport/jsonrpc.py and envelope.py; add actual MockTransport-to-manager response regressions in tests/fortinet/test_rpc_errors.py and register in run-tests.sh.
 - [x] T119 [US2] Reproduce/fix A124-079 fractional BGP_INTEL_MAX_RPS causing zero-capacity limiter IndexError in bgp-intel-mcp/http_client.py; verify observed sub-one-per-second pacing in tests/bgp-intel/test_rate_limit.py.
+
+- [x] T120 [US1] Reproduce/fix A124-080 production model guard reporting available for disabled/unrouted configurations and embedded direct-model overrides in federation/controls.py and gateway.py; validate effective provider/primary/fallback route and security mode before delegation, test fixture configs, and document existing production adoption.
+
+- [x] T121 [US1] Reproduce/fix A124-081 invocation grants/budgets becoming stale across approval/guard waits and skill scheduling in authorization.py/invocation.py; revalidate original grant before execution, reserve request allowance before awaits, count replication requests and test revocation/concurrent admission using real SQLite/service handlers.
+
+- [x] T122 [US3] Reproduce/fix A124-082 remaining credential serialization in scripts/setup.sh, openclaw-to-hermes-mcp.py and normalize-mcp-cwd.py; remove prompt eval/sed writes, reuse literal dotenv decoding and private atomic file writes from write-env.py, verify malicious-looking literal input and generated YAML/private file behavior.
+
+- [x] T123 [US2] Reproduce/fix A124-083 malformed list replies becoming successful empty results in Claroty _extract_items, Halo pagination/get_all and Auvik merge_page/get_all; preserve valid empty lists and expose partial/error state in actual client regressions under tests/unit/test_vendor_list_failures.py; propagate failed/incomplete name resolution through Halo/Auvik utils/resolver.py.
+
+- [x] T124 [US3] Reproduce/fix A124-084 setup replacing operator USER.md and Twilio whitelist/config, including unescaped JSON labels; add scripts/setup-profile.py for private retained-original updates, managed identity section and whitelist merge, wire setup.sh and verify preservation/repeat/malformed-input cases.
+
+- [x] T125 [US1] Reproduce/fix A124-085 federation result files overwritten by repeated peer-controlled request ids and false result references on failed persistence in audit.py/tasks.py; create exclusive private result files, expose unavailable results and retain failed terminal task state when storage fails; verify duplicate ids and actual task storage failure.
+
+- [x] T126 [US4] Correct A124-086 Azure ordinary logger mislabeled GAIT persistence in azure_network_mcp_server.py and README.md; name emitted records operation logs and use returned rather than success for functions that return error envelopes. Preserve tool registration and explicitly require session GAIT recording.
+
+- [ ] T127 [US2] Fix A124-087 floating Flutter CI toolchain changing locked SDK dependencies and failing clean plugin preparation; pin the verified Flutter 3.44.8 in .github/workflows/mobile-ci.yml, trigger CI on workflow edits and validate actual macOS analysis/tests/native builds.

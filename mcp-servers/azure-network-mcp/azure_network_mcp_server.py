@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Azure Network MCP Server - FastMCP entry point with GAIT audit logging."""
+"""Azure Network MCP Server - FastMCP entry point with operation logging."""
 
 from __future__ import annotations
 
@@ -40,11 +40,11 @@ logger = logging.getLogger("azure-network-mcp")
 mcp = FastMCP("azure-network-mcp")
 
 
-# --- GAIT Audit Logging ---
+# --- Operation Logging (session GAIT recording is separate) ---
 
-def gait_audit_log(operation: str, target: str, subscription_id: Optional[str] = None,
+def log_operation(operation: str, target: str, subscription_id: Optional[str] = None,
                    status: str = "success", details: Optional[str] = None) -> None:
-    """Log a GAIT audit entry for an MCP tool operation."""
+    """Emit an ordinary operation log, not a persisted GAIT commit."""
     entry = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "operation": operation,
@@ -54,11 +54,11 @@ def gait_audit_log(operation: str, target: str, subscription_id: Optional[str] =
     }
     if details:
         entry["details"] = details
-    logger.info(f"GAIT: {json.dumps(entry)}")
+    logger.info(f"OPERATION: {json.dumps(entry)}")
 
 
-def with_gait_logging(tool_name: str):
-    """Decorator to wrap MCP tool functions with GAIT audit logging."""
+def with_operation_logging(tool_name: str):
+    """Decorator to wrap MCP tool functions with operation logging."""
     def decorator(func):
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
@@ -68,13 +68,13 @@ def with_gait_logging(tool_name: str):
                 "policy_name") or kwargs.get("lb_name") or kwargs.get(
                 "nic_name") or kwargs.get("zone_name") or kwargs.get(
                 "resource_group") or "all"
-            gait_audit_log(tool_name, target, subscription_id, "started")
+            log_operation(tool_name, target, subscription_id, "started")
             try:
                 result = await func(*args, **kwargs)
-                gait_audit_log(tool_name, target, subscription_id, "success")
+                log_operation(tool_name, target, subscription_id, "returned")
                 return result
             except Exception as e:
-                gait_audit_log(tool_name, target, subscription_id, "error", str(e))
+                log_operation(tool_name, target, subscription_id, "error", str(e))
                 return format_error_response(e)
         return wrapper
     return decorator
@@ -154,7 +154,7 @@ tools_to_register = [
 ]
 
 for tool in tools_to_register:
-    mcp.tool()(with_gait_logging(tool.__name__)(tool))
+    mcp.tool()(with_operation_logging(tool.__name__)(tool))
 
 
 def main():

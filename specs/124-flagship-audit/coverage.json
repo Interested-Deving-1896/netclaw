@@ -2122,43 +2122,43 @@
       "path": "mcp-servers/auvik-mcp/utils/pagination.py",
       "subsystem": "mcp-servers/auvik-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/auvik-mcp/utils/rate_limiter.py",
       "subsystem": "mcp-servers/auvik-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/auvik-mcp/utils/resolver.py",
       "subsystem": "mcp-servers/auvik-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/auvik-mcp/utils/toon_helper.py",
@@ -2188,11 +2188,15 @@
       "path": "mcp-servers/azure-network-mcp/README.md",
       "subsystem": "mcp-servers/azure-network-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/azure-network-mcp/__init__.py",
@@ -2212,15 +2216,15 @@
       "path": "mcp-servers/azure-network-mcp/azure_network_mcp_server.py",
       "subsystem": "mcp-servers/azure-network-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/azure-network-mcp/clients/__init__.py",
@@ -2548,15 +2552,15 @@
       "path": "mcp-servers/azure-network-mcp/utils/rate_limiter.py",
       "subsystem": "mcp-servers/azure-network-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/batfish-mcp/Dockerfile",
@@ -3085,15 +3089,15 @@
       "path": "mcp-servers/claroty-mcp/clients/claroty_client.py",
       "subsystem": "mcp-servers/claroty-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/claroty-mcp/models/__init__.py",
@@ -4265,15 +4269,15 @@
       "path": "mcp-servers/halo-mcp/tools/_common.py",
       "subsystem": "mcp-servers/halo-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/halo-mcp/tools/assets.py",
@@ -4423,15 +4427,15 @@
       "path": "mcp-servers/halo-mcp/utils/resolver.py",
       "subsystem": "mcp-servers/halo-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/halo-mcp/utils/toon_helper.py",
@@ -5932,15 +5936,15 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/audit.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/authorization.py",
@@ -6005,29 +6009,29 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/chroma_store_bridge.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/controls.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/edge.py",
@@ -6216,15 +6220,15 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/posture.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/push_notify.py",
@@ -6286,15 +6290,15 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/router.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/service.py",
@@ -12097,11 +12101,15 @@
       "path": "scripts/in2n-member-home.py",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "scripts/in2n-member.py",
@@ -12481,21 +12489,29 @@
       "path": "scripts/normalize-mcp-cwd.py",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "scripts/openclaw-to-hermes-mcp.py",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "scripts/patch-claw-certs.sh",
@@ -12626,11 +12642,15 @@
       "path": "scripts/setup.sh",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source trust/failure/persistence boundary review; details in WSL continuation"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review; no claim of complete vendor, hardware, or unavailable provider acceptance."
     },
     {
       "path": "scripts/systemd/defenseclaw-sidecar.service",

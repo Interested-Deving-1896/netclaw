@@ -214,7 +214,11 @@ class AuvikClient:
                 }
 
             payload = result["data"]
-            merge_page(items, payload)
+            try:
+                merge_page(items, payload)
+            except ValueError as exc:
+                return {"items": items, "page_count": page_count, "truncated": True,
+                        "next_cursor": current_path, "error": str(exc)}
             page_count += 1
             next_url = next_cursor_url(payload)
 

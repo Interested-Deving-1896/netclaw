@@ -217,7 +217,7 @@ class ClarotyClient:
         if isinstance(data, list):
             return data
         if not isinstance(data, dict):
-            return []
+            raise ValueError("xDome list response must contain a recognized items array")
 
         # Preferred path: caller told us the key.
         if items_key:
@@ -252,7 +252,7 @@ class ClarotyClient:
             list(data.keys()),
             items_key,
         )
-        return []
+        raise ValueError("xDome response did not contain a recognized items array")
 
     async def paginate(
         self,

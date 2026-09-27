@@ -1,7 +1,7 @@
 name: Mobile CI
 on:
   pull_request:
-    paths: ['mobile/netclaw-mobile/**']
+    paths: ['mobile/netclaw-mobile/**', '.github/workflows/mobile-ci.yml']
 
 jobs:
   test-and-build:
@@ -14,6 +14,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.44.8'
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test

@@ -373,3 +373,35 @@ An HTTP200 body missing result/status.code defaults to success and returns None.
 ### A124-079 — Medium — Fractional BGP rate limit crashes before request
 
 BGP_INTEL_MAX_RPS accepts positive fractions but int conversion in the sliding window turns values below1 into capacity0; recent[0] raises IndexError. Preserve operator-requested slower rates with one slot per1/rate seconds below1rps; retain the existing integer sliding-window ceiling above1.
+
+### A124-080 — High — Production model guard accepts disabled/direct-provider execution
+
+`defenseclaw_available` checks CLI presence and an open TCP port but never checks security_mode, despite its contract. Border startup only logs require_defenseclaw_mode failure. Embedded execution preserves a direct --model override after this proxy-only check; member-home provisioning explicitly creates a direct Anthropic provider. Require configured guard mode and effective model routing through the intended local proxy, including overrides/fallbacks, before production delegation. Testing mode remains explicitly unguarded. Existing production deployments using direct member providers need manual reviewed configuration adoption; do not rewrite operator provider credentials automatically.
+
+### A124-081 — High — Invocation authorization goes stale while awaiting approval
+
+Tools/skills/knowledge/replication authorize before an approval wait and then execute without checking revocation, federation state or consumed budget. Skill requests debit only after execution, allowing concurrent starts beyond the remaining daily allowance; replica reads do not debit requests. Revalidate the same original grant at admission and reserve each request before execution. Human approval cannot resurrect a revoked/replaced grant. Already admitted work is not retroactively cancelled.
+
+### A124-082 — High — Setup evaluates credential input and alternate-runtime writes lose literal/private guarantees
+
+setup.sh prompt helpers eval user input; set_env still uses sed/unquoted dotenv despite the installer writer repair. Hermes conversion strips quotes without decoding escaped literal values and writes credential-bearing YAML/sidecars with ordinary permissions; normalizer writes config in place. Share the literal codec and private atomic writer, and use printf assignment rather than eval. Preserve existing configuration during write failure; no credential-value logging.
+
+### A124-083 — Medium — Malformed vendor inventories become successful empty lists
+
+Claroty logs an unrecognized response then returns[]; Halo non-JSON GET is wrapped as successful raw text then pagination extracts[]; Auvik missing data defaults to[]. All can be misread as an empty inventory. Reject unrecognized list shapes and preserve accumulated items with explicit error/truncated metadata where the client envelope supports partial results. Valid empty list replies stay successful.
+
+### A124-084 — Medium — Platform setup overwrites identity and voice policy
+
+Personalization replaces USER.md even on a repeat setup (default role is nonempty). Twilio setup interpolates a label into JSON without escaping and replaces all existing whitelist/quiet-hours/rate settings. Preserve operator text and unrelated voice policy, retain originals privately before updates, and serialize labels as JSON data. Reject malformed existing state rather than rebuilding over it.
+
+### A124-085 — High — Peer-chosen result ids overwrite earlier audit/task payloads
+
+Auditor.store_result derives a shared filename from request_id and overwrites it. Distinct peers/calls choosing the same id can corrupt an earlier result reference. Write failure is logged but still returns a nonexistent reference, allowing completed-state claims without stored output. Use unique private files independent of peer-controlled ids; propagate persistence failure and ensure task terminal failure remains visible even when error-payload storage also fails. Existing stored references remain readable.
+
+### A124-086 — Medium — Azure ordinary logs are labeled GAIT records
+
+The Azure wrapper only calls logger.info but labels entries GAIT. It also logs success whenever a function returns, including returned error envelopes. Correct the logging/documentation claim: these are ordinary operation logs, not persisted GAIT commits. Mark normal returns as returned; session workflows retain the separate GAIT obligation. This correction does not invent server-side GAIT persistence.
+
+### A124-087 — Medium — Floating mobile CI SDK fails clean dependency preparation
+
+PR265 mobile CI selected Flutter3.47.5 instead of the locally verified3.44.8, changed four locked dependencies and failed copying firebase_messaging into an absent SourcePackages directory. Pin the tested SDK and run the complete macOS job; workflow-only changes must also trigger that job. Native build acceptance remains pending until CI succeeds.

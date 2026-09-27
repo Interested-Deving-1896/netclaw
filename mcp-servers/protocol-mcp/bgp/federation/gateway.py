@@ -114,6 +114,12 @@ async def _apply_production_controls(cmd: list, prompt: str) -> list:
     guard_ok, guard_detail = await controls.defenseclaw_available()
     if not guard_ok:
         raise EnforcementRefused(f"model-guard unavailable: {guard_detail}")
+    if "--model" in cmd:
+        index = cmd.index("--model")
+        override = cmd[index + 1] if index + 1 < len(cmd) else ""
+        route_ok, detail = controls.guarded_model_route(override)
+        if not route_ok:
+            raise EnforcementRefused(f"model-guard unavailable: {detail}")
     return cmd
 
 

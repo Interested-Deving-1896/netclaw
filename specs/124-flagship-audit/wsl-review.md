@@ -137,3 +137,53 @@ Token package remainder: cost calculator override shape/finite-range and session
 Fortinet REST/JSON-RPC transport and credentials: TLS defaults verified, credentials named not emitted, no automatic write retries. RPC malformed-success reproduced/fixed078. The local JSONL audit is ordinary logging, not an immutable GAIT commit; retain that boundary. BGP HTTP caching/rate control and private-prefix validator read: cache TTL/source labels and input refusal are explicit,0.5rps crash reproduced/fixed079 with observed timeline. No live registry/appliance requests for these regressions.
 
 160 baseline paths received explicit coverage dispositions supported by completed HUD/Flutter execution, source reads, AST-empty package markers or historical/passive artifact boundaries. The inventory and hashes are in evidence/wsl/coverage-dispositions.json. Historical blog/archive drafts do not assert current platform or provider acceptance. Remaining pending paths stay pending.
+
+Reviewed router/controls/posture plus embedded model selection and member-home provisioning. Router excludes removed/quarantined members and deterministic specialization is explicit. Production guard incorrectly used proxy reachability without config/override routing, reproduced080. Corrected guard checks use effective config and inherit conservative fallback checks; target tests cover disabled mode/direct provider/fallback/remote endpoint/agent override and valid local route. Probe liveness does not certify external guard decisions. Additional invocation review is active: grants/budgets are checked before approval waits, and skill request debit occurs after execution; revalidation/reservation regression is next.
+
+A124-081: full invocation tool/task/query/replica admission and Authorizer review
+confirmed stale authorization after approval/guard waits, late skill debit and
+missing replica debit. Added revalidation of original grant, federation and
+knowledge visibility; conditional SQLite request reservation prevents concurrent
+starts beyond the daily allowance.16 targeted tests and full n2n suite pass.
+No claim of retroactive cancellation or hard token reservation for unknown future
+model usage.
+
+A124-082: actual setup helpers execute substitution-looking input via eval and
+sed fails on delimiters; fixtures reproduce both. Hermes legacy decoder fails
+literal round-trip and new YAML mode was0644. Shared private writer and decoder
+now used by setup/Hermes/cwd normalizer;16 writer/CLI/deployment tests pass.
+Remaining setup review candidates: Twilio JSON heredoc string escaping and
+unconditional USER.md personalization replacement; not yet dispositioned.
+
+Vendor AST boundary inventory reviewed for Azure/Auvik/Claroty/Halo tool wrappers:
+Azure SDK get/list/read diagnostics, Auvik inventory GETs, Halo read tools plus
+previously reviewed gated CR creation, Claroty read POSTs and ITSM-gated writes.
+Claroty retries only429, not generic write transport errors. Actual list parsing
+review confirmed083 missing/malformed wrappers become empty; fixed with valid
+empty and partial-page tests. Halo explicit record_count0 metadata retained.
+This extraction is not full semantic certification of all formatter/compliance
+logic or live cloud/appliance endpoints.
+
+Setup remainder: testbed editing is explicitly handed to the selected editor;
+no device commands execute in setup. Identity and Twilio heredocs confirmed084
+original-data replacement and malformed quoted-label JSON. Added private
+retained-original updates, managed identity section and policy-preserving voice
+merge;4helper tests plus actual prompt literal test pass. No real voice/provider
+calls or operator profile modifications were performed.
+
+A124-085: Auditor result ids were peer-controlled shared filenames; repeated ids
+overwrite prior payloads and failed writes returned false references. Exclusive
+0600 files now decouple payload identity from request ids. Task persistence failure
+reaches failed state even if the error payload also cannot be saved. Missing and
+legacy result references tested explicitly;4 tests and full n2n pass.
+
+A124-083 name-resolution follow-through: Halo/Auvik resolvers previously converted
+failed or truncated lists into NotFound or an apparently unique match. They now
+return UpstreamError while explicit numeric ids retain direct lookup.5 fixture
+cases pass, and full Halo/Auvik suites pass after correcting the legacy
+false-empty assertions. Explicit Halo count0 metadata remains a valid empty reply.
+
+A124-086: Azure source wrapper was ordinary logger.info labeled GAIT, not immutable
+persistence. Corrected function/log/documentation names and normal-return status;
+registered MCP tool names are unchanged. AST compilation succeeds. Session GAIT
+recording remains required separately; no new server-side persistence claim.

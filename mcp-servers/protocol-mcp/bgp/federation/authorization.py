@@ -121,7 +121,7 @@ class Authorizer:
     # ---- the decision (FR-012/013/017) --------------------------------
 
     def authorize(self, peer_identity: str, target_type: str, target_name: str,
-                  *, already_trusted: bool = False) -> Decision:
+                  *, already_trusted: bool = False, check_rate: bool = True) -> Decision:
         # spec 121: is_federated() checks the eN2N federation_peer table — a
         # concept that doesn't exist for an iN2N member's own self-referential
         # peer_identity (its one channel to Border, see _in2n_member_submit's
@@ -139,13 +139,39 @@ class Authorizer:
         if not grant:
             return Decision(False, "not_allowlisted",
                             reason=f"{target_type} '{target_name}' not allowlisted for {peer_identity}")
-        if not self._check_rate(peer_identity):
+        if check_rate and not self._check_rate(peer_identity):
             return Decision(False, "rate_limited", grant, "per-minute rate limit exceeded")
         if not self._check_budget(peer_identity):
             return Decision(False, "budget_exhausted", grant, "daily budget exhausted")
         if grant["requires_approval"]:
             return Decision(False, "approval_required", grant, "human approval required")
         return Decision(True, "allowlisted", grant)
+
+    def admit(self, peer_identity: str, target_type: str, target_name: str,
+              original: Decision, *, already_trusted: bool = False) -> Decision:
+        """Revalidate after waits, then reserve one request before execution.
+
+        The caller has already completed any approval required by `original`.
+        A new/replaced grant cannot inherit that approval. Rate admission was
+        consumed by the initial request and is deliberately not charged twice.
+        """
+        current = self.authorize(peer_identity, target_type, target_name,
+                                 already_trusted=already_trusted, check_rate=False)
+        if not current.allowed and current.code != "approval_required":
+            return current
+        if not original.grant or current.grant["id"] != original.grant["id"]:
+            return Decision(False, "not_allowlisted", reason="original grant was revoked or replaced")
+        if current.code == "approval_required" and original.code != "approval_required":
+            return current
+        # Conditional update also guards concurrent budget reservations.
+        cur = self.manager._conn.execute(
+            "UPDATE budget_counter SET requests_used=requests_used+1 "
+            "WHERE peer_identity=? AND day=? AND requests_used<? AND tokens_used<?",
+            (peer_identity, _today(), self.daily_requests, self.daily_tokens))
+        self.manager._conn.commit()
+        if cur.rowcount != 1:
+            return Decision(False, "budget_exhausted", current.grant, "daily budget exhausted")
+        return Decision(True, "allowlisted", current.grant)
 
     # ---- approvals (FR-013) -------------------------------------------
 

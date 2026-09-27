@@ -65,7 +65,16 @@ def update(path, key, value, systemd=False):
     lines = [line for line in original.splitlines() if not assignment.match(line)]
     lines.append(key + '=' + (systemd_quote(value) if systemd else quote(value)))
     data = '\n'.join(lines) + '\n'
-    fd, temporary = tempfile.mkstemp(prefix='.netclaw-env-', dir=path.parent)
+    write_private(path, data)
+
+
+def write_private(path, data):
+    """Atomically replace a local text configuration with private permissions."""
+    path = Path(path).absolute()
+    if path.is_symlink() or (path.exists() and not stat.S_ISREG(path.stat().st_mode)):
+        raise ValueError('Configuration path must be a regular file, not a symlink')
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    fd, temporary = tempfile.mkstemp(prefix='.netclaw-config-', dir=path.parent)
     try:
         with os.fdopen(fd, 'w') as stream:
             stream.write(data)
