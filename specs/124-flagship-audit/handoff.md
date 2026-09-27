@@ -1,6 +1,48 @@
 # Spec 124 — Mac checkpoint and WSL continuation
 
-**Spec 124 is not complete.** 83/94 tasks are checked (88% by task count, not weighted audit coverage). All 55 confirmed findings have repairs and passing relevant Mac verification. Eleven broad tasks remain: T007–014, T021, T026–027. Continue the audit in WSL before starting 125. Apple review is explicitly nonblocking; do not infer Apple approval from this decision.
+**Spec 124 is not complete.** Committed checkpoint `659c02d` contains056–070.
+The subsequent WSL repair batch071–079 is implemented with targeted evidence.
+108/119 tasks are checked; eleven broad tasks remain T007–014,T021,T026–027.
+Coverage:364 targeted reviews,202 executed test files,40 generated files,
+912 historical/reference dispositions,92 passive assets and944 pending baseline
+paths. Do not relabel pending paths without supporting review.
+
+The user explicitly authorized Docker for Linux acceptance and wants completion,
+PR merge, branch closure and return to main, **then** actual local NetClaw migration.
+Do not migrate the operator installation before main. No PR exists yet. Preserve
+user changes in `testbed/testbed.yaml` and untracked `mcp-servers/prisma-sdwan-mcp/`.
+No subagents are authorized.
+
+WSL milestone: Docker Debian systemd fresh/upgrade/managed-pyATS adoption passed;
+four operator-fixture hashes preserved; GAIT recovery/imports passed; actual PEP668
+refusal; systemd literal env round-trip. Windows Edge HUD/Canvas synthetic chat
+passed, separate real-provider marker request passed, CML12/12 read-only checks,
+FRR trust cases/NSM19/Redfish15 passed.431 Flutter tests and clean analyze pass.
+The broad contract milestone had22 passes and2 memory-contract assertion failures;
+both corrected suites now pass, as does the n2n follow-up. Final full-suite run
+must follow the remaining audit. See verification.md and wsl-review.md.
+
+Private evidence/fixtures: `~/.openclaw/audit124-wsl`. Docker audit containers
+`netclaw-audit124-linux`, `netclaw-audit124-frr`, `netclaw-audit124-redfish` remain
+available; preserve unrelated containers. Actual local runtime has not been migrated.
+GAIT branch `audit124-wsl-completion-2026-09-27`, latest milestone `701da081`.
+The WSL source review is still active: skill boundary extraction is private
+`skill-boundaries.json`, not a semantic-completion report. Next continue broad
+installer/vendor/skill/mobile/federation/docs review, reproduction-first repairs,
+final host acceptance reconciliation, final gates/report, then merge/main/operator migration.
+
+Additional acceptance: isolated WSL full fresh/upgrade pyATS+GAIT installer exited0,
+four fixture hashes preserved, edited skill original retained, isolated foreground
+gateway health passed. Updated Linux Docker full upgrade exited0 and the four
+fixture hashes remain unchanged. Latest HUD219/build/audit0, Flutter431/analyze,
+n2n, Fortinet and BGP suites pass. The broad unit run had one collection failure in
+the new cost test (missing src import path); corrected isolated test now passes14,
+and cost+budget51 pass. Final full suites still must run after remaining fixes.
+Skill deployment075 retains private originals and rejects symlink paths; TTL076
+prevents stale edge replay; cost077 halts invalid accounting; RPC078 distinguishes
+malformed replies; fractional pacing079 is verified without external API traffic.
+
+The Mac checkpoint below is retained as historical evidence, not current progress.
 
 ## Git checkpoint
 

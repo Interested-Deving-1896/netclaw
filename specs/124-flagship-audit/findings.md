@@ -4,9 +4,9 @@ Baseline: ad6a4a8. Inventory coverage is not completed review. Confirmed finding
 
 ## Current status — authoritative checkpoint
 
-Phase 1 remains **in progress**. The WSL continuation adds findings056–070;
-056–070 have implemented repairs and passing targeted verification, including
-431 Flutter tests and clean analysis on WSL. 99/110 tasks are checked; broad semantic coverage and
+Phase 1 remains **in progress**. The WSL continuation adds findings056–079;
+056–079 have implemented repairs and passing targeted verification, including
+431 Flutter tests and clean analysis on WSL. 108/119 tasks are checked; broad semantic coverage and
 final gates remain open. Linux systemd Docker fresh/upgrade, WSL pyATS recovery,
 Windows Edge HUD/Canvas fixture chats, a separate real model request, CML read-only
 pCalls and Docker network fixtures have evidence. Docker proves Debian userspace
@@ -49,6 +49,12 @@ Open completion work: remaining broad source/skill review, remaining full-host a
 ## Trust boundaries
 
 ### WSL continuation findings
+
+- **A124-073 — Medium — HUD resource identifiers can escape their data roots.** Skill and session detail routes join decoded URL identifiers directly to filesystem paths; encoded separators can select outside SKILL.md or transcript files, and symlinks can escape too. The HUD remains local-operator-only after001; this is confinement within that trusted interface, not a demonstrated remote authentication bypass. T113 reproduces real HTTP traversal and constrains resolved regular files to their intended roots.
+- **A124-074 — Medium — HUD misreports zero/invalid budgets.** `resolveBudgetPolicy` uses truthiness defaults, turning a valid zero ceiling into5USD and zero call allowance into20. It also accepts non-finite environment values inconsistent with the repaired Python policy; percent computation treats a zero ceiling as0% usage. T114 mirrors validated layered limits and reports an immediate zero ceiling as halted.
+
+- **A124-071 — High (audit integrity) — other skills still call the obsolete GAIT schema.** Eighteen literal examples across17 skills use either `{input:{role,content,artifacts}}` or `prompt`/`response`, which the installed server silently ignores: the probe returned success but `gait_show` proved both recorded text fields empty. The main GAIT skill was corrected earlier, but these callers were missed by static extraction of external tool schemas. T111 updates all discovered callers and verifies against the actual schema, without treating illustrative network outcomes as observations.
+- **A124-072 — High (workflow) — ACI guide allows an insufficient approval state.** The deployment skill says proceed if state is `implement` OR `approved`; repository policy requires approved authorization AND Implement lifecycle state. T112 makes that gate explicit, binds it to the intended CR and preserves baseline/verification requirements. This is a guide defect, not evidence that an external APIC server enforces or bypasses a gate.
 
 - **A124-070 — Medium — mobile headless timeout leaves late connections unowned.** `connectHeadless` wraps reconnect in `Future.timeout`, which stops waiting but does not cancel the underlying future. A later successful reconnect produces a live authenticated client that no caller receives or closes. T110 closes late results while preserving normal ownership on timely success; no enrollment-data change.
 
@@ -345,3 +351,25 @@ FederationChannel._dispatch_task creates a task for every reassembled frame with
 ### A124-055 — Medium — HUD RAG fails in a checkout path containing spaces
 
 The server interpolated its absolute RAG script path into an unquoted command string. mcp-call.py uses shlex.split, so a path such as `/Users/operator/NetClaw Project/...` becomes multiple arguments and the RAG server cannot start. Quote argv items for that parser without invoking a shell; actual parser regressions cover spaces, quotes and metacharacters. No persisted schema changes or migration.
+
+### A124-075 — High — Installer skill deployment overwrites operator content and follows links
+
+`core_deploy` uses recursive copy into an existing tree, then rewrites all deployed text for alternate runtimes. Existing skill edits have no recovery copy; destination symlinks may redirect writes outside the skills directory. Preserve changed existing files before atomic replacement, refuse link destinations before any write, and transform incoming managed content only. Add explicit conflict-aware restore of retained originals; custom-only files remain untouched.
+
+A124-075 verified: original installer overwrote a synthetic operator skill without backup (`skill-deployment-before.json`). Seven regressions pass for actual deployment, private backups, repeat behavior, custom-only preservation, runtime substitution, directory/file symlink refusal, failed replacement and conflict-aware repeat restore (`skill-deployment-after.txt`). No operator installation was modified.
+
+### A124-076 — Medium — Edge queue replays messages past its TTL
+
+Expiry is pruned only on enqueue; a disconnected phone can reconnect after the seven-day TTL without a new write and receive expired messages. Read/count operations must exclude expired rows independently of enqueue. This preserves stored rows until normal pruning while preventing stale replay; no schema migration.
+
+### A124-077 — Medium — Invalid pricing and NaN cost bypass budget comparisons
+
+Pricing override JSON is assumed to be a model mapping and accepts arbitrary price/discount values. Arrays crash loading; NaN cost can enter SessionLedger.total_cost, making cost-cap comparisons false. Validate overrides and reject invalid ledger costs while halting further budgeted work. This is configuration/usage validation; no historical price or provider billing equivalence is asserted.
+
+### A124-078 — Medium — Fortinet malformed RPC response appears as no ADOMs
+
+An HTTP200 body missing result/status.code defaults to success and returns None. list_adoms turns that into empty_result. Non-auth errors also use an empty-result outcome before scope validation obscures it. Require a well-formed single RPC result with explicit status code; expose request_failed for invalid/error responses and retain valid empty-list semantics.
+
+### A124-079 — Medium — Fractional BGP rate limit crashes before request
+
+BGP_INTEL_MAX_RPS accepts positive fractions but int conversion in the sliding window turns values below1 into capacity0; recent[0] raises IndexError. Preserve operator-requested slower rates with one slot per1/rate seconds below1rps; retain the existing integer sliding-window ceiling above1.

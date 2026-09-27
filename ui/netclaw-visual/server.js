@@ -1,3 +1,5 @@
+import { resourceFile } from './src/security/resource-path.js';
+import { resolveBudgetPolicy } from './src/security/budget-policy.js';
 import { parseEnvData, updateEnvironment, writePrivateAtomic } from './src/security/private-files.js';
 import express from 'express';
 import { WebSocketServer } from 'ws';
@@ -659,7 +661,8 @@ function parseMarkdownTable(lines) {
 }
 
 function parseSkillMarkdown(skillId) {
-  const filePath = path.join(SKILLS_DIR, skillId, 'SKILL.md');
+  const filePath = resourceFile(SKILLS_DIR, skillId, '/SKILL.md');
+  if (!filePath) return null;
   const raw = readText(filePath);
   if (!raw) return null;
 
@@ -1210,7 +1213,7 @@ app.get('/api/budget/status', (req, res) => {
 
     const pct = policy.sessionBudgetUsd > 0
       ? Math.min(100, Math.round((sessionCost / policy.sessionBudgetUsd) * 100))
-      : 0;
+      : 100;
 
     let status = 'ok';
     if (pct >= 100) status = 'halted';
@@ -1301,26 +1304,6 @@ app.put('/api/budget/config', (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-/**
- * Resolve budget policy from config (mirrors Python budget_policy.py logic).
- * Returns merged defaults for display purposes.
- */
-function resolveBudgetPolicy(config) {
-  const defaults = config?.agents?.defaults || {};
-  const budget = defaults.budget || {};
-  const interfaceDefaults = defaults.interfaceDefaults || {};
-
-  return {
-    sessionBudgetUsd: parseFloat(process.env.NETCLAW_SESSION_BUDGET_USD || '') || budget.sessionBudgetUsd || 5.0,
-    maxToolCallsPerTurn: budget.maxToolCallsPerTurn || 20,
-    contextWarningTokens: budget.contextWarningTokens || 100000,
-    allowOverride: budget.allowOverride !== false,
-    overrideIncrementUsd: budget.overrideIncrementUsd || 2.0,
-    model: null, // Global default; interface-specific in interfaceDefaults
-    interfaceDefaults,
-  };
-}
 
 /**
  * Estimate cost of the most recently active session by reading its JSONL
@@ -1733,8 +1716,8 @@ app.get('/api/sessions', (req, res) => {
 });
 
 app.get('/api/session/:id/tools', (req, res) => {
-  const sessionFile = path.join(SESSIONS_DIR, `${req.params.id}.jsonl`);
-  if (!fs.existsSync(sessionFile)) return res.status(404).json({ error: 'Session not found' });
+  const sessionFile = resourceFile(SESSIONS_DIR, req.params.id, '.jsonl');
+  if (!sessionFile) return res.status(404).json({ error: 'Session not found' });
   const calls = extractToolCalls(sessionFile);
   res.json(calls);
 });

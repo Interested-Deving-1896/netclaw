@@ -442,11 +442,15 @@
       "path": "benchmarks/results-2026-06-17.txt",
       "subsystem": "benchmarks",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "blender_addon.py",
@@ -769,31 +773,43 @@
       "path": "docs/APP-REVIEW-NOTES-DRAFT.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/APP-REVIEW-REPLY-5.1-DRAFT.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/APP-STORE-LISTING-DRAFT.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/CHECKPOINT.md",
@@ -849,21 +865,29 @@
       "path": "docs/LINKEDIN-ARTICLE-DRAFT.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/LINKEDIN-HYPE-POST-DRAFT.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/MOBILE-RELEASE.md",
@@ -949,191 +973,267 @@
       "path": "docs/blog/2026-04-18-enterprise-security-3-rings.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-06-08-claroty-mcp.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-07-10-n2n-federation.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-07-11-n2n-reliability.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-07-12-in2n-risk.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-07-13-in2n-production.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-07-15-claw-certification.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-07-17-rag-mcp.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-07-23-auvik-mcp.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-07-24-halo-mcp.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-07-31-r1-multivendor-cli-driver.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-07-31-r2-cisco-psirt.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-07-31-r8-globalping.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-08-06-mobile-prerelease-sweep.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-08-14-mobile-polish-pass.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-08-15-live-activity-interactive-inflight.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-08-15-siri-app-intents.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-08-15-watch-double-tap-corner-complication.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/blog/2026-08-15-widgets-controlwidget.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/ietf/AGENTPROTO-POSITIONING.md",
@@ -1199,71 +1299,99 @@
       "path": "docs/ietf/archive/draft-capobianco-ncfed-01.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/ietf/archive/draft-capobianco-ncfed-02.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/ietf/archive/rendered/draft-capobianco-ncfed-01.html",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/ietf/archive/rendered/draft-capobianco-ncfed-01.txt",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/ietf/archive/rendered/draft-capobianco-ncfed-01.xml",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/ietf/archive/rendered/draft-capobianco-ncfed-02.txt",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/ietf/archive/rendered/draft-capobianco-ncfed-02.xml",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/ietf/captures/MANIFEST.sha256",
@@ -1365,11 +1493,15 @@
       "path": "docs/lab-report-2026-02-23.md",
       "subsystem": "docs",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "reference-boundary",
+      "methods": [
+        "Historical/draft documentation inventory; recorded byte hash and heading for provenance"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Historical narrative and submission drafts are not current acceptance evidence or runtime instructions."
     },
     {
       "path": "docs/privacy-policy.html",
@@ -1677,15 +1809,15 @@
       "path": "mcp-servers/analysis-mcp/sandbox.py",
       "subsystem": "mcp-servers/analysis-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "mcp-servers/analysis-mcp/server.py",
@@ -1797,15 +1929,15 @@
       "path": "mcp-servers/auvik-mcp/__init__.py",
       "subsystem": "mcp-servers/auvik-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/auvik-mcp/auvik_mcp_server.py",
@@ -1825,15 +1957,15 @@
       "path": "mcp-servers/auvik-mcp/clients/__init__.py",
       "subsystem": "mcp-servers/auvik-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/auvik-mcp/clients/auvik_client.py",
@@ -1854,15 +1986,15 @@
       "path": "mcp-servers/auvik-mcp/models/__init__.py",
       "subsystem": "mcp-servers/auvik-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/auvik-mcp/models/responses.py",
@@ -1892,15 +2024,15 @@
       "path": "mcp-servers/auvik-mcp/tools/__init__.py",
       "subsystem": "mcp-servers/auvik-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/auvik-mcp/tools/alerts.py",
@@ -1962,15 +2094,15 @@
       "path": "mcp-servers/auvik-mcp/utils/__init__.py",
       "subsystem": "mcp-servers/auvik-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/auvik-mcp/utils/constants.py",
@@ -2066,15 +2198,15 @@
       "path": "mcp-servers/azure-network-mcp/__init__.py",
       "subsystem": "mcp-servers/azure-network-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/azure-network-mcp/azure_network_mcp_server.py",
@@ -2094,15 +2226,15 @@
       "path": "mcp-servers/azure-network-mcp/clients/__init__.py",
       "subsystem": "mcp-servers/azure-network-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/azure-network-mcp/clients/azure_client.py",
@@ -2124,15 +2256,15 @@
       "path": "mcp-servers/azure-network-mcp/compliance/__init__.py",
       "subsystem": "mcp-servers/azure-network-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/azure-network-mcp/compliance/cis_azure.py",
@@ -2152,15 +2284,15 @@
       "path": "mcp-servers/azure-network-mcp/models/__init__.py",
       "subsystem": "mcp-servers/azure-network-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/azure-network-mcp/models/responses.py",
@@ -2190,15 +2322,15 @@
       "path": "mcp-servers/azure-network-mcp/tools/__init__.py",
       "subsystem": "mcp-servers/azure-network-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/azure-network-mcp/tools/app_gateway.py",
@@ -2358,15 +2490,15 @@
       "path": "mcp-servers/azure-network-mcp/utils/__init__.py",
       "subsystem": "mcp-servers/azure-network-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/azure-network-mcp/utils/constants.py",
@@ -2498,15 +2630,15 @@
       "path": "mcp-servers/bgp-intel-mcp/http_client.py",
       "subsystem": "mcp-servers/bgp-intel-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "mcp-servers/bgp-intel-mcp/outcomes.py",
@@ -2550,15 +2682,15 @@
       "path": "mcp-servers/bgp-intel-mcp/sources/__init__.py",
       "subsystem": "mcp-servers/bgp-intel-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/bgp-intel-mcp/sources/atlas.py",
@@ -2634,15 +2766,15 @@
       "path": "mcp-servers/bgp-intel-mcp/validate.py",
       "subsystem": "mcp-servers/bgp-intel-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "mcp-servers/catc-mcp/NOTICE.md",
@@ -2911,15 +3043,15 @@
       "path": "mcp-servers/claroty-mcp/__init__.py",
       "subsystem": "mcp-servers/claroty-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/claroty-mcp/claroty_mcp_server.py",
@@ -2939,15 +3071,15 @@
       "path": "mcp-servers/claroty-mcp/clients/__init__.py",
       "subsystem": "mcp-servers/claroty-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/claroty-mcp/clients/claroty_client.py",
@@ -2967,15 +3099,15 @@
       "path": "mcp-servers/claroty-mcp/models/__init__.py",
       "subsystem": "mcp-servers/claroty-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/claroty-mcp/models/responses.py",
@@ -3005,15 +3137,15 @@
       "path": "mcp-servers/claroty-mcp/tools/__init__.py",
       "subsystem": "mcp-servers/claroty-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/claroty-mcp/tools/alerts.py",
@@ -3117,15 +3249,15 @@
       "path": "mcp-servers/claroty-mcp/utils/__init__.py",
       "subsystem": "mcp-servers/claroty-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/claroty-mcp/utils/gcf_helper.py",
@@ -3316,15 +3448,15 @@
       "path": "mcp-servers/document-mcp/writers/__init__.py",
       "subsystem": "mcp-servers/document-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/document-mcp/writers/docx_writer.py",
@@ -3586,29 +3718,29 @@
       "path": "mcp-servers/fortinet-mcp/credentials.py",
       "subsystem": "mcp-servers/fortinet-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "mcp-servers/fortinet-mcp/envelope.py",
       "subsystem": "mcp-servers/fortinet-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "mcp-servers/fortinet-mcp/gates.py",
@@ -3631,15 +3763,15 @@
       "path": "mcp-servers/fortinet-mcp/planes/__init__.py",
       "subsystem": "mcp-servers/fortinet-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/fortinet-mcp/planes/analyzer.py",
@@ -3711,43 +3843,43 @@
       "path": "mcp-servers/fortinet-mcp/transport/__init__.py",
       "subsystem": "mcp-servers/fortinet-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/fortinet-mcp/transport/jsonrpc.py",
       "subsystem": "mcp-servers/fortinet-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "mcp-servers/fortinet-mcp/transport/rest.py",
       "subsystem": "mcp-servers/fortinet-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "mcp-servers/gitlab-mcp/README.md",
@@ -3798,15 +3930,15 @@
       "path": "mcp-servers/gnmi-mcp/__init__.py",
       "subsystem": "mcp-servers/gnmi-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/gnmi-mcp/gnmi_client.py",
@@ -3972,15 +4104,15 @@
       "path": "mcp-servers/gns3-mcp-server/tests/__init__.py",
       "subsystem": "mcp-servers/gns3-mcp-server",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/gns3-mcp-server/tests/test_gns3_mcp_server.py",
@@ -4023,29 +4155,29 @@
       "path": "mcp-servers/halo-mcp/__init__.py",
       "subsystem": "mcp-servers/halo-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/halo-mcp/clients/__init__.py",
       "subsystem": "mcp-servers/halo-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/halo-mcp/clients/halo_client.py",
@@ -4081,15 +4213,15 @@
       "path": "mcp-servers/halo-mcp/models/__init__.py",
       "subsystem": "mcp-servers/halo-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/halo-mcp/models/responses.py",
@@ -4119,15 +4251,15 @@
       "path": "mcp-servers/halo-mcp/tools/__init__.py",
       "subsystem": "mcp-servers/halo-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/halo-mcp/tools/_common.py",
@@ -4233,15 +4365,15 @@
       "path": "mcp-servers/halo-mcp/utils/__init__.py",
       "subsystem": "mcp-servers/halo-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/halo-mcp/utils/constants.py",
@@ -4712,15 +4844,15 @@
       "path": "mcp-servers/multivendor-cli-mcp/inventory/__init__.py",
       "subsystem": "mcp-servers/multivendor-cli-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/multivendor-cli-mcp/inventory/generated.py",
@@ -4782,15 +4914,15 @@
       "path": "mcp-servers/multivendor-cli-mcp/policy/__init__.py",
       "subsystem": "mcp-servers/multivendor-cli-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/multivendor-cli-mcp/policy/filter.py",
@@ -4862,15 +4994,15 @@
       "path": "mcp-servers/multivendor-cli-mcp/tools/__init__.py",
       "subsystem": "mcp-servers/multivendor-cli-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/multivendor-cli-mcp/tools/change.py",
@@ -4975,15 +5107,15 @@
       "path": "mcp-servers/nautobot-golden-config-mcp/__init__.py",
       "subsystem": "mcp-servers/nautobot-golden-config-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/nautobot-golden-config-mcp/job_runner.py",
@@ -5351,15 +5483,15 @@
       "path": "mcp-servers/nautobot-routing-mcp/__init__.py",
       "subsystem": "mcp-servers/nautobot-routing-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/nautobot-routing-mcp/bgp_helpers.py",
@@ -5918,15 +6050,15 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/edge_queue.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source review of behavior and limits recorded in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not physical-device or unavailable external-service acceptance."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/gait.py",
@@ -6041,15 +6173,15 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/logfilter.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source review of behavior and limits recorded in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not physical-device or unavailable external-service acceptance."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/manager.py",
@@ -6217,15 +6349,15 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/transport_health.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source review of behavior and limits recorded in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not physical-device or unavailable external-service acceptance."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/zoom_channel.py",
@@ -6716,15 +6848,15 @@
       "path": "mcp-servers/protocol-mcp/tests/__init__.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/protocol-mcp/tests/test_agent_prioritisation.py",
@@ -6837,15 +6969,15 @@
       "path": "mcp-servers/rag-mcp/embeddings/__init__.py",
       "subsystem": "mcp-servers/rag-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/rag-mcp/embeddings/embedder.py",
@@ -6867,15 +6999,15 @@
       "path": "mcp-servers/rag-mcp/ingestion/__init__.py",
       "subsystem": "mcp-servers/rag-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/rag-mcp/ingestion/chunker.py",
@@ -6962,15 +7094,15 @@
       "path": "mcp-servers/rag-mcp/retrieval/__init__.py",
       "subsystem": "mcp-servers/rag-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/rag-mcp/retrieval/hybrid.py",
@@ -7024,15 +7156,15 @@
       "path": "mcp-servers/rag-mcp/storage/__init__.py",
       "subsystem": "mcp-servers/rag-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/rag-mcp/storage/bm25_store.py",
@@ -7367,15 +7499,15 @@
       "path": "mcp-servers/syslog-mcp/__init__.py",
       "subsystem": "mcp-servers/syslog-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/syslog-mcp/gait_logger.py",
@@ -7546,21 +7678,29 @@
       "path": "mcp-servers/tts-mcp/output/tts_b3bd0071.mp3",
       "subsystem": "mcp-servers/tts-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "asset-boundary",
+      "methods": [
+        "Passive audio artifact inventory and byte hash"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Media asset; no executable source or current TTS runtime acceptance."
     },
     {
       "path": "mcp-servers/tts-mcp/output/tts_d479a4cc.mp3",
       "subsystem": "mcp-servers/tts-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "asset-boundary",
+      "methods": [
+        "Passive audio artifact inventory and byte hash"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Media asset; no executable source or current TTS runtime acceptance."
     },
     {
       "path": "mcp-servers/tts-mcp/server.py",
@@ -7697,15 +7837,15 @@
       "path": "mcp-servers/twitter-mcp/__init__.py",
       "subsystem": "mcp-servers/twitter-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/twitter-mcp/guardrails.py",
@@ -8082,15 +8222,15 @@
       "path": "mcp-servers/zoom-rtms-mcp/__init__.py",
       "subsystem": "mcp-servers/zoom-rtms-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/zoom-rtms-mcp/extractor.py",
@@ -8198,15 +8338,15 @@
       "path": "mcp-servers/zoom-rtms-mcp/tests/__init__.py",
       "subsystem": "mcp-servers/zoom-rtms-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "AST confirmed empty/docstring-only Python package marker"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "mcp-servers/zoom-rtms-mcp/tests/test_extractor.py",
@@ -8486,11 +8626,15 @@
       "path": "mobile/netclaw-mobile/android/app/src/main/AndroidManifest.xml",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source review of behavior and limits recorded in WSL continuation"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not physical-device or unavailable external-service acceptance."
     },
     {
       "path": "mobile/netclaw-mobile/android/app/src/main/kotlin/ca/automateyournetwork/netclaw/mobile/MainActivity.kt",
@@ -9959,11 +10103,15 @@
       "path": "mobile/netclaw-mobile/ios/Runner/Info.plist",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source review of behavior and limits recorded in WSL continuation"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not physical-device or unavailable external-service acceptance."
     },
     {
       "path": "mobile/netclaw-mobile/ios/Runner/LiveActivityBridge.swift",
@@ -9999,11 +10147,15 @@
       "path": "mobile/netclaw-mobile/ios/Runner/PrivacyInfo.xcprivacy",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source review of behavior and limits recorded in WSL continuation"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not physical-device or unavailable external-service acceptance."
     },
     {
       "path": "mobile/netclaw-mobile/ios/Runner/Runner-Bridging-Header.h",
@@ -10019,11 +10171,15 @@
       "path": "mobile/netclaw-mobile/ios/Runner/Runner.entitlements",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source review of behavior and limits recorded in WSL continuation"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not physical-device or unavailable external-service acceptance."
     },
     {
       "path": "mobile/netclaw-mobile/ios/Runner/SceneDelegate.swift",
@@ -10945,551 +11101,771 @@
       "path": "mobile/netclaw-mobile/test/answer_body_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/answer_format_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/app_lock_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/approval_client_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/approval_confirmation_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/ask_border_headless_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/ask_live_activity_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/background_refresh_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/badge_lifecycle_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/border_health_headless_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/capability_registration_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/capture_client_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/chat_retry_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/chat_screen_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/clear_and_revocation_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/conversation_search_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/conversation_store_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/dashboard_data_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/dashboard_screen_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/device_deep_link_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/device_heartbeat_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/edge_client_error_classification_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/edge_client_reconnect_leak_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/edge_identity_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/enrollment_display_name_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/enrollment_flow_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/enrollment_store_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/feed_screen_highlight_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/feed_screen_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/haptics_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/headless_connect_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/heartbeat_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/live_activity_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/local_notifications_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/manual_enrollment_screen_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/message_feed_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/no_hardcoded_colors_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/notification_deep_link_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/notification_response_routing_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/onboarding_explainer_screen_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/pending_approval_store_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/pending_approvals_headless_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/pending_open_intent_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/push_message_ingest_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/push_registration_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/reconnect_supervisor_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/settings_screen_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/theme_preference_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/theme_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/turn_reconciler_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/voice_session_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/voice_transcription_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/watch_relay_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/widget_data_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "mobile/netclaw-mobile/test/widget_test.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by complete serial Flutter test run on WSL, 431 passing tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/mobile-wsl-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Dart tests do not establish physical-device behavior or native signed builds."
     },
     {
       "path": "netclaw.jpg",
@@ -22898,11 +23274,15 @@
       "path": "src/netclaw_tokens/__init__.py",
       "subsystem": "src",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "src/netclaw_tokens/budget_policy.py",
@@ -22922,21 +23302,29 @@
       "path": "src/netclaw_tokens/cost_calculator.py",
       "subsystem": "src",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "src/netclaw_tokens/counter.py",
       "subsystem": "src",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "src/netclaw_tokens/footer.py",
@@ -22973,11 +23361,15 @@
       "path": "src/netclaw_tokens/gcf_wrapper.py",
       "subsystem": "src",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "src/netclaw_tokens/requirements.txt",
@@ -23057,11 +23449,15 @@
       "path": "tests/auvik-mcp/__init__.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "AST confirmed empty/docstring-only Python package marker"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "tests/auvik-mcp/conftest.py",
@@ -23397,11 +23793,15 @@
       "path": "tests/bgp-intel/test_rate_limit.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "tests/bgp-intel/test_validate.py",
@@ -23627,11 +24027,15 @@
       "path": "tests/fortinet/run-tests.sh",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "tests/fortinet/test_audit.py",
@@ -23707,11 +24111,15 @@
       "path": "tests/halo-mcp/__init__.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "AST confirmed empty/docstring-only Python package marker"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Package marker has no executable statements; imported package behavior is reviewed separately."
     },
     {
       "path": "tests/halo-mcp/conftest.py",
@@ -26739,21 +27147,29 @@
       "path": "ui/netclaw-visual/src/orgchart-render/peer-treatments.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart-render/treatments.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/categorize.js",
@@ -26769,31 +27185,43 @@
       "path": "ui/netclaw-visual/src/orgchart/categorize.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/feed-state.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source review of behavior and limits recorded in WSL continuation"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not physical-device or unavailable external-service acceptance."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/feed-state.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/force-layout.js",
@@ -26809,51 +27237,71 @@
       "path": "ui/netclaw-visual/src/orgchart/force-layout.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/freshness.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source review of behavior and limits recorded in WSL continuation"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not physical-device or unavailable external-service acceptance."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/freshness.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/health.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source review of behavior and limits recorded in WSL continuation"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not physical-device or unavailable external-service acceptance."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/health.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/layout-payload.js",
@@ -26869,11 +27317,15 @@
       "path": "ui/netclaw-visual/src/orgchart/layout-payload.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/layout-store.js",
@@ -26889,11 +27341,15 @@
       "path": "ui/netclaw-visual/src/orgchart/layout-store.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/layout.js",
@@ -26909,31 +27365,43 @@
       "path": "ui/netclaw-visual/src/orgchart/layout.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/liveness.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Source review of behavior and limits recorded in WSL continuation"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Targeted source review, not physical-device or unavailable external-service acceptance."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/liveness.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/normalize.js",
@@ -26949,11 +27417,15 @@
       "path": "ui/netclaw-visual/src/orgchart/normalize.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/ordering.js",
@@ -26969,11 +27441,15 @@
       "path": "ui/netclaw-visual/src/orgchart/ordering.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/peer-detail.js",
@@ -26989,11 +27465,15 @@
       "path": "ui/netclaw-visual/src/orgchart/peer-detail.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/orgchart/presets.js",
@@ -27009,11 +27489,15 @@
       "path": "ui/netclaw-visual/src/orgchart/presets.test.js",
       "subsystem": "ui",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by npm test src/**/*.test.js, 219 passing HUD tests"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/hud-latest-tests.txt"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Execution does not independently certify every test assertion or all production states."
     },
     {
       "path": "ui/netclaw-visual/src/panels/KnowledgePanel.css",
@@ -27204,15 +27688,15 @@
       "path": "workspace/skills/aci-change-deploy/SKILL.md",
       "subsystem": "workspace",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source review of behavior and limits recorded in WSL continuation"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not physical-device or unavailable external-service acceptance."
     },
     {
       "path": "workspace/skills/aci-fabric-audit/SKILL.md",
@@ -27825,43 +28309,43 @@
       "path": "workspace/skills/catc-client-ops/SKILL.md",
       "subsystem": "workspace",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "workspace/skills/catc-inventory/SKILL.md",
       "subsystem": "workspace",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "workspace/skills/catc-troubleshoot/SKILL.md",
       "subsystem": "workspace",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "workspace/skills/checkpoint/SKILL.md",
@@ -28752,43 +29236,43 @@
       "path": "workspace/skills/f5-config-mgmt/SKILL.md",
       "subsystem": "workspace",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "workspace/skills/f5-health-check/SKILL.md",
       "subsystem": "workspace",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "workspace/skills/f5-troubleshoot/SKILL.md",
       "subsystem": "workspace",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "workspace/skills/fmc-firewall-ops/SKILL.md",
@@ -30100,15 +30584,15 @@
       "path": "workspace/skills/pyats-config-mgmt/SKILL.md",
       "subsystem": "workspace",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Source boundary review in WSL continuation; GAIT examples checked against actual schema where applicable"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Targeted source review, not a claim of complete semantic or live provider coverage."
     },
     {
       "path": "workspace/skills/pyats-dynamic-test/SKILL.md",

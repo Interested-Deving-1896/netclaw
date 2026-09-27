@@ -61,4 +61,32 @@ test('real HUD server rejects hostile HTTP and WebSocket requests before fixture
   assert.equal(await request(port, { Origin: 'null' }), 403, 'opaque origin rejected');
   assert.equal(await upgrade(port, 'https://untrusted.example'), 403, 'foreign WebSocket rejected');
   assert.equal(await upgrade(port, 'http://127.0.0.1:3000'), 101, 'local WebSocket preserved');
+
+  const skills = path.join(root, 'workspace', 'skills');
+  const sessions = path.join(root, '.openclaw', 'agents', 'main', 'sessions');
+  const outside = path.join(root, 'outside');
+  for (const dir of [skills, sessions, outside]) fs.mkdirSync(dir, { recursive:true });
+  fs.writeFileSync(path.join(outside, 'SKILL.md'), '# outside fixture\n');
+  fs.writeFileSync(path.join(outside, 'private.jsonl'), '{}\n');
+  fs.symlinkSync(outside, path.join(skills, 'linked'), 'dir');
+  fs.symlinkSync(path.join(outside, 'private.jsonl'), path.join(sessions, 'linked.jsonl'));
+  fs.mkdirSync(path.join(skills, 'ordinary'));
+  fs.writeFileSync(path.join(skills, 'ordinary', 'SKILL.md'), '# Ordinary\n\nValid skill.\n');
+  fs.writeFileSync(path.join(sessions, 'ordinary.jsonl'), '{}\n');
+  for (const route of ['/api/skill/ordinary', '/api/session/ordinary/tools']) {
+    assert.equal((await fetch(`http://127.0.0.1:${port}${route}`)).status, 200, route);
+  }
+  for (const route of [
+    '/api/skill/..%2f..%2foutside', '/api/skill/linked',
+    '/api/session/..%2f..%2f..%2f..%2foutside%2fprivate/tools', '/api/session/linked/tools',
+  ]) {
+    assert.equal((await fetch(`http://127.0.0.1:${port}${route}`)).status, 404, route);
+  }
+  fs.writeFileSync(path.join(root, '.openclaw', 'openclaw.json'), JSON.stringify({
+    agents: { defaults: { budget: { sessionBudgetUsd:0, maxToolCallsPerTurn:0 } } },
+  }));
+  const budget = await (await fetch(`http://127.0.0.1:${port}/api/budget/status`)).json();
+  assert.equal(budget.sessionBudgetUsd, 0);
+  assert.equal(budget.maxToolCallsPerTurn, 0);
+  assert.equal(budget.status, 'halted');
 });

@@ -1,6 +1,8 @@
-# Spec 124 — WSL acceptance handoff (prepared, not yet executed)
+# Spec 124 — WSL acceptance procedure and continuation
 
-The transfer checkpoint is recorded in handoff.md. WSL continues spec124; this is not a declaration that broad source review or the phase is complete. Apple review is nonblocking. Do not start125 until the remaining review and required acceptance gates are resolved or explicitly dispositioned with the user.
+The WSL continuation checkpoint and completed acceptance are now recorded in
+handoff.md, verification.md and wsl-review.md. The commands below remain the
+reproducible procedure; they are not all pending. WSL continues spec124; this is not a declaration that broad source review or the phase is complete. Apple review is nonblocking. Do not start125 until the remaining review and required acceptance gates are resolved or explicitly dispositioned with the user.
 
 ## Human preparation
 
@@ -103,4 +105,4 @@ and [Docker Desktop WSL integration](https://docs.docker.com/desktop/features/ws
 
 ## Required evidence when returning
 
-Record host/distribution/kernel, exact Git revision, dependency/runtime versions, suite exit codes and optional gaps, fixture image digests, install/migration preview/apply/repeat/failure/recovery results, and actual browser/CLI startup outcomes. Keep raw configurations and credentials private; commit only redacted outcome summaries. Continue the 1168 pending baseline semantic dispositions honestly. The 11open tasks are listed in handoff.md; running the test commands alone does not close them.
+Record host/distribution/kernel, exact Git revision, dependency/runtime versions, suite exit codes and optional gaps, fixture image digests, install/migration preview/apply/repeat/failure/recovery results, and actual browser/CLI startup outcomes. Keep raw configurations and credentials private; commit only redacted outcome summaries. Continue the 944 pending baseline semantic dispositions honestly. The 11open tasks are listed in handoff.md; running the test commands alone does not close them.

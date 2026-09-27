@@ -1,5 +1,15 @@
 # Specification analysis — September26–27,2026
 
+T113/A124-073 and T114/A124-074 map FR-003/004/005/010. Actual isolated HTTP
+fixtures must prove resource traversal/linked escape refusal and zero-budget display.
+Resource IDs remain names, not arbitrary paths; existing data is unchanged. HUD
+budget display must agree with Python validation, while estimates remain estimates.
+
+T111/A124-071 and T112/A124-072 map FR-003/010/011: actual GAIT execution
+reproduces empty audit text despite a success response; a guide's OR gate contradicts approved Implement
+policy. Update exact skill callers and gate language, without executing vendor
+writes, publishing communications or treating example outcomes as live facts.
+
 T110/A124-070 maps FR-004/005/014: demonstrate late future completion through the
 real headless helper, close the abandoned client and retain timely client ownership.
 No enrollment schema or signing change; Flutter verification is available on WSL,
@@ -202,3 +212,11 @@ A124-059/T098 corrects fixture availability detection (FR-008), not Redfish prod
 A124-058/T097 extends FR-003 secret handling: the scrubber must consume an entire enable credential, including explicit plaintext type and spaces. This is compatible output hardening, not a database schema change. Existing indexed snapshots require review/re-ingestion from trusted originals; no destructive automated purge is authorized.
 
 A124-056/T095 and A124-057/T096 are within FR-007/FR-009 safe upgrade and FR-003 literal/private configuration scope. Exercise `core_deploy` itself, not a duplicated helper. Preserve operator files and configured data locations; fresh destinations still receive defaults. Existing deployments require no destructive migration; future installs stop overwriting user state. Historical lost content requires an operator backup. No device writes, provider calls or live installation migration are part of these regression fixtures.
+
+A124-075/T115 is required for FR-007/FR-009 before operator upgrade. Deploy incoming skills with a private journal of old/new digests and retained original bytes; reject link destinations and conflicting recovery. Regression must cover the actual core_deploy function, changed skills, custom-only files, alternate runtime rewriting, repeat deployment and recovery. No runtime migration is authorized before main.
+
+A124-076/T116 addresses FR-004 stale-versus-current semantics for disconnected edge delivery. SQLite time-filtered reads and counts prevent replay after expiry, independent of cleanup. Verify a fresh row remains deliverable and an expired row disappears from all pending counts before a new enqueue.
+
+A124-077/T117 extends FR-004/FR-005 truthful resource accounting. Validate finite nonnegative prices and discount0–100; malformed optional overrides retain known default values. Invalid direct ledger usage must halt rather than silently accept unknown cost. Existing finite valid pricing/usage remains compatible; no persisted database format changes.
+
+A124-078/T118 covers FR-004 provider failure-versus-empty interpretation with MockTransport and actual manager envelope; request_failed is an additive outcome and requires caller/documentation visibility. A124-079/T119 covers FR-006 bounded request pacing without public API traffic. Both changes are compatible for valid normal responses/configuration; no persisted format migration.

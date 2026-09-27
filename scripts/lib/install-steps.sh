@@ -2896,21 +2896,12 @@ fi
 
 # Deploy skills into the runtime's skills dir (workspace/skills for OpenClaw,
 # a flat skills/ for Hermes)
-mkdir -p "$RUNTIME_SKILLS"
-cp -r "$NETCLAW_DIR/workspace/skills/"* "$RUNTIME_SKILLS/"
-log_info "Deployed skills to $RUNTIME_SKILLS/"
-
-# Skills are authored OpenClaw-native — they hardcode the state dir as
-# `~/.openclaw/...` in both functional paths (memory db, rag store, generated
-# output dirs) and credential docs (`~/.openclaw/.env`). On a non-OpenClaw
-# runtime, rewrite that state-dir segment in the DEPLOYED copies so the agent
-# looks in the right place. The repo's skills stay byte-for-byte OpenClaw-native.
-_state_base="$(basename "$RUNTIME_HOME")"   # e.g. .hermes
-if [ "$_state_base" != ".openclaw" ]; then
-    find "$RUNTIME_SKILLS" -type f \( -name '*.md' -o -name '*.py' -o -name '*.js' -o -name '*.css' \) \
-        -exec sed -i "s#\.openclaw#${_state_base}#g" {} + 2>/dev/null || true
-    log_info "Rewrote .openclaw → ${_state_base} in deployed skills"
-fi
+python3 "$(dirname "$_NETCLAW_ENV_WRITER")/deploy-skills.py" \
+    --source "$NETCLAW_DIR/workspace/skills" \
+    --destination "$RUNTIME_SKILLS" \
+    --backups "$RUNTIME_HOME/skill-deployment-backups" \
+    --state-base "$(basename "$RUNTIME_HOME")" || return 1
+log_info "Deployed skills to $RUNTIME_SKILLS/ with recovery originals retained"
 
 # Both runtimes keep operator-edited persona files in RUNTIME_WORKSPACE.
 # These are bootstrap defaults, never an upgrade payload.

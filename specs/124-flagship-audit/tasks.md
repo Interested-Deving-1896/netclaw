@@ -62,6 +62,12 @@ T001–T003 precede T004–T006. Review work T007–T013 can be interleaved once
 
 ## Parallel opportunities
 
+- [x] T113 [US1] Reproduce/fix A124-073 HUD skill/session identifiers escaping their intended directories in server.js; add resolved-path containment in src/security/resource-path.js and real HTTP traversal/symlink regressions in server-access.test.js.
+- [x] T114 [US2] Reproduce/fix A124-074 HUD budget display disagreeing with enforced zero/invalid limits; extract validated policy resolution, preserve zero ceilings and report halted at zero with real endpoint and resolver regressions.
+
+- [x] T111 [US4] Fix A124-071 obsolete nested-input GAIT examples across workspace/skills (exact paths in evidence/wsl/gait-skill-corrections.json); validate literal calls against actual gait_record_turn schema, preserve example text and distinguish illustrative results from observations.
+- [x] T112 [US1] Fix A124-072 aci-change-deploy/SKILL.md approval gate permitting approved OR Implement; require exact intended CR, approved status AND Implement state, verified baseline and observed post-change results; review changed guide and retain external tool-schema caveat.
+
 - [x] T110 [US2] Reproduce/fix A124-070 mobile headless reconnect leaking a client that finishes after the caller times out in lib/ncfed/headless_connect.dart; verify late completion closes once and ordinary success remains open in test/headless_connect_test.dart, then run Flutter tests/analyze serially.
 
 - [x] T109 [US3] Extend A124-067/A124-061 repair to component_install_n2n in scripts/lib/install-steps.sh: use runtime-aware private literal defaults/updates and propagate failed required dependencies; test actual component without network calls in tests/unit/test_n2n_install_preservation.py.
@@ -192,3 +198,12 @@ Batch dependencies: T028 → T029 → T030 security verification; T031 precedes 
 - [x] T093 [US1] Fix A124-054 with process-wide count/byte admission in federation/channel.py, reject overload before spawning, release reservations when handlers settle, test cross-channel/byte-limit recovery and preserve heartbeat multiplexing; document overload behavior (FR-003, FR-005, FR-006).
 
 - [x] T094 [US2] Fix A124-055 HUD RAG subprocess command construction for checkout paths containing spaces/apostrophes in server.js and src/security/command.js; verify the generated command with the actual Python shlex parser (FR-005, FR-014).
+
+- [x] T115 [US3] Reproduce/fix A124-075 skill deployment overwriting operator content or following destination links in scripts/lib/install-steps.sh; add scripts/deploy-skills.py with private retained backups, link refusal, incoming-only runtime substitutions and conflict-aware recovery; verify actual deployment and restore fixtures.
+
+- [x] T116 [US2] Reproduce/fix A124-076 edge queue replay/counts retaining expired messages when no new enqueue occurs in federation/edge_queue.py; filter expired rows on pending/depth/depths and test actual SQLite queue with elapsed time before any new write.
+
+- [x] T117 [US2] Reproduce/fix A124-077 malformed pricing overrides and non-finite cost poisoning in src/netclaw_tokens/cost_calculator.py and session_ledger.py; validate override shapes/ranges and ledger cost admission, then prove invalid cost cannot bypass budget checks in tests/unit/test_token_cost_validation.py.
+
+- [x] T118 [US2] Reproduce/fix A124-078 malformed/error Fortinet JSON-RPC envelopes reported as successful empty data in transport/jsonrpc.py and envelope.py; add actual MockTransport-to-manager response regressions in tests/fortinet/test_rpc_errors.py and register in run-tests.sh.
+- [x] T119 [US2] Reproduce/fix A124-079 fractional BGP_INTEL_MAX_RPS causing zero-capacity limiter IndexError in bgp-intel-mcp/http_client.py; verify observed sub-one-per-second pacing in tests/bgp-intel/test_rate_limit.py.

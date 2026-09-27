@@ -88,3 +88,52 @@ target and confirming the intended runtime. Do not source dotenv files as shell.
 Regression evidence: `tests/unit/test_core_deploy_preservation.py` runs the real
 deployment function in temporary directories for fresh/repeat installs, unusual
 path characters, private permissions, and pre-existing operator state.
+
+HUD skill/session detail identifiers now stay inside their resolved data roots;
+encoded path separators and links outside those roots return404. Move a legitimate
+resource into its managed directory instead of passing a path as its identifier.
+No existing file is moved or rewritten. HUD budget status now preserves zero
+ceilings and rejects invalid numeric overrides consistently with enforced limits.
+
+Updated skill GAIT examples use `user_text`/`assistant_text`. Older nested `input`
+or `prompt`/`response` calls can return success while recording empty text. Review
+recent records with `gait_show`; missing historical content must be reconstructed
+only from actual retained evidence, never from illustrative skill examples.
+
+### Skill deployment recovery (A124-075)
+
+Installer upgrades now retain originals of changed skills under the runtime's
+`skill-deployment-backups/deploy-*` directories before replacing any files.
+Each private generation contains a journal and original bytes. Repeated deployment
+of identical content creates no new generation. Files absent from the repository
+are preserved, and Hermes substitutions apply only to incoming files.
+
+Preview skill changes without writing files:
+
+```bash
+python3 scripts/deploy-skills.py --source workspace/skills \
+  --destination ~/.openclaw/workspace/skills \
+  --backups ~/.openclaw/skill-deployment-backups --preview
+```
+
+Deployment refuses symlink destinations and symlink ancestors before updating
+skills; use a regular skill directory to adopt this installer. Existing links are
+left untouched. A failed deployment can leave a partially updated tree, but retains
+all originals. Restore the generation printed by the installer with:
+
+```bash
+python3 scripts/deploy-skills.py --restore ~/.openclaw/skill-deployment-backups/deploy-EXACT_GENERATION
+```
+
+Restore checks all target digests before writing and refuses subsequent local
+edits. Resolve such conflicts manually using the retained originals; do not force
+an older generation over newer changes. Restore removes only newly deployed files
+whose bytes still match the journal and restores replaced files with their former
+permissions. Recovery is repeatable and keeps the journal. Review/merge operator
+skill customizations from the originals after an upgrade.
+
+A124-076 corrects edge queue TTL enforcement when a phone reconnects without a new enqueue. Expired messages are excluded from replay and pending counts; the next enqueue performs existing cleanup. No database conversion is needed.
+
+A124-077 validates optional pricing override shapes and numeric ranges. Invalid entries now warn and use default pricing. If direct usage accounting supplies an invalid/non-finite cost, the session ledger halts with `invalid_cost`, reports its total as incomplete and refuses a budget override. Correct the usage source before starting a new ledger. Valid zero/positive costs and existing stored data are unchanged. Estimates are not provider invoices.
+
+A124-078 adds Fortinet `request_failed` for malformed/error JSON-RPC replies. Consumers must treat it as an unavailable answer, not a successful empty inventory. Valid empty lists remain `empty_result`. A124-079 supports fractional `BGP_INTEL_MAX_RPS` below1 with a longer pacing window; no state migration.

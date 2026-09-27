@@ -67,3 +67,20 @@ def test_upgrade_preserves_persona_testbed_and_custom_stores(tmp_path):
     assert values['RAG_DATA_DIR'] == '/custom/rag'
     assert values['MEMORY_DATA_DIR'] == '/custom/memory'
     assert values['PYATS_TESTBED_PATH'] == '/custom/testbed.yaml'
+
+
+def test_upgrade_retains_skill_original_and_ignores_custom_only_file(tmp_path):
+    runtime = tmp_path / '.openclaw'
+    skill = runtime / 'workspace/skills/example/SKILL.md'
+    skill.parent.mkdir(parents=True)
+    skill.write_text('operator skill\n')
+    custom = skill.parent / 'custom.md'
+    custom.write_text('operator .openclaw custom\n')
+    deploy(tmp_path)
+    assert skill.read_text() == 'new skill\n'
+    assert custom.read_text() == 'operator .openclaw custom\n'
+    generations = list((runtime / 'skill-deployment-backups').glob('deploy-*'))
+    assert len(generations) == 1
+    assert (generations[0] / 'originals/example/SKILL.md').read_text() == 'operator skill\n'
+    deploy(tmp_path)
+    assert len(list((runtime / 'skill-deployment-backups').glob('deploy-*'))) == 1

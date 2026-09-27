@@ -1,6 +1,6 @@
-# Verification — authoritative current checkpoint
+# Verification — current WSL continuation and historical Mac checkpoint
 
-Host macOS arm64; baselinead6a4a8; branch124-flagship-audit. Local test results do not establish remote appliance/provider acceptance. No private configuration or credentials are retained in this report.
+Historical Mac checkpoint: host macOS arm64; baselinead6a4a8; branch124-flagship-audit. Local test results do not establish remote appliance/provider acceptance. No private configuration or credentials are retained in this report.
 
 | Check | Latest verified result | Evidence |
 |---|---|---|
@@ -91,3 +91,9 @@ outputs, tokens, provider results and operator configuration stay private.
 Coverage now records44 additional targeted semantic dispositions, with1124
 baseline paths still pending. This is not100% review, and merge/operator migration
 have not occurred. See wsl-review.md for exact reviewed boundaries and limitations.
+
+## WSL continuation: full installer and second repair batch
+
+The isolated WSL full installer completed fresh `--components "pyats gait"` and upgrade `--add "pyats gait"` with exit0. Separate HOME, shared Python3.12 and dedicated pyATS/GAIT runtimes were used. Four operator-fixture hashes survived; a custom skill was retained in the private deployment backup. The foreground gateway on19338 returned health.ok=true and was stopped. No operator service unit was installed/restarted. Installer discovery still observed the host default port; this is not the isolated gateway evidence. Explicit isolated gateway health is recorded separately in evidence/wsl/wsl-full-summary.json.
+
+HUD219 tests/build/audit0 pass; positive resource reads and traversal/symlink rejection pass after073/074. Seventeen skill files now use the actual GAIT argument schema (28 literal calls validated). ACI guide now requires approved AND Implement. Skill deployment075 has7 passing actual/helper recovery tests. Edge queue076 has before/after SQLite TTL evidence and the full n2n suite passed. Invalid token cost077 has51 passing cost/budget tests, including fail-closed accounting and blocked override. Broad review and final gates remain pending.

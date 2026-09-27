@@ -102,3 +102,38 @@ Azure client selection uses SDK credential chains, fixed Azure scopes and a
 subscription semaphore; pagination errors propagate. Blender's bundled addon is a
 trusted local code-execution endpoint by design, default localhost; inspection is
 not a Blender/Windows rendering acceptance. Broad vendor/skill review remains open.
+
+## Skill continuation
+
+Read ACI change deployment, Aruba CX configuration, Cloudflare DNS and Atlassian
+ITSM workflows. Cloudflare examples are reads and identify their remote server;
+Atlassian mutating flows retain human confirmation. Aruba's upstream ITSM toggle
+and lab mode are described, not independently verified enforcement. Installed
+external schemas must be discovered before invoking them. ACI's OR approval gate
+was incorrect (A124-072); it now requires exact-CR approval AND Implement state.
+Eighteen GAIT calls across17 skills used ignored nested-input or prompt/response fields (A124-071).
+Actual GAIT accepted the probe but stored empty text; the probe and corrective
+explanation are retained. Corrected examples preserve their illustrative content
+and explicitly prohibit treating sample outcomes as observations. All literal GAIT
+examples are checked against the installed signature and actual stored fields.
+This adds targeted caller review, not full semantic coverage of those17 skills.
+
+Additional HUD review covered local API environment masking/updates, budget config
+and status, skill markdown resolution, session transcript extraction and chat
+forwarding. Encoded identifiers and outside symlinks escaped skill/session roots
+(A124-073); actual HTTP fixtures now reject them. Zero ceilings displayed default
+limits (A124-074); shared display validation now preserves zero and invalid-layer
+fallback. The cost display is still an estimate, not independently verified billing.
+Federation cold-start shell execution uses the operator-stored launch specification;
+it is not directly constructed from peer request text. Production selects confined
+argv and refuses unavailable containment; this is distinct from lab shell execution.
+
+A124-075: reviewed core_deploy skill copy and global alternate-runtime rewrite; reproduced lost custom skill in the prior committed implementation. Replaced with retained-original deployment and incoming-only substitution. Seven fixture regressions passed. All targets are preflighted before writes, but whole-tree replacement is not transactional; recovery checks digests and refuses later edits. Strict symlink refusal includes ancestor paths.
+
+Reviewed edge_queue.py enqueue/prune/replay/counts: found expiry depended on future enqueue, reproduced with real SQLite then repaired all pending reads/counts (A124-076). Reviewed logfilter.py narrow asyncio message suppression and malformed-record pass-through. Reviewed transport_health.py: systemctl/DNS checks are coarse local service/peer-host diagnostics, not authenticated tunnel reachability; absence of systemctl returns false and no native Mac tunnel proof is claimed.
+
+Token package remainder: cost calculator override shape/finite-range and session ledger NaN admission produced A124-077. Counter fallback explicitly marks estimated and omits nontext payload sizing; GCF wrapper preserves JSON/string fallback and calls reviewed serializer, binary wrapping is a display conversion rather than binary archival. Analysis sandbox materializes allowlisted datasets before external-access/configuration lockdown; serial query watchdog interrupts and output caps expose truncation. No hard OS-level CPU/RSS isolation claim.
+
+Fortinet REST/JSON-RPC transport and credentials: TLS defaults verified, credentials named not emitted, no automatic write retries. RPC malformed-success reproduced/fixed078. The local JSONL audit is ordinary logging, not an immutable GAIT commit; retain that boundary. BGP HTTP caching/rate control and private-prefix validator read: cache TTL/source labels and input refusal are explicit,0.5rps crash reproduced/fixed079 with observed timeline. No live registry/appliance requests for these regressions.
+
+160 baseline paths received explicit coverage dispositions supported by completed HUD/Flutter execution, source reads, AST-empty package markers or historical/passive artifact boundaries. The inventory and hashes are in evidence/wsl/coverage-dispositions.json. Historical blog/archive drafts do not assert current platform or provider acceptance. Remaining pending paths stay pending.
