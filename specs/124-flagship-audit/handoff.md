@@ -4,7 +4,7 @@
 
 ## Git checkpoint
 
-Branch: `124-flagship-audit`; baseline: `ad6a4a8`. The exact verified source checkpoint and remote status are recorded here after the transfer commit. Do not reset or clean user changes. Credentials, raw device outputs, .env files, testbeds, audit stores, signing keys, archives and virtualenvs stay outside Git.
+Branch: `124-flagship-audit`; baseline: `ad6a4a8`. Source and verification checkpoint: `826a40e8f45f69345d8a38d08cf0222a71a08c8a`. Pushed to origin and verified with `git ls-remote` on September 27. The subsequent handoff-only commit records this reference; fetch the latest branch HEAD. **Ready to continue on Ubuntu under WSL2 now.** Do not reset or clean user changes. Credentials, raw device outputs, .env files, testbeds, audit stores, signing keys, archives and virtualenvs stay outside Git.
 
 ## Programme and decisions
 

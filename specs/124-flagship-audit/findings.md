@@ -4,7 +4,7 @@ Baseline: ad6a4a8. Inventory coverage is not completed review. Confirmed finding
 
 ## Current status — authoritative checkpoint
 
-Phase 1 is **in progress**, with 83/94 tasks complete (88% by task count, not percentage of source reviewed). All 55 confirmed findings have implemented repairs and passing relevant Mac verification. Broad review tasks and required host/provider acceptance remain open. Apple 1.0.2 (4) was uploaded and submitted for automatic release after review; Apple processing is explicitly nonblocking. A Git checkpoint is being prepared; the final handoff records its verified remote revision. No production device configuration changed.
+Phase 1 is **in progress**, with 83/94 tasks complete (88% by task count, not percentage of source reviewed). All 55 confirmed findings have implemented repairs and passing relevant Mac verification. Broad review tasks and required host/provider acceptance remain open. Apple 1.0.2 (4) was uploaded and submitted for automatic release after review; Apple processing is explicitly nonblocking. Source/evidence checkpoint `826a40e` is pushed and remote-verified; see handoff.md for WSL continuation. No production device configuration changed.
 
 | IDs | Current disposition |
 |---|---|

@@ -26,7 +26,7 @@ Use the Linux home filesystem, such as `~/netclaw`, rather than `/mnt/c` for the
 checkout. Preserve existing `.env`, testbeds, enrollment keys, data and runtime
 configuration; do not copy Mac virtualenvs or private signing files to WSL.
 
-After verifying the checkpoint in handoff.md is pushed, update the existing clean checkout:
+The source checkpoint `826a40e` is pushed and remote-verified. Update the existing clean checkout:
 
 ```bash
 cd ~/netclaw
@@ -34,6 +34,7 @@ git status --short
 git fetch origin
 git switch 124-flagship-audit
 git pull --ff-only origin 124-flagship-audit
+git merge-base --is-ancestor 826a40e8f45f69345d8a38d08cf0222a71a08c8a HEAD
 ```
 
 If the branch does not yet exist locally, use
