@@ -265,6 +265,9 @@ class Ledger:
                 consumed = db.execute("UPDATE grants SET consumed=1 WHERE digest=? AND task_id=? AND endpoint=? AND expires_at>? AND consumed=0", (record["request_digest"], config.task_id, config.endpoint, time.time())).rowcount
                 if not consumed:
                     raise Refused("approval_required", "Private disclosure requires exact-request, destination and task-bound operator approval.")
+            record.update(approval_required=False, disclosure_required=approval,
+                          disclosure_status="approved_consumed" if approval else "not_required")
+            record.pop("disclosure_approval", None)
             db.execute("INSERT INTO calls VALUES (?,?,?,?,?,?,?,?)", (record["assessment_id"], day, config.task_id, cost, parent, record["request_digest"], "pending", canonical(record)))
 
     def finish(self, identifier: str, record: dict, cost: float | None = None):
@@ -277,7 +280,17 @@ class Ledger:
     def assessment(self, identifier: str, task: str) -> dict | None:
         with self.connect() as db:
             row = db.execute("SELECT record FROM calls WHERE id=? AND task=?", (identifier, task)).fetchone()
-        return json.loads(row[0]) if row else None
+        if not row:
+            return None
+        record = json.loads(row[0])
+        # Older records retained preview-only approval fields. A calls row is
+        # inserted only after successful admission (including atomic grant
+        # consumption), so reading it must not ask for another disclosure.
+        if record.get("approval_required"):
+            record.update(approval_required=False, disclosure_required=True,
+                          disclosure_status="approved_consumed")
+            record.pop("disclosure_approval", None)
+        return record
 
 
 def gait_audit(record: dict) -> dict:
