@@ -57,3 +57,7 @@ the final trusted BMC URL. See [migration guide](../../docs/REDFISH-TLS-MIGRATIO
 
 `bash tests/redfish/run-tests.sh` — 15 assertions. Verdict and read-only assertions are pure
 stdlib; the live mockup ones skip without `httpx` and the container.
+
+Power transitions remain distinct: `PoweringOn` yields `POWERING_ON` and `PoweringOff` yields
+`POWERING_OFF`. Neither establishes completion. Read the BMC again before reporting a
+steady on/off state; consumers must accept these additive verdict values.

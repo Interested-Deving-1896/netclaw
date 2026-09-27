@@ -43,7 +43,7 @@ except ImportError as e:
 GNS3_URL = os.getenv("GNS3_URL", "http://localhost:3080")
 GNS3_USER = os.getenv("GNS3_USER", "")
 GNS3_PASSWORD = os.getenv("GNS3_PASSWORD", "")
-GNS3_VERIFY_SSL = os.getenv("GNS3_VERIFY_SSL", "true").lower() == "true"
+GNS3_VERIFY_SSL = os.getenv("GNS3_VERIFY_SSL", "true").strip().lower() not in ("false", "0", "no")
 GNS3_TOKEN_TTL = int(os.getenv("GNS3_TOKEN_TTL", "3000"))  # 50 minutes default
 
 # =============================================================================

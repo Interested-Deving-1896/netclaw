@@ -63,8 +63,9 @@ That switch has no BGP. Counted as a failure, it claims a BGP fault where there 
 an absence rendered as a finding, the same class as spec 091's inert Suricata, 094's BMC timeout,
 096's capped count and 095's empty Mist org.
 
-The rule is **deliberately narrow**: only messages clearly indicating an inactive feature or an
-unsupported command are reclassified, the original message is always preserved, and anything
+The rule requires complete recognized command-unavailable diagnostics in **every** message.
+Inactive interfaces, unsupported hardware, missing expected configuration and mixed failures
+remain failures. The original messages are always preserved, and anything
 uncertain stays `fail`. An over-eager rule would hide real failures, which is worse than the problem
 it solves.
 

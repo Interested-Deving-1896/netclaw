@@ -60,7 +60,7 @@ HALO_CLIENT_ID: str = os.getenv("HALO_CLIENT_ID", "")
 HALO_CLIENT_SECRET: str = os.getenv("HALO_CLIENT_SECRET", "")
 HALO_SCOPE: str = os.getenv("HALO_SCOPE", DEFAULT_SCOPE)
 HALO_AUTH_URL: str = os.getenv("HALO_AUTH_URL", "")  # override for self-hosted layouts
-HALO_VERIFY_SSL: bool = os.getenv("HALO_VERIFY_SSL", "true").lower() == "true"
+HALO_VERIFY_SSL: bool = os.getenv("HALO_VERIFY_SSL", "true").strip().lower() not in ("false", "0", "no")
 HALO_TIMEOUT: int = int(os.getenv("HALO_TIMEOUT", str(DEFAULT_TIMEOUT)))
 HALO_PAGE_SIZE: int = int(os.getenv("HALO_PAGE_SIZE", str(DEFAULT_PAGE_SIZE)))
 HALO_MAX_PAGES: int = int(os.getenv("HALO_MAX_PAGES", str(DEFAULT_MAX_PAGES)))

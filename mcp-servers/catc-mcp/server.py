@@ -134,7 +134,7 @@ def _call(group: str, operation: str, params: dict | None) -> dict:
                         "not_configured")
     spec = ops[operation]
     uri = spec["uri"]
-    verify = (os.environ.get("CATALYST_CENTER_VERIFY_SSL", "true").lower() == "true")
+    verify = (os.environ.get("CATALYST_CENTER_VERIFY_SSL", "true").strip().lower() not in ("false", "0", "no"))
     caveats = []
     if not verify:
         caveats.append("TLS verification is DISABLED for this appliance.")

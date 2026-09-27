@@ -195,3 +195,25 @@ Read credential/setup paths of CheckPoint, Forward, IPFabric, Twitter, Twilio, p
 Contract test dispositions added only for actual passing harnesses and explicit non-live files named by them, plus loaded Auvik/Halo/N2N pytest configuration. Opt-in live suites remain pending/source-review candidates; running an offline harness does not validate their providers. Exact paths/hashes/methods are in evidence/wsl/coverage-batch89.json.
 
 Mac CI now reaches native build: after creating the SwiftPM parent, analysis and431 Flutter tests pass on macOS. Xcode15.4 aborts loading synchronized groups; the next run uses macos-26/Xcode26.6 and SDK-relative Foundation lookup. This is still pending native-build acceptance.
+
+### Controller and adopted-server boundaries (090)
+
+Reviewed CATC facade source end-to-end: fixed groups/operation catalogue, GET-only dispatch, credential token acquisition, controller identity/time caveats, explicit empty/auth/forbidden/error outcomes and bounded HTTP calls. Parsed all8 catalogue files:514 GET definitions, relative URI paths; these are generated upstream definitions, not native executable server code. Appliance/version compatibility remains external and live CATC acceptance is not claimed.
+
+Read K8s/Zabbix notices and guides, actual registration, K8s denied Secret/read-only/core tool config, and Zabbix read-method/deny-list/TLS/client initialization boundaries. Zabbix remains an unchanged adopted dependency; remaining vendor files receive an explicit external boundary, not first-party source certification. Its boolean parser exposed the unresolved TLS defect090, contained by the first-party launcher and covered against the actual vendor parser. Read-only operations still require session GAIT; corrected documentation that implied there was nothing to record. Exact paths/hashes are in coverage-batch90.json.
+
+Expanded TLS startup-expression review across CATC/GNS3/EVE/Auvik/Halo/SuzieQ/Claroty and current CML/Redfish registration defaults.66 targeted tests pass including legacy registration preview/apply/repeat/recovery, later-edit conflict and custom launcher refusal. No upstream source changed and no provider traffic occurred. Runtime-specific CA acceptance remains dependent on actual configured provider access.
+
+### Memory/GCF review closure and verdict follow-through
+
+The remaining memory files are now reviewed: schema has idempotent tables/indexes and temporal fact keys; package initializers only export storage/embedder classes; embedder lazily loads a fixed model, latches unavailability and returns None for embedding failure, while the already-repaired Chroma store exposes EMBEDDING_FAILED/CHROMA_UNAVAILABLE instead of an empty success. Model retrieval quality and cache/download availability are outside offline certification. The token library manifest pins gcf-python2.2.1; Anthropic remains a lower-bounded SDK dependency, with shared installation constraints and current tested runtime recorded separately. No new dependency added. Together with prior RAG replication/recovery/GCF/budget reviews and benchmarks, this completes T010's targeted review scope; other broad tasks remain open.
+
+ANTA verdict review found substring matches reclassify real and mixed failures as not_applicable (091). Redfish verdict review found transition states asserted as completed power facts (092). Twelve regressions pass after narrow whole-diagnostic/all-message classification and distinct POWERING_ON/OFF outcomes. Full ANTA/Redfish contract follow-ups remain separate evidence; no device action performed.
+
+### Peer chat containment (093)
+
+Reviewed chat.py end-to-end plus shared admission. Chat now checks bounded portable ids and peer/direction ownership before execution, refuses duplicate foreign sessions and outbound peer path ids, opens only regular no-follow0600 transcripts and escapes embedded newlines. Persistence failure propagates rather than reporting success. Shared conditional request reservation occurs before the model await; tokens are charged afterward without a second request debit.16 chat/admission integration regressions pass and full n2n contracts pass. Existing ordinary UUID sessions remain compatible; malformed historical ids need a new session. No live provider request or operator conversation mutation occurred.
+
+Validation milestone: all24 families pass after090; subsequent ANTA/Redfish verdict and n2n chat follow-ups pass. The Redfish generic runner still lists its default-port capability unavailable; the separate earlier18000 official fixture result is the live evidence. Mac native CI reached SwiftPM deployment mismatch;9559745 adds supported Flutter config-only preparation and awaits rerun.
+
+Next source candidates, not yet closed findings: inventory cache paths/staleness; ACME subprocess timeout cleanup; certificate renewal returning the unchanged CA/hub or unchanged ACME certificate and retiring its same key fingerprint. Reproduce before repair.

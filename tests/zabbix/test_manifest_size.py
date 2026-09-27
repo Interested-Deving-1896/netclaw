@@ -28,7 +28,7 @@ async def main():
     env["ZABBIX_TOKEN"] = "placeholder"
     env["READ_ONLY"] = "true"
     p = StdioServerParameters(command=sys.executable,
-                              args=["-m", "zabbix_mcp_server.server"], env=env)
+                              args=["-u", sys.argv[1]], env=env)
     async with stdio_client(p) as (r, w):
         async with ClientSession(r, w) as s:
             await s.initialize()
@@ -42,7 +42,7 @@ asyncio.run(main())
 def _probe():
     if not os.path.exists(VENV_PY):
         return None
-    out = subprocess.run([VENV_PY, "-c", PROBE], capture_output=True, text=True, timeout=120)
+    out = subprocess.run([VENV_PY, "-c", PROBE, repo("scripts", "zabbix-stdio.py")], capture_output=True, text=True, timeout=120)
     if out.returncode != 0:
         raise RuntimeError(f"Installed Zabbix MCP manifest probe failed (exit {out.returncode})")
     import json

@@ -2,9 +2,11 @@
 
 **Spec124 is not complete.** Pushed checkpoint12775a3 contains fixes001–086; all24 contract families pass.
 Subsequent c290869/e463e63 repair Mac CI; native build rerun pending.
-Fixes088–089/standalone failure continuation pass20 isolated regressions and unit family.
-118/130 tasks are checked; T007–014,T021,T026–027 and new macOS CI T127 remain.
-Coverage:389 targeted,240 execution,40 generated,912 reference,92 asset and881 pending baseline paths.
+Pushed e5d3774 includes088–089/standalone failure fixes;20 regressions and unit family pass.
+Fixes090–093 now verified:24/24 families after090, then ANTA/Redfish/n2n follow-ups.
+T010 memory/GCF review is closed; remaining broad review and Mac native CI still open.
+123/134 tasks are checked; T007–014,T021,T026–027 and new macOS CI T127 remain.
+Coverage:414 targeted,240 execution,40 generated inventories,8 generated boundaries,912 reference,92 asset,14 external and834 pending baseline paths.
 Do not relabel pending paths without supporting review.
 
 Draft PR: https://github.com/automateyournetwork/netclaw/pull/265 . At f04714b,

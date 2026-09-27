@@ -413,3 +413,19 @@ CheckPoint/IPFabric/Forward retain delimiter-based or raw dotenv writes; peering
 ### A124-089 — High — OAuth callback does not bind returned authorization to request
 
 Twitter setup generates state but accepts any code on any URL without validating state, and waits indefinitely for callback/provider response. Four loopback negative cases reproduce acceptance. Require one matching state and callback path/code, bound waits and close the listener. Persist tokens privately with literal encoding and no credential logging; no live Twitter authorization is performed in the audit.
+
+### A124-090 — High — Empty or unresolved TLS settings disable server identity checks
+
+Several startup expressions enable TLS verification only for recognized true values, so blank/unresolved/typo environment values silently disable it.22 regression cases reproduce this plus old insecure CML/Redfish registration defaults. Zabbix has the same parser issue upstream; contain it in a first-party launcher without modifying the vendored source. Existing production deployments must adopt corrected registration and trust their private CA; intentional lab overrides remain explicit.
+
+### A124-091 — High — ANTA keyword reclassification hides real failures
+
+Any message containing inactive, not configured or unsupported becomes not_applicable, including inactive interfaces, missing expected BGP peers, unsupported hardware and mixed failures. Six fixtures reproduce lost failure verdicts. Reclassify only complete recognized command-unavailable diagnostics and only when every message qualifies; uncertain/mixed expectations remain failed.
+
+### A124-092 — Medium — Redfish transition states are reported as completed power facts
+
+PoweringOff becomes POWERED_OFF and PoweringOn becomes POWERED_ON, asserting a stable state before the BMC reports completion. Preserve transitions as distinct POWERING_OFF/POWERING_ON with an explicit completion caveat. On/Off behavior remains unchanged; consumers of the closed enum must accept the additive values.
+
+### A124-093 — High — Chat sessions are unbound and transcripts allow path escape
+
+Chat message handling never verifies session existence, owner or direction. Peer-supplied ids are interpolated into transcript filenames, and duplicate opens silently reuse another peer’s row. Transcript errors are swallowed; symlinks can redirect writes. Concurrent messages debit request allowance only after gateway completion. Bind sessions before execution, constrain ids/paths, surface persistence failures and reserve budget before awaiting the model.

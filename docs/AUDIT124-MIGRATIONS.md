@@ -210,3 +210,24 @@ overwritten by an id collision can only be recovered from an earlier backup.
 Standalone CheckPoint/IPFabric/Forward/Twitter/Twilio setup now preserves literal credentials with private atomic dotenv writes. Twilio whitelist edits retain other policy entries and save private originals under `.setup-backups` beside the config; CheckPoint placeholder pruning uses the same retained-original mechanism. Compare the retained original with current state before any manual recovery, and retain newer operator edits. Historical overwritten values require an earlier backup.
 
 Peering setup decodes dotenv as data and starts the daemon with selected literal settings; rerunning configuration no longer evaluates prompt input. Twitter OAuth callbacks require matching state and finish within five minutes; token exchange has a30-second timeout. Retry authorization if it expires. Tokens are saved privately, never printed. Existing tokens/config need no format migration. Required standalone dependency/build/smoke failures now stop setup; use a configured virtualenv with the documented shared pip helper on PEP668 hosts.
+
+### TLS startup and registration (090)
+
+CATC, GNS3, EVE, Auvik, Halo, SuzieQ and Claroty now verify server identity when a TLS setting is blank, unresolved or misspelled. Only explicit `false`, `0` or `no` opts out. For production private CAs, install the trusted CA for the relevant client instead of disabling verification. Zabbix uses a first-party launcher that normalizes its TLS flag before starting the unchanged vendored program.
+
+Preview existing OpenClaw registration adoption, then apply after preserving the installation:
+
+```bash
+python3 scripts/migrate-tls-registration.py --config ~/.openclaw/openclaw.json
+python3 scripts/migrate-tls-registration.py --config ~/.openclaw/openclaw.json --apply
+```
+
+This updates only known old CML/Redfish fallback strings and the known old Zabbix launch arguments, preserving credentials, interpreter paths and unrelated configuration. Custom Zabbix launch arguments are refused for manual review. Repeating a successful apply is unchanged. A private `.pre-tls-registration` original and digest journal are retained beside the config. Use `--restore` to preview recovery and `--restore --apply` to restore only when no later edits conflict. Restart affected MCPs and verify health; the migration makes no provider calls. Other runtimes need the equivalent launcher/default changes in their own config and a preserved original.
+
+### Verdict consumers (091–092)
+
+ANTA results previously hidden by broad applicability keywords now remain `fail` unless every message is a recognized command-unavailable diagnostic. Redfish adds `POWERING_ON` and `POWERING_OFF`; downstream consumers must display these as transitions and wait for a subsequent BMC observation before declaring completion. `POWERED_ON` and `POWERED_OFF` retain their meanings. These are response-semantic corrections, with no destructive stored-data migration.
+
+### Federation chat sessions (093)
+
+Ordinary UUID sessions remain usable. IDs must now be1–128 ASCII letters/digits/dots/underscores/hyphens beginning with a letter or digit, and must belong to the same peer and direction. Open a new session for an old malformed id; do not move or import files named by an untrusted id. Existing valid transcript files remain in place and become0600 when appended. New lines quote/escape embedded text so a peer cannot forge another transcript line. Storage failure now fails the call visibly. Request allowance is reserved before model execution; a failed attempt can consume a request, so inspect the result before retrying. No transcript purge or operator state migration is required.

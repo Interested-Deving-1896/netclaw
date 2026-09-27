@@ -211,7 +211,7 @@
         "REDFISH_URL": "${REDFISH_URL:-}",
         "REDFISH_USERNAME": "${REDFISH_USERNAME:-}",
         "REDFISH_PASSWORD": "${REDFISH_PASSWORD:-}",
-        "REDFISH_VERIFY_TLS": "${REDFISH_VERIFY_TLS:-false}",
+        "REDFISH_VERIFY_TLS": "${REDFISH_VERIFY_TLS:-true}",
         "REDFISH_TIMEOUT": "${REDFISH_TIMEOUT:-15}"
       }
     },
@@ -749,7 +749,7 @@
         "CML_URL": "${CML_URL}",
         "CML_USERNAME": "${CML_USERNAME}",
         "CML_PASSWORD": "${CML_PASSWORD}",
-        "CML_VERIFY_SSL": "${CML_VERIFY_SSL:-false}"
+        "CML_VERIFY_SSL": "${CML_VERIFY_SSL:-true}"
       },
       "args": [
         "-m",
@@ -1272,8 +1272,8 @@
     "zabbix-mcp": {
       "command": "mcp-servers/zabbix-mcp/.venv/bin/python",
       "args": [
-        "-m",
-        "zabbix_mcp_server.server"
+        "-u",
+        "scripts/zabbix-stdio.py"
       ],
       "env": {
         "ZABBIX_URL": "${ZABBIX_URL}",

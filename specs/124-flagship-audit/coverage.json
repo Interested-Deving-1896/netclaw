@@ -1885,15 +1885,15 @@
       "path": "mcp-servers/anta-mcp/verdict.py",
       "subsystem": "mcp-servers/anta-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Memory schema/embedder and verdict semantic boundary review; exact scope in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Optional real embedding-model retrieval quality and provider/hardware acceptance remain distinct from source/fixture checks."
     },
     {
       "path": "mcp-servers/atlassian-mcp/README.md",
@@ -1943,15 +1943,15 @@
       "path": "mcp-servers/auvik-mcp/auvik_mcp_server.py",
       "subsystem": "mcp-servers/auvik-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/auvik-mcp/clients/__init__.py",
@@ -2784,101 +2784,141 @@
       "path": "mcp-servers/catc-mcp/NOTICE.md",
       "subsystem": "mcp-servers/catc-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/catc-mcp/README.md",
       "subsystem": "mcp-servers/catc-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/catc-mcp/catalog/compliance.json",
       "subsystem": "mcp-servers/catc-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "generated-boundary",
+      "methods": [
+        "Parsed generated upstream operation catalogue; GET-only, relative URI and facade dispatch reviewed. Appliance/version semantics remain external."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/catc-mcp/catalog/devices.json",
       "subsystem": "mcp-servers/catc-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "generated-boundary",
+      "methods": [
+        "Parsed generated upstream operation catalogue; GET-only, relative URI and facade dispatch reviewed. Appliance/version semantics remain external."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/catc-mcp/catalog/events.json",
       "subsystem": "mcp-servers/catc-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "generated-boundary",
+      "methods": [
+        "Parsed generated upstream operation catalogue; GET-only, relative URI and facade dispatch reviewed. Appliance/version semantics remain external."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/catc-mcp/catalog/health.json",
       "subsystem": "mcp-servers/catc-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "generated-boundary",
+      "methods": [
+        "Parsed generated upstream operation catalogue; GET-only, relative URI and facade dispatch reviewed. Appliance/version semantics remain external."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/catc-mcp/catalog/other.json",
       "subsystem": "mcp-servers/catc-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "generated-boundary",
+      "methods": [
+        "Parsed generated upstream operation catalogue; GET-only, relative URI and facade dispatch reviewed. Appliance/version semantics remain external."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/catc-mcp/catalog/sites.json",
       "subsystem": "mcp-servers/catc-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "generated-boundary",
+      "methods": [
+        "Parsed generated upstream operation catalogue; GET-only, relative URI and facade dispatch reviewed. Appliance/version semantics remain external."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/catc-mcp/catalog/software.json",
       "subsystem": "mcp-servers/catc-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "generated-boundary",
+      "methods": [
+        "Parsed generated upstream operation catalogue; GET-only, relative URI and facade dispatch reviewed. Appliance/version semantics remain external."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/catc-mcp/catalog/wireless.json",
       "subsystem": "mcp-servers/catc-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "generated-boundary",
+      "methods": [
+        "Parsed generated upstream operation catalogue; GET-only, relative URI and facade dispatch reviewed. Appliance/version semantics remain external."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/catc-mcp/requirements.txt",
@@ -2894,15 +2934,15 @@
       "path": "mcp-servers/catc-mcp/server.py",
       "subsystem": "mcp-servers/catc-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/chrome-devtools-mcp/README.md",
@@ -3542,15 +3582,15 @@
       "path": "mcp-servers/eve-ng-mcp-server/eve_client.py",
       "subsystem": "mcp-servers/eve-ng-mcp-server",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/eve-ng-mcp-server/eve_console.py",
@@ -4084,15 +4124,15 @@
       "path": "mcp-servers/gns3-mcp-server/gns3_mcp_server.py",
       "subsystem": "mcp-servers/gns3-mcp-server",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/gns3-mcp-server/requirements.txt",
@@ -4203,15 +4243,15 @@
       "path": "mcp-servers/halo-mcp/halo_mcp_server.py",
       "subsystem": "mcp-servers/halo-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/halo-mcp/models/__init__.py",
@@ -4660,31 +4700,43 @@
       "path": "mcp-servers/k8s-mcp/NOTICE.md",
       "subsystem": "mcp-servers/k8s-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/k8s-mcp/README.md",
       "subsystem": "mcp-servers/k8s-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/k8s-mcp/config.toml",
       "subsystem": "mcp-servers/k8s-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/memory-mcp/README.md",
@@ -4705,29 +4757,29 @@
       "path": "mcp-servers/memory-mcp/embeddings/__init__.py",
       "subsystem": "mcp-servers/memory-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Memory schema/embedder and verdict semantic boundary review; exact scope in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Optional real embedding-model retrieval quality and provider/hardware acceptance remain distinct from source/fixture checks."
     },
     {
       "path": "mcp-servers/memory-mcp/embeddings/embedder.py",
       "subsystem": "mcp-servers/memory-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Memory schema/embedder and verdict semantic boundary review; exact scope in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Optional real embedding-model retrieval quality and provider/hardware acceptance remain distinct from source/fixture checks."
     },
     {
       "path": "mcp-servers/memory-mcp/memory_mcp_server.py",
@@ -4763,15 +4815,15 @@
       "path": "mcp-servers/memory-mcp/storage/__init__.py",
       "subsystem": "mcp-servers/memory-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Memory schema/embedder and verdict semantic boundary review; exact scope in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Optional real embedding-model retrieval quality and provider/hardware acceptance remain distinct from source/fixture checks."
     },
     {
       "path": "mcp-servers/memory-mcp/storage/chroma_store.py",
@@ -4793,11 +4845,15 @@
       "path": "mcp-servers/memory-mcp/storage/schema.sql",
       "subsystem": "mcp-servers/memory-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Memory schema/embedder and verdict semantic boundary review; exact scope in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Optional real embedding-model retrieval quality and provider/hardware acceptance remain distinct from source/fixture checks."
     },
     {
       "path": "mcp-servers/memory-mcp/storage/sqlite_store.py",
@@ -5995,15 +6051,16 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/chat.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Inbound/outbound session ownership, private transcript persistence and async budget boundary review with real SQLite/filesystem regressions"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/evidence/wsl/n2n-chat.json",
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Actual provider chat remains separate; existing malformed session ids must be replaced with a new session."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/chroma_store_bridge.py",
@@ -7281,15 +7338,15 @@
       "path": "mcp-servers/redfish-mcp/verdict.py",
       "subsystem": "mcp-servers/redfish-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Memory schema/embedder and verdict semantic boundary review; exact scope in wsl-review.md"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Optional real embedding-model retrieval quality and provider/hardware acceptance remain distinct from source/fixture checks."
     },
     {
       "path": "mcp-servers/snmptrap-mcp/README.md",
@@ -7474,15 +7531,15 @@
       "path": "mcp-servers/suzieq-mcp/suzieq_client.py",
       "subsystem": "mcp-servers/suzieq-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/syslog-mcp/README.md",
@@ -7969,21 +8026,29 @@
       "path": "mcp-servers/zabbix-mcp/NOTICE.md",
       "subsystem": "mcp-servers/zabbix-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/README.md",
       "subsystem": "mcp-servers/zabbix-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/requirements.txt",
@@ -8003,214 +8068,254 @@
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/.gitignore",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "ownership": "third-party",
+      "review_state": "external-boundary",
+      "methods": [
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/CONTRIBUTING.md",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "ownership": "third-party",
+      "review_state": "external-boundary",
+      "methods": [
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/Dockerfile",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "ownership": "third-party",
+      "review_state": "external-boundary",
+      "methods": [
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/LICENSE",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "ownership": "third-party",
+      "review_state": "external-boundary",
+      "methods": [
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/README.md",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "ownership": "third-party",
+      "review_state": "external-boundary",
+      "methods": [
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/config/.env.example",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "ownership": "third-party",
+      "review_state": "external-boundary",
+      "methods": [
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/config/mcp.json",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "ownership": "third-party",
+      "review_state": "external-boundary",
+      "methods": [
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/docker-compose.yml",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "ownership": "third-party",
+      "review_state": "external-boundary",
+      "methods": [
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/pyproject.toml",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "ownership": "third-party",
+      "review_state": "external-boundary",
+      "methods": [
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/requirements.txt",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "ownership": "third-party",
+      "review_state": "external-boundary",
+      "methods": [
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/scripts/start_server.py",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
+      "ownership": "third-party",
+      "review_state": "external-boundary",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/scripts/test_server.py",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
+      "ownership": "third-party",
+      "review_state": "external-boundary",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/src/zabbix_mcp_server/__init__.py",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
+      "ownership": "third-party",
+      "review_state": "external-boundary",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/src/zabbix_mcp_server/api_docs_scraper.py",
       "subsystem": "mcp-servers/zabbix-mcp",
-      "ownership": "vendor",
-      "review_state": "pending",
+      "ownership": "third-party",
+      "review_state": "external-boundary",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Unmodified adopted upstream dependency; pinned notice, separate runtime, registration enforcement and relevant read/TLS call boundaries reviewed. This is not a full upstream code audit."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/src/zabbix_mcp_server/client.py",
       "subsystem": "mcp-servers/zabbix-mcp",
       "ownership": "vendor",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/src/zabbix_mcp_server/config.py",
       "subsystem": "mcp-servers/zabbix-mcp",
       "ownership": "vendor",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/src/zabbix_mcp_server/server.py",
       "subsystem": "mcp-servers/zabbix-mcp",
       "ownership": "vendor",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zabbix-mcp/vendor/zabbix-mcp-server/src/zabbix_mcp_server/utils.py",
       "subsystem": "mcp-servers/zabbix-mcp",
       "ownership": "vendor",
-      "review_state": "pending",
+      "review_state": "targeted-review",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "Transport/registration and read-only dispatch boundary review; scope in wsl-review.md. Startup expressions checked with actual AST evaluation, distinct from live provider acceptance."
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/wsl-review.md"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Source/registration boundary only; live provider behavior remains unverified. No full-file correctness certification."
     },
     {
       "path": "mcp-servers/zoom-rtms-mcp/README.md",
@@ -23430,11 +23535,15 @@
       "path": "src/netclaw_tokens/requirements.txt",
       "subsystem": "src",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Memory schema/embedder and verdict semantic boundary review; exact scope in wsl-review.md"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Optional real embedding-model retrieval quality and provider/hardware acceptance remain distinct from source/fixture checks."
     },
     {
       "path": "src/netclaw_tokens/session_ledger.py",

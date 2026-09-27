@@ -105,4 +105,4 @@ and [Docker Desktop WSL integration](https://docs.docker.com/desktop/features/ws
 
 ## Required evidence when returning
 
-Record host/distribution/kernel, exact Git revision, dependency/runtime versions, suite exit codes and optional gaps, fixture image digests, install/migration preview/apply/repeat/failure/recovery results, and actual browser/CLI startup outcomes. Keep raw configurations and credentials private; commit only redacted outcome summaries. Continue the 881 pending baseline semantic dispositions honestly. The broad open tasks are listed in handoff.md; running the test commands alone does not close them.
+Record host/distribution/kernel, exact Git revision, dependency/runtime versions, suite exit codes and optional gaps, fixture image digests, install/migration preview/apply/repeat/failure/recovery results, and actual browser/CLI startup outcomes. Keep raw configurations and credentials private; commit only redacted outcome summaries. Continue the 834 pending baseline semantic dispositions honestly. The broad open tasks are listed in handoff.md; running the test commands alone does not close them.

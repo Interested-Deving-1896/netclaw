@@ -4150,7 +4150,7 @@ else
     log_warn "Zabbix MCP directory missing: $ZABBIX_MCP_DIR"
 fi
 
-ZABBIX_MCP_CMD_DETECTED="$ZABBIX_MCP_DIR/.venv/bin/python -m zabbix_mcp_server.server"
+ZABBIX_MCP_CMD_DETECTED="$ZABBIX_MCP_DIR/.venv/bin/python -u $NETCLAW_DIR/scripts/zabbix-stdio.py"
 }
 
 component_install_globalping() {

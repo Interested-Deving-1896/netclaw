@@ -163,15 +163,20 @@ class Authorizer:
             return Decision(False, "not_allowlisted", reason="original grant was revoked or replaced")
         if current.code == "approval_required" and original.code != "approval_required":
             return current
-        # Conditional update also guards concurrent budget reservations.
+        if not self.reserve_request(peer_identity):
+            return Decision(False, "budget_exhausted", current.grant, "daily budget exhausted")
+        return Decision(True, "allowlisted", current.grant)
+
+    def reserve_request(self, peer_identity: str) -> bool:
+        """Reserve a request before asynchronous execution, including chat."""
+        if not self._check_budget(peer_identity):
+            return False
         cur = self.manager._conn.execute(
             "UPDATE budget_counter SET requests_used=requests_used+1 "
             "WHERE peer_identity=? AND day=? AND requests_used<? AND tokens_used<?",
             (peer_identity, _today(), self.daily_requests, self.daily_tokens))
         self.manager._conn.commit()
-        if cur.rowcount != 1:
-            return Decision(False, "budget_exhausted", current.grant, "daily budget exhausted")
-        return Decision(True, "allowlisted", current.grant)
+        return cur.rowcount == 1
 
     # ---- approvals (FR-013) -------------------------------------------
 
