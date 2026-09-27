@@ -25,3 +25,6 @@
 - (Add anything NetClaw should remember about you, your team, or your network here)
 - (e.g., "R1 and R2 are in the lab — less strict change control needed")
 - (e.g., "Always CC @oncall-noc in Slack for P1 alerts")
+
+- Jev preference (2026-09-27): optional visible Science Officer, dynamically invented questions from human/member context, advice-only with read-only evidence; default $5/day and $0.25/task budgets adjustable by operator. Avoid static question libraries.
+- HUD preference (2026-09-27): function over flash; preserve Adam's reusable context/chat canvas and add detailed Science Officer data views during the new HUD phase.

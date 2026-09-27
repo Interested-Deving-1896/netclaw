@@ -39,6 +39,7 @@ import {
 // state means, how stale is stale, whether a failed poll is an outage — are
 // unit-tested. The render modules here have no automated coverage.
 import { peerDetailView } from './orgchart/peer-detail.js';
+import { renderScienceOfficer } from './orgchart/science-officer.js';
 import {
   createFeedState, recordSuccess, recordFailure, staleIndicator, renderablePayload,
 } from './orgchart/feed-state.js';
@@ -964,9 +965,10 @@ function findFederationPeer(peer) {
 // 056 iN2N: this claw's own risk view (role + members) for the local-core panel.
 function renderRiskSection() {
   const risk = state.n2n?.risk;
+  const scienceOfficerHtml = renderScienceOfficer(state.n2n?.advisors);
   if (!risk || risk.role === 'standalone') {
     return `<div class="n2n-section"><h3>Risk (iN2N)</h3>
-      <p class="n2n-muted">Standalone claw — a risk of one, its own Border.</p></div>`;
+      <p class="n2n-muted">Standalone claw — a risk of one, its own Border.</p>${scienceOfficerHtml}</div>`;
   }
   if (risk.role === 'member') {
     return `<div class="n2n-section"><h3>Risk: ${risk.risk_name} (Member)</h3>
@@ -992,6 +994,7 @@ function renderRiskSection() {
       <div class="detail-row"><span>Members</span><strong>${risk.members_active ?? 0}/${risk.member_count ?? 0} active</strong></div>
       <h4>Member spokes (${members.length})</h4>
       <ul class="n2n-list">${rows}</ul>
+      ${scienceOfficerHtml}
       ${renderGaitTrail()}
     </div>`;
 }

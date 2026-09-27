@@ -893,3 +893,15 @@ enrollment. The skill's "Key Terms" and "CLI Command Routing" sections encode th
 `redfish-mcp` reads BMC/hardware health on a server chassis, this reads OOB console-server/managed-device
 state — disjoint hardware classes · neither `pyats` nor `multivendor-cli` reaches a device through a serial
 console port, this closes that gap when the primary network path is down.
+
+## Jev Science Officer (spec125)
+
+`jev-mcp` is an optional stdio service with `jev_status`, `jev_evaluate` and `jev_assessment`.
+Hosted `TYPESAFE_API_KEY` (`JEV_API_KEY` alias), `JEV_ENABLED` opt-in, `JEV_BASE_URL` and
+`JEV_MODEL`; custom `JEV_COMPATIBLE_API_KEY` must bind to `JEV_COMPATIBLE_KEY_ENDPOINT`; dedicated virtualenv. Operator setup: `python3 scripts/jev-settings.py setup`.
+Daily $5 / originating task $0.25 caps persist in `JEV_DATA_DIR` (default `~/.openclaw/jev`).
+Trusted task binding or conservative shared unscoped case; model cannot reset budget identity.
+Dynamic questions only. Noul probability, Choice/Score confidence and Score rubric position
+are distinct. Advisory service is visible separately from execution members. No write tools.
+Private disclosure approval binds exact prepared request digest, destination and task;
+credentials excluded. See [guide](docs/JEV-SCIENCE-OFFICER.md) for failure and consent workflow.

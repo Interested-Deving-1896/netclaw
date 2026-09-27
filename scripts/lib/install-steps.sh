@@ -4334,3 +4334,23 @@ fi
 
 echo ""
 }
+
+# ── Jev Science Officer (spec 125) ─────────────────────────────
+component_install_jev() {
+    log_step "Installing optional Jev Science Officer..."
+    local jev_dir="$NETCLAW_DIR/mcp-servers/jev-mcp"
+    [ -f "$jev_dir/requirements.txt" ] || {
+        log_error "Jev requirements are missing: $jev_dir"; return 1;
+    }
+    netclaw_venv_create "$jev_dir/.venv" || return 1
+    NETCLAW_VENV="$jev_dir/.venv" netclaw_pip_install -r "$jev_dir/requirements.txt" || return 1
+    _set_env_default JEV_ENABLED false || return 1
+    _set_env_default JEV_DAILY_LIMIT_USD 5 || return 1
+    _set_env_default JEV_CASE_LIMIT_USD 0.25 || return 1
+    log_info "Jev installed. An API key alone does not enable evaluation calls."
+    if [ -t 0 ]; then
+        python3 "$NETCLAW_DIR/scripts/jev-settings.py" --env-file "$RUNTIME_ENV" setup || return 1
+    else
+        log_info "Enable and configure Jev: python3 scripts/jev-settings.py --env-file '$RUNTIME_ENV' setup"
+    fi
+}

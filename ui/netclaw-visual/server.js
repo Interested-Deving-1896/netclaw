@@ -13,6 +13,7 @@ import { fileURLToPath } from 'url';
 import { hudPorts, createLocalAccess, localAccessMiddleware } from './src/security/local-access.js';
 import { createRagUpload, cleanupRagUpload } from './src/security/rag-upload.js';
 import { mcpCommand } from './src/security/command.js';
+import { scienceOfficer } from './src/orgchart/science-officer.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -574,6 +575,22 @@ function parseEnvFile() {
   return merged;
 }
 
+// Local status only: refreshing the HUD never performs inference or exposes
+// provider keys/evidence. Advisors stay outside the enrolled member registry.
+function readScienceOfficers() {
+  const env = { ...parseEnvFile(), ...process.env };
+  const enabled = String(env.JEV_ENABLED || '').toLowerCase() === 'true';
+  const dataDir = (env.JEV_DATA_DIR || path.join(os.homedir(), '.openclaw', 'jev'))
+    .replace(/^~(?=\/|$)/, os.homedir());
+  let snapshot = null;
+  try {
+    const filename = path.join(dataDir, 'status.json');
+    if (fs.statSync(filename).size <= 65536) snapshot = JSON.parse(fs.readFileSync(filename, 'utf8'));
+  } catch { /* missing, corrupt or unreadable status is not a healthy advisor */ }
+  const advisor = scienceOfficer(snapshot, enabled);
+  return advisor ? [advisor] : [];
+}
+
 function writeEnvFile(updates) {
   const targetFile = fs.existsSync(OPENCLAW_ENV) ? OPENCLAW_ENV : ROOT_ENV;
   updateEnvironment(targetFile, updates);
@@ -988,11 +1005,12 @@ app.get('/api/bgp', async (req, res) => {
 // Aggregates the mesh daemon's /n2n/* state for the HUD federation view.
 // Mirrors the /api/bgp pattern; degrades gracefully when N2N is disabled.
 async function fetchN2NState() {
+  const advisors = readScienceOfficers();
   try {
     const statusRes = await fetch(`${BGP_API}/n2n/status`, { signal: AbortSignal.timeout(3000) });
-    if (!statusRes.ok) return { available: false, peers: [] };
+    if (!statusRes.ok) return { available: false, peers: [], advisors };
     const status = await statusRes.json();
-    if (!status || status.enabled === false) return { available: false, peers: [] };
+    if (!status || status.enabled === false) return { available: false, peers: [], advisors };
 
     // Enrich each federated peer with its cached inventory
     const peers = await Promise.all((status.peers || []).map(async (p) => {
@@ -1086,10 +1104,10 @@ async function fetchN2NState() {
     } catch { /* edge push audit optional (pre-066 daemon) */ }
 
     return { available: true, identity: status.identity, peers, approvals,
-             risk, members, posture, gait, replicationJobs, edgeNodes, recentPushes,
+             risk, members, advisors, posture, gait, replicationJobs, edgeNodes, recentPushes,
              generatedAt: new Date().toISOString() };
   } catch {
-    return { available: false, peers: [], risk: null, members: [],
+    return { available: false, peers: [], risk: null, members: [], advisors,
              replicationJobs: [], edgeNodes: [], recentPushes: [],
              generatedAt: new Date().toISOString() };
   }

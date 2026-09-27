@@ -378,7 +378,7 @@ core_mcpdir
 
 INSTALL_LOG_DIR="$RUNTIME_HOME/logs/install"
 mkdir -p "$INSTALL_LOG_DIR"
-INTERACTIVE_COMPONENTS=" checkpoint forward ipfabric threejs-viz "
+INTERACTIVE_COMPONENTS=" checkpoint forward ipfabric threejs-viz jev "
 
 run_component() {
     # $1 = component id, $2 = function name, $3 = display name
