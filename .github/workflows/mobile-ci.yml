@@ -23,6 +23,8 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
+      - name: Prepare Flutter native build settings
+        run: flutter build ios --debug --simulator --no-codesign --config-only
       - name: Build Runner (iOS Simulator)
         run: |
           xcodebuild build \

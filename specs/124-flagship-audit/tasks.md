@@ -19,7 +19,7 @@ Independent test: coverage inventory has every baseline tracked path and every c
 - [ ] T007 [US1] Review install/CLI/dependency/CI boundaries in scripts/, config/, .github/workflows/, .env.example and dependency manifests; record findings in specs/124-flagship-audit/findings.md (FR-003, FR-004).
 - [ ] T008 [US1] Review HTTP/WebSocket/auth/upload/process boundaries in ui/netclaw-visual/server.js and ui/netclaw-visual/src/; reproduce confirmed defects in targeted tests (FR-003, FR-004).
 - [ ] T009 [US1] Review peer identity, authorization, grants, execution and audit paths in mcp-servers/protocol-mcp/bgp/federation/ and mcp-servers/n2n-mcp/; record evidence (FR-003, FR-004).
-- [ ] T010 [US1] Review ingestion/retrieval/replication, persistence, GCF correctness and resource limits in mcp-servers/rag-mcp/, mcp-servers/memory-mcp/ and src/netclaw_tokens/ (FR-003, FR-004).
+- [x] T010 [US1] Review ingestion/retrieval/replication, persistence, GCF correctness and resource limits in mcp-servers/rag-mcp/, mcp-servers/memory-mcp/ and src/netclaw_tokens/ (FR-003, FR-004).
 - [ ] T011 [US1] Review remaining MCP servers and workspace/skills/ against actual tool schemas, read/write enforcement and transport/dependency behavior; record per-server coverage in coverage.json (FR-003, FR-004).
 - [ ] T012 [US1] Review mobile enrollment, approvals, capture, watch relay, voice and Zoom boundaries in mobile/netclaw-mobile/, mcp-servers/twilio-voice-mcp/ and mcp-servers/protocol-mcp/bgp/federation/zoom_channel.py (FR-003, FR-004).
 - [ ] T013 [US1] Review docs/, specs/, examples/, lab/, labs/, captures/, benchmarks/, root operating files and asset/generated boundaries; complete coverage dispositions in coverage.json (FR-001, FR-004).
@@ -229,3 +229,10 @@ Batch dependencies: T028 → T029 → T030 security verification; T031 precedes 
 - [x] T129 [US2] Extend A124-061 to standalone dependency/build/smoke failures in checkpoint-enable.sh, forward-enable.sh, twitter_install.sh and twilio_install.sh. Use the existing scoped PEP668-safe pip helper; prove required failures exit nonzero before configuration and report no successful installation.
 
 - [x] T130 [US1] Fix A124-089 OAuth callback state/path binding and unbounded waits in scripts/twitter_oauth2_setup.py; verify real loopback callback rejection/acceptance in tests/unit/test_oauth_callback_state.py, bound provider exchange and save returned tokens privately without logging secrets.
+
+- [ ] T131 [US1/US3] Fix A124-090 blank/unresolved TLS settings silently disabling verification in seven first-party clients and vendored Zabbix startup; normalize only explicit false values, add scripts/zabbix-stdio.py without modifying upstream, repair CML/Redfish default registration and add preview/apply/repeat/recovery config migration in scripts/migrate-tls-registration.py. Test actual startup expressions, vendored parser through wrapper and old-state migration preservation.
+
+- [ ] T132 [US2] Fix A124-091 ANTA broad applicability regex hiding real/mixed failures in anta-mcp/verdict.py; require narrow complete command-unavailable evidence for every message, test actual verdicts and update the guide.
+- [ ] T133 [US2] Fix A124-092 Redfish power transitions reported as completed states in redfish-mcp/verdict.py; expose POWERING_ON/OFF with transition caveats, test all four states and retain completed-state behavior.
+
+- [ ] T134 [US1] Fix A124-093 chat session ownership/path traversal and concurrent budget admission in federation/chat.py and authorization.py; validate inbound/outbound session binding, refuse unsafe transcript paths/links, persist privately without swallowing errors, reserve request allowance before model waits and verify real SQLite/filesystem/async regressions.
