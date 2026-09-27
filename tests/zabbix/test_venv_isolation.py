@@ -8,8 +8,6 @@ from __future__ import annotations
 import json, os, re, subprocess
 from _harness import FAILURES, check, read, repo, run, skip  # noqa: F401
 
-PINNED_BELOW_3 = ["netbox-mcp-server", "CiscoFMC-MCP-server-community",
-                  "Wikipedia_MCP", "rag-mcp", "ISE_MCP"]
 VENV_PY = os.environ.get(
     "NETCLAW_ZABBIX_VENV_PY",
     repo("mcp-servers", "zabbix-mcp", ".venv", "bin", "python"),
@@ -30,36 +28,20 @@ def test_venv_exists_and_holds_fastmcp_3():
     check("the venv has the vendored package installed",
           _version(VENV_PY, "zabbix-mcp-server") is not None, "not installed")
 
-def test_system_interpreter_is_untouched():
-    import importlib.metadata as md
-    try:
-        sysv = md.version("fastmcp")
-    except Exception:
-        skip("system fastmcp check", "fastmcp not installed system-wide")
+def test_runtime_excludes_system_packages():
+    if not os.path.exists(VENV_PY):
+        skip("venv isolation", "venv not built")
         return
-    check("the SYSTEM interpreter still resolves fastmcp 2.x", sysv.startswith("2."),
-          f"got {sysv} — installing the Zabbix server leaked into the shared interpreter, "
-          f"which breaks {', '.join(PINNED_BELOW_3)}")
-
-def test_the_five_pinned_servers_are_still_satisfied():
-    import importlib.metadata as md
-    try:
-        sysv = md.version("fastmcp")
-    except Exception:
-        skip("pinned-server check", "fastmcp not installed system-wide")
-        return
-    major = int(sysv.split(".")[0])
-    for server in PINNED_BELOW_3:
-        found = False
-        for fn in ("pyproject.toml", "requirements.txt"):
-            p = repo("mcp-servers", server, fn)
-            if os.path.exists(p):
-                if re.search(r"fastmcp[^\n]*<\s*3", open(p, encoding="utf-8").read()):
-                    found = True
-        check(f"{server} still declares fastmcp<3", found,
-              "its pin vanished — either it was relaxed, or this list is stale")
-    check(f"the installed system fastmcp ({sysv}) satisfies <3", major < 3,
-          "all five pinned servers are now unsatisfiable")
+    probe = subprocess.run([VENV_PY, "-c", "import json,sys,site; print(json.dumps({'prefix':sys.prefix,'base':sys.base_prefix,'user_site':site.ENABLE_USER_SITE}))"],
+                           capture_output=True, text=True, check=True)
+    state = json.loads(probe.stdout)
+    check("runtime has a distinct virtualenv prefix", state["prefix"] != state["base"])
+    check("runtime excludes user site packages", state["user_site"] is False)
+    cfg = os.path.join(state["prefix"], "pyvenv.cfg")
+    with open(cfg, encoding="utf-8") as fh:
+        config = dict(line.strip().split("=", 1) for line in fh if "=" in line)
+    config = {k.strip(): v.strip().lower() for k, v in config.items()}
+    check("runtime excludes system site packages", config.get("include-system-site-packages") == "false")
 
 def test_installer_never_uses_bare_venv():
     steps = read("scripts", "lib", "install-steps.sh")
@@ -105,8 +87,7 @@ def test_venv_is_gitignored():
                          capture_output=True, cwd=repo()).returncode != 0,
           "the vendored tree is invisible to git")
 
-TESTS = [test_venv_exists_and_holds_fastmcp_3, test_system_interpreter_is_untouched,
-         test_the_five_pinned_servers_are_still_satisfied, test_installer_never_uses_bare_venv,
+TESTS = [test_venv_exists_and_holds_fastmcp_3, test_runtime_excludes_system_packages, test_installer_never_uses_bare_venv,
          test_registration_points_at_the_venv, test_venv_is_gitignored]
 
 if __name__ == "__main__":

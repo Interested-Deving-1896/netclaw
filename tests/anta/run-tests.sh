@@ -117,6 +117,16 @@ else
     fi
 fi
 
+if "$VENV_PY" -c 'from anta.device import SSLParameters' >/dev/null 2>&1; then
+    if "$VENV_PY" "$REPO_ROOT/tests/anta/test-tls.py"; then
+        ok "HTTPS certificate/hostname enforcement and device cleanup"
+    else
+        bad "HTTPS verification regression"
+    fi
+else
+    skip "HTTPS verification API acceptance" "ANTA1.10 runtime unavailable"
+fi
+
 echo
 echo "passed: $PASS  failed: $FAIL  skipped: $SKIP"
 [ $FAIL -eq 0 ]

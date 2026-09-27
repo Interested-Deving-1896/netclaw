@@ -71,7 +71,11 @@ class TaskManager:
                 self._set(task_id, state="cancelled", completed_at=_now())
                 raise
             except Exception as e:
-                ref = self.audit.store_result(task_id, {"error": str(e)})
+                try:
+                    ref = self.audit.store_result(task_id, {"error": str(e)})
+                except Exception:
+                    ref = None
+                    logger.warning("Task %s error payload could not be persisted", task_id)
                 self._set(task_id, state="failed", result_ref=ref, completed_at=_now())
                 logger.warning("Task %s failed: %s", task_id, e)
             finally:
@@ -142,7 +146,11 @@ class TaskManager:
                 payload = json.loads(open(row["result_ref"]).read())
                 out.update({k: v for k, v in payload.items() if k in ("output_text", "error")})
             except Exception:
-                pass
+                out["result_available"] = False
+                out["error"] = "Stored task result is unavailable"
+        elif row["state"] in ("completed", "failed"):
+            out["result_available"] = False
+            out["error"] = "Task result was not persisted"
         return out
 
     def record_outbound(self, task_id: str, peer_identity: str, target_type: str,

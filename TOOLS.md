@@ -653,7 +653,7 @@ ANTA pulls **cryptography 50.0.0** while the system holds **46.0.5** with four u
 by dry-run *before* installing — spec 076's cryptography incident.
 
 Credentials: `ANTA_USERNAME` / `ANTA_PASSWORD`, environment only. `ANTA_VERIFY_TLS` defaults to
-`false` and is always disclosed in output as `tls_verified`.
+`true` and is always disclosed in output as `tls_verified`.
 
 ## Elasticsearch Logs (`elasticsearch-mcp`, adopted third-party Apache-2.0)
 

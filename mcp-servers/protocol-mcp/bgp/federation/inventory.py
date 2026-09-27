@@ -8,6 +8,8 @@ Remote inventories are cached per peer with received-at metadata for staleness
 """
 
 import json
+import calendar
+import shlex
 import logging
 import os
 import re
@@ -171,7 +173,8 @@ class InventoryBuilder:
         for s in skills:
             s["invocable"] = True
         # Border: fold in member specialties as risk-level capabilities (FR-016).
-        skills += self._member_aggregate_skills({s["name"] for s in skills})
+        skills += [s for s in self._member_aggregate_skills({s["name"] for s in skills})
+                   if self._visibility("skill", s["name"], peer_identity)]
         all_servers = self._load_mcp_servers()
         servers = [s for s in all_servers
                    if self._visibility("mcp_server", s["name"], peer_identity)]
@@ -278,37 +281,75 @@ class InventoryBuilder:
 
     def _load_secret_values(self) -> set:
         secrets = set()
+        values = dict(os.environ)
         try:
-            for line in self.env_path.read_text().splitlines():
-                line = line.strip()
-                if not line or line.startswith("#") or "=" not in line:
-                    continue
-                key, val = line.split("=", 1)
-                val = val.strip().strip('"').strip("'")
-                # Scan only secret-named keys, and only non-trivial values.
-                if self._SECRET_KEY_RE.search(key) and len(val) >= 8:
-                    secrets.add(val)
-        except Exception:
-            pass
+            text = self.env_path.read_text()
+        except FileNotFoundError:
+            text = ""
+        except OSError as error:
+            raise ValueError("Inventory secret source is unreadable") from error
+        for line in text.splitlines():
+            match = re.match(r'^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$', line.strip())
+            if not match or not self._SECRET_KEY_RE.search(match[1]):
+                continue
+            raw = match[2]
+            try:
+                try:
+                    val = json.loads(raw) if raw.startswith('"') else None
+                except ValueError:
+                    val = None
+                if not isinstance(val, str):
+                    val = ' '.join(shlex.split(raw, comments=True))
+            except ValueError as error:
+                raise ValueError("Inventory secret source is malformed") from error
+            # Scan both configured and effective values if they differ.
+            if len(val) >= 8:
+                secrets.add(val)
+        for key, val in values.items():
+            if self._SECRET_KEY_RE.search(key) and len(val) >= 8:
+                secrets.add(val)
         return secrets
 
     def _assert_no_secrets(self, inv: dict):
-        blob = json.dumps(inv)
+        def strings(value):
+            if isinstance(value, str):
+                yield value
+            elif isinstance(value, dict):
+                for key, item in value.items():
+                    yield str(key)
+                    yield from strings(item)
+            elif isinstance(value, (list, tuple)):
+                for item in value:
+                    yield from strings(item)
+        contents = list(strings(inv))
         for secret in self._load_secret_values():
-            if secret in blob:
-                raise ValueError("Inventory build aborted: a secret value from .env "
+            if any(secret in value for value in contents):
+                raise ValueError("Inventory build aborted: a secret value "
                                  "appeared in the advertised inventory (FR-007)")
 
     # ---- remote cache (FR-008/FR-009) ----------------------------------
 
-    def cache_remote(self, peer_identity: str, inventory: dict):
+    def _cache_base(self, peer_identity):
+        if not isinstance(peer_identity, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,199}", peer_identity):
+            raise ValueError("Invalid inventory peer identity")
         base = self.manager.base_dir / "inventories"
-        (base / f"{peer_identity}.json").write_text(json.dumps(inventory, indent=2))
-        (base / f"{peer_identity}.meta.json").write_text(
+        if base.is_symlink():
+            raise ValueError("Inventory cache directory must not be a symlink")
+        for suffix in (".json", ".meta.json"):
+            path = base / (peer_identity + suffix)
+            if path.is_symlink() or (path.exists() and not path.is_file()):
+                raise ValueError("Inventory cache must be a regular file")
+        return base
+
+    def cache_remote(self, peer_identity: str, inventory: dict):
+        from .certs import _write_secret
+        base = self._cache_base(peer_identity)
+        _write_secret(base / f"{peer_identity}.json", json.dumps(inventory, indent=2))
+        _write_secret(base / f"{peer_identity}.meta.json",
             json.dumps({"received_at": _now(), "version": inventory.get("version")}))
 
     def load_remote(self, peer_identity: str, refresh_s: int = 21600) -> Optional[dict]:
-        base = self.manager.base_dir / "inventories"
+        base = self._cache_base(peer_identity)
         inv_path = base / f"{peer_identity}.json"
         if not inv_path.is_file():
             return None
@@ -318,11 +359,11 @@ class InventoryBuilder:
             received_at = json.loads((base / f"{peer_identity}.meta.json").read_text()).get("received_at")
         except Exception:
             pass
-        stale = False
+        stale = True
         if received_at:
             try:
-                age = time.time() - time.mktime(time.strptime(received_at, "%Y-%m-%dT%H:%M:%SZ"))
-                stale = age > (2 * refresh_s)
+                age = time.time() - calendar.timegm(time.strptime(received_at, "%Y-%m-%dT%H:%M:%SZ"))
+                stale = age < 0 or age > (2 * refresh_s)
             except Exception:
                 pass
         return {"inventory": inv, "received_at": received_at, "stale": stale}

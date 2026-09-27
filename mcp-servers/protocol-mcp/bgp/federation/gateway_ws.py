@@ -174,12 +174,12 @@ class GatewayWsClient:
                     fut.set_exception(e)
             self._pending = {}
 
-    async def call(self, method: str, params: dict, timeout_s: float,
+    async def call(self, method: str, params: dict, timeout_s: float | None,
                     expect_final: bool = True) -> dict:
         """Send one JSON-RPC request, await its matching (final) response,
         return the response frame's `payload`. Raises GatewayWsError on an
         `ok: false` response, TimeoutError if no response arrives within
-        timeout_s.
+        timeout_s. None delegates the response deadline to the caller.
 
         `expect_final=True` (default, matches how OpenClaw's own CLI dispatches
         `agent`): skip an intermediate "accepted" acknowledgement frame and
@@ -197,19 +197,21 @@ class GatewayWsClient:
             await asyncio.sleep(_RECONNECT_BACKOFF_S)
             return await self._call_once(method, params, timeout_s, expect_final)
 
-    async def _call_once(self, method: str, params: dict, timeout_s: float,
+    async def _call_once(self, method: str, params: dict, timeout_s: float | None,
                           expect_final: bool) -> dict:
         await self._ensure_connected()
         req_id = str(uuid.uuid4())
         fut = asyncio.get_event_loop().create_future()
         self._pending[req_id] = (fut, expect_final)
         req = {"type": "req", "id": req_id, "method": method, "params": params}
-        await self._ws.send(json.dumps(req))
         try:
+            await self._ws.send(json.dumps(req))
             frame = await asyncio.wait_for(fut, timeout=timeout_s)
-        except asyncio.TimeoutError:
+        finally:
+            # Cancellation and send failures must release bookkeeping too.
             self._pending.pop(req_id, None)
-            raise
+            if not fut.done():
+                fut.cancel()
         if not frame.get("ok"):
             raise GatewayWsError(f"gateway RPC '{method}' failed: {frame.get('error')}")
         return frame.get("payload", {})

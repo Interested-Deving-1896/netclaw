@@ -106,6 +106,22 @@ class Invoker:
         self.tool_timeout = int(os.environ.get("N2N_TOOL_TIMEOUT_S", "120"))
         self.skill_timeout = int(os.environ.get("N2N_SKILL_TIMEOUT_S", "600"))
 
+    def _admit(self, peer, target_type, target, request_id, original, *, already_trusted=False):
+        if target_type in ("knowledge", "knowledge_replica"):
+            visible = {entry["collection_id"] for entry in self.service.inventory._load_knowledge(peer)}
+            if target not in visible:
+                self.audit.record(direction="inbound", peer_identity=peer, target_type=target_type,
+                                  target_name=target, request_id=request_id,
+                                  decision="not_allowlisted", outcome="denied")
+                raise RpcError(ERR_NOT_ALLOWLISTED, "collection is no longer available to this peer")
+        decision = self.authz.admit(peer, target_type, target, original,
+                                    already_trusted=already_trusted)
+        if not decision.allowed:
+            self.audit.record(direction="inbound", peer_identity=peer, target_type=target_type,
+                              target_name=target, request_id=request_id,
+                              decision=decision.code, outcome="denied")
+            raise RpcError(_CODE_MAP.get(decision.code, -32000), decision.reason)
+
     # ---- inbound: a peer asks US to run something ----------------------
 
     async def handle_tools_call(self, channel, params):
@@ -149,7 +165,7 @@ class Invoker:
                               target_name=tool, request_id=req_id, decision="guardrail_blocked", outcome="denied")
             raise RpcError(ERR_GUARDRAIL_BLOCKED, "DefenseClaw inspection blocked the call")
 
-        self.authz.debit(peer, requests=1)
+        self._admit(peer, "tool", tool, req_id, decision, already_trusted=already_trusted)
         try:
             result = await self._exec_tool_stdio(tool, arguments)
             ref = self.audit.store_result(req_id or f"{peer}-{tool}", result)
@@ -204,6 +220,7 @@ class Invoker:
                 progress("awaiting approval")
                 if not await self._await_approval(appr["approval_id"]):
                     raise RpcError(ERR_APPROVAL_EXPIRED, "approval not granted")
+            self._admit(peer, "skill", skill, task_id, decision)
             progress("running skill")
             try:
                 output, tokens = await self._exec_skill_gateway(
@@ -224,7 +241,7 @@ class Invoker:
                                   target_name=skill, request_id=task_id, decision="allowlisted",
                                   outcome="error")
                 raise
-            self.authz.debit(peer, requests=1, tokens=tokens)
+            self.authz.debit(peer, requests=0, tokens=tokens)
             self.audit.record(direction="inbound", peer_identity=peer, target_type="skill",
                               target_name=skill, request_id=task_id, decision="allowlisted",
                               outcome="success")
@@ -327,7 +344,7 @@ class Invoker:
                   f"'{collection}'. Using your RAG knowledge base, answer the question "
                   f"and cite the source document(s) and page(s). If the collection does "
                   f"not contain the answer, say so plainly.\n\nQuestion: {query}")
-        self.authz.debit(peer, requests=1)
+        self._admit(peer, "knowledge", collection_id, req_id, decision)
         try:
             answer, tokens = await run_agent_turn(
                 prompt, session_key=f"n2n-knowledge-{peer}", untrusted=True,
@@ -413,6 +430,7 @@ class Invoker:
             self.service.notify_approval(inv_id, peer, "knowledge_replica", collection_id)
             if not await self._await_approval(appr["approval_id"]):
                 raise RpcError(ERR_APPROVAL_EXPIRED, "approval not granted")
+        self._admit(peer, "knowledge_replica", collection_id, req_id, decision)
         return (peer, collection_id, req_id), None
 
     async def handle_replicate_manifest(self, channel, params):

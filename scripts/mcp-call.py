@@ -5,7 +5,7 @@ Usage:
     python3 mcp-call.py <server-command> <tool-name> [arguments-json]
 
 Examples:
-    python3 mcp-call.py "python3 -u /path/to/pyats_mcp_server.py" pyats_list_devices
+    python3 mcp-call.py "python3 -u /path/to/netclaw/scripts/pyats-stdio.py" pyats_list_devices
     python3 mcp-call.py "npx -y @drawio/mcp" open_drawio_mermaid '{"content":"graph TD; A-->B"}'
     python3 mcp-call.py "node /path/to/markmap/dist/index.js" create_markmap '{"content":"# Root"}'
 """
@@ -17,6 +17,7 @@ import shlex
 import subprocess
 import sys
 import time
+import tempfile
 
 
 def send(proc, msg):
@@ -83,16 +84,11 @@ def split_server_command(server_cmd):
 
 def read_stderr(proc):
     """Best-effort read of currently available stderr output."""
-    chunks = []
-    while True:
-        ready, _, _ = select.select([proc.stderr], [], [], 0)
-        if not ready:
-            break
-        data = proc.stderr.readline()
-        if not data:
-            break
-        chunks.append(data.decode(errors="replace"))
-    return "".join(chunks).strip()
+    proc.stderr.flush()
+    proc.stderr.seek(0, os.SEEK_END)
+    size = proc.stderr.tell()
+    proc.stderr.seek(max(0, size - 8192))
+    return proc.stderr.read(8192).decode(errors="replace").strip()
 
 
 def main():
@@ -113,14 +109,16 @@ def main():
         args_json = {}
 
     cmd_parts, env = split_server_command(server_cmd)
+    error_log = tempfile.TemporaryFile()
     proc = subprocess.Popen(
         cmd_parts,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stderr=error_log,
         env=env,
     )
 
+    proc.stderr = error_log
     try:
         # Step 1: Initialize
         send(proc, {
@@ -133,7 +131,7 @@ def main():
                 "clientInfo": {"name": "netclaw", "version": "1.0"},
             },
         })
-        init_resp = recv(proc, timeout=10, expected_id=0)
+        init_resp = recv(proc, timeout=60, expected_id=0)
         if not init_resp:
             stderr_output = read_stderr(proc)
             if stderr_output:
@@ -156,7 +154,10 @@ def main():
         tool_timeout = float(os.environ.get("MCP_CALL_TIMEOUT", "30"))
         resp = recv(proc, timeout=tool_timeout, expected_id=1)
         if resp:
-            print(json.dumps(resp.get("result", resp), indent=2))
+            result = resp.get("result", resp)
+            print(json.dumps(result, indent=2))
+            if "error" in resp or (isinstance(result, dict) and result.get("isError")):
+                sys.exit(1)
         else:
             stderr_output = read_stderr(proc)
             if stderr_output:
@@ -170,6 +171,8 @@ def main():
             proc.wait(timeout=3)
         except subprocess.TimeoutExpired:
             proc.kill()
+            proc.wait()
+        error_log.close()
 
 
 if __name__ == "__main__":

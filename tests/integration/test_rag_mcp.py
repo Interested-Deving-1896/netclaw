@@ -162,9 +162,11 @@ def test_unsupported_and_size_errors_surface():
     assert resp["error"]["code"] == "UNSUPPORTED_FORMAT"
 
 
-def test_gait_absent_does_not_crash():
-    # gait_log swallows import errors; a plain call must not raise
-    server.gait_log("test", "no gait installed here")
+def test_gait_absent_does_not_crash(tmp_path, monkeypatch):
+    # No test may write the operator's actual GAIT history.
+    monkeypatch.chdir(tmp_path)
+    result = server.gait_log("test", "synthetic event")
+    assert result["status"] == "unavailable"
 
 
 # ---------------------------------------------------------------------
@@ -239,7 +241,7 @@ def test_list_and_stats():
     stats = server._do_stats()["data"]
     assert stats["document_count"] >= 1
     assert stats["total_chunks"] >= 1
-    assert stats["schema_version"] == 1
+    assert stats["schema_version"] == 2
     assert "telemetry" in stats and "query_count" in stats["telemetry"]
 
 

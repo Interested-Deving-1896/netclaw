@@ -56,6 +56,7 @@ done
 echo
 
 run_suite "Command filter contract (FR-022/023/029)" "$REPO_ROOT/tests/multivendor/test_filter.py"
+run_suite "SSH identity, raw-read gate and private baseline security" "$REPO_ROOT/tests/multivendor/test_security.py"
 
 if [ -f "$REPO_ROOT/tests/multivendor/test_inventory.py" ]; then
     run_suite "Inventory sources contract (FR-017*)" "$REPO_ROOT/tests/multivendor/test_inventory.py"

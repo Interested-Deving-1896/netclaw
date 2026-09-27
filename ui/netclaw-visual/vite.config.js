@@ -3,10 +3,19 @@ import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { hudPorts, createLocalAccess, localAccessMiddleware } from './src/security/local-access.js';
+
+const ports = hudPorts();
+const localOnly = () => ({
+  name: 'netclaw-local-access',
+  configureServer(server) { server.middlewares.use(localAccessMiddleware(createLocalAccess(ports))); },
+  configurePreviewServer(server) { server.middlewares.use(localAccessMiddleware(createLocalAccess(ports))); },
+});
+
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [localOnly(), react()],
   build: {
     rollupOptions: {
       input: {
@@ -15,11 +24,14 @@ export default defineConfig({
       },
     },
   },
+  preview: { host: '127.0.0.1', port: ports.ui, strictPort: true },
   server: {
-    port: 3000,
+    host: '127.0.0.1',
+    port: ports.ui,
+    strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: `http://127.0.0.1:${ports.api}`,
         timeout: 300000,
         configure: (proxy) => {
           proxy.on('proxyReq', (_proxyReq, _req, res) => {
@@ -29,7 +41,7 @@ export default defineConfig({
         },
       },
       '/ws': {
-        target: 'ws://localhost:3001',
+        target: `ws://127.0.0.1:${ports.api}`,
         ws: true,
       },
     },

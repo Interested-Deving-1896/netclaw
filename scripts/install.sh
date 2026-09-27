@@ -422,12 +422,14 @@ for id in $SELECTED; do
     fi
 done
 
+CORE_FAILED=0
 if [ "${NETCLAW_VERBOSE:-0}" = "1" ]; then
-    core_tokens
+    core_tokens || CORE_FAILED=1
 else
     if core_tokens > "$INSTALL_LOG_DIR/core-tokens.log" 2>&1; then
         log_info "Token optimization library installed  ${DIM}(log: $INSTALL_LOG_DIR/core-tokens.log)${NC}"
     else
+        CORE_FAILED=1
         log_warn "Token optimization install reported an error — last 10 log lines:"
         tail -10 "$INSTALL_LOG_DIR/core-tokens.log" | sed 's/^/    /'
     fi
@@ -597,7 +599,7 @@ echo ""
 log_step "Installation Summary"
 echo ""
 echo "========================================="
-echo "  NetClaw Installation Complete"
+echo "  NetClaw Installation Results"
 echo "========================================="
 echo ""
 
@@ -713,4 +715,11 @@ if [ -n "$PROBLEM_COMPONENTS" ]; then
     echo ""
     echo "    ./scripts/install.sh --add \"$(echo $PROBLEM_COMPONENTS | tr '\n' ' ' | sed 's/ $//')\""
     echo ""
+fi
+
+if [ "$CORE_FAILED" -ne 0 ]; then
+    log_error "Required token dependencies did not install. Fix the errors in $INSTALL_LOG_DIR/core-tokens.log and rerun the installer."
+fi
+if [ -n "$PROBLEM_COMPONENTS" ] || [ "$SERVERS_FAIL" -ne 0 ] || [ "$CORE_FAILED" -ne 0 ]; then
+    exit 1
 fi

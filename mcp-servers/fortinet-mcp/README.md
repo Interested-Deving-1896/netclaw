@@ -185,3 +185,7 @@ Measured against a live FortiGate-VM, FortiOS **7.6.7**, 2026-08-01:
 `workspace/skills/fortianalyzer-ops` · `fwrule-analyzer` (FortiOS parser, consumes
 policy from here) · `multivendor-cli-mcp` (spec 076 — FortiOS **CLI**, a different
 plane)
+
+## Spec124 production authorization update
+
+Production writes now require the exact ServiceNow CR to be approved and in Implement state. Missing or failed verification blocks writes. See [change-gate migration](../../docs/CHANGE-GATE-MIGRATION.md) for private configuration, preflight, backup and recovery. No ServiceNow record is created or approved automatically.

@@ -114,6 +114,12 @@ async def _apply_production_controls(cmd: list, prompt: str) -> list:
     guard_ok, guard_detail = await controls.defenseclaw_available()
     if not guard_ok:
         raise EnforcementRefused(f"model-guard unavailable: {guard_detail}")
+    if "--model" in cmd:
+        index = cmd.index("--model")
+        override = cmd[index + 1] if index + 1 < len(cmd) else ""
+        route_ok, detail = controls.guarded_model_route(override)
+        if not route_ok:
+            raise EnforcementRefused(f"model-guard unavailable: {detail}")
     return cmd
 
 
@@ -405,25 +411,32 @@ async def run_agent_turn(prompt: str, session_key: str = "n2n", timeout_s: int =
         # itself controls, so an operator can grep for how a given session_key
         # reached NetClaw.
         logger.info("agent turn origin=%s session_key=%s", normalized_origin, session_key)
-    call_future = asyncio.ensure_future(client.call("agent", params, float(timeout_s)))
-    remaining = float(timeout_s)
-    if on_stall and stall_after_s and stall_after_s < remaining:
-        done, _ = await asyncio.wait({call_future}, timeout=stall_after_s)
-        remaining -= stall_after_s
-        if not done:
-            # Silent this long usually means the gateway is holding the session
-            # at its scope-upgrade approval gate. Surface it to the operator and
-            # let the caller extend the window so the approval can land.
-            try:
-                remaining += max(0, int(on_stall(stall_after_s) or 0))
-            except Exception as e:
-                logger.warning("on_stall notifier failed: %s", e)
-    if not call_future.done():
-        await asyncio.wait({call_future}, timeout=remaining)
-    if not call_future.done():
-        call_future.cancel()
-        raise asyncio.TimeoutError(
-            f"agent turn for session '{session_key}' timed out — if the gateway "
-            f"is holding a scope-upgrade approval, approve it and retry")
-    payload = await call_future
-    return _extract_reply_from_ws_payload(payload)
+    call_future = asyncio.ensure_future(client.call("agent", params, None))
+    try:
+        remaining = float(timeout_s)
+        if on_stall and stall_after_s and stall_after_s < remaining:
+            done, _ = await asyncio.wait({call_future}, timeout=stall_after_s)
+            remaining -= stall_after_s
+            if not done:
+                # Silent this long usually means the gateway is holding the session
+                # at its scope-upgrade approval gate. Surface it to the operator and
+                # let the caller extend the window so the approval can land.
+                try:
+                    remaining += max(0, int(on_stall(stall_after_s) or 0))
+                except Exception as e:
+                    logger.warning("on_stall notifier failed: %s", e)
+        if not call_future.done():
+            await asyncio.wait({call_future}, timeout=remaining)
+        if not call_future.done():
+            call_future.cancel()
+            raise asyncio.TimeoutError(
+                f"agent turn for session '{session_key}' timed out — if the gateway "
+                f"is holding a scope-upgrade approval, approve it and retry")
+        payload = await call_future
+        return _extract_reply_from_ws_payload(payload)
+    finally:
+        if not call_future.done():
+            call_future.cancel()
+        # Consume cancellation/result so no pending RPC survives caller timeout
+        # or cancellation. The remote execution budget remains params['timeout'].
+        await asyncio.gather(call_future, return_exceptions=True)

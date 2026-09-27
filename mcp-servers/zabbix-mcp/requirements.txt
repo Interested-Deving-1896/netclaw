@@ -18,3 +18,6 @@
 # installer has a single documented entry point and so the rationale above
 # travels with the code.
 ./vendor/zabbix-mcp-server
+# NetClaw's supported runtime contract; leave vendored upstream unchanged.
+fastmcp>=3.2.0,<4
+mcp>=1.2.0,<2

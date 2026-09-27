@@ -1,3 +1,4 @@
+import { setSafeHtml, appendSafeHtml } from '../security/safe-html.js';
 /**
  * KnowledgePanel - HUD component for the RAG Knowledge Base (Feature 062)
  *
@@ -36,7 +37,7 @@ export class KnowledgePanel {
     this.element = document.createElement('div');
     this.element.id = 'knowledge-panel';
     this.element.className = 'knowledge-panel collapsed';
-    this.element.innerHTML = this.getTemplate();
+    setSafeHtml(this.element, this.getTemplate());
     this.setupEventListeners();
     if (this.socket) this.connectSocket();
     this.refresh();
@@ -237,13 +238,13 @@ export class KnowledgePanel {
   renderProgress() {
     const el = this.element.querySelector('#kp-progress');
     const items = [...this.progress.values()].slice(-5);
-    el.innerHTML = items
+    setSafeHtml(el, items
       .map((p) => {
         const cls = p.status === 'error' ? 'kp-chip-error' : p.status === 'ready' ? 'kp-chip-done' : 'kp-chip-busy';
         const err = p.error ? `<div class="kp-error-text">${this.esc(p.error)}</div>` : '';
         return `<div class="kp-chip ${cls}"><span>${this.esc(p.title || '')}</span><span class="kp-chip-status">${this.esc(p.status)}</span>${err}</div>`;
       })
-      .join('');
+      .join(''));
   }
 
   renderTables() {
@@ -254,9 +255,9 @@ export class KnowledgePanel {
 
     const docRows = this.element.querySelector('#kp-doc-rows');
     if (!this.documents.length) {
-      docRows.innerHTML = '<tr><td colspan="7" class="kp-empty">No documents indexed yet — upload one above.</td></tr>';
+      setSafeHtml(docRows, '<tr><td colspan="7" class="kp-empty">No documents indexed yet — upload one above.</td></tr>');
     } else {
-      docRows.innerHTML = this.documents
+      setSafeHtml(docRows, this.documents
         .map(
           (d) => `<tr>
             <td title="${this.esc(d.id)}">${this.esc(d.title)}</td>
@@ -271,14 +272,14 @@ export class KnowledgePanel {
             </td>
           </tr>`
         )
-        .join('');
+        .join(''));
     }
 
     const snapRows = this.element.querySelector('#kp-snap-rows');
     if (!this.snapshots.length) {
-      snapRows.innerHTML = '<tr><td colspan="5" class="kp-empty">No snapshots</td></tr>';
+      setSafeHtml(snapRows, '<tr><td colspan="5" class="kp-empty">No snapshots</td></tr>');
     } else {
-      snapRows.innerHTML = this.snapshots
+      setSafeHtml(snapRows, this.snapshots
         .map(
           (s) => `<tr>
             <td>${this.esc(s.title)}</td>
@@ -290,7 +291,7 @@ export class KnowledgePanel {
             </td>
           </tr>`
         )
-        .join('');
+        .join(''));
     }
 
     this.element.querySelectorAll('.kp-actions button').forEach((btn) => {

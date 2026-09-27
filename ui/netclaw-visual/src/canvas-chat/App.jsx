@@ -7,6 +7,7 @@
  */
 import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { createSessionGate } from "./session-gate.js";
 
 // ---- theme ---------------------------------------------------------------
 const C = {
@@ -204,7 +205,7 @@ async function callNetClaw({ messages }) {
   return String(data.response || "").trim();
 }
 
-async function callLLM(messages) {
+async function requestLLM(messages) {
   const text = await callNetClaw({ messages });
   if (!text) throw new Error("empty response from NetClaw");
   return text;
@@ -357,6 +358,13 @@ const ROOT = {
 
 export default function App() {
   const [nodes, setNodes] = useState([ROOT]);
+  const [sessionError, setSessionError] = useState(null);
+  const sessionGate = useRef(createSessionGate());
+  const callLLM = (messages) => sessionGate.current.request(() => requestLLM(messages));
+  const runSessionChange = async (work) => {
+    try { await sessionGate.current.change(work); setSessionError(null); }
+    catch (error) { setSessionError(String(error.message || error)); }
+  };
   const [active, setActive] = useState("root");
   const [branchHint, setBranchHint] = useState(null);
   const [drafts, setDrafts] = useState({});
@@ -920,6 +928,7 @@ export default function App() {
     // blank (otherwise the chat shows "no threads open" with no way to bring them back)
     if (loaded.length && loaded.every((n) => n.closed)) loaded = loaded.map((n) => (n.depth === 0 ? { ...n, closed: false } : n));
     setNodes(loaded);
+    setDrafts({}); setQuotes({}); setAttachments({});
     const firstOpen = loaded.find((n) => !n.closed);
     setActive(obj.active && loaded.some((n) => n.id === obj.active && !n.closed) ? obj.active : (firstOpen ? firstOpen.id : null));
   };
@@ -944,7 +953,7 @@ export default function App() {
   const openFile = (e) => {
     const f = e.target.files && e.target.files[0]; if (!f) return;
     const reader = new FileReader();
-    reader.onload = () => { try { loadState(JSON.parse(String(reader.result))); } catch {} };
+    reader.onload = () => runSessionChange(() => loadState(JSON.parse(String(reader.result))));
     reader.readAsText(f);
     e.target.value = "";
   };
@@ -1072,52 +1081,56 @@ export default function App() {
       const now = Date.now();
       idb.put({ id: currentSession.id, title: deriveSessionTitle(data.nodes), createdAt: currentSession.createdAt, updatedAt: now, nodes: data.nodes, active: data.active })
         .then(() => setSessionList((ls) => { const others = ls.filter((s) => s.id !== currentSession.id); return [{ id: currentSession.id, title: deriveSessionTitle(data.nodes), createdAt: currentSession.createdAt, updatedAt: now, nodes: data.nodes, active: data.active }, ...others]; }))
-        .catch(() => {});
+        .catch((error) => setSessionError("Session save failed: " + String(error.message || error)));
     }, 400);
+    return () => clearTimeout(saveTimerRef.current);
   }, [nodes, active, currentSession]); // eslint-disable-line
 
-  const newSession = async () => {
-    // flush any pending save of the current session first
+  const newSession = () => runSessionChange(async () => {
     if (saveTimerRef.current) { clearTimeout(saveTimerRef.current); saveTimerRef.current = null; }
     if (currentSession) {
       const data = serialize();
-      try { await idb.put({ id: currentSession.id, title: deriveSessionTitle(data.nodes), createdAt: currentSession.createdAt, updatedAt: Date.now(), nodes: data.nodes, active: data.active }); } catch {}
+      await idb.put({ id: currentSession.id, title: deriveSessionTitle(data.nodes), createdAt: currentSession.createdAt, updatedAt: Date.now(), nodes: data.nodes, active: data.active });
     }
+    resetSession();
+  });
+
+  const openSession = (id) => runSessionChange(async () => {
+    if (saveTimerRef.current) { clearTimeout(saveTimerRef.current); saveTimerRef.current = null; }
+    if (currentSession) {
+      const data = serialize();
+      await idb.put({ id: currentSession.id, title: deriveSessionTitle(data.nodes), createdAt: currentSession.createdAt, updatedAt: Date.now(), nodes: data.nodes, active: data.active });
+    }
+    const sess = await idb.get(id);
+    if (!sess) throw new Error("Session is unavailable.");
+    setCurrentSession({ id: sess.id, createdAt: sess.createdAt });
+    pastRef.current = []; futureRef.current = [];
+    loadState({ nodes: sess.nodes, active: sess.active });
+    firstSave.current = true;
+    setShowSessions(false);
+    reloadSessionList();
+  });
+
+  const deleteSession = (id) => runSessionChange(async () => {
+    if (saveTimerRef.current) { clearTimeout(saveTimerRef.current); saveTimerRef.current = null; }
+    await idb.del(id);
+    setSessionFolder((m) => { if (!(id in m)) return m; const out = { ...m }; delete out[id]; return out; });
+    setSessionTitles((m) => { if (!(id in m)) return m; const out = { ...m }; delete out[id]; return out; });
+    if (currentSession && currentSession.id === id) resetSession();
+    else reloadSessionList();
+  });
+
+  const resetSession = () => {
     const id = sessId(); const now = Date.now();
     setCurrentSession({ id, createdAt: now });
     pastRef.current = []; futureRef.current = [];
     _seq = 0;
     setNodes([{ ...ROOT, messages: [] }]);
-    setActive("root");
-    setSel([]);
+    setDrafts({}); setQuotes({}); setAttachments({});
+    setActive("root"); setSel([]);
     firstSave.current = true;
     setShowSessions(false);
     reloadSessionList();
-  };
-
-  const openSession = async (id) => {
-    if (saveTimerRef.current) { clearTimeout(saveTimerRef.current); saveTimerRef.current = null; }
-    if (currentSession) {
-      const data = serialize();
-      try { await idb.put({ id: currentSession.id, title: deriveSessionTitle(data.nodes), createdAt: currentSession.createdAt, updatedAt: Date.now(), nodes: data.nodes, active: data.active }); } catch {}
-    }
-    try {
-      const sess = await idb.get(id); if (!sess) return;
-      setCurrentSession({ id: sess.id, createdAt: sess.createdAt });
-      pastRef.current = []; futureRef.current = [];
-      loadState({ nodes: sess.nodes, active: sess.active });
-      firstSave.current = true;
-      setShowSessions(false);
-      reloadSessionList();
-    } catch {}
-  };
-
-  const deleteSession = async (id) => {
-    try { await idb.del(id); } catch {}
-    setSessionFolder((m) => { if (!(id in m)) return m; const out = { ...m }; delete out[id]; return out; });
-    setSessionTitles((m) => { if (!(id in m)) return m; const out = { ...m }; delete out[id]; return out; });
-    if (currentSession && currentSession.id === id) await newSession();
-    else reloadSessionList();
   };
 
   useEffect(() => { try { localStorage.setItem("nc-canvas-theme", dark ? "dark" : "light"); } catch {} }, [dark]);
@@ -1316,6 +1329,7 @@ export default function App() {
         .sb-del:hover{background:#A8324E!important;color:#fff!important;border-color:#A8324E!important}
         @media(max-width:900px){.hud-back-label{display:none}}`}</style>
 
+      {sessionError && <div role="alert" style={{ padding: 10, color: "#c53030" }}>{sessionError}</div>}
       {/* top bar */}
       <div style={{ flexShrink: 0, padding: "8px 14px", borderBottom: `1px solid ${C.hairline}`, background: C.canvas, display: "flex", alignItems: "center", gap: 10, zIndex: 100 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>

@@ -13,6 +13,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from unittest.mock import patch
 
 REPO = Path(__file__).resolve().parents[2]
 RUNNER_PATH = REPO / "scripts" / "run-contract-tests.py"
@@ -169,7 +170,8 @@ def test_preflight_distinguishes_dependency_live_and_docker(runner) -> int:
         old = os.environ.pop("ALPHA_TOKEN", None)
         try:
             alpha = runner.preflight_suite("alpha", manifest["suites"]["alpha"], root)
-            beta = runner.preflight_suite("beta", manifest["suites"]["beta"], root)
+            with patch.object(runner.shutil, "which", return_value=None):
+                beta = runner.preflight_suite("beta", manifest["suites"]["beta"], root)
         finally:
             if old is not None:
                 os.environ["ALPHA_TOKEN"] = old
@@ -429,6 +431,60 @@ def test_fingerprint_separates_kinds_and_paths(runner) -> int:
         temp.cleanup()
 
 
+def test_isolated_files_preserve_import_namespaces_and_failures(runner) -> int:
+    temp, root, path = fake_repo(with_pytest=True)
+    try:
+        raw = json.loads(path.read_text())
+        cfg = raw["suites"]["gamma"]
+        cfg["environment"]["path"] = None
+        cfg["isolate_files"] = True
+        path.write_text(json.dumps(raw))
+        # Minimal offline pytest stand-in: executes module-level assertions.
+        # Two plugins deliberately export the same top-level module name.
+        (root / "pytest.py").write_text("import runpy,sys; runpy.run_path(sys.argv[1])\n")
+        (root / "tests/gamma/test_gamma.py").unlink()
+        for name in ("a", "b"):
+            plugin = root / name
+            plugin.mkdir()
+            (plugin / "shared.py").write_text(f"VALUE = {name!r}\n")
+            (root / f"tests/gamma/test_{name}.py").write_text(
+                f"import sys; sys.path.insert(0, {str(plugin)!r})\n"
+                f"import shared; assert shared.VALUE == {name!r}\n")
+        manifest = runner.load_manifest(path, root)
+        result = runner.run_suite("gamma", cfg, manifest, root)
+        isolated = result["status"] == "PASS" and len(result["test_runs"]) == 2
+        (root / "tests/gamma/test_bad.py").write_text("assert False, 'deliberate failure'\n")
+        result = runner.run_suite("gamma", cfg, manifest, root)
+        failed = (result["status"] == "FAIL" and len(result["test_runs"]) == 3
+                  and "deliberate failure" in result["output"])
+        return check("isolated plugins keep namespaces and failures remain visible", isolated and failed)
+    finally:
+        temp.cleanup()
+
+
+def test_isolation_rejects_invalid_manifest_and_empty_suite(runner) -> int:
+    temp, root, path = fake_repo(with_pytest=True)
+    try:
+        raw = json.loads(path.read_text())
+        raw["suites"]["alpha"]["isolate_files"] = True
+        path.write_text(json.dumps(raw))
+        try:
+            runner.load_manifest(path, root)
+            return check("shell isolation rejected", False)
+        except runner.ManifestError:
+            pass
+        cfg = raw["suites"]["gamma"]
+        cfg["isolate_files"] = True
+        (root / "tests/gamma/test_gamma.py").unlink()
+        try:
+            runner.suite_commands("gamma", cfg, root)
+            return check("empty isolated suite rejected", False)
+        except runner.ManifestError:
+            return check("invalid and empty isolation rejected", True)
+    finally:
+        temp.cleanup()
+
+
 def main() -> int:
     runner = load_runner()
     tests = [
@@ -449,6 +505,8 @@ def main() -> int:
         test_ci_exclusion_requires_a_recorded_reason,
         test_matrix_omits_held_out_suites,
         test_fingerprint_separates_kinds_and_paths,
+        test_isolated_files_preserve_import_namespaces_and_failures,
+        test_isolation_rejects_invalid_manifest_and_empty_suite,
     ]
     failures = 0
     for test in tests:

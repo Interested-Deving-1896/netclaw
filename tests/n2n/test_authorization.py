@@ -96,3 +96,28 @@ def test_approval_lifecycle(manager):
     authz.resolve_approval(appr["approval_id"], "approve")
     assert authz.approval_status(appr["approval_id"]) == "approved"
     assert len(authz.pending_approvals()) == 0
+
+
+def test_expired_approval_cannot_be_resolved_before_status_poll(manager):
+    authz = Authorizer(manager)
+    inv_id = manager._conn.execute(
+        "INSERT INTO remote_invocation_record (direction, peer_identity, decision, outcome) "
+        "VALUES ('inbound', 'fixture', 'approval_required', 'pending')").lastrowid
+    approval = authz.create_approval(inv_id)['approval_id']
+    manager._conn.execute("UPDATE approval_request SET expires_at='2000-01-01T00:00:00Z' WHERE id=?", (approval,))
+    manager._conn.commit()
+    result = authz.resolve_approval(approval, 'approve')
+    assert result['resolved'] is False and result['expired'] is True
+    assert authz.approval_status(approval) == 'expired'
+    assert not authz.pending_approvals()
+
+
+def test_listing_expires_unpolled_approvals(manager):
+    authz = Authorizer(manager)
+    inv_id = manager._conn.execute(
+        "INSERT INTO remote_invocation_record (direction, peer_identity, decision, outcome) "
+        "VALUES ('inbound', 'fixture', 'approval_required', 'pending')").lastrowid
+    approval = authz.create_approval(inv_id)['approval_id']
+    manager._conn.execute("UPDATE approval_request SET expires_at='2000-01-01T00:00:00Z' WHERE id=?", (approval,))
+    manager._conn.commit()
+    assert not authz.pending_approvals()

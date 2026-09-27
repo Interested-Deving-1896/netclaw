@@ -501,12 +501,22 @@ class FederationService:
             return None
         from . import certs
         cert_pem, _ = self.host_credential()
+        import datetime
+        fp = certs.key_fingerprint(cert_pem)
+        state = "unknown"
+        for credential in self.manager.list_credentials():
+            if credential["fingerprint"] == fp:
+                state = "ok" if credential["state"] == "active" else credential["state"]
+                break
         try:
-            na = certs.cert_not_after(cert_pem).isoformat()
+            expiry = certs.cert_not_after(cert_pem)
+            na = expiry.isoformat()
+            if expiry <= datetime.datetime.now(datetime.timezone.utc):
+                state = "expired"
         except Exception:
             na = None
-        return {"fp": certs.key_fingerprint(cert_pem), "not_after": na,
-                "renew_state": "ok"}
+            state = "unknown"
+        return {"fp": fp, "not_after": na, "renew_state": state}
 
     def host_credential(self) -> tuple:
         """The credential this claw presents on secured channels. If a domain is
@@ -616,9 +626,10 @@ class FederationService:
         """FR-014: only a Border (or a standalone claw) runs the external eN2N
         stack. A Member never federates externally — it talks only to its Border."""
         try:
-            return self.risk.role() != "member"
+            return self.risk.role() in ("standalone", "border")
         except Exception:
-            return True  # fail open to pre-056 behavior if risk state is unavailable
+            logger.warning("External federation refused: role state unavailable")
+            return False
 
     async def accept_channel(self, peer_as: int, router_id: str, reader, writer):
         if not self._en2n_allowed():
@@ -1119,10 +1130,17 @@ class FederationService:
         preamble, then run an InternalChannel; the member authenticates via
         in2n/enroll (first time) or in2n/hello (pinned-key proof)."""
         from .internal_channel import InternalChannel, send_border_preamble
+        from .internal_security import channel_binding
+        try:
+            binding = channel_binding(writer)
+        except ValueError:
+            writer.close()
+            raise
         nonce = await send_border_preamble(writer)
         ch = InternalChannel(reader, writer, local_identity=self.local_identity,
                              member_id=None, is_border_side=True,
                              handlers=self._in2n_border_handlers, nonce=nonce)
+        ch.auth_binding = binding
         await ch.start()
         logger.info("Accepted iN2N dial-in (awaiting member auth)")
         return ch
@@ -1148,7 +1166,7 @@ class FederationService:
         cert_pem = params.get("cert_pem", "")
         signature = bytes.fromhex(params.get("signature", "") or "")
         # Proof the dialer holds the private key for the cert it presents (FR-013).
-        if not self.risk.verify_possession(cert_pem, channel.nonce, signature):
+        if not self.risk.verify_possession(cert_pem, channel.nonce, signature, getattr(channel, "auth_binding", b"")):
             raise RpcError(_ERR_NOT_TRUSTED, "key possession proof failed")
         try:
             res = self.risk.consume_token(
@@ -1187,7 +1205,7 @@ class FederationService:
         res["risk_ca"] = anchor
         mnonce = params.get("member_nonce")
         if mnonce:
-            attest = self.risk.attest_hub(bytes.fromhex(mnonce))
+            attest = self.risk.attest_hub(bytes.fromhex(mnonce) + getattr(channel, "auth_binding", b""))
             if attest:
                 res["hub_attestation"] = attest
         return res
@@ -1203,7 +1221,7 @@ class FederationService:
         if not mem or not mem.get("pinned_key"):
             raise RpcError(_ERR_NOT_TRUSTED, "unknown or unpinned member")
         ok = (mem["key_fingerprint"] == fingerprint
-              and self.risk.verify_possession(mem["pinned_key"], channel.nonce, signature)
+              and self.risk.verify_possession(mem["pinned_key"], channel.nonce, signature, getattr(channel, "auth_binding", b""))
               and self.risk.verify_member(member_id, fingerprint))
         if not ok:
             # FR-022: attribute the failure to its source so a foreign host cannot
@@ -1226,7 +1244,7 @@ class FederationService:
         # are the legitimate hub (CA-signed hub cert + signature over the nonce).
         mnonce = params.get("member_nonce")
         if mnonce:
-            attest = self.risk.attest_hub(bytes.fromhex(mnonce))
+            attest = self.risk.attest_hub(bytes.fromhex(mnonce) + getattr(channel, "auth_binding", b""))
             if attest:
                 result["hub_attestation"] = attest
         return result
@@ -1664,6 +1682,8 @@ class FederationService:
             raise RpcError(-32602, "approval_id and action ('approve'|'deny') required")
         confirmation_method = params.get("confirmation_method", "biometric")
         result = self.authz.resolve_approval(int(approval_id), action, via=confirmation_method)
+        if not result["resolved"]:
+            raise RpcError(-32602, "approval expired or unknown; start a new invocation")
         # already_resolved (073/FR-005, research D6): additive field -- a
         # caller that only checks "resolved" sees identical behavior to
         # before this existed.
@@ -2138,6 +2158,12 @@ class FederationService:
         from .internal_channel import InternalChannel, read_border_preamble
         reader, writer = await asyncio.wait_for(
             asyncio.open_connection(host, port, ssl=ssl_context), timeout=30.0)
+        from .internal_security import channel_binding
+        try:
+            binding = channel_binding(writer)
+        except ValueError:
+            writer.close()
+            raise
         nonce = await read_border_preamble(reader)
         if nonce is None:
             writer.close()
@@ -2145,55 +2171,59 @@ class FederationService:
         ch = InternalChannel(reader, writer, local_identity=self.local_identity,
                              member_id=self.risk.self_member_id(), is_border_side=False,
                              handlers=self._in2n_member_handlers, nonce=nonce)
-        await ch.start()
-        cert_pem = self.risk.self_cert_pem()
-        signature = self.risk.self_sign(nonce).hex()
-        member_id = self.risk.self_member_id()
-        # US2: challenge the Border to attest it is our legitimate hub.
-        member_nonce = os.urandom(32)
-        if enrollment_token:
-            resp = await ch.call("in2n/enroll", {
-                "token": enrollment_token, "member_id": member_id,
-                "cert_pem": cert_pem, "signature": signature,
-                "member_nonce": member_nonce.hex(),
-                "scope": list(self.member_scope) or None,
-                "runtime_kind": os.environ.get("N2N_MEMBER_RUNTIME", "process"),
-                "transport_binding": "distributed"}, timeout=30.0)
-            # Persist the CA anchor delivered at enrollment.
-            if resp.get("risk_ca"):
-                self.risk.store_risk_anchor(resp["risk_ca"])
-        else:
-            resp = await ch.call("in2n/hello", {
-                "member_id": member_id,
-                "key_fingerprint": self.risk.fingerprint_of(cert_pem),
-                "member_nonce": member_nonce.hex(),
-                "signature": signature}, timeout=30.0)
-        # US2 hub attestation: if we hold an anchor, the Border MUST prove it is
-        # the legitimate hub for our risk; a missing/invalid attestation aborts.
-        anchor = self.risk.risk_anchor()
-        if anchor:
-            risk_name = (member_id.split("/", 1)[0] if member_id else
-                         (self.risk.get_risk() or {}).get("risk_name") or "risk")
-            attest = resp.get("hub_attestation")
-            if not attest or not self.risk.verify_hub_attestation(
-                    attest, anchor, member_nonce, risk_name):
-                writer.close()
-                raise RuntimeError("iN2N hub attestation failed — refusing to trust Border")
-            logger.info("iN2N: verified hub attestation for %s", risk_name)
-        ch.trusted = True   # we pinned the Border endpoint at provisioning
-        # spec 121: by this point we've proven possession of our own pinned key
-        # (self.risk.self_sign(nonce) above) and, if we hold an anchor, verified
-        # Border's hub attestation too — a genuine possession proof, just via
-        # iN2N's pinned-key/signed-nonce mechanism rather than eN2N's TLS
-        # cert-binding one. Without this, channel.attestation stays at
-        # FederationChannel's "self-asserted" default forever, and
-        # negotiate.allows() tier-0-denies n2n/tools/call unconditionally on
-        # every internal channel regardless of how well authenticated it is.
-        ch.attestation = "possession"
-        self.border_channel = ch
-        logger.info("iN2N: dialed Border %s:%s as %s (%s)", host, port, member_id,
-                    {k: v for k, v in resp.items() if k not in ("risk_ca", "hub_attestation")})
-        return resp
+        try:
+            await ch.start()
+            cert_pem = self.risk.self_cert_pem()
+            signature = self.risk.self_sign(nonce, binding).hex()
+            member_id = self.risk.self_member_id()
+            # US2: challenge the Border to attest it is our legitimate hub.
+            member_nonce = os.urandom(32)
+            if enrollment_token:
+                resp = await ch.call("in2n/enroll", {
+                    "token": enrollment_token, "member_id": member_id,
+                    "cert_pem": cert_pem, "signature": signature,
+                    "member_nonce": member_nonce.hex(),
+                    "scope": list(self.member_scope) or None,
+                    "runtime_kind": os.environ.get("N2N_MEMBER_RUNTIME", "process"),
+                    "transport_binding": "distributed"}, timeout=30.0)
+            else:
+                resp = await ch.call("in2n/hello", {
+                    "member_id": member_id,
+                    "key_fingerprint": self.risk.fingerprint_of(cert_pem),
+                    "member_nonce": member_nonce.hex(),
+                    "signature": signature}, timeout=30.0)
+            # US2 hub attestation: if we hold an anchor, the Border MUST prove it is
+            # the legitimate hub for our risk; a missing/invalid attestation aborts.
+            anchor = self.risk.risk_anchor() or resp.get("risk_ca")
+            if anchor:
+                risk_name = (member_id.split("/", 1)[0] if member_id else
+                             (self.risk.get_risk() or {}).get("risk_name") or "risk")
+                attest = resp.get("hub_attestation")
+                if not attest or not self.risk.verify_hub_attestation(
+                        attest, anchor, member_nonce + binding, risk_name):
+                    writer.close()
+                    raise RuntimeError("iN2N hub attestation failed — refusing to trust Border")
+                logger.info("iN2N: verified hub attestation for %s", risk_name)
+            if enrollment_token and anchor and not self.risk.risk_anchor():
+                self.risk.store_risk_anchor(anchor)
+            ch.trusted = True   # we pinned the Border endpoint at provisioning
+            # spec 121: by this point we've proven possession of our own pinned key
+            # (self.risk.self_sign(nonce) above) and, if we hold an anchor, verified
+            # Border's hub attestation too — a genuine possession proof, just via
+            # iN2N's pinned-key/signed-nonce mechanism rather than eN2N's TLS
+            # cert-binding one. Without this, channel.attestation stays at
+            # FederationChannel's "self-asserted" default forever, and
+            # negotiate.allows() tier-0-denies n2n/tools/call unconditionally on
+            # every internal channel regardless of how well authenticated it is.
+            ch.attestation = "possession"
+            self.border_channel = ch
+            logger.info("iN2N: dialed Border %s:%s as %s (%s)", host, port, member_id,
+                        {k: v for k, v in resp.items() if k not in ("risk_ca", "hub_attestation")})
+            return resp
+        except BaseException:
+            await ch.close()
+            raise
+
 
     async def _in2n_member_submit(self, channel, params):
         """Member side: the Border delegates a task. Enforce scope (FR-023),

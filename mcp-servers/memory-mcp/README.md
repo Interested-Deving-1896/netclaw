@@ -236,5 +236,17 @@ By default, data older than 1 year is automatically pruned. Use the `prune_old_d
 
 If sentence-transformers is unavailable:
 - `memory_store_session` will fail with `EMBEDDINGS_UNAVAILABLE` error
-- `memory_recall` returns empty results with a note explaining unavailability
+- `memory_recall` returns `success: false` with `CHROMA_UNAVAILABLE`,
+  `EMBEDDING_FAILED` or `SEARCH_FAILED`; unavailable retrieval is not empty memory.
+- Date and any-topic filters apply to up to 200 nearest candidates. A larger
+  corpus sets `data.partial: true`; additional matches may exist, including when
+  the returned filtered list is empty. Existing stored metadata needs no reindex.
 - All SQLite-based tools (facts, decisions, links) continue to work normally
+
+## Mutation audit status
+
+Mutation responses now include an `audit` object: `recorded` with a GAIT commit
+reference, or `unavailable` with a warning. An unavailable audit does not undo a
+completed data write; do not repeat the write solely to retry logging. These
+components declare `gait-ai` in their own runtime and require an initialized
+GAIT repository discoverable from the server working directory.

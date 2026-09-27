@@ -25,6 +25,12 @@ from ..constants import (
 
 logger = logging.getLogger("n2n.channel")
 
+# Shared across channels: reconnecting must not create a fresh dispatch budget.
+_MAX_DISPATCH_TASKS = 64
+_MAX_DISPATCH_BYTES = 32 * 1024 * 1024
+_DISPATCH_RESERVATIONS: dict = {}
+
+
 # Feature 100 (FR-033): the inbound-call ARRIVAL event.
 #
 # Emitted on the `n2n.invocation` logger even though it originates here, because this
@@ -148,8 +154,12 @@ class FederationChannel:
             return
         self._closed = True
         for t in (self._read_task, self._hb_task):
-            if t:
+            if t and t is not asyncio.current_task():
                 t.cancel()
+        for fut in tuple(self._pending.values()):
+            if not fut.done():
+                fut.set_exception(ConnectionError("Channel closed; operation outcome may be unknown"))
+        self._pending.clear()
         try:
             self.writer.close()
         except Exception:
@@ -248,7 +258,8 @@ class FederationChannel:
                 # or another concurrent request/response) while a slow one finishes in
                 # the background — the same non-blocking-dispatch pattern any protocol
                 # multiplexing concurrent in-flight requests over one connection needs.
-                self._dispatch_task(full)
+                if not self._dispatch_task(full):
+                    break
         except (asyncio.IncompleteReadError, ConnectionError):
             self.logger.info("Channel closed by peer")
         except asyncio.CancelledError:
@@ -291,21 +302,30 @@ class FederationChannel:
 
     # ---- dispatch -----------------------------------------------------
 
-    def _dispatch_task(self, raw: bytes) -> None:
+    def _dispatch_task(self, raw: bytes) -> bool:
         """Fire-and-track: runs _dispatch as its own task instead of blocking the read
         loop on it (see the call site's comment — spec 121 research.md R10). Keeps a
         strong reference in self._dispatch_tasks so the task isn't garbage-collected
         mid-flight, and logs (rather than silently drops) an exception that escapes
         _dispatch's own internal handling."""
+        if self._closed:
+            return False
+        if (len(_DISPATCH_RESERVATIONS) >= _MAX_DISPATCH_TASKS or
+                sum(_DISPATCH_RESERVATIONS.values()) + len(raw) > _MAX_DISPATCH_BYTES):
+            self.logger.warning("Federation dispatch capacity exceeded; closing overloaded transport")
+            return False
         task = asyncio.create_task(self._dispatch(raw))
+        _DISPATCH_RESERVATIONS[task] = len(raw)
         self._dispatch_tasks.add(task)
 
         def _done(t: asyncio.Task) -> None:
             self._dispatch_tasks.discard(t)
+            _DISPATCH_RESERVATIONS.pop(t, None)
             if not t.cancelled() and t.exception() is not None:
                 self.logger.error("Unhandled exception in dispatched task: %s", t.exception())
 
         task.add_done_callback(_done)
+        return True
 
     async def _dispatch(self, raw: bytes):
         try:
@@ -378,19 +398,30 @@ class FederationChannel:
     # ---- outbound requests --------------------------------------------
 
     async def call(self, method: str, params: dict, timeout: float = 30.0) -> dict:
+        if self._closed:
+            raise ConnectionError("Channel is closed")
         self._next_id += 1
         req_id = f"{self.local_identity}:{self._next_id}"
-        fut = asyncio.get_event_loop().create_future()
+        fut = asyncio.get_running_loop().create_future()
         self._pending[req_id] = fut
-        await self._send_frames({"jsonrpc": "2.0", "id": req_id, "method": method, "params": params})
+
+        async def exchange():
+            await self._send_frames({"jsonrpc": "2.0", "id": req_id, "method": method, "params": params})
+            return await fut
+
         try:
-            resp = await asyncio.wait_for(fut, timeout=timeout)
+            resp = await asyncio.wait_for(exchange(), timeout=timeout)
+            if "error" in resp:
+                raise RpcError(resp["error"]["code"], resp["error"]["message"])
+            return resp.get("result", {})
         except asyncio.TimeoutError:
+            raise RpcError(ERR_EXECUTION_TIMEOUT, f"{method} timed out; operation outcome may be unknown")
+        finally:
             self._pending.pop(req_id, None)
-            raise RpcError(ERR_EXECUTION_TIMEOUT, f"{method} timed out")
-        if "error" in resp:
-            raise RpcError(resp["error"]["code"], resp["error"]["message"])
-        return resp.get("result", {})
+            if not fut.done():
+                fut.cancel()
+            elif not fut.cancelled():
+                fut.exception()  # consume a close error if send failed concurrently
 
     async def notify(self, method: str, params: dict):
         await self._send_frames({"jsonrpc": "2.0", "method": method, "params": params})

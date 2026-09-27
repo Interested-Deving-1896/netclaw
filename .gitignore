@@ -1,5 +1,7 @@
 # Environment and secrets
 .env
+*.pre-voice-auth
+.voice-auth-*
 *.env.local
 
 # Python
@@ -160,3 +162,17 @@ docs/ietf/kdrfc-err.txt
 # container runtime and regenerated on every deploy — lab output, not source.
 labs/*/clab-*/
 labs/**/.tls/
+
+*.pre-pyats-http
+*.pre-in2n-tls
+*.pre-zoom-auth
+*.pre-redfish-tls
+*.pre-nautobot-tls
+*.pre-anta-tls
+*.pre-change-gates
+
+*.pre-ssh-trust
+
+# Private environment-migration recovery digests
+*.pre-*.state.json
+local-permissions-backup.json

@@ -31,10 +31,12 @@
 #   NETCLAW_VENV=/path/to/.venv netclaw_pip_install <args...>   # into that venv
 #   netclaw_venv_create /path/to/.venv             # create a venv that actually works
 #
-# Both are no-ops for behaviour on hosts where pip3 and python3 already agree.
+# Shared installs enforce tracked compatibility constraints; dedicated venvs
+# use their own requirements. Distro-managed Python is never overridden.
 
 # Interpreter that NetClaw's servers actually run under. Overridable for testing.
-: "${NETCLAW_PY:=/usr/bin/python3}"
+: "${NETCLAW_PY:=$(command -v python3)}"
+NETCLAW_SHARED_CONSTRAINTS="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../config" && pwd)/python-shared-constraints.txt"
 
 _netclaw_resolve_py() {
     # An explicit venv always wins.
@@ -72,15 +74,17 @@ netclaw_pip_install() {
         echo "  Remedy: $py -m ensurepip --upgrade   (or install the matching *-venv package)" >&2
         return 1
     fi
-    # PEP 668: a distro-managed interpreter refuses installs outright with
-    # "error: externally-managed-environment". Spec 090 found this helper had no handling
-    # for it, so on Ubuntu 26.04 the one install path spec 077 mandates could not install
-    # any new package at all -- which is why three registered servers were dead while the
-    # installer reported success.
-    #
-    # Handled here, once, rather than at 56 call sites that each appended
-    # `--break-system-packages` behind `2>/dev/null || log_warn`. That pattern turned a
-    # total failure into a single warning line in a long log, and exit 0.
+    # PEP 668 protects distro packages. Report refusal with a venv remedy;
+    # never silently override it or claim the component was installed.
+    # Constrain the shared legacy runtime. Dedicated environments carry their
+    # own manifests and must not inherit incompatible shared MCP1 constraints.
+    if [ -z "${NETCLAW_VENV:-}" ]; then
+        if [ ! -f "$NETCLAW_SHARED_CONSTRAINTS" ]; then
+            echo "Missing tracked shared Python constraints; refusing unbounded install." >&2
+            return 1
+        fi
+        set -- -c "$NETCLAW_SHARED_CONSTRAINTS" "$@"
+    fi
     local out rc
     out="$("$py" -m pip install "$@" 2>&1)"; rc=$?
     if [ "$rc" -eq 0 ]; then
@@ -89,15 +93,10 @@ netclaw_pip_install() {
     fi
 
     if printf '%s' "$out" | grep -q 'externally-managed-environment'; then
-        # Say so. A silent retry here would hide that packages are landing in a
-        # distro-managed tree, which the operator may need to know when it breaks.
         echo "netclaw_pip_install: $py is externally managed (PEP 668)." >&2
-        echo "  Retrying with --break-system-packages. To avoid this, set NETCLAW_VENV." >&2
-        out="$("$py" -m pip install --break-system-packages "$@" 2>&1)"; rc=$?
-        if [ "$rc" -eq 0 ]; then
-            printf '%s\n' "$out"
-            return 0
-        fi
+        echo "  Refusing to override system packages. Create a venv with netclaw_venv_create," >&2
+        echo "  set NETCLAW_VENV to it, and configure the server to use that interpreter." >&2
+
     fi
 
     # FR-003c (spec 090): never swallow the reason. The whole point of a single install

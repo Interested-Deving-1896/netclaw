@@ -9,7 +9,9 @@ has this been down.
 ## Adopted, not authored
 
 See [NOTICE.md](./NOTICE.md). `mpeirone/zabbix-mcp-server`, pinned `0722f48`, **GPL-3.0**, vendored
-unmodified, invoked over stdio as a separate program.
+unmodified, invoked over stdio as a separate program. The NetClaw-owned
+`scripts/zabbix-stdio.py` launcher normalizes blank/unresolved TLS settings to verified
+transport before starting upstream; only explicit `false`, `0` or `no` disables it.
 
 ### Why adopt, with the numbers
 
@@ -69,7 +71,7 @@ else. **This is the first NetClaw integration where a core distinction is enforc
 structure** — a deliberate trade for the smallest surface and upstream maintenance.
 
 **2. No per-call GAIT audit.** The upstream has no audit concept, and there is no platform-level MCP audit.
-Acceptable only because this is strictly read-only: there is no operation to record.
+Read-only calls still need a session audit record: record the request, observations and failures with GAIT separately. This integration does not provide automatic per-call persistence.
 
 ## The two traps
 

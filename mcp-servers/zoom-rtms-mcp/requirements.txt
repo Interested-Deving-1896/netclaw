@@ -12,3 +12,6 @@ python-dotenv>=1.0.0
 #   python3.13 -m venv mcp-servers/zoom-rtms-mcp/.venv
 #   mcp-servers/zoom-rtms-mcp/.venv/bin/pip install -r requirements.txt
 rtms>=1.0.0
+
+# Authenticated Zoom Apps context (isolated runtime).
+cryptography>=46,<51

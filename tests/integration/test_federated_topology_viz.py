@@ -33,6 +33,8 @@ _DAEMON_API = "http://127.0.0.1:8179"
 
 
 def _daemon_reachable() -> bool:
+    if os.environ.get("RUN_LIVE_FEDERATION_TESTS") != "1":
+        return False
     try:
         httpx.get(f"{_DAEMON_API}/n2n/members/health", timeout=5.0)
         return True
@@ -41,6 +43,8 @@ def _daemon_reachable() -> bool:
 
 
 def _member_active() -> bool:
+    if os.environ.get("RUN_LIVE_FEDERATION_TESTS") != "1":
+        return False
     try:
         response = httpx.get(f"{_DAEMON_API}/n2n/members/health", timeout=5.0)
         for m in response.json().get("members", []):
@@ -51,7 +55,7 @@ def _member_active() -> bool:
     return False
 
 
-pytestmark = pytest.mark.skipif(not _daemon_reachable(), reason="mesh daemon not reachable at :8179")
+pytestmark = pytest.mark.skipif(not _daemon_reachable(), reason="set RUN_LIVE_FEDERATION_TESTS=1 with a disposable live federation")
 
 
 def _snapshot():

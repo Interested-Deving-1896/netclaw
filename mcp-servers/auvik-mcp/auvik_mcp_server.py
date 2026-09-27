@@ -41,7 +41,7 @@ logger = logging.getLogger("auvik-mcp")
 
 AUVIK_USERNAME: str = os.getenv("AUVIK_USERNAME", "")
 AUVIK_API_KEY: str = os.getenv("AUVIK_API_KEY", "")
-AUVIK_VERIFY_SSL: bool = os.getenv("AUVIK_VERIFY_SSL", "true").lower() == "true"
+AUVIK_VERIFY_SSL: bool = os.getenv("AUVIK_VERIFY_SSL", "true").strip().lower() not in ("false", "0", "no")
 AUVIK_TIMEOUT: int = int(os.getenv("AUVIK_TIMEOUT", "30"))
 AUVIK_RATE_LIMIT: int = int(os.getenv("AUVIK_RATE_LIMIT", "600"))  # calls per 60 s
 AUVIK_MAX_PAGES: int = int(os.getenv("AUVIK_MAX_PAGES", "50"))

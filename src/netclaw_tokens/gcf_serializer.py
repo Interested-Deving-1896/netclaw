@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+from functools import lru_cache
 from typing import Any
 
 logger = logging.getLogger("netclaw_tokens.gcf_serializer")
@@ -292,6 +293,43 @@ def get_session_manager() -> GCFSessionManager:
     return _session_manager
 
 
+def _validated_generic(data: Any) -> str:
+    """Use generic GCF only when its decoder preserves JSON values and types.
+
+    Some scalar strings/empty structures are ambiguous in the generic grammar.
+    Reject a lossy encoding so the caller returns its original JSON snapshot.
+    """
+    from gcf import encode_generic, decode_generic
+    encoded = encode_generic(data)
+    original = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    decoded = json.dumps(decode_generic(encoded), sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    if decoded != original:
+        raise ValueError("GCF generic round-trip changed source data")
+    return encoded
+
+
+@lru_cache(maxsize=16)
+def _cached_generic(snapshot: str) -> str:
+    return _validated_generic(json.loads(snapshot))
+
+
+def _lossless_generic(data: Any) -> str:
+    # Immutable content keys prevent a caller mutating an object from receiving
+    # stale results. Bound retained inputs to 4 MiB; large responses bypass reuse.
+    snapshot = json.dumps(data, separators=(",", ":"), ensure_ascii=False)
+    if len(snapshot.encode("utf-8")) <= 256 * 1024:
+        return _cached_generic(snapshot)
+    return _validated_generic(data)
+
+
+def _with_source_snapshot(graph_text: str, source_text: str) -> str:
+    # Graph symbols are a projection: they cannot carry arbitrary device fields,
+    # error envelopes or observation timestamps. Even a delta must include the
+    # current full source, because a recipient may not retain earlier context.
+    return ("# Topology projection (summary only)\n" + graph_text +
+            "\n# Complete source snapshot (authoritative)\n" + source_text)
+
+
 # ---------------------------------------------------------------------------
 # Main serialize function
 # ---------------------------------------------------------------------------
@@ -349,24 +387,27 @@ def serialize_response(
         nodes, edges, _, _ = _detect_graph_arrays(data)
         if nodes is not None and edges is not None:
             try:
+                source_text = _lossless_generic(data)
                 payload = _build_payload(nodes, edges)
 
                 # Try delta first
                 if use_delta:
                     delta_str = _session_manager.encode_delta(payload)
                     if delta_str is not None:
+                        delta_str = _with_source_snapshot(delta_str, source_text)
                         gcf_token_count = _estimate_token_count(delta_str)
                         return _result(delta_str, json_token_count, gcf_token_count, False, "delta")
 
                 # Try session dedup
                 if use_session:
-                    gcf_str = _session_manager.encode_with_session(payload)
+                    gcf_str = _with_source_snapshot(
+                        _session_manager.encode_with_session(payload), source_text)
                     gcf_token_count = _estimate_token_count(gcf_str)
                     return _result(gcf_str, json_token_count, gcf_token_count, False, "graph+session")
 
                 # Plain graph encoding
                 from gcf import encode
-                gcf_str = encode(payload)
+                gcf_str = _with_source_snapshot(encode(payload), source_text)
                 if use_session or use_delta:
                     _session_manager._last_payload = payload
                 gcf_token_count = _estimate_token_count(gcf_str)
@@ -380,9 +421,7 @@ def serialize_response(
 
     # Fall back to generic profile
     try:
-        from gcf import encode_generic
-
-        gcf_str = encode_generic(data)
+        gcf_str = _lossless_generic(data)
         gcf_token_count = _estimate_token_count(gcf_str)
         return _result(gcf_str, json_token_count, gcf_token_count, False, "generic")
     except Exception as exc:

@@ -187,14 +187,11 @@ fi
 
 log_info "All prerequisites satisfied."
 
-# PEP 668: modern distros (Debian 12+, Ubuntu 23.04+, Fedora 38+) mark the
-# system Python "externally managed" and every bare `pip3 install` fails
-# with "externally-managed-environment". NetClaw's MCP servers install into
-# the system Python by design, so opt back in for this run.
-if python3 -c 'import os,sys,sysconfig; sys.exit(0 if os.path.exists(os.path.join(sysconfig.get_path("stdlib"), "EXTERNALLY-MANAGED")) else 1)' 2>/dev/null; then
-    export PIP_BREAK_SYSTEM_PACKAGES=1
-    log_warn "This system's Python is externally managed (PEP 668)."
-    log_info "Setting PIP_BREAK_SYSTEM_PACKAGES=1 for this run so MCP server pip installs can proceed."
+# PEP 668 is a protection, not an installation error to override globally.
+# Shared MCP dependencies require an explicitly selected compatible runtime.
+if python3 -c 'import os,sys,sysconfig; sys.exit(0 if sys.prefix == sys.base_prefix and os.path.exists(os.path.join(sysconfig.get_path("stdlib"), "EXTERNALLY-MANAGED")) else 1)' 2>/dev/null; then
+    log_warn "System Python is externally managed. Select an isolated runtime before shared MCP installs."
+    log_info "See docs/PYTHON-RUNTIME-MIGRATION.md; system package protection remains enabled."
 fi
 
 echo ""
@@ -473,49 +470,24 @@ component_install_pyats() {
 log_step "Installing pyATS MCP Server..."
 echo "  Source: https://github.com/automateyournetwork/pyATS_MCP"
 
-# pyATS ships wheels for Python 3.9–3.13 only — on newer Pythons the pip
-# install fails, so check up front and give a real path forward.
-PY_MAJOR=$(python3 -c 'import sys; print(sys.version_info.major)' 2>/dev/null || echo 0)
-PY_MINOR=$(python3 -c 'import sys; print(sys.version_info.minor)' 2>/dev/null || echo 0)
-if [ "$PY_MAJOR" -ne 3 ] || [ "$PY_MINOR" -lt 9 ] || [ "$PY_MINOR" -gt 13 ]; then
-    log_error "pyATS supports Python 3.9–3.13 — found $(python3 --version 2>/dev/null || echo 'no python3')."
-    ALT_PY=""
-    for v in 3.13 3.12 3.11 3.10; do
-        if command -v "python$v" &> /dev/null; then ALT_PY="python$v"; break; fi
-    done
-    if [ -n "$ALT_PY" ]; then
-        log_warn "This system has $ALT_PY — install pyATS into a venv with:"
-        echo "    $ALT_PY -m venv ~/.openclaw/pyats-venv"
-        echo "    ~/.openclaw/pyats-venv/bin/pip install 'pyats[full]' mcp pydantic python-dotenv"
-    else
-        log_warn "Install Python 3.13 first (e.g. 'sudo apt install python3.13 python3.13-venv', or pyenv), then re-run:"
-        echo "    ./scripts/install.sh --components pyats"
+local pyats_venv="${PYATS_VENV:-$RUNTIME_HOME/pyats-venv}"
+local previous_existed=0
+if [ -e "$pyats_venv.previous" ] || [ -L "$pyats_venv.previous" ]; then previous_existed=1; fi
+# Source and dependencies are staged together. Keep legacy clones untouched.
+python3 "$NETCLAW_DIR/scripts/setup-pyats-runtime.py" --target "$pyats_venv" || return 1
+PYATS_MCP_DIR="$pyats_venv/upstream"
+mkdir -p "$RUNTIME_HOME"
+if ! python3 "$NETCLAW_DIR/scripts/migrate-pyats-http.py" \
+    --env-file "$RUNTIME_ENV" --repo "$NETCLAW_DIR" --venv "$pyats_venv" \
+    --upstream "$PYATS_MCP_DIR/pyats_mcp_server.py" --apply; then
+    # Roll back only the generation this invocation displaced, never an older
+    # retained backup on an idempotent rerun.
+    if [ "$previous_existed" -eq 0 ] && { [ -e "$pyats_venv.previous" ] || [ -L "$pyats_venv.previous" ]; }; then
+        python3 "$NETCLAW_DIR/scripts/setup-pyats-runtime.py" --target "$pyats_venv" --restore || return 1
     fi
-    echo ""
     return 1
 fi
-
-PYATS_MCP_DIR="$MCP_DIR/pyATS_MCP"
-clone_or_pull "$PYATS_MCP_DIR" "https://github.com/automateyournetwork/pyATS_MCP.git"
-
-log_info "Installing Python dependencies..."
-if ! netclaw_pip_install -r "$PYATS_MCP_DIR/requirements.txt" 2>/dev/null; then
-    log_warn "requirements.txt install failed — trying the direct package set..."
-    if ! netclaw_pip_install "pyats[full]" mcp pydantic python-dotenv; then
-        log_error "pyATS Python dependencies failed to install (see pip output above)."
-        log_warn "Fix the pip error, then retry with: ./scripts/install.sh --add \"pyats\""
-        echo ""
-        return 1
-    fi
-fi
-
-if [ -f "$PYATS_MCP_DIR/pyats_mcp_server.py" ]; then
-    log_info "pyATS MCP ready: $PYATS_MCP_DIR/pyats_mcp_server.py"
-else
-    log_error "pyats_mcp_server.py not found after clone"
-    echo ""
-    return 1
-fi
+log_info "pyATS stateless HTTP runtime ready, with NetClaw compatibility launcher."
 
 echo ""
 }
@@ -673,7 +645,7 @@ GAIT_MCP_DIR="$MCP_DIR/gait_mcp"
 clone_or_pull "$GAIT_MCP_DIR" "https://github.com/automateyournetwork/gait_mcp.git"
 
 log_info "Installing GAIT dependencies..."
-netclaw_pip_install mcp fastmcp gait-ai 2>/dev/null || log_warn "Some GAIT deps failed"
+bash "$NETCLAW_DIR/scripts/gait-venv-setup.sh" || return 1
 
 [ -f "$GAIT_MCP_DIR/gait_mcp.py" ] && \
     log_info "GAIT MCP ready: $GAIT_MCP_DIR/gait_mcp.py (runs via gait-stdio.py wrapper)" || \
@@ -1993,9 +1965,10 @@ if [ -d "$N2N_MCP_DIR" ]; then
     log_info "Installing n2n-mcp dependencies..."
     netclaw_pip_install -r "$N2N_MCP_DIR/requirements.txt" || \
         netclaw_pip_install httpx fastmcp || \
-        log_warn "n2n-mcp deps install failed — install httpx + fastmcp manually"
+        { log_warn "n2n-mcp deps install failed — install httpx + fastmcp manually"; return 1; }
 else
     log_warn "n2n-mcp not found — it should be bundled at mcp-servers/n2n-mcp/"
+    return 1
 fi
 
 # Spec 105: N2N declares "Requires the mesh" above, and the mesh daemon IS
@@ -2015,21 +1988,13 @@ if [ -f "$PROTOCOL_MCP_REQS" ]; then
     log_info "Ensuring mesh daemon (protocol-mcp) dependencies — N2N runs on it..."
     netclaw_pip_install -r "$PROTOCOL_MCP_REQS" || \
         netclaw_pip_install websockets qrcode httpx h2 || \
-        log_warn "mesh daemon deps install failed — the NCFED edge listener will not bind"
+        { log_warn "mesh daemon deps install failed — the NCFED edge listener will not bind"; return 1; }
 fi
 
 # Enable the federation layer in the OpenClaw .env
-OPENCLAW_ENV_N2N="$HOME/.openclaw/.env"
-[ -f "$OPENCLAW_ENV_N2N" ] || touch "$OPENCLAW_ENV_N2N"
-if ! grep -q "^N2N_ENABLED=" "$OPENCLAW_ENV_N2N" 2>/dev/null; then
-    {
-        echo "N2N_ENABLED=true"
-        echo "N2N_DISPLAY_NAME=$(hostname)"
-    } >> "$OPENCLAW_ENV_N2N"
-    log_info "Set N2N_ENABLED=true in $OPENCLAW_ENV_N2N"
-else
-    log_info "N2N already configured in $OPENCLAW_ENV_N2N"
-fi
+_set_env_default N2N_ENABLED true || return 1
+_set_env_default N2N_DISPLAY_NAME "$(hostname)" || return 1
+log_info "N2N settings preserved/configured in $RUNTIME_ENV"
 
 log_info "N2N Federation installed. Next:"
 echo "      1. Ensure the mesh is up (./scripts/peering-setup.sh start)"
@@ -2038,13 +2003,8 @@ echo "      3. Reload MCP servers (openclaw mcp reload) to pick up n2n-mcp"
 echo "      4. Mutually consent with a peer — see N2N-PEERING-NETCLAWS.md"
 
 # ── iN2N (feature 056): standalone vs part of a "risk" ──────────────
-_in2n_setenv() {  # _in2n_setenv KEY VALUE — upsert into ~/.openclaw/.env
-    local key="$1" val="$2" f="$HOME/.openclaw/.env"
-    if grep -q "^${key}=" "$f" 2>/dev/null; then
-        sed -i "s|^${key}=.*|${key}=${val}|" "$f"
-    else
-        echo "${key}=${val}" >> "$f"
-    fi
+_in2n_setenv() {
+    _set_env_var "$1" "$2"
 }
 
 if declare -f tui_menu >/dev/null 2>&1; then
@@ -2057,7 +2017,7 @@ if declare -f tui_menu >/dev/null 2>&1; then
         "Part of a risk — Member Claw (focused specialist; dials the Border)"
     case "$TUI_CHOICE" in
         0)
-            _in2n_setenv N2N_ROLE standalone
+            _in2n_setenv N2N_ROLE standalone || return 1
             log_info "Configured as standalone NetClaw."
             ;;
         1)
@@ -2071,10 +2031,10 @@ if declare -f tui_menu >/dev/null 2>&1; then
                 0) _stacks=both ;; 1) _stacks=in2n ;; *) _stacks=en2n ;;
             esac
             read -r -p "  iN2N listener port for member dial-ins [11790]: " _p
-            _in2n_setenv N2N_ROLE border
-            _in2n_setenv N2N_RISK_NAME "${_risk_name:-my-risk}"
-            _in2n_setenv N2N_ENABLED_STACKS "$_stacks"
-            _in2n_setenv N2N_IN2N_PORT "${_p:-11790}"
+            _in2n_setenv N2N_ROLE border || return 1
+            _in2n_setenv N2N_RISK_NAME "${_risk_name:-my-risk}" || return 1
+            _in2n_setenv N2N_ENABLED_STACKS "$_stacks" || return 1
+            _in2n_setenv N2N_IN2N_PORT "${_p:-11790}" || return 1
             log_info "Configured as Border Claw of risk '${_risk_name:-my-risk}' (stacks=$_stacks)."
             echo "      Add members with: netclaw risk add <profile|custom> <name>"
             echo "      Profiles available: $(python3 "${NETCLAW_DIR:-.}/scripts/in2n-profiles.py" list 2>/dev/null | awk '{printf "%s ", $1}')"
@@ -2084,10 +2044,10 @@ if declare -f tui_menu >/dev/null 2>&1; then
             read -r -p "  This member's name (member_id will be <risk>/<name>): " _mname
             read -r -p "  Border endpoint (host:port the member dials): " _bep
             read -r -p "  Enrollment token from the Border: " _tok
-            _in2n_setenv N2N_ROLE member
-            _in2n_setenv N2N_RISK_NAME "${_risk_name:-my-risk}"
-            _in2n_setenv N2N_BORDER_ENDPOINT "$_bep"
-            _in2n_setenv N2N_MEMBER_ID "${_risk_name:-my-risk}/${_mname:-member}"
+            _in2n_setenv N2N_ROLE member || return 1
+            _in2n_setenv N2N_RISK_NAME "${_risk_name:-my-risk}" || return 1
+            _in2n_setenv N2N_BORDER_ENDPOINT "$_bep" || return 1
+            _in2n_setenv N2N_MEMBER_ID "${_risk_name:-my-risk}/${_mname:-member}" || return 1
             [ -n "$_tok" ] && _in2n_setenv N2N_ENROLLMENT_TOKEN "$_tok"
             log_info "Configured as Member Claw ${_risk_name}/${_mname}. It will dial the Border on start."
             ;;
@@ -2545,13 +2505,13 @@ TOKEN_LIB_DIR="$NETCLAW_DIR/src/netclaw_tokens"
 if [ -d "$TOKEN_LIB_DIR" ]; then
     log_info "Installing netclaw_tokens dependencies..."
     netclaw_pip_install -r "$TOKEN_LIB_DIR/requirements.txt" || {
-            log_warn "netclaw_tokens pip install failed — trying individual packages"
-            netclaw_pip_install anthropic toon-format || \
-                    log_warn "Token optimization deps failed. Install manually: pip3 install anthropic toon-format"
+            log_error "Token optimization dependencies failed; fix the reported interpreter/dependency error and rerun the installer."
+            return 1
         }
     log_info "netclaw_tokens library ready at $TOKEN_LIB_DIR"
 else
-    log_warn "Token optimization library not found at $TOKEN_LIB_DIR"
+    log_error "Token optimization library not found at $TOKEN_LIB_DIR"
+    return 1
 fi
 
 echo ""
@@ -2743,14 +2703,9 @@ if [[ "$enable_forward" =~ ^[Yy]$ ]]; then
     OPENCLAW_ENV="$RUNTIME_ENV"
 
     forward_set_env_var() {
-        local key="$1" val="$2" tmp
-        [ -z "$val" ] && return
-        mkdir -p "$(dirname "$OPENCLAW_ENV")"
-        [ -f "$OPENCLAW_ENV" ] || touch "$OPENCLAW_ENV"
-        tmp="$(mktemp)"
-        grep -v "^${key}=" "$OPENCLAW_ENV" > "$tmp" 2>/dev/null || true
-        printf '%s=%s\n' "$key" "$val" >> "$tmp"
-        mv "$tmp" "$OPENCLAW_ENV"
+        local key="$1" val="$2"
+        [ -z "$val" ] && return 0
+        _set_env_var "$key" "$val"
     }
 
     forward_set_env_placeholder() {
@@ -2888,7 +2843,7 @@ echo ""
 core_deploy() {
 log_step "Deploying skills and configuration..."
 
-PYATS_SCRIPT="$PYATS_MCP_DIR/pyats_mcp_server.py"
+PYATS_SCRIPT="$NETCLAW_DIR/scripts/pyats-stdio.py"
 TESTBED_PATH="$NETCLAW_DIR/testbed/testbed.yaml"
 
 # Bootstrap the runtime state dir (create if it doesn't exist)
@@ -2941,63 +2896,38 @@ fi
 
 # Deploy skills into the runtime's skills dir (workspace/skills for OpenClaw,
 # a flat skills/ for Hermes)
-mkdir -p "$RUNTIME_SKILLS"
-cp -r "$NETCLAW_DIR/workspace/skills/"* "$RUNTIME_SKILLS/"
-log_info "Deployed skills to $RUNTIME_SKILLS/"
+python3 "$(dirname "$_NETCLAW_ENV_WRITER")/deploy-skills.py" \
+    --source "$NETCLAW_DIR/workspace/skills" \
+    --destination "$RUNTIME_SKILLS" \
+    --backups "$RUNTIME_HOME/skill-deployment-backups" \
+    --state-base "$(basename "$RUNTIME_HOME")" || return 1
+log_info "Deployed skills to $RUNTIME_SKILLS/ with recovery originals retained"
 
-# Skills are authored OpenClaw-native — they hardcode the state dir as
-# `~/.openclaw/...` in both functional paths (memory db, rag store, generated
-# output dirs) and credential docs (`~/.openclaw/.env`). On a non-OpenClaw
-# runtime, rewrite that state-dir segment in the DEPLOYED copies so the agent
-# looks in the right place. The repo's skills stay byte-for-byte OpenClaw-native.
-_state_base="$(basename "$RUNTIME_HOME")"   # e.g. .hermes
-if [ "$_state_base" != ".openclaw" ]; then
-    find "$RUNTIME_SKILLS" -type f \( -name '*.md' -o -name '*.py' -o -name '*.js' -o -name '*.css' \) \
-        -exec sed -i "s#\.openclaw#${_state_base}#g" {} + 2>/dev/null || true
-    log_info "Rewrote .openclaw → ${_state_base} in deployed skills"
-fi
-
-if [ "$RUNTIME" = "hermes" ]; then
-    # Hermes reads a single SOUL.md at the top of its state dir.
-    if [ -f "$NETCLAW_DIR/SOUL.md" ]; then
-        cp "$NETCLAW_DIR/SOUL.md" "$RUNTIME_HOME/SOUL.md"
-        log_info "Deployed SOUL.md to $RUNTIME_HOME/"
+# Both runtimes keep operator-edited persona files in RUNTIME_WORKSPACE.
+# These are bootstrap defaults, never an upgrade payload.
+mkdir -p "$RUNTIME_WORKSPACE"
+for mdfile in SOUL.md AGENTS.md IDENTITY.md USER.md TOOLS.md HEARTBEAT.md; do
+    if [ -e "$RUNTIME_WORKSPACE/$mdfile" ] || [ -L "$RUNTIME_WORKSPACE/$mdfile" ]; then
+        log_info "Preserved operator $mdfile"
+    elif [ -f "$NETCLAW_DIR/$mdfile" ]; then
+        cp "$NETCLAW_DIR/$mdfile" "$RUNTIME_WORKSPACE/$mdfile"
+        log_info "Bootstrapped $mdfile to workspace"
     fi
-    # Keep the other persona files alongside skills for reference.
-    for mdfile in AGENTS.md IDENTITY.md USER.md TOOLS.md HEARTBEAT.md; do
-        [ -f "$NETCLAW_DIR/$mdfile" ] && cp "$NETCLAW_DIR/$mdfile" "$RUNTIME_HOME/$mdfile"
-    done
-else
-    # Deploy OpenClaw workspace MD files (SOUL, AGENTS, IDENTITY, USER, TOOLS, HEARTBEAT)
-    for mdfile in SOUL.md AGENTS.md IDENTITY.md USER.md TOOLS.md HEARTBEAT.md; do
-        if [ -f "$NETCLAW_DIR/$mdfile" ]; then
-            cp "$NETCLAW_DIR/$mdfile" "$RUNTIME_WORKSPACE/$mdfile"
-            log_info "Deployed $mdfile to workspace"
-        fi
-    done
-    log_info "Deployed workspace files to $RUNTIME_WORKSPACE/"
-fi
+done
 
 # Symlink testbed into the workspace so the agent can find it
 mkdir -p "$RUNTIME_WORKSPACE/testbed"
-ln -sf "$NETCLAW_DIR/testbed/testbed.yaml" "$RUNTIME_WORKSPACE/testbed/testbed.yaml"
-log_info "Symlinked testbed.yaml into $RUNTIME_WORKSPACE/testbed/"
+if [ ! -e "$RUNTIME_WORKSPACE/testbed/testbed.yaml" ] && [ ! -L "$RUNTIME_WORKSPACE/testbed/testbed.yaml" ]; then
+    ln -s "$NETCLAW_DIR/testbed/testbed.yaml" "$RUNTIME_WORKSPACE/testbed/testbed.yaml"
+    log_info "Symlinked testbed.yaml into $RUNTIME_WORKSPACE/testbed/"
+else
+    log_info "Preserved operator workspace testbed"
+fi
 
 # Set ALL environment variables in the runtime .env
 OPENCLAW_ENV="$RUNTIME_ENV"
-[ -f "$OPENCLAW_ENV" ] || touch "$OPENCLAW_ENV"
-
-# Write env vars to OpenClaw .env (portable — no associative arrays for macOS bash 3.2)
-_set_env_var() {
-    local key="$1" val="$2"
-    if grep -q "^${key}=" "$OPENCLAW_ENV" 2>/dev/null; then
-        sed -i.bak "s|^${key}=.*|${key}=${val}|" "$OPENCLAW_ENV" && rm -f "$OPENCLAW_ENV.bak"
-    else
-        echo "${key}=${val}" >> "$OPENCLAW_ENV"
-    fi
-}
-
-_set_env_var "PYATS_TESTBED_PATH"       "$TESTBED_PATH"
+# Use common.sh's literal, atomic, private writer throughout deployment.
+_set_env_default "PYATS_TESTBED_PATH"   "$RUNTIME_WORKSPACE/testbed/testbed.yaml"
 _set_env_var "PYATS_MCP_SCRIPT"         "$PYATS_SCRIPT"
 _set_env_var "MCP_CALL"                 "$NETCLAW_DIR/scripts/mcp-call.py"
 _set_env_var "MARKMAP_MCP_SCRIPT"       "$MARKMAP_INNER/dist/index.js"
@@ -3026,8 +2956,8 @@ _set_env_var "HUMANRAIL_MCP_URL"       "http://127.0.0.1:8100/mcp"
 # Stateful data dirs — pin to the active runtime's home so RAG/Memory stores
 # land under ~/.hermes on Hermes instead of the servers' ~/.openclaw defaults.
 # No-op for OpenClaw ($RUNTIME_HOME is ~/.openclaw, same as the built-in default).
-_set_env_var "RAG_DATA_DIR"            "$RUNTIME_HOME/rag"
-_set_env_var "MEMORY_DATA_DIR"         "$RUNTIME_HOME/memory"
+_set_env_default "RAG_DATA_DIR"         "$RUNTIME_HOME/rag"
+_set_env_default "MEMORY_DATA_DIR"      "$RUNTIME_HOME/memory"
 
 # gtrace is a Go binary, not a Python script — just record the path
 if command -v gtrace &> /dev/null; then
@@ -3592,7 +3522,7 @@ for pair in "SNMP trap:snmptrap-mcp" "Syslog:syslog-mcp" "IPFIX/NetFlow:ipfix-mc
     fi
 done
 
-log_info "All three receivers ready — deduplication, rate limiting, and GAIT audit logging built in"
+log_info "Receiver dependency installation attempted — verify each startup and audit persistence counters"
 
 echo ""
 }
@@ -3698,9 +3628,9 @@ if [[ "$enable_comfyui_viz" =~ ^[Yy]$ ]]; then
     cd "$NETCLAW_DIR"
 
     log_info "Installing topology-diagram-mcp and image-style-mcp dependencies (spec 121)..."
-    python3 -m pip install --user --break-system-packages -r "$MCP_DIR/topology-diagram-mcp/requirements.txt" 2>/dev/null \
+    netclaw_pip_install -r "$MCP_DIR/topology-diagram-mcp/requirements.txt" 2>/dev/null \
         || log_warn "pip install failed for topology-diagram-mcp"
-    python3 -m pip install --user --break-system-packages -r "$MCP_DIR/image-style-mcp/requirements.txt" 2>/dev/null \
+    netclaw_pip_install -r "$MCP_DIR/image-style-mcp/requirements.txt" 2>/dev/null \
         || log_warn "pip install failed for image-style-mcp"
 
     if command -v openclaw &> /dev/null; then
@@ -4220,7 +4150,7 @@ else
     log_warn "Zabbix MCP directory missing: $ZABBIX_MCP_DIR"
 fi
 
-ZABBIX_MCP_CMD_DETECTED="$ZABBIX_MCP_DIR/.venv/bin/python -m zabbix_mcp_server.server"
+ZABBIX_MCP_CMD_DETECTED="$ZABBIX_MCP_DIR/.venv/bin/python -u $NETCLAW_DIR/scripts/zabbix-stdio.py"
 }
 
 component_install_globalping() {

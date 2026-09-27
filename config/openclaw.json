@@ -104,7 +104,11 @@
         "GNMI_TLS_SKIP_VERIFY": "${GNMI_TLS_SKIP_VERIFY:-false}",
         "GNMI_DEFAULT_PORT": "${GNMI_DEFAULT_PORT:-6030}",
         "GNMI_MAX_RESPONSE_SIZE": "${GNMI_MAX_RESPONSE_SIZE:-1048576}",
-        "GNMI_MAX_SUBSCRIPTIONS": "${GNMI_MAX_SUBSCRIPTIONS:-50}"
+        "GNMI_MAX_SUBSCRIPTIONS": "${GNMI_MAX_SUBSCRIPTIONS:-50}",
+        "SERVICENOW_INSTANCE_URL": "${SERVICENOW_INSTANCE_URL}",
+        "SERVICENOW_USERNAME": "${SERVICENOW_USERNAME}",
+        "SERVICENOW_PASSWORD": "${SERVICENOW_PASSWORD}",
+        "NETCLAW_LAB_MODE": "${NETCLAW_LAB_MODE:-false}"
       }
     },
     "azure-network-mcp": {
@@ -207,7 +211,7 @@
         "REDFISH_URL": "${REDFISH_URL:-}",
         "REDFISH_USERNAME": "${REDFISH_USERNAME:-}",
         "REDFISH_PASSWORD": "${REDFISH_PASSWORD:-}",
-        "REDFISH_VERIFY_TLS": "${REDFISH_VERIFY_TLS:-false}",
+        "REDFISH_VERIFY_TLS": "${REDFISH_VERIFY_TLS:-true}",
         "REDFISH_TIMEOUT": "${REDFISH_TIMEOUT:-15}"
       }
     },
@@ -346,7 +350,8 @@
       "env": {
         "NAUTOBOT_URL": "${NAUTOBOT_URL}",
         "NAUTOBOT_TOKEN": "${NAUTOBOT_TOKEN}",
-        "NAUTOBOT_VERIFY_SSL": "${NAUTOBOT_VERIFY_SSL:-false}",
+        "NAUTOBOT_VERIFY_SSL": "${NAUTOBOT_VERIFY_SSL:-true}",
+        "NAUTOBOT_CA_BUNDLE": "${NAUTOBOT_CA_BUNDLE}",
         "NAUTOBOT_TIMEOUT": "${NAUTOBOT_TIMEOUT:-60}",
         "ITSM_ENABLED": "${ITSM_ENABLED:-false}",
         "ITSM_LAB_MODE": "${ITSM_LAB_MODE:-true}"
@@ -361,7 +366,8 @@
       "env": {
         "NAUTOBOT_URL": "${NAUTOBOT_URL}",
         "NAUTOBOT_TOKEN": "${NAUTOBOT_TOKEN}",
-        "NAUTOBOT_VERIFY_SSL": "${NAUTOBOT_VERIFY_SSL:-false}",
+        "NAUTOBOT_VERIFY_SSL": "${NAUTOBOT_VERIFY_SSL:-true}",
+        "NAUTOBOT_CA_BUNDLE": "${NAUTOBOT_CA_BUNDLE}",
         "NAUTOBOT_TIMEOUT": "${NAUTOBOT_TIMEOUT:-60}",
         "GOLDEN_CONFIG_POLL_INTERVAL": "${GOLDEN_CONFIG_POLL_INTERVAL:-5}",
         "GOLDEN_CONFIG_JOB_TIMEOUT": "${GOLDEN_CONFIG_JOB_TIMEOUT:-300}",
@@ -378,7 +384,8 @@
       "env": {
         "NAUTOBOT_URL": "${NAUTOBOT_URL}",
         "NAUTOBOT_TOKEN": "${NAUTOBOT_TOKEN}",
-        "NAUTOBOT_VERIFY_SSL": "${NAUTOBOT_VERIFY_SSL:-false}",
+        "NAUTOBOT_VERIFY_SSL": "${NAUTOBOT_VERIFY_SSL:-true}",
+        "NAUTOBOT_CA_BUNDLE": "${NAUTOBOT_CA_BUNDLE}",
         "NAUTOBOT_TIMEOUT": "${NAUTOBOT_TIMEOUT:-60}",
         "ITSM_ENABLED": "${ITSM_ENABLED:-false}",
         "ITSM_LAB_MODE": "${ITSM_LAB_MODE:-true}"
@@ -604,7 +611,10 @@
         "CLAROTY_VERIFY_SSL": "${CLAROTY_VERIFY_SSL:-true}",
         "CLAROTY_TIMEOUT": "${CLAROTY_TIMEOUT:-30}",
         "CLAROTY_RATE_LIMIT_PER_MIN": "${CLAROTY_RATE_LIMIT_PER_MIN:-2000}",
-        "NETCLAW_LAB_MODE": "${NETCLAW_LAB_MODE:-false}"
+        "NETCLAW_LAB_MODE": "${NETCLAW_LAB_MODE:-false}",
+        "SERVICENOW_INSTANCE_URL": "${SERVICENOW_INSTANCE_URL}",
+        "SERVICENOW_USERNAME": "${SERVICENOW_USERNAME}",
+        "SERVICENOW_PASSWORD": "${SERVICENOW_PASSWORD}"
       }
     },
     "twitter-mcp": {
@@ -739,7 +749,7 @@
         "CML_URL": "${CML_URL}",
         "CML_USERNAME": "${CML_USERNAME}",
         "CML_PASSWORD": "${CML_PASSWORD}",
-        "CML_VERIFY_SSL": "${CML_VERIFY_SSL:-false}"
+        "CML_VERIFY_SSL": "${CML_VERIFY_SSL:-true}"
       },
       "args": [
         "-m",
@@ -1115,7 +1125,14 @@
       "args": [
         "-u",
         "mcp-servers/multivendor-cli-mcp/server.py"
-      ]
+      ],
+      "env": {
+        "SERVICENOW_INSTANCE_URL": "${SERVICENOW_INSTANCE_URL}",
+        "SERVICENOW_USERNAME": "${SERVICENOW_USERNAME}",
+        "SERVICENOW_PASSWORD": "${SERVICENOW_PASSWORD}",
+        "MULTIVENDOR_SSH_STRICT": "${MULTIVENDOR_SSH_STRICT:-true}",
+        "MULTIVENDOR_KNOWN_HOSTS": "${MULTIVENDOR_KNOWN_HOSTS}"
+      }
     },
     "cisco-psirt-mcp": {
       "command": "python3",
@@ -1156,7 +1173,10 @@
         "FORTIANALYZER_HOST": "${FORTIANALYZER_HOST}",
         "FORTIANALYZER_API_TOKEN": "${FORTIANALYZER_API_TOKEN}",
         "FORTINET_VERIFY_SSL": "${FORTINET_VERIFY_SSL}",
-        "FORTINET_ALLOW_WRITES": "${FORTINET_ALLOW_WRITES}"
+        "FORTINET_ALLOW_WRITES": "${FORTINET_ALLOW_WRITES}",
+        "SERVICENOW_INSTANCE_URL": "${SERVICENOW_INSTANCE_URL}",
+        "SERVICENOW_USERNAME": "${SERVICENOW_USERNAME}",
+        "SERVICENOW_PASSWORD": "${SERVICENOW_PASSWORD}"
       }
     },
     "bgp-intel-mcp": {
@@ -1180,7 +1200,8 @@
         "ANTA_USERNAME": "${ANTA_USERNAME}",
         "ANTA_PASSWORD": "${ANTA_PASSWORD}",
         "ANTA_ENABLE_PASSWORD": "${ANTA_ENABLE_PASSWORD}",
-        "ANTA_VERIFY_TLS": "${ANTA_VERIFY_TLS:-false}",
+        "ANTA_VERIFY_TLS": "${ANTA_VERIFY_TLS:-true}",
+        "ANTA_CA_BUNDLE": "${ANTA_CA_BUNDLE}",
         "ANTA_TIMEOUT": "${ANTA_TIMEOUT:-30}"
       }
     },
@@ -1251,8 +1272,8 @@
     "zabbix-mcp": {
       "command": "mcp-servers/zabbix-mcp/.venv/bin/python",
       "args": [
-        "-m",
-        "zabbix_mcp_server.server"
+        "-u",
+        "scripts/zabbix-stdio.py"
       ],
       "env": {
         "ZABBIX_URL": "${ZABBIX_URL}",
