@@ -5896,15 +5896,15 @@
       "path": "mcp-servers/protocol-mcp/bgp/__init__.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "execution-coverage",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "coverage.py7.16.2 on actual542-test N2N run; executed lines include imports; no live provider/network coverage implied"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/address_family.py",
@@ -5980,15 +5980,15 @@
       "path": "mcp-servers/protocol-mcp/bgp/constants.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "execution-coverage",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "coverage.py7.16.2 on actual542-test N2N run; executed lines include imports; no live provider/network coverage implied"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/errors.py",
@@ -6370,15 +6370,15 @@
       "path": "mcp-servers/protocol-mcp/bgp/federation/risk.py",
       "subsystem": "mcp-servers/protocol-mcp",
       "ownership": "first-party",
-      "review_state": "pending",
+      "review_state": "execution-coverage",
       "methods": [
-        "local structural/AST/security-pattern triage"
+        "coverage.py7.16.2 on actual542-test N2N run; executed lines include imports; no live provider/network coverage implied"
       ],
       "evidence": [
-        "evidence/skill-mcp-static-review.json"
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
       ],
       "findings": [],
-      "limitation": "Structural pass only; semantic/source-contract review and live behavior not fully verified"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mcp-servers/protocol-mcp/bgp/federation/rotation.py",
@@ -10704,21 +10704,29 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/ask_border_headless.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/ask_live_activity.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/background_refresh.dart",
@@ -10754,11 +10762,15 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/capability_registration.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/capture_client.dart",
@@ -10778,61 +10790,85 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/conversation_search.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/conversation_store.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/dashboard_data.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/device_deep_link.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/device_heartbeat.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/edge_ask_client.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/edge_client.dart",
@@ -10909,11 +10945,15 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/haptics.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/headless_connect.dart",
@@ -10943,11 +10983,15 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/live_activity.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/local_notifications.dart",
@@ -10963,31 +11007,43 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/message_feed.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/notification_deep_link.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/pending_approval_store.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/pending_approvals_headless.dart",
@@ -11003,11 +11059,15 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/pending_open_intent.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/push_message_ingest.dart",
@@ -11023,21 +11083,29 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/push_registration.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/reconnect_supervisor.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/theme_preference.dart",
@@ -11053,11 +11121,15 @@
       "path": "mobile/netclaw-mobile/lib/ncfed/turn_reconciler.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/ncfed/voice_transcription.dart",
@@ -11097,21 +11169,29 @@
       "path": "mobile/netclaw-mobile/lib/screens/answer_body.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/screens/approvals_screen.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/screens/capture_screen.dart",
@@ -11127,21 +11207,29 @@
       "path": "mobile/netclaw-mobile/lib/screens/chat_screen.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/screens/dashboard_screen.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/screens/device_scan_screen.dart",
@@ -11157,11 +11245,15 @@
       "path": "mobile/netclaw-mobile/lib/screens/empty_state.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/screens/enrollment_screen.dart",
@@ -11177,51 +11269,71 @@
       "path": "mobile/netclaw-mobile/lib/screens/feed_screen.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/screens/highlighted_text.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/screens/manual_enrollment_screen.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/screens/onboarding_explainer_screen.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/screens/settings_screen.dart",
       "subsystem": "mobile",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Flutter3.44.8 test --coverage;432passed; no native plugin/device coverage implied"
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/evidence/wsl/measured-execution-102.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Measured executed statements, not complete semantic source review. Unexecuted branches/native plugins/providers are not accepted by this disposition."
     },
     {
       "path": "mobile/netclaw-mobile/lib/theme.dart",

@@ -272,3 +272,7 @@ A124-099 found during lab asset/source boundary review. Three shell scripts and 
 A124-100 Canvas source review covers API request completion, IndexedDB session handlers, import/export and autosave lifecycle. Three baseline production-handler fixtures fail on deletion recreation and swallowed save/delete errors; repaired handlers plus request/switch concurrency gate are under HUD validation. Live-provider behavior is distinct from these browser-storage boundaries.
 
 A124-101 two production-panel VM fixtures reproduce unavailable/failed overlay reported enabled. Fix panel result-gating and optional module process lifecycle, with mocked SDK cleanup acceptance. This does not claim Zoom review entitlement or camera-frame API acceptance.
+
+A124-102 mobile deep-link trust boundary found during source review and instrumented Flutter tests. Actual handler regression calls the recording EdgeRpcSource before the fix; invalid input must now produce zero RPC calls. Ordinary hyphenated names and unknown valid inventory IDs remain supported.
+
+A124-103 lifecycle review: actual EnrollmentGate widget fixture completes reconnect after unmount; baseline must close the returned fake client but does not. Background refresh and HomeShell ownership paths traced for timeout/error/disposal followthrough before repair.

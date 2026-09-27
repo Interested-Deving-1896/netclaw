@@ -255,3 +255,8 @@ SQLite and Chroma are separate stores: abrupt termination between their commit p
 ### Canvas conversation persistence (100)
 
 IndexedDB session formats are unchanged. Canvas now requires pending replies or session saves to finish before switching/importing/deleting sessions, keeping node-id reuse from misattributing replies. Storage failures are visible and retain the current conversation. Deleting the active session no longer re-saves it while creating a blank session. Existing resurrected duplicates can be reviewed and deleted normally; no bulk removal or browser-data migration is performed.
+
+
+### Mobile device links (102)
+
+Automatic device-status links now accept exactly one inventory identifier of1–128 ASCII letters/digits/dots/underscores/colons/hyphens, starting with a letter or digit, and no user-info, port, query or fragment. Regenerate an old incompatible QR/link with a valid identifier, or type the intended request manually in Chat. Existing enrollment, conversation and device data are unchanged; no stored-state conversion is needed. This bounds untrusted link input and does not replace the Border's execution authorization.

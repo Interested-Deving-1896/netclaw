@@ -461,3 +461,11 @@ Async replies append by node id while sessions reuse root/numeric ids. Session s
 ### A124-101 — Medium — Zoom overlay toggle claims success before an available/successful implementation
 
 Panel changes enabled state before checking whether the optional overlay module exists or whether SDK calls succeed. The shipped HTML does not load overlay.js, yet the button reports enabled. Refuse unavailable/failed changes, update state only after an explicit true result, serialize button actions and clean up a controller after failed camera startup. Stop attempts cover both layers, retaining failure visibility. The optional module remains unloaded pending real Zoom Layers entitlement/API acceptance; no live overlay success is claimed.
+
+### A124-102 — High — Device deep links inject arbitrary text into automatically submitted requests
+
+Device URI parsing accepts any decoded first path segment and ignores user info, ports, query/fragment and extra segments. A QR/link can contain encoded newlines and instructions that become an automatically submitted agent prompt. Reproduction reaches ask() with such a link. Restrict the device route to one bounded ASCII inventory identifier, reject extra URI fields and retain normal known/unknown identifier behavior. This narrows untrusted identifier syntax; it does not replace server authorization or claim to solve arbitrary prompt injection.
+
+### A124-103 — High — Mobile lifecycle paths retain clients after their owner exits
+
+EnrollmentGate drops a late reconnect result after disposal without closing it. HomeShell stops its supervisor but does not close its client or unsubscribe deep-link/push listeners, allowing old handlers to survive removal. Background refresh uses an unowned timed-out reconnect and skips close on intermediate errors, and its native setup repeats the independent-engine/full-plugin pattern already corrected for App Intents. Reproduce and close all owned clients/listeners, reuse bounded connection ownership and selective grouped native startup. Native runtime behavior remains distinct from simulator compilation.

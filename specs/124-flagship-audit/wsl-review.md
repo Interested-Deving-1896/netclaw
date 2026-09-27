@@ -248,3 +248,10 @@ macOS run36325037956 (f4fdd5a) passed Flutter3.44.8 analysis/tests, config-only 
 ### Optional Zoom panel and UI asset boundary (101)
 
 Read overlay.js, manifest scope/host declarations and panel.html; traced the toggle in panel.js. The optional overlay module is not loaded by shipped HTML, so the UI now reports unavailable instead of enabled. Two production-handler failure fixtures and a mocked SDK partial-start cleanup fixture pass; HUD227 tests pass. Live Zoom Layers entitlement/frame submission remains unverified and is not enabled by this fix. CSS files were checked for external-resource/executable sinks; HUD CSS compiles in the production build. The public fixtures symlink resolves to tracked spec072 static fixtures; licensing notice retains upstream MIT text.
+
+
+### Mobile links and measured execution (102)
+
+Read device_deep_link.dart, notification_deep_link.dart, push_message_ingest.dart, pending_open_intent.dart, pending_approvals_headless.dart, border_health_headless.dart; read Swift HeadlessEngineRunner, WidgetDataStore and WatchRelayPlugin. Device-link hostile input reached an actual recording RPC before repair and now yields zero calls. Full Flutter432/analyze pass. Native background/foreground disposal paths exposed further lifecycle candidates and remain under review.
+
+Instrumented actual N2N542 and Flutter432 runs. measured-execution-102.json records covered source line numbers, measured totals and source hashes, explicitly including import execution. Only pending paths with at least10 covered lines and50% measured statements receive execution-coverage, not semantic-review status. This is line evidence, never a claim of100% branch or device coverage.

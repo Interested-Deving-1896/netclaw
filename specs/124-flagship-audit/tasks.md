@@ -252,3 +252,7 @@ Batch dependencies: T028 → T029 → T030 security verification; T031 precedes 
 - [x] T141 [US1/US2] Fix A124-100 Canvas conversation/session crossing and persistence false success in App.jsx and session-gate.js; verify production session handlers plus pending-request/save admission, retain state on storage failures and prevent deleted-session recreation. Run HUD tests/build and record browser acceptance scope.
 
 - [x] T142 [US2] Fix A124-101 ui/netclaw-zoom-app panel/overlay false enabled state and partial-start cleanup; verify actual panel click handlers and mocked SDK failure cleanup, retain explicit live entitlement gap.
+
+- [x] T143 [US1/US3] Fix A124-102 mobile device-deep-link automatic prompt text injection in lib/ncfed/device_deep_link.dart; constrain URI and decoded identifier, test no RPC for hostile links and valid existing links, document QR/manual-query adoption.
+
+- [ ] T144 [US1/US2] Fix A124-103 mobile lifecycle client/listener ownership in main.dart, background_refresh.dart, deep-link listeners and AppDelegate.swift; verify actual widget late completion, late/error headless cleanup and native simulator compilation after selective grouped engine registration.
