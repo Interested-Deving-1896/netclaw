@@ -223,3 +223,9 @@ Batch dependencies: T028 → T029 → T030 security verification; T031 precedes 
 - [x] T126 [US4] Correct A124-086 Azure ordinary logger mislabeled GAIT persistence in azure_network_mcp_server.py and README.md; name emitted records operation logs and use returned rather than success for functions that return error envelopes. Preserve tool registration and explicitly require session GAIT recording.
 
 - [ ] T127 [US2] Fix A124-087 floating Flutter CI toolchain changing locked SDK dependencies and failing clean plugin preparation; pin the verified Flutter 3.44.8 in .github/workflows/mobile-ci.yml, trigger CI on workflow edits and validate actual macOS analysis/tests/native builds.
+
+- [ ] T128 [US1] Fix A124-088 standalone credential writers in checkpoint-enable.sh, ipfabric-enable.sh, forward-enable.sh, twilio_install.sh, twitter_install.sh and twitter_oauth2_setup.py; replace peering prompt eval/literal decoding and patch-claw-certs env writes; reuse safe writer/profile preservation and prove actual helper/interactive fixture behavior.
+
+- [ ] T129 [US2] Extend A124-061 to standalone dependency/build/smoke failures in checkpoint-enable.sh, forward-enable.sh, twitter_install.sh and twilio_install.sh. Use the existing scoped PEP668-safe pip helper; prove required failures exit nonzero before configuration and report no successful installation.
+
+- [ ] T130 [US1] Fix A124-089 OAuth callback state/path binding and unbounded waits in scripts/twitter_oauth2_setup.py; verify real loopback callback rejection/acceptance in tests/unit/test_oauth_callback_state.py, bound provider exchange and save returned tokens privately without logging secrets.
