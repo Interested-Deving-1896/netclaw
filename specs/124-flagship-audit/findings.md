@@ -429,3 +429,15 @@ PoweringOff becomes POWERED_OFF and PoweringOn becomes POWERED_ON, asserting a s
 ### A124-093 — High — Chat sessions are unbound and transcripts allow path escape
 
 Chat message handling never verifies session existence, owner or direction. Peer-supplied ids are interpolated into transcript filenames, and duplicate opens silently reuse another peer’s row. Transcript errors are swallowed; symlinks can redirect writes. Concurrent messages debit request allowance only after gateway completion. Bind sessions before execution, constrain ids/paths, surface persistence failures and reserve budget before awaiting the model.
+
+### A124-094 — High — Certificate renewal reports unchanged credentials as renewed and retires active keys
+
+Create-once CA/hub helpers and no-op ACME renewal can return the original certificate. Rotation registers it and retires the same fingerprint, falsely reporting success and removing it from the active registry. A real renewal retaining its key suffers the same retirement. Require a different valid certificate and retain same-key successors as active. Unsupported CA/hub renewal now needs explicit operator attention rather than a false success; peer successor rollout remains a separate review.
+
+### A124-095 — High — Timed-out or cancelled ACME commands continue running
+
+The ACME wrapper cancels communicate on timeout/cancellation but never terminates or reaps the process. The command can continue after its caller fails. Two real subprocess cases reproduce the surviving child. Terminate the owned process group and reap before returning failure; preserve normal exit/output behavior.
+
+### A124-096 — High — Automatic certificate renewal breaks established peer pins
+
+Host renewal generates a new key, then sends an unacknowledged n2n/cert/update notification for which no handler exists. A remote authoritative file pin rejects the renewed host, although rotation reports success. Renew the certificate using the installed key and preserve pin identity; refuse registry/key inconsistency before writes. Remove claims of automatic successor-key overlap. Deliberate key replacement requires the existing operator verification/re-pin workflow.

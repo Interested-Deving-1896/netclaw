@@ -236,3 +236,9 @@ Batch dependencies: T028 → T029 → T030 security verification; T031 precedes 
 - [x] T133 [US2] Fix A124-092 Redfish power transitions reported as completed states in redfish-mcp/verdict.py; expose POWERING_ON/OFF with transition caveats, test all four states and retain completed-state behavior.
 
 - [x] T134 [US1] Fix A124-093 chat session ownership/path traversal and concurrent budget admission in federation/chat.py and authorization.py; validate inbound/outbound session binding, refuse unsafe transcript paths/links, persist privately without swallowing errors, reserve request allowance before model waits and verify real SQLite/filesystem/async regressions.
+
+- [x] T135 [US2] Fix A124-094 unchanged certificate issuance reported renewed and same-key renewals retired in federation/rotation.py; require a changed valid certificate before success and retire only a different predecessor key fingerprint. Reproduce actual registry state with unchanged CA/hub/ACME and renewed same-key certificate fixtures.
+
+- [x] T136 [US1] Fix A124-095 ACME subprocess surviving timeout/cancellation in federation/acme.py; isolate the child process group, terminate/reap on failure and verify real local subprocess timeout/cancel/success cases without ACME or DNS calls.
+
+- [x] T137 [US1/US3] Fix A124-096 automatic host certificate renewal replacing the pinned key without a working successor handler in federation/rotation.py/certs.py; renew the certificate with the existing key, atomically preserve installed identity and test a real remote pin across renewal. Correct key-rollover claims; deliberate key replacement continues to require operator re-verification.

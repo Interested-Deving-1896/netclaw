@@ -231,3 +231,10 @@ ANTA results previously hidden by broad applicability keywords now remain `fail`
 ### Federation chat sessions (093)
 
 Ordinary UUID sessions remain usable. IDs must now be1–128 ASCII letters/digits/dots/underscores/hyphens beginning with a letter or digit, and must belong to the same peer and direction. Open a new session for an old malformed id; do not move or import files named by an untrusted id. Existing valid transcript files remain in place and become0600 when appended. New lines quote/escape embedded text so a peer cannot forge another transcript line. Storage failure now fails the call visibly. Request allowance is reserved before model execution; a failed attempt can consume a request, so inspect the result before retrying. No transcript purge or operator state migration is required.
+
+
+### Certificate renewal and process cleanup (094–096)
+
+Routine pinned-host renewal now replaces the certificate atomically while retaining its private key. ACME renewal requests lego's `--reuse-key` (supported by the pinned 4.19.2 client), preserving peer SPKI pins. Unchanged certificates are reported as renewal failures, and same-key successors remain active. Heartbeats expose the current credential registry state, including failed renewal; unregistered credentials report unknown. CA/hub helpers only create credentials when absent: their output is not automatic renewal. Coordinate CA/hub renewal or deliberate private-key replacement with affected peers and re-verify pins; automatic successor-key overlap is not implemented.
+
+No certificate or key is replaced during source upgrade. Existing credentials and pins remain readable. Preserve private keys and the federation database before any operator renewal. Inspect failed/expired registry entries and peer connectivity before retrying; do not clear mismatched pins without verifying the new identity. ACME timeout/cancellation now terminates and reaps its owned process group, preventing abandoned DNS renewal processes. The regression acceptance uses local fixtures, not a live CA or DNS challenge.

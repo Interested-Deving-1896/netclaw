@@ -217,3 +217,8 @@ Reviewed chat.py end-to-end plus shared admission. Chat now checks bounded porta
 Validation milestone: all24 families pass after090; subsequent ANTA/Redfish verdict and n2n chat follow-ups pass. The Redfish generic runner still lists its default-port capability unavailable; the separate earlier18000 official fixture result is the live evidence. Mac native CI reached SwiftPM deployment mismatch;9559745 adds supported Flutter config-only preparation and awaits rerun.
 
 Next source candidates, not yet closed findings: inventory cache paths/staleness; ACME subprocess timeout cleanup; certificate renewal returning the unchanged CA/hub or unchanged ACME certificate and retiring its same key fingerprint. Reproduce before repair.
+
+
+### Certificate lifecycle review (094–096)
+
+Read renewal, certificate persistence, ACME process execution and heartbeat status paths. Real registry fixtures reproduce unchanged/same-key false success, two-service pins reproduce broken successor identity, and actual local subprocesses reproduce cancellation/timeout leakage. Fixes retain routine private keys, validate changed/current certificates, report registry health, atomically write certificates and terminate/reap owned processes. The pinned lego v4.19.2 official cmd/cmd_renew.go confirms --reuse-key support. CA/hub issuance remains create-once; automatic successor-key overlap is not implemented and its public claim is corrected. Full federation contracts:528 passed (n2n-renewal.json). No live ACME/DNS or operator credential rotation occurred.

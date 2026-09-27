@@ -501,12 +501,22 @@ class FederationService:
             return None
         from . import certs
         cert_pem, _ = self.host_credential()
+        import datetime
+        fp = certs.key_fingerprint(cert_pem)
+        state = "unknown"
+        for credential in self.manager.list_credentials():
+            if credential["fingerprint"] == fp:
+                state = "ok" if credential["state"] == "active" else credential["state"]
+                break
         try:
-            na = certs.cert_not_after(cert_pem).isoformat()
+            expiry = certs.cert_not_after(cert_pem)
+            na = expiry.isoformat()
+            if expiry <= datetime.datetime.now(datetime.timezone.utc):
+                state = "expired"
         except Exception:
             na = None
-        return {"fp": certs.key_fingerprint(cert_pem), "not_after": na,
-                "renew_state": "ok"}
+            state = "unknown"
+        return {"fp": fp, "not_after": na, "renew_state": state}
 
     def host_credential(self) -> tuple:
         """The credential this claw presents on secured channels. If a domain is
