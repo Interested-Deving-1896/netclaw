@@ -58,7 +58,7 @@ from embeddings import Embedder
 # ---------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------
-DATA_DIR = os.environ.get("MEMORY_DATA_DIR", os.path.expanduser("~/.openclaw/memory"))
+DATA_DIR = str(Path(os.environ.get("MEMORY_DATA_DIR", "~/.openclaw/memory")).expanduser().resolve())
 DB_PATH = os.path.join(DATA_DIR, "memory.db")
 
 # ---------------------------------------------------------------------

@@ -45,6 +45,21 @@ Add to your MCP configuration (e.g., `~/.openclaw/mcp.json`):
 |----------|---------|-------------|
 | `MEMORY_DATA_DIR` | `~/.openclaw/memory` | Data directory for SQLite and ChromaDB |
 
+`~` is expanded against the server process's home directory before either
+backend starts. Border and members that should share memory must use the same
+absolute directory (and have local filesystem access); different operator homes
+are not implicitly federated. Memory records provide evidence, not independent
+authorization or a substitute for the applicable change policy.
+
+Older versions treated an explicitly configured `~` literally and could create
+`<working-directory>/~/.openclaw/memory`. Before upgrading an affected installation,
+back up SQLite through its backup API and preserve both Chroma directories. Compare
+and reconcile all stores into the intended directory; never overwrite an existing
+database or discard duplicate/conflicting facts merely to fix the path. Preserve
+record IDs, timestamps and provenance. Chroma session data requires its own merge
+if present. Pin the same absolute `MEMORY_DATA_DIR` in participating local processes,
+restart them, and verify an existing record through each member's actual tools.
+
 ## MCP Tools
 
 ### Facts (User Story 1)
