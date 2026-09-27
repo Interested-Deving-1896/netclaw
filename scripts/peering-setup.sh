@@ -30,12 +30,8 @@ DAEMON_OUT="/tmp/bgp-daemon-v2.out"
 
 # Read a value from ~/.openclaw/.env ('' if unset)
 env_get() {
-    local v
-    v="$(grep -m1 "^${1}=" "$OPENCLAW_ENV" 2>/dev/null | cut -d= -f2-)"
-    # Strip one surrounding pair of single/double quotes — values like
-    # NETCLAW_BGP_PEERS='[...]' must reach json.loads() unquoted.
-    v="${v#\"}"; v="${v%\"}"; v="${v#\'}"; v="${v%\'}"
-    printf '%s' "$v"
+    [ -f "$OPENCLAW_ENV" ] || return 0
+    python3 "$SCRIPT_DIR/write-env.py" --get "$OPENCLAW_ENV" "$1"
 }
 
 # Prompt with default; re-prompts yes/no questions until the answer is valid
@@ -44,7 +40,7 @@ ask() {
     local var="$1" text="$2" default="${3:-}" input
     echo -ne "  ${CYAN}${text}${NC}${default:+ ${DIM}[$default]${NC}}: "
     read -r input
-    eval "$var=\"${input:-$default}\""
+    printf -v "$var" '%s' "${input:-$default}"
 }
 
 ask_yn() {
@@ -58,8 +54,8 @@ ask_yn() {
         read -r input
         input="${input:-$default}"
         case "$input" in
-            [Yy]|[Yy]es) eval "$var=y"; return ;;
-            [Nn]|[Nn]o)  eval "$var=n"; return ;;
+            [Yy]|[Yy]es) printf -v "$var" '%s' y; return ;;
+            [Nn]|[Nn]o)  printf -v "$var" '%s' n; return ;;
             *) echo -e "  ${YELLOW}Please answer y or n.${NC}" ;;
         esac
     done
@@ -86,9 +82,7 @@ daemon_start() {
     # Pull only the daemon's keys from .env — values may contain JSON, and
     # other .env lines have unquoted spaces that break plain `source`.
     log_info "Starting mesh BGP daemon..."
-    env $(grep -E "^(NETCLAW_ROUTER_ID|NETCLAW_LOCAL_AS|NETCLAW_LAB_MODE|NETCLAW_MESH_ENABLED|NETCLAW_MESH_OPEN|BGP_LISTEN_PORT|BGP_API_PORT|N2N_ENABLED|N2N_DISPLAY_NAME|N2N_RATE_PER_MIN|N2N_DAILY_REQUESTS|N2N_DAILY_TOKENS|N2N_ROLE|N2N_RISK_NAME|N2N_RISK_DESCRIPTION|N2N_ENABLED_STACKS|N2N_IN2N_PORT|N2N_RISK_MODE|N2N_BORDER_ENDPOINT|N2N_QUARANTINE_THRESHOLD|N2N_CERT_MODE|N2N_CLAW_DOMAIN|N2N_ACME_DNS_PROVIDER|N2N_ACME_EMAIL)=" "$OPENCLAW_ENV") \
-        NETCLAW_BGP_PEERS="$(env_get NETCLAW_BGP_PEERS)" \
-        nohup python3 "$BGP_DAEMON" >> "$DAEMON_OUT" 2>&1 &
+    nohup python3 "$SCRIPT_DIR/peering-launch.py" "$OPENCLAW_ENV" "$BGP_DAEMON" >> "$DAEMON_OUT" 2>&1 &
     local pid=$!
     sleep 3
 
@@ -152,7 +146,7 @@ esac
 
 # ── configuration wizard ─────────────────────────────────────────
 mkdir -p "$(dirname "$OPENCLAW_ENV")"
-[ -f "$OPENCLAW_ENV" ] || touch "$OPENCLAW_ENV"
+[ -f "$OPENCLAW_ENV" ] || (umask 077; touch "$OPENCLAW_ENV")
 
 echo ""
 echo -e "${BOLD}  NetClaw Protocol Peering${NC}"

@@ -1,9 +1,10 @@
 # Spec 124 — Active WSL continuation
 
-**Spec124 is not complete.** Pushed checkpoint f04714b contains fixes001–079.
-Fixes080–086 are implemented and all24 contract families pass after them.
-115/127 tasks are checked; T007–014,T021,T026–027 and new macOS CI T127 remain.
-Coverage:382 targeted,202 execution,40 generated,912 reference,92 asset and926 pending baseline paths.
+**Spec124 is not complete.** Pushed checkpoint12775a3 contains fixes001–086; all24 contract families pass.
+Subsequent c290869/e463e63 repair Mac CI; native build rerun pending.
+Fixes088–089/standalone failure continuation pass20 isolated regressions and unit family.
+118/130 tasks are checked; T007–014,T021,T026–027 and new macOS CI T127 remain.
+Coverage:389 targeted,240 execution,40 generated,912 reference,92 asset and881 pending baseline paths.
 Do not relabel pending paths without supporting review.
 
 Draft PR: https://github.com/automateyournetwork/netclaw/pull/265 . At f04714b,
@@ -24,11 +25,10 @@ capabilities remain explicitly unverified; contract status is not live acceptanc
 
 Private fixtures ~/.openclaw/audit124-wsl; audit containers netclaw-audit124-linux,
 netclaw-audit124-frr, netclaw-audit124-redfish remain available. Preserve unrelated services.
-GAIT branch audit124-wsl-completion-2026-09-27, last recorded milestone f7593a7e.
+GAIT branch audit124-wsl-completion-2026-09-27, last recorded milestone1be93e75.
 Next: complete remaining source/skills/docs dispositions and reproduction-first repairs;
 resolve Mac CI; final gates/report; merge/main; back up/apply operator migrations and verify.
-Latest installer review found standalone checkpoint/forward credential writers and
-false-success paths needing reproduction/repair; not yet a completed finding batch.
+Standalone credential/failure/OAuth repairs are now verified; source review remains active.
 
 The Mac checkpoint below is retained as historical evidence, not current progress.
 

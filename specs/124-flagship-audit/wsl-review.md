@@ -187,3 +187,11 @@ A124-086: Azure source wrapper was ordinary logger.info labeled GAIT, not immuta
 persistence. Corrected function/log/documentation names and normal-return status;
 registered MCP tool names are unchanged. AST compilation succeeds. Session GAIT
 recording remains required separately; no new server-side persistence claim.
+
+### Standalone setup and OAuth continuation (088–089; T128–130)
+
+Read credential/setup paths of CheckPoint, Forward, IPFabric, Twitter, Twilio, peering and cert patching. Corrected literal dotenv updates, peer prompt evaluation and selected-key process env, preserved Twilio policy and CheckPoint config originals, and stopped required dependency/build/smoke failures. Twitter/Twilio use the existing PEP668-safe interpreter helper. OAuth now binds callback path/state/code, bounds wait and token exchange, and saves token pairs in one private atomic write without printing credentials. Twenty isolated actual helper/full-script/loopback tests pass, including four rejected OAuth callbacks. The unit family also passes after the initial batch; later CheckPoint/Forward cases are in the20-test targeted result. No provider authorization, live calls/posts, certificate migration or mesh launch occurred against operator state.
+
+Contract test dispositions added only for actual passing harnesses and explicit non-live files named by them, plus loaded Auvik/Halo/N2N pytest configuration. Opt-in live suites remain pending/source-review candidates; running an offline harness does not validate their providers. Exact paths/hashes/methods are in evidence/wsl/coverage-batch89.json.
+
+Mac CI now reaches native build: after creating the SwiftPM parent, analysis and431 Flutter tests pass on macOS. Xcode15.4 aborts loading synchronized groups; the next run uses macos-26/Xcode26.6 and SDK-relative Foundation lookup. This is still pending native-build acceptance.

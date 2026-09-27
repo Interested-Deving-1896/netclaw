@@ -11952,11 +11952,16 @@
       "path": "scripts/checkpoint-enable.sh",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Standalone credential, callback, process launch and failure boundaries; actual isolated fixture tests in standalone-writers-after.txt."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "scripts/chrome-devtools-enable.sh",
@@ -12042,11 +12047,16 @@
       "path": "scripts/forward-enable.sh",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Standalone credential, callback, process launch and failure boundaries; actual isolated fixture tests in standalone-writers-after.txt."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "scripts/gait-stdio.py",
@@ -12517,11 +12527,16 @@
       "path": "scripts/patch-claw-certs.sh",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Standalone credential, callback, process launch and failure boundaries; actual isolated fixture tests in standalone-writers-after.txt."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "scripts/patches/sketchfab-mcp-license-fix.patch",
@@ -12537,11 +12552,16 @@
       "path": "scripts/peering-setup.sh",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Standalone credential, callback, process launch and failure boundaries; actual isolated fixture tests in standalone-writers-after.txt."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "scripts/probe-mist-mcp.py",
@@ -12686,31 +12706,46 @@
       "path": "scripts/twilio_install.sh",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Standalone credential, callback, process launch and failure boundaries; actual isolated fixture tests in standalone-writers-after.txt."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "scripts/twitter_install.sh",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Standalone credential, callback, process launch and failure boundaries; actual isolated fixture tests in standalone-writers-after.txt."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "scripts/twitter_oauth2_setup.py",
       "subsystem": "scripts",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "targeted-review",
+      "methods": [
+        "Standalone credential, callback, process launch and failure boundaries; actual isolated fixture tests in standalone-writers-after.txt."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "scripts/verify-catalog-coverage.py",
@@ -23483,21 +23518,31 @@
       "path": "tests/auvik-mcp/conftest.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/auvik-mcp/pytest.ini",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/auvik-mcp/test_alerts.py",
@@ -23773,41 +23818,61 @@
       "path": "tests/bgp-intel/run-tests.sh",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/bgp-intel/test_envelope.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/bgp-intel/test_manifest_size.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/bgp-intel/test_outcomes.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/bgp-intel/test_rate_limit.py",
@@ -23827,11 +23892,16 @@
       "path": "tests/bgp-intel/test_validate.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/catc/_harness.py",
@@ -23847,21 +23917,31 @@
       "path": "tests/catc/run-tests.sh",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/catc/test_catalogue.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/catc/test_live_catc.py",
@@ -23887,31 +23967,46 @@
       "path": "tests/cisco-psirt/run-tests.sh",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/cisco-psirt/test_cache_ratelimit.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/cisco-psirt/test_normalise.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/contract-suites.json",
@@ -23957,81 +24052,121 @@
       "path": "tests/document/run-tests.sh",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/document/test_manifest_size.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/document/test_no_fabrication.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/document/test_output_paths.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/document/test_pdf_forms.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/document/test_provenance.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/document/test_sanitize.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/document/test_tagged_values.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/fixtures/rag/golden_set.example.yaml",
@@ -24061,41 +24196,61 @@
       "path": "tests/fortinet/test_audit.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/fortinet/test_credentials.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/fortinet/test_device_plane.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/fortinet/test_envelope.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/fortinet/test_manifest_size.py",
@@ -24121,11 +24276,16 @@
       "path": "tests/globalping/run-tests.sh",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/halo-mcp/__init__.py",
@@ -24145,21 +24305,31 @@
       "path": "tests/halo-mcp/conftest.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/halo-mcp/pytest.ini",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/halo-mcp/test_client.py",
@@ -24460,21 +24630,31 @@
       "path": "tests/k8s/run-tests.sh",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/k8s/test_config_forced.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/k8s/test_live_k8s.py",
@@ -24505,11 +24685,16 @@
       "path": "tests/k8s/test_skill_procedure.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/multivendor/integration-lab.sh",
@@ -24540,31 +24725,46 @@
       "path": "tests/multivendor/test_filter.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/multivendor/test_inventory.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/n2n/conftest.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/n2n/test_acme_060.py",
@@ -25702,11 +25902,16 @@
       "path": "tests/nsm/run-tests.sh",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/reconcile/run-tests.sh",
@@ -25742,11 +25947,16 @@
       "path": "tests/runner/run-tests.sh",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/runner/test_run_contract_tests.py",
@@ -26257,11 +26467,16 @@
       "path": "tests/zabbix/run-tests.sh",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/zabbix/test_live_traps.py",
@@ -26292,21 +26507,31 @@
       "path": "tests/zabbix/test_readonly_forced.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/zabbix/test_skill_procedure.py",
       "subsystem": "tests",
       "ownership": "first-party",
-      "review_state": "pending",
-      "methods": [],
-      "evidence": [],
+      "review_state": "execution-coverage",
+      "methods": [
+        "Executed by the passing batch86 declared contract family; excludes opt-in live harnesses. Execution is not a full source review."
+      ],
+      "evidence": [
+        "specs/124-flagship-audit/wsl-review.md",
+        "specs/124-flagship-audit/evidence/wsl/contracts-batch86.json"
+      ],
       "findings": [],
-      "limitation": "Not yet reviewed"
+      "limitation": "Boundary or execution disposition only; optional live providers and unrelated behavior are not certified."
     },
     {
       "path": "tests/zabbix/test_venv_isolation.py",

@@ -409,3 +409,7 @@ PR265 mobile CI selected Flutter3.47.5 instead of the locally verified3.44.8, ch
 ### A124-088 — High — Standalone setup bypasses credential and preservation fixes
 
 CheckPoint/IPFabric/Forward retain delimiter-based or raw dotenv writes; peering prompts evaluate input, and dotenv launch loses spaces/quotes. Twitter/Twilio standalone scripts duplicate unsafe credential writes, and Twilio replaces the whitelist policy. OAuth setup prints tokens and overwrites dotenv without private atomic persistence. IPFabric also references an undefined writer variable. Extend the shared safe writer and profile updater across these entrypoints; retain private configuration recovery and explicit failure.
+
+### A124-089 — High — OAuth callback does not bind returned authorization to request
+
+Twitter setup generates state but accepts any code on any URL without validating state, and waits indefinitely for callback/provider response. Four loopback negative cases reproduce acceptance. Require one matching state and callback path/code, bound waits and close the listener. Persist tokens privately with literal encoding and no credential logging; no live Twitter authorization is performed in the audit.

@@ -204,3 +204,9 @@ and persistence failure produces a failed task even if its error payload cannot
 be saved. An execution may already have happened before persistence failed:
 inspect the target state before retrying a mutating task. Older results already
 overwritten by an id collision can only be recovered from an earlier backup.
+
+### Standalone setup (088–089)
+
+Standalone CheckPoint/IPFabric/Forward/Twitter/Twilio setup now preserves literal credentials with private atomic dotenv writes. Twilio whitelist edits retain other policy entries and save private originals under `.setup-backups` beside the config; CheckPoint placeholder pruning uses the same retained-original mechanism. Compare the retained original with current state before any manual recovery, and retain newer operator edits. Historical overwritten values require an earlier backup.
+
+Peering setup decodes dotenv as data and starts the daemon with selected literal settings; rerunning configuration no longer evaluates prompt input. Twitter OAuth callbacks require matching state and finish within five minutes; token exchange has a30-second timeout. Retry authorization if it expires. Tokens are saved privately, never printed. Existing tokens/config need no format migration. Required standalone dependency/build/smoke failures now stop setup; use a configured virtualenv with the documented shared pip helper on PEP668 hosts.
