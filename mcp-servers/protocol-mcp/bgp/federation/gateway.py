@@ -31,6 +31,7 @@ import logging
 import os
 import re
 import shutil
+import tempfile
 import uuid
 
 from . import gateway_ws
@@ -190,8 +191,9 @@ def _extract_reply_from_envelopes(objs: list):
     # Best-effort token count
     tokens = 0
     try:
-        usage = (result.get("meta") or {}).get("usage") or obj.get("usage") or {}
-        tokens = usage.get("total_tokens") or usage.get("totalTokens") or 0
+        meta = result.get("meta") or {}
+        usage = meta.get("usage") or (meta.get("agentMeta") or {}).get("usage") or obj.get("usage") or {}
+        tokens = usage.get("total_tokens") or usage.get("totalTokens") or usage.get("total") or 0
     except Exception:
         tokens = 0
     return reply, int(tokens or 0)
@@ -218,11 +220,12 @@ def _extract_reply(stdout: str):
         except Exception:
             start = stdout.find("{", start + 1)
     if not objs:
-        # No JSON — return raw trailing text so the caller still gets something.
-        return stdout.strip()[-2000:], 0
+        raise RuntimeError("Agent returned no valid JSON result; task result unavailable")
 
     reply, tokens = _extract_reply_from_envelopes(objs)
-    return reply or "(no reply text in agent response)", tokens
+    if not reply:
+        raise RuntimeError("Agent returned no reply text; task result unavailable")
+    return reply, tokens
 
 
 def _extract_reply_from_ws_payload(payload: dict):
@@ -233,7 +236,9 @@ def _extract_reply_from_ws_payload(payload: dict):
     exact same extraction core `_extract_reply` uses (spec 116,
     contracts/run-agent-turn.md: "Reused unchanged")."""
     reply, tokens = _extract_reply_from_envelopes([payload] if isinstance(payload, dict) else [])
-    return reply or "(no reply text in agent response)", tokens
+    if not reply:
+        raise RuntimeError("Agent returned no reply text; task result unavailable")
+    return reply, tokens
 
 
 _RECOGNIZED_ORIGINS = {"voice"}
@@ -374,24 +379,30 @@ async def run_agent_turn(prompt: str, session_key: str = "n2n", timeout_s: int =
         # Both fail closed — a member that cannot be sandboxed or guarded does NOT
         # run unprotected. Testing mode runs unwrapped (fast iteration, FR-006).
         cmd = await _apply_production_controls(cmd, prompt)
-        proc = await asyncio.create_subprocess_exec(
-            *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT,
-            env=_agent_env())
-        comm = asyncio.ensure_future(proc.communicate())
-        if not comm.done():
-            await asyncio.wait({comm}, timeout=float(timeout_s))
-        if not comm.done():
+        # Keep JSON separate from plugin diagnostics. A large Node stdout write
+        # to a pipe can also be truncated by an explicit process exit; regular
+        # files are synchronous on POSIX. Anonymous private files retain neither
+        # prompts nor credentials after the turn and avoid pipe backpressure.
+        with tempfile.TemporaryFile() as output_file, tempfile.TemporaryFile() as error_file:
+            proc = await asyncio.create_subprocess_exec(
+                *cmd, stdout=output_file, stderr=error_file, env=_agent_env())
             try:
-                proc.kill()
-            except Exception:
-                pass
-            comm.cancel()
-            raise asyncio.TimeoutError(
-                f"agent turn for session '{session_key}' timed out")
-        out, _ = await comm
-        stdout = out.decode(errors="replace") if out else ""
-        if proc.returncode != 0:
-            logger.warning("openclaw agent exited %s", proc.returncode)
+                await asyncio.wait_for(proc.wait(), timeout=float(timeout_s))
+            except BaseException:
+                if proc.returncode is None:
+                    try:
+                        proc.kill()
+                    except ProcessLookupError:
+                        pass
+                await proc.wait()
+                raise
+            if proc.returncode != 0:
+                raise RuntimeError(f"Agent process exited {proc.returncode}; task result unavailable")
+            output_file.seek(0)
+            out = output_file.read(16 * 1024 * 1024 + 1)
+            if len(out) > 16 * 1024 * 1024:
+                raise RuntimeError("Agent result exceeded 16 MiB; task result unavailable")
+            stdout = out.decode(errors="replace")
         return _extract_reply(stdout)
 
     # Gateway (default) path: persistent WS RPC, no per-turn subprocess, no

@@ -16,6 +16,8 @@ devices:
     connections:
       defaults:
         class: unicon.Unicon
+        arguments:
+          init_config_commands: []
       ssh:
         protocol: ssh
         ip: 192.168.2.201
@@ -30,6 +32,8 @@ devices:
     connections:
       defaults:
         class: unicon.Unicon
+        arguments:
+          init_config_commands: []
       ssh:
         protocol: ssh
         ip: 192.168.2.202
@@ -44,6 +48,8 @@ devices:
     connections:
       defaults:
         class: unicon.Unicon
+        arguments:
+          init_config_commands: []
       ssh:
         protocol: ssh
         ip: 192.168.2.211
@@ -58,6 +64,8 @@ devices:
     connections:
       defaults:
         class: unicon.Unicon
+        arguments:
+          init_config_commands: []
       ssh:
         protocol: ssh
         ip: 192.168.2.212

@@ -75,6 +75,16 @@ def serve():
 
         Author questions dynamically from the user's task and member evidence. This
         cannot execute actions, grant approval, select task identity or raise budgets.
+        purpose must be evidence_review, specialist_advice, answer_review,
+        diagnostic_advice, change_review, or incident_triage.
+        questions maps caller-authored IDs to objects with type and instructions:
+        Noul: {"type":"noul","instructions":"a yes/no proposition"}.
+        Choice: {"type":"choice","instructions":"select an alternative",
+                 "criteria":{"label":"description","uncertain":"insufficient evidence"}}.
+        Score: {"type":"score","instructions":"evaluate one dimension",
+                "criteria":["lowest descriptive level","highest descriptive level"]}.
+        Choice requires 2–255 labeled criteria; Score requires 2–10 ordered levels.
+        Do not use text, options, output, or scale_levels as question fields.
         prepare_only returns the exact request digest for operator disclosure approval
         without sending. Use at most one reconsideration of a successful initial result.
         """
