@@ -36,12 +36,16 @@ test('real HUD server rejects hostile HTTP and WebSocket requests before fixture
   fs.mkdirSync(ui, { recursive: true });
   fs.mkdirSync(path.join(root, 'testbed'));
   fs.writeFileSync(path.join(root, 'testbed', 'testbed.yaml'), 'devices: {}\n');
-  for (const name of ['server.js', 'package.json']) fs.copyFileSync(path.join(source, name), path.join(ui, name));
+  // The API composes sibling feature modules; include them in this isolated fixture.
+  for (const name of fs.readdirSync(source).filter(name => name.endsWith('.js') || name === 'package.json')) {
+    fs.copyFileSync(path.join(source, name), path.join(ui, name));
+  }
   for (const name of ['node_modules', 'src']) fs.symlinkSync(path.join(source, name), path.join(ui, name), 'dir');
   const socket = net.createServer(); socket.listen(0, '127.0.0.1'); await once(socket, 'listening');
   const port = socket.address().port; await new Promise(resolve => socket.close(resolve));
   const child = spawn(process.execPath, ['server.js'], {
-    cwd: ui, env: { PATH: process.env.PATH, HOME: root, HUD_PORT: String(port), HUD_UI_PORT: '3000' },
+    cwd: ui, env: { PATH: process.env.PATH, HOME: root, USERPROFILE: root,
+      OPENCLAW_HOME: path.join(root, '.openclaw'), HUD_PORT: String(port), HUD_UI_PORT: '3000' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   t.after(async () => {

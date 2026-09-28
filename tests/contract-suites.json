@@ -2,6 +2,22 @@
   "schema_version": 1,
   "default_python": "3.12",
   "suites": {
+    "canvas-terminal": {
+      "kind": "shell",
+      "command": ["bash", "tests/canvas-terminal/run-tests.sh"],
+      "environment": {
+        "path": null,
+        "requirements": [],
+        "packages": [],
+        "required_imports": [],
+        "prepend_path": false
+      },
+      "ci": {
+        "include": false,
+        "reason": "Executed by .github/workflows/hud-ci.yml with Node/npm dependencies, Python and no live credentials; excluded only from the separate MCP matrix to avoid duplicate installation."
+      },
+      "timeout_seconds": 600
+    },
     "analysis": {
       "kind": "shell",
       "command": [

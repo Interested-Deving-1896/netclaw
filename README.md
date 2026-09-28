@@ -305,6 +305,19 @@ CLI declarations, MCP signatures and the HUD OpenAPI reference. Three.js views a
 optional companions to the panels and tables. Configured capabilities, recorded
 usage and estimates stay distinct from verified live state.
 
+On Windows, start the gateway and Visual HUD together by double-clicking
+`Start-NetClaw.cmd`, or from PowerShell:
+
+```powershell
+.\Start-NetClaw.ps1
+```
+
+The launcher verifies Node.js, npm, and OpenClaw; installs Visual HUD
+dependencies on the first run; avoids starting duplicate services; waits for
+the configured gateway port plus ports 3000 and 3001; and opens Canvas Chat. Use
+`.\Start-NetClaw.ps1 -Interface HUD` to open the main dashboard instead,
+or add `-NoBrowser` when you only want to start the services.
+
 ```bash
 cd ui/netclaw-visual
 npm install

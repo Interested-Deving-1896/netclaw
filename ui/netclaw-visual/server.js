@@ -1,3 +1,5 @@
+import { createTerminalProfiles, cleanConfiguredValue, validateTerminalProfileInput } from './terminal-profiles.js';
+import { createTerminalHostStore, terminalHostFingerprint, terminalHostKeyType } from './terminal-host-store.js';
 import { controlUiLocation } from './src/hud-server/control-ui.js';
 import { securitySettings, openshellStatus } from './src/hud-server/security-posture.js';
 import { mountLogs } from './src/hud-server/logs.js';
@@ -13,6 +15,7 @@ import { resourceFile } from './src/security/resource-path.js';
 import { resolveBudgetPolicy } from './src/security/budget-policy.js';
 import { parseEnvData, updateEnvironment, writePrivateAtomic } from './src/security/private-files.js';
 import express from 'express';
+import { registerObservabilityRoutes } from './observability.js';
 import { WebSocketServer } from 'ws';
 import http from 'http';
 import fs from 'fs';
@@ -25,6 +28,43 @@ import { hudPorts, createLocalAccess, localAccessMiddleware } from './src/securi
 import { createRagUpload, cleanupRagUpload } from './src/security/rag-upload.js';
 import { mcpCommand } from './src/security/command.js';
 import { scienceOfficer } from './src/orgchart/science-officer.js';
+import crypto from 'crypto';
+import ssh2 from 'ssh2';
+import { TopologyService, supportsTopology } from './topology-service.js';
+import { TopologyLogin } from './topology-login.js';
+import { prepareTestbedEdit } from './testbed-editor.js';
+import { collectIosTopology } from './topology-collector.js';
+import { registerGenieRoutes } from './genie-parser.js';
+import { registerIntentExecutionRoutes } from './terminal-intent-execution.js';
+import { createTranscriptActivityReader } from './terminal-intent-live.js';
+import { createLocalChangePolicy } from './terminal-change-policy.js';
+import {
+  applySshAlgorithmPolicy,
+  keyExchangeFailureDetails,
+} from './terminal-ssh-policy.js';
+import {
+  isLocalTerminalRequest,
+} from './terminal-local-request.js';
+import {
+  terminalCredentialOverride,
+} from './terminal-credentials.js';
+import {
+  DnsPtrEnrichmentProvider,
+  LocalAliasEnrichmentProvider,
+  TerminalEnrichmentManager,
+  normalizeTerminalEnrichmentObjects,
+} from './terminal-enrichment.js';
+
+const { Client: SSHClient } = ssh2;
+const { listTerminalProfiles, appendTerminalProfile, getTerminalProfile } = createTerminalProfiles({
+  parseTestbed, parseEnvFile, readText, getTestbedFile: () => TESTBED_FILE, pickDeviceConnection,
+});
+const { readTerminalKnownHosts, trustTerminalHost, forgetTerminalHost } = createTerminalHostStore({
+  file: process.env.NETCLAW_TERMINAL_KNOWN_HOSTS_FILE
+    ? path.resolve(process.env.NETCLAW_TERMINAL_KNOWN_HOSTS_FILE)
+    : path.join(os.homedir(), '.openclaw', 'netclaw-terminal-known-hosts.json'),
+  readText,
+});
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -32,6 +72,13 @@ const app = express();
 const ports = hudPorts();
 const allowedLocalRequest = createLocalAccess(ports);
 app.use(localAccessMiddleware(allowedLocalRequest));
+const TERMINAL_ENRICHMENT_FILE = path.join(process.env.OPENCLAW_HOME || path.join(os.homedir(), '.openclaw'), 'netclaw-terminal-enrichment.json');
+function loadTerminalAliases() {
+  try { return JSON.parse(fs.readFileSync(TERMINAL_ENRICHMENT_FILE, 'utf8')).aliases || {}; } catch { return {}; }
+}
+const terminalAliasProvider = new LocalAliasEnrichmentProvider({ aliases: loadTerminalAliases() });
+const terminalEnrichmentManager = new TerminalEnrichmentManager({ providers: [new DnsPtrEnrichmentProvider(), terminalAliasProvider] });
+
 // The branching canvas can include a compact image or an attached text file in
 // its context. Keep the cap explicit so those requests work without making the
 // API an unbounded JSON sink.
@@ -40,6 +87,12 @@ mountDocumentation(app, ROOT);
 mountLogs(app, os.homedir());
 const hudBindings = new Bindings(path.join(os.homedir(), '.openclaw', 'hud-bindings'));
 mountAssessmentRoutes(app, { bindings: hudBindings, audit: assessmentAudit(ROOT), readAssessment: createJevReader(ROOT, () => ({ ...parseEnvFile(), ...process.env })) });
+registerGenieRoutes(app, { getEnv: () => ({ ...parseEnvFile(), ...process.env }) });
+registerObservabilityRoutes(app, { getEnv: () => ({ ...parseEnvFile(), ...process.env }) });
+registerIntentExecutionRoutes(app, { getGatewayConfig, listDevices: listTerminalProfiles,
+  changePolicy: createLocalChangePolicy({ directory: () => path.join(OPENCLAW_HOME, 'netclaw-changes'), listDevices: listTerminalProfiles }),
+  createActivityReader: options => createTranscriptActivityReader({ ...options, directory: path.join(OPENCLAW_HOME, 'agents', 'main', 'sessions') }),
+});
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({
@@ -48,7 +101,9 @@ const wss = new WebSocketServer({
 });
 
 const SKILLS_DIR = path.join(ROOT, 'workspace/skills');
-const TESTBED_FILE = path.join(ROOT, 'testbed/testbed.yaml');
+const TESTBED_FILE = process.env.NETCLAW_TESTBED_FILE
+  ? path.resolve(process.env.NETCLAW_TESTBED_FILE)
+  : path.join(ROOT, 'testbed/testbed.yaml');
 const CONFIG_FILE = path.join(ROOT, 'config/openclaw.json');
 const IDENTITY_FILE = path.join(ROOT, 'IDENTITY.md');
 const SOUL_FILE = path.join(ROOT, 'SOUL.md');
@@ -586,7 +641,9 @@ const ENV_MAP = {
 };
 
 // ── Env file locations (OpenClaw .env is the real source of truth) ──
-const OPENCLAW_ENV = path.join(process.env.HOME || '/root', '.openclaw', '.env');
+const OPENCLAW_HOME = process.env.OPENCLAW_HOME || path.join(os.homedir(), '.openclaw');
+const OPENCLAW_ENV = path.join(OPENCLAW_HOME, '.env');
+const OPENCLAW_CONFIG = path.join(OPENCLAW_HOME, 'openclaw.json');
 const ROOT_ENV = path.join(ROOT, '.env');
 
 // Ordered list — first file wins per key, but we merge all
@@ -621,9 +678,42 @@ function readScienceOfficers() {
   return advisor ? [advisor] : [];
 }
 
+// An alias that follows the current Instant model used in ChatGPT.
+const TERRA_MODEL = 'chat-latest';
+
+function getTerraConfig() {
+  const fileVars = parseEnvFile();
+  const apiKey = cleanConfiguredValue(
+    process.env.NETCLAW_TERRA_API_KEY
+      || process.env.OPENAI_API_KEY
+      || fileVars.NETCLAW_TERRA_API_KEY
+      || fileVars.OPENAI_API_KEY,
+  );
+  return { apiKey, model: TERRA_MODEL };
+}
+
+function cleanTerraText(value, limit) {
+  return String(value || '').replace(/\0/g, '').trim().slice(0, limit);
+}
+
+const TERMINAL_INPUT_LIMIT = 64 * 1024;
+
 function writeEnvFile(updates) {
   const targetFile = fs.existsSync(OPENCLAW_ENV) ? OPENCLAW_ENV : ROOT_ENV;
   updateEnvironment(targetFile, updates);
+}
+
+function writeOpenClawEnvValue(key, value) {
+  fs.mkdirSync(path.dirname(OPENCLAW_ENV), { recursive: true });
+  let text = readText(OPENCLAW_ENV);
+  const regex = new RegExp(`^${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*=.*$`, 'm');
+  const newLine = `${key}=${value}`;
+  if (regex.test(text)) {
+    text = text.replace(regex, newLine);
+  } else {
+    text = text.trimEnd() + `\n${newLine}\n`;
+  }
+  fs.writeFileSync(OPENCLAW_ENV, text, { encoding: 'utf8', mode: 0o600 });
 }
 
 function maskValue(value) {
@@ -828,25 +918,44 @@ function parseSkillMarkdown(skillId) {
 }
 
 function parseDevices() {
-  const source = readText(TESTBED_FILE);
-  if (!source) return [];
-
   try {
-    const testbed = yaml.load(source);
+    const testbed = parseTestbed();
     return Object.entries(testbed?.devices || {}).map(([name, device]) => ({
+      ...(() => {
+        const picked = pickDeviceConnection(device);
+        return {
+          protocol: picked?.connection?.protocol || 'ssh',
+          ip: picked?.connection?.ip || 'N/A',
+          port: picked?.connection?.port || 22,
+        };
+      })(),
       id: slugify(name),
       name,
       alias: device.alias || name,
       type: device.type || 'device',
       os: device.os || 'unknown',
       platform: device.platform || 'unknown',
-      protocol: device.connections?.cli?.protocol || 'ssh',
-      ip: device.connections?.cli?.ip || 'N/A',
-      port: device.connections?.cli?.port || 22,
     }));
   } catch {
     return [];
   }
+}
+
+function parseTestbed() {
+  const source = readText(TESTBED_FILE);
+  if (!source) return {};
+  return yaml.load(source) || {};
+}
+
+function pickDeviceConnection(device) {
+  const connections = device?.connections || {};
+  const candidates = Object.entries(connections)
+    .filter(([name, value]) => name !== 'defaults' && value && typeof value === 'object');
+  const preferred = candidates.find(([name]) => name === 'cli')
+    || candidates.find(([name]) => name === 'ssh')
+    || candidates.find(([, value]) => String(value.protocol || '').toLowerCase() === 'ssh')
+    || candidates[0];
+  return preferred ? { name: preferred[0], connection: preferred[1] } : null;
 }
 
 function parseConfig() {
@@ -1234,6 +1343,180 @@ app.get('/api/gateway/status', async (req, res) => {
 });
 
 // ── Full SKILL.md detail endpoint ──────────────────────────────────
+// Terminal profiles expose connection metadata only. Authentication material is
+// resolved server-side when a local Canvas client requests an SSH session.
+app.get('/api/terminal/devices', (req, res) => {
+  if (!isLocalTerminalRequest(req)) {
+    return res.status(403).json({ error: 'Terminal profiles are restricted to a localhost browser.' });
+  }
+  try {
+    res.json({ devices: listTerminalProfiles() });
+  } catch {
+    res.status(500).json({ error: 'Unable to read terminal profiles from testbed.yaml.' });
+  }
+});
+
+// Enrichment runs independently from the PTY websocket. It only accepts
+// normalized IP objects and never receives, stores, or mutates terminal bytes.
+const topologyKnownFingerprint = profile => {
+  const record = readTerminalKnownHosts()[`${profile.host}:${profile.port}`];
+  return typeof record === 'string' ? record : record?.fingerprint;
+};
+const topologyLogin = new TopologyLogin({ Client: SSHClient, getProfile: getTerminalProfile,
+  knownFingerprint: topologyKnownFingerprint, trustHost: trustTerminalHost,
+  fingerprintOf: terminalHostFingerprint, keyTypeOf: terminalHostKeyType });
+const topologyService = new TopologyService({
+  file: process.env.NETCLAW_TOPOLOGY_FILE || path.join(process.env.OPENCLAW_HOME || path.join(os.homedir(), '.openclaw'), 'netclaw-topology-authorization.json'),
+  getProfile: id => topologyLogin.profile(id),
+  listProfiles: listTerminalProfiles,
+  knownFingerprint: profile => {
+    const record = readTerminalKnownHosts()[`${profile.host}:${profile.port}`];
+    return typeof record === 'string' ? record : record?.fingerprint;
+  },
+  collect: options => collectIosTopology({ ...options, Client: SSHClient, fingerprintOf: terminalHostFingerprint }),
+});
+server.on('close', () => { topologyService.stop(); topologyLogin.clear(); });
+
+// Local-only, explicitly authorized collection. No caller-supplied CLI is accepted.
+app.use('/api/topology', (req, res, next) => {
+  if (!isLocalTerminalRequest(req)) return res.status(403).json({ error: 'Topology collection is restricted to a localhost browser.' });
+  res.set('Cache-Control', 'no-store');
+  if (req.method === 'POST' && !req.is('application/json')) return res.status(415).json({ error: 'JSON request required.' });
+  next();
+});
+app.get('/api/topology/status', (req, res) => {
+  try {
+    res.json({ ...topologyService.status(), availableDevices: listTerminalProfiles().map(profile => ({
+      id: profile.id, alias: profile.alias, os: profile.os, eligible: supportsTopology(profile), loginReady: topologyLogin.ready(profile.id),
+    })) });
+  } catch { res.status(500).json({ error: 'Unable to read testbed profiles.' }); }
+});
+app.post('/api/topology/authorize', (req, res) => {
+  try { res.json(topologyService.authorize(req.body)); }
+  catch (error) { res.status(400).json({ error: error.message }); }
+});
+app.post('/api/topology/login', async (req, res) => {
+  const controller = new AbortController();
+  const disconnect = () => { if (!res.writableEnded) controller.abort(); };
+  res.on('close', disconnect);
+  try { res.json(await topologyLogin.login(req.body, controller.signal)); }
+  catch (error) { if (!res.destroyed) res.status(400).json({ error: error.message }); }
+  finally { res.off('close', disconnect); }
+});
+app.post('/api/topology/revoke', (req, res) => {
+  topologyLogin.clear();
+  try { res.json(topologyService.revoke()); }
+  catch (error) { res.status(500).json({ error: error.message }); }
+});
+app.post('/api/topology/lookup', (req, res) => {
+  const { type, value, vrf } = req.body || {};
+  if (!['ip', 'prefix'].includes(type) || typeof value !== 'string' || value.length > 64
+    || (vrf != null && (typeof vrf !== 'string' || vrf.length > 128))) return res.status(400).json({ error: 'Invalid route lookup.' });
+  res.json(topologyService.lookup({ type, value, vrf }));
+});
+
+app.post('/api/terminal/enrich', async (req, res) => {
+  if (!isLocalTerminalRequest(req)) {
+    return res.status(403).json({ error: 'Terminal enrichment is restricted to a localhost browser.' });
+  }
+  try {
+    const objects = normalizeTerminalEnrichmentObjects(req.body?.objects);
+    const results = await terminalEnrichmentManager.enrich(objects);
+    res.json({ results });
+  } catch {
+    res.status(500).json({ error: 'Terminal enrichment lookup failed.' });
+  }
+});
+
+app.get('/api/terminal/enrichment/aliases', (req, res) => {
+  if (!isLocalTerminalRequest(req)) return res.status(403).json({ error: 'Terminal enrichment is restricted to a localhost browser.' });
+  res.json({ aliases: terminalAliasProvider.aliases });
+});
+
+app.put('/api/terminal/enrichment/aliases', (req, res) => {
+  if (!isLocalTerminalRequest(req)) return res.status(403).json({ error: 'Terminal enrichment is restricted to a localhost browser.' });
+  const aliases = req.body?.aliases;
+  if (!aliases || typeof aliases !== 'object' || Array.isArray(aliases)) return res.status(400).json({ error: 'Aliases must be an object keyed by IP address or CIDR prefix.' });
+  const cleaned = Object.fromEntries(Object.entries(aliases)
+    .filter(([key, value]) => typeof value === 'string' && value.trim() && normalizeTerminalEnrichmentObjects([{ type: key.includes('/') ? 'prefix' : 'ip', value: key }]).length)
+    .map(([key, value]) => [key.trim(), value.trim().slice(0, 160)]));
+  try {
+    fs.mkdirSync(path.dirname(TERMINAL_ENRICHMENT_FILE), { recursive: true });
+    fs.writeFileSync(TERMINAL_ENRICHMENT_FILE, JSON.stringify({ aliases: cleaned }, null, 2));
+    terminalAliasProvider.setAliases(cleaned);
+    terminalEnrichmentManager.cache.clear();
+    res.json({ aliases: cleaned });
+  } catch { res.status(500).json({ error: 'Unable to save local terminal aliases.' }); }
+});
+
+app.post('/api/terminal/devices', (req, res) => {
+  if (!isLocalTerminalRequest(req)) {
+    return res.status(403).json({ error: 'Terminal profiles are restricted to a localhost browser.' });
+  }
+  try {
+    const id = appendTerminalProfile(req.body);
+    const device = listTerminalProfiles().find((profile) => profile.id === id);
+    broadcastWS('config:updated', {
+      keys: ['testbed'],
+      generatedAt: new Date().toISOString(),
+    });
+    res.status(201).json({ ok: true, device, devices: listTerminalProfiles() });
+  } catch (error) {
+    const status = error.code === 'DEVICE_EXISTS' ? 409 : 400;
+    res.status(status).json({ error: error.message || 'Unable to append the terminal device.' });
+  }
+});
+
+function changeTerminalProfile(req, res, remove = false) {
+  if (!isLocalTerminalRequest(req)) return res.status(403).json({ error: 'Terminal profiles are restricted to a localhost browser.' });
+  if (!req.is('application/json')) return res.status(415).json({ error: 'JSON request required.' });
+  try {
+    const id = req.params.deviceId;
+    const profile = listTerminalProfiles().find(entry => entry.id === id);
+    if (!profile) return res.status(404).json({ error: 'Device no longer exists. Reload devices.' });
+    if ([...wss.clients].some(socket => socket.terminalSession?.profile?.id === id)) {
+      return res.status(409).json({ error: 'Disconnect this device in all terminal windows before editing or removing it.' });
+    }
+    if (remove && req.body?.confirmDevice !== id) return res.status(400).json({ error: 'Confirm the exact device to remove.' });
+    if (!remove && req.body?.id !== id) return res.status(400).json({ error: 'Device IDs cannot be renamed here. Edit the display name instead.' });
+    const device = remove ? null : validateTerminalProfileInput(req.body).device;
+    const commit = prepareTestbedEdit({ file: TESTBED_FILE, id, revision: req.body?.revision,
+      device, connectionName: profile.connection, remove });
+    // No new endpoint can inherit standing consent or cached login credentials.
+    topologyService.revokeDevice(id);
+    topologyLogin.forget(id);
+    commit();
+    broadcastWS('config:updated', { keys: ['testbed'], generatedAt: new Date().toISOString() });
+    const devices = listTerminalProfiles();
+    res.json({ ok: true, devices, device: devices.find(entry => entry.id === id) || null });
+  } catch (error) {
+    // Filesystem errors can include private paths; expose only controlled messages.
+    res.status(error.status || 400).json({ error: error.code
+      ? 'Unable to save the testbed or revoke collection. Check local file permissions; reload and reauthorize if needed.'
+      : error.message || 'Unable to change this device.' });
+  }
+}
+app.put('/api/terminal/devices/:deviceId', (req, res) => changeTerminalProfile(req, res));
+app.delete('/api/terminal/devices/:deviceId', (req, res) => changeTerminalProfile(req, res, true));
+
+// Removes only the local fingerprint for the selected testbed endpoint. The
+// next SSH connection must still pass the normal host-key verification prompt.
+app.delete('/api/terminal/devices/:deviceId/host-key', (req, res) => {
+  if (!isLocalTerminalRequest(req)) {
+    return res.status(403).json({ error: 'Terminal profiles are restricted to a localhost browser.' });
+  }
+  try {
+    const profile = listTerminalProfiles().find((entry) => entry.id === req.params.deviceId);
+    if (!profile?.supported) {
+      return res.status(404).json({ error: 'The selected SSH device is not present in testbed.yaml.' });
+    }
+    const removed = forgetTerminalHost(profile.host, profile.port);
+    res.json({ removed, host: profile.host, port: profile.port });
+  } catch {
+    res.status(500).json({ error: 'Unable to reset the saved SSH host key.' });
+  }
+});
+
 app.get('/api/skill/:skillId', (req, res) => {
   const result = parseSkillMarkdown(req.params.skillId);
   if (!result) return res.status(404).json({ error: 'Skill not found or no SKILL.md' });
@@ -1582,8 +1865,7 @@ function textFromChatContent(content) {
 // Read OpenClaw gateway config for auth
 function getGatewayConfig() {
   try {
-    const configPath = path.join(process.env.HOME || '/root', '.openclaw', 'openclaw.json');
-    const config = JSON.parse(readText(configPath));
+    const config = JSON.parse(readText(OPENCLAW_CONFIG));
     return {
       port: config?.gateway?.port || 18789,
       token: config?.gateway?.auth?.token || '',
@@ -1594,6 +1876,77 @@ function getGatewayConfig() {
     return { port: 18789, token: '', chatCompletionsEnabled: false };
   }
 }
+
+app.get('/api/terminal/terra/status', (req, res) => {
+  if (!isLocalTerminalRequest(req)) {
+    return res.status(403).json({ error: 'Terra terminal assistance is restricted to a localhost browser.' });
+  }
+  const terra = getTerraConfig();
+  res.json({ configured: Boolean(terra.apiKey), model: terra.model });
+});
+
+app.put('/api/terminal/terra/config', (req, res) => {
+  if (!isLocalTerminalRequest(req)) {
+    return res.status(403).json({ error: 'Terra terminal assistance is restricted to a localhost browser.' });
+  }
+  const apiKey = cleanConfiguredValue(req.body?.apiKey);
+  if (apiKey.length < 8 || apiKey.length > 512 || /[\r\n\0]/.test(apiKey)) {
+    return res.status(400).json({ error: 'Enter a valid OpenAI API key.' });
+  }
+  try {
+    // Keep Terra's credential scoped to this feature and never return it to the browser.
+    writeOpenClawEnvValue('NETCLAW_TERRA_API_KEY', apiKey);
+    res.status(204).end();
+  } catch {
+    res.status(500).json({ error: 'Instant Assist could not save the API key locally.' });
+  }
+});
+
+app.post('/api/terminal/terra', async (req, res) => {
+  if (!isLocalTerminalRequest(req)) {
+    return res.status(403).json({ error: 'Terra terminal assistance is restricted to a localhost browser.' });
+  }
+
+  const messages = normalizeChatContext(req.body?.messages);
+  if (!messages) {
+    return res.status(400).json({ error: 'Expected terminal messages with user or assistant content.' });
+  }
+
+  const terra = getTerraConfig();
+  if (!terra.apiKey) {
+    return res.status(503).json({
+      error: 'Instant Assist needs an API key. Choose Set up Instant Assist in the terminal toolbar to save one locally.',
+    });
+  }
+
+  try {
+    const terraResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${terra.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: terra.model,
+        messages,
+        response_format: { type: 'json_object' },
+      }),
+      signal: AbortSignal.timeout(120000),
+    });
+    const data = await terraResponse.json().catch(() => ({}));
+    if (!terraResponse.ok) {
+      const detail = cleanTerraText(data?.error?.message, 1_000) || `HTTP ${terraResponse.status}`;
+      return res.status(502).json({ error: `Instant Assist request failed: ${detail}` });
+    }
+    const response = cleanTerraText(data?.choices?.[0]?.message?.content, 40_000);
+    if (!response) {
+      return res.status(502).json({ error: 'Instant Assist returned an empty response.' });
+    }
+    res.json({ response, model: terra.model });
+  } catch (error) {
+    res.status(502).json({ error: 'Instant Assist could not be reached. Check your network connection and API configuration.' });
+  }
+});
 
 app.post('/api/chat', async (req, res) => {
   const { message, messages, hudThread } = req.body || {};
@@ -2173,6 +2526,308 @@ app.post('/api/rag/documents/:id/reindex', async (req, res) => {
   }
 });
 
+function sendSocketMessage(socket, type, payload) {
+  if (socket.readyState === 1) {
+    socket.send(JSON.stringify({ type, payload }));
+  }
+}
+
+function terminalStatus(socket, status, payload = {}) {
+  sendSocketMessage(socket, 'terminal:status', { status, ...payload });
+}
+
+function safeTerminalError(error) {
+  const code = error?.code;
+  if (code === 'ECONNREFUSED') return 'Connection refused by the selected SSH endpoint.';
+  if (code === 'ETIMEDOUT') return 'The SSH connection timed out.';
+  if (code === 'ENOTFOUND') return 'The SSH hostname could not be resolved.';
+  if (error?.level === 'client-authentication') return 'SSH authentication failed.';
+  return String(error?.message || 'The SSH session failed.')
+    .replace(/(password|passphrase)\s*[:=]\s*\S+/gi, '$1=[redacted]')
+    .slice(0, 240);
+}
+
+function closeTerminalSession(socket, { notify = true, message = 'Disconnected.' } = {}) {
+  const session = socket.terminalSession;
+  if (!session) {
+    if (notify) terminalStatus(socket, 'disconnected', { message });
+    return;
+  }
+
+  socket.terminalSession = null;
+  session.closed = true;
+  if (session.hostKeyTimer) clearTimeout(session.hostKeyTimer);
+  if (session.pendingHostKey?.verify) {
+    try { session.pendingHostKey.verify(false); } catch {}
+  }
+  session.pendingHostKey = null;
+  try { session.stream?.close(); } catch {}
+  try { session.client?.end(); } catch {}
+  if (notify) terminalStatus(socket, 'disconnected', { message, device: session.profile?.id });
+}
+
+function endTerminalSession(socket, session, message = 'Remote session closed.') {
+  if (socket.terminalSession !== session) return;
+  socket.terminalSession = null;
+  session.closed = true;
+  if (session.hostKeyTimer) clearTimeout(session.hostKeyTimer);
+  session.pendingHostKey = null;
+  terminalStatus(socket, 'disconnected', { message, device: session.profile?.id });
+}
+
+function failTerminalSession(socket, session, error) {
+  if (socket.terminalSession !== session) return;
+  const authenticationFailure = error?.level === 'client-authentication';
+  const keyExchangeFailure = keyExchangeFailureDetails(error, {
+    legacySshCompatibility: session.legacySshCompatibility,
+  });
+  terminalStatus(socket, 'error', {
+    message: keyExchangeFailure?.message || safeTerminalError(error),
+    device: session.profile?.id,
+    ...(authenticationFailure ? {
+      code: 'AUTH_FAILED',
+      credentialPromptAvailable: true,
+    } : {}),
+    ...(keyExchangeFailure || {}),
+  });
+  closeTerminalSession(socket, { notify: false });
+}
+
+function startTerminalSession(socket, request, payload = {}) {
+  if (!isLocalTerminalRequest(request)) {
+    terminalStatus(socket, 'error', {
+      message: 'Interactive terminal sessions are restricted to a localhost browser.',
+    });
+    return;
+  }
+
+  closeTerminalSession(socket, { notify: false });
+
+  let profile;
+  try {
+    const credentialOverride = terminalCredentialOverride(payload);
+    profile = getTerminalProfile(
+      String(payload.device || ''),
+      { credentialOverride },
+    );
+  } catch (error) {
+    terminalStatus(socket, 'error', { message: safeTerminalError(error) });
+    return;
+  }
+
+  const cols = Math.max(20, Math.min(500, Number.parseInt(payload.cols, 10) || 80));
+  const rows = Math.max(5, Math.min(200, Number.parseInt(payload.rows, 10) || 24));
+  const legacySshCompatibility = payload.legacySshCompatibility === true;
+  const session = {
+    profile,
+    cols,
+    rows,
+    legacySshCompatibility,
+    client: new SSHClient(),
+    stream: null,
+    pendingHostKey: null,
+    hostKeyTimer: null,
+    connected: false,
+    closed: false,
+  };
+  socket.terminalSession = session;
+
+  terminalStatus(socket, 'connecting', {
+    device: profile.id,
+    protocol: profile.protocol,
+    host: profile.host,
+    port: profile.port,
+    message: `Connecting to ${profile.alias}...`,
+  });
+
+  const knownHosts = readTerminalKnownHosts();
+  const knownHost = knownHosts[`${profile.host}:${profile.port}`];
+  const clientConfig = {
+    host: profile.host,
+    port: profile.port,
+    username: profile.username,
+    readyTimeout: 20000,
+    keepaliveInterval: 10000,
+    keepaliveCountMax: 3,
+    tryKeyboard: Boolean(profile.password),
+    hostVerifier(key, verify) {
+      const fingerprint = terminalHostFingerprint(key);
+      const keyType = terminalHostKeyType(key);
+      const knownFingerprint = typeof knownHost === 'string'
+        ? knownHost
+        : knownHost?.fingerprint;
+
+      if (knownFingerprint === fingerprint) {
+        verify(true);
+        return;
+      }
+
+      session.pendingHostKey = {
+        verify,
+        fingerprint,
+        keyType,
+      };
+      terminalStatus(socket, 'host-key', {
+        device: profile.id,
+        host: profile.host,
+        port: profile.port,
+        fingerprint,
+        keyType,
+        changed: Boolean(knownFingerprint),
+        message: knownFingerprint
+          ? 'The SSH host key has changed.'
+          : 'This SSH host key is not trusted yet.',
+      });
+      session.hostKeyTimer = setTimeout(() => {
+        if (session.pendingHostKey?.verify !== verify) return;
+        session.pendingHostKey = null;
+        verify(false);
+        failTerminalSession(socket, session, new Error('Host-key approval timed out.'));
+      }, 60000);
+    },
+  };
+
+  if (profile.password) clientConfig.password = profile.password;
+  if (profile.privateKey) clientConfig.privateKey = profile.privateKey;
+  if (profile.passphrase) clientConfig.passphrase = profile.passphrase;
+  if (profile.agent) clientConfig.agent = profile.agent;
+  applySshAlgorithmPolicy(clientConfig, { legacySshCompatibility });
+
+  session.client
+    .on('keyboard-interactive', (name, instructions, lang, prompts, finish) => {
+      finish(prompts.map(() => profile.password || ''));
+    })
+    .on('ready', () => {
+      if (session.closed) return;
+      terminalStatus(socket, 'opening', {
+        device: profile.id,
+        message: 'Opening interactive shell...',
+      });
+      session.client.shell({
+        term: 'xterm-256color',
+        cols: session.cols,
+        rows: session.rows,
+        width: 0,
+        height: 0,
+      }, (error, stream) => {
+        if (error) {
+          failTerminalSession(socket, session, error);
+          return;
+        }
+        if (session.closed) {
+          try { stream.close(); } catch {}
+          return;
+        }
+
+        session.stream = stream;
+        session.connected = true;
+        terminalStatus(socket, 'connected', {
+          device: profile.id,
+          protocol: profile.protocol,
+          host: profile.host,
+          port: profile.port,
+          legacySshCompatibility,
+          message: legacySshCompatibility
+            ? `Connected to ${profile.alias} with Legacy KEX compatibility.`
+            : `Connected to ${profile.alias}.`,
+        });
+
+        stream.on('data', (chunk) => {
+          sendSocketMessage(socket, 'terminal:data', {
+            data: Buffer.from(chunk).toString('base64'),
+          });
+        });
+        stream.stderr?.on('data', (chunk) => {
+          sendSocketMessage(socket, 'terminal:data', {
+            data: Buffer.from(chunk).toString('base64'),
+          });
+        });
+        stream.on('close', () => {
+          try { session.client.end(); } catch {}
+          endTerminalSession(socket, session);
+        });
+      });
+    })
+    .on('error', (error) => failTerminalSession(socket, session, error))
+    .on('close', () => {
+      if (socket.terminalSession === session) {
+        endTerminalSession(
+          socket,
+          session,
+          session.connected ? 'Remote session closed.' : 'SSH connection closed.',
+        );
+      }
+    });
+
+  try {
+    session.client.connect(clientConfig);
+  } catch (error) {
+    failTerminalSession(socket, session, error);
+  }
+}
+
+function handleTerminalMessage(socket, request, message) {
+  const payload = message?.payload || {};
+  if (message?.type === 'terminal:connect') {
+    startTerminalSession(socket, request, payload);
+    return;
+  }
+  if (message?.type === 'terminal:disconnect') {
+    closeTerminalSession(socket);
+    return;
+  }
+  if (message?.type === 'terminal:hostkey-response') {
+    const session = socket.terminalSession;
+    const pending = session?.pendingHostKey;
+    if (!session || !pending) return;
+    session.pendingHostKey = null;
+    if (session.hostKeyTimer) clearTimeout(session.hostKeyTimer);
+    session.hostKeyTimer = null;
+    const accepted = payload.accept === true;
+    if (accepted) {
+      try {
+        trustTerminalHost(
+          session.profile,
+          pending.fingerprint,
+          pending.keyType,
+        );
+      } catch (error) {
+        pending.verify(false);
+        failTerminalSession(socket, session, error);
+        return;
+      }
+    }
+    pending.verify(accepted);
+    if (!accepted) {
+      failTerminalSession(socket, session, new Error('SSH host key was not trusted.'));
+    } else {
+      terminalStatus(socket, 'connecting', {
+        device: session.profile.id,
+        message: 'Host key trusted. Continuing SSH handshake...',
+      });
+    }
+    return;
+  }
+
+  const session = socket.terminalSession;
+  if (!session) return;
+
+  if (message?.type === 'terminal:input') {
+    const data = typeof payload.data === 'string' ? payload.data : '';
+    if (!data || Buffer.byteLength(data, 'utf8') > TERMINAL_INPUT_LIMIT) return;
+    if (session.stream?.writable) session.stream.write(data);
+    return;
+  }
+
+  if (message?.type === 'terminal:resize') {
+    session.cols = Math.max(20, Math.min(500, Number.parseInt(payload.cols, 10) || 80));
+    session.rows = Math.max(5, Math.min(200, Number.parseInt(payload.rows, 10) || 24));
+    if (session.stream) {
+      try { session.stream.setWindow(session.rows, session.cols, 0, 0); } catch {}
+    }
+  }
+}
+
 function broadcastWS(type, payload) {
   const msg = JSON.stringify({ type, payload });
   for (const socket of sockets) {
@@ -2182,9 +2837,18 @@ function broadcastWS(type, payload) {
 
 const sockets = new Set();
 
-wss.on('connection', (socket) => {
+wss.on('connection', (socket, request) => {
   sockets.add(socket);
   socket.send(JSON.stringify({ type: 'graph:init', payload: buildGraph() }));
+
+  socket.on('message', (raw, isBinary) => {
+    if (isBinary || raw.length > 128 * 1024) return;
+    try {
+      handleTerminalMessage(socket, request, JSON.parse(raw.toString('utf8')));
+    } catch {
+      terminalStatus(socket, 'error', { message: 'Invalid terminal WebSocket message.' });
+    }
+  });
 
   const timer = setInterval(async () => {
     if (socket.readyState !== socket.OPEN) return;
@@ -2205,6 +2869,7 @@ wss.on('connection', (socket) => {
   }, 5000);
 
   socket.on('close', () => {
+    closeTerminalSession(socket, { notify: false });
     sockets.delete(socket);
     clearInterval(timer);
   });

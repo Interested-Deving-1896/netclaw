@@ -17,6 +17,7 @@ const rootDir = fileURLToPath(new URL('.', import.meta.url));
 export default defineConfig({
   plugins: [localOnly(), react()],
   build: {
+    manifest: true,
     rollupOptions: {
       input: {
         hud: resolve(rootDir, 'index.html'),

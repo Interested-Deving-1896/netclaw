@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - 'ui/netclaw-visual/**'
+      - 'scripts/install-pyats-genie.py'
+      - 'scripts/test-install-pyats-genie.py'
+      - 'tests/canvas-terminal/**'
       - '.github/workflows/hud-ci.yml'
   push:
     branches: [main]
@@ -28,4 +31,9 @@ jobs:
           cache-dependency-path: ui/netclaw-visual/package-lock.json
       - run: npm ci
       - run: npm test
-      - run: npm run build
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Canvas terminal contracts, Python mocks and bundle budget
+        working-directory: .
+        run: bash tests/canvas-terminal/run-tests.sh

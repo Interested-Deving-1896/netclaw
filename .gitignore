@@ -178,3 +178,6 @@ labs/**/.tls/
 # Private environment-migration recovery digests
 *.pre-*.state.json
 local-permissions-backup.json
+# Local inventory backups may contain device credentials.
+*.yaml.backups/
+*.yml.backups/
