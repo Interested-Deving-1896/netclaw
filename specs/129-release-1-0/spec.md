@@ -35,6 +35,8 @@ An operator can download the official v1.0.0 source release, find installation a
 
 - FR-009: User clarification: establish `1.x.y` versioning for future completed specs. Add root VERSION and a preparation helper: minor for features, patch for fixes/docs/maintenance; map each release to numbered specs and leave component versions independent. Validate release metadata before tagging.
 
+- FR-010: Provide a reusable content-agent handoff for blog/LinkedIn/X, with exact inventory, tagged source links, channel briefs, attribution, publication checks and explicit claim boundaries. Prepare content; do not publish social messages.
+
 ## Success Criteria
 
 Contribution requirements are discoverable, local specification/reconciliation checks pass, release CI is green, and the public release URL resolves to the intended immutable tag. GAIT and daily memory record the actual outcome.

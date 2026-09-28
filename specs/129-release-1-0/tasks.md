@@ -10,3 +10,5 @@
 - [ ] T007 Push release branch, open PR and merge after green checks.
 - [ ] T008 Verify main CI, create annotated v1.0.0 tag, publish and verify official GitHub release.
 - [ ] T009 Record actual outcome in daily memory and GAIT; show release URL.
+
+- [x] T011 Add source-linked blog/LinkedIn/X content-agent handoff requested during release preparation.
