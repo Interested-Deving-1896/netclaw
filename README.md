@@ -12,9 +12,13 @@ Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one Ne
 
 **Reference:** [Architecture](#architecture) · [MCP servers](#mcp-servers-173) · [Skills](#skills-233) · [Workflows](#standard-workflows) · [Safety](#safety)
 
+The function-first HUD adds panels, Basic/Advanced presentation and detailed Jev
+views while preserving the full Canvas workspace. See the [HUD guide](docs/HUD-FUNCTION-FIRST.md)
+for local review and current acceptance limits.
+
 ## RAG — answers grounded in your documents
 
-Teach NetClaw your vendor guides, standards, customer designs and runbooks. Upload through Slack or the HUD Knowledge panel, ingest a local file, or preview a URL crawl before importing it. PDF, Markdown, HTML, text and modern Office formats are supported; legacy Office conversion uses optional LibreOffice.
+Teach NetClaw your vendor guides, standards, customer designs and runbooks. Upload through Slack or the HUD RAG panel, ingest a local file, or preview a URL crawl before importing it. PDF, Markdown, HTML, text and modern Office formats are supported; legacy Office conversion uses optional LibreOffice.
 
 Hybrid semantic and keyword search, local reranking and structure-aware chunks return **cited passages with document, section and page context**. Retrieval runs locally after the models are installed. NetClaw can refine a search within a bounded budget and report when the corpus cannot answer. Uploaded knowledge stays separate from the agent's experiential memory; captured network snapshots are opt-in and carry their age.
 
@@ -46,9 +50,13 @@ Live meeting context and historical meeting search serve different purposes: RTM
 
 [RTMS setup, tools and deployment boundaries](mcp-servers/zoom-rtms-mcp/README.md) · [Meeting intelligence specification](specs/118-zoom-meeting-intelligence/spec.md)
 
-## HUD access security
+## Function-first HUD
 
-The HUD now runs on loopback only. Existing remote users should use the [SSH-tunnel migration helper and access guide](docs/HUD-ACCESS.md). This protects the local credential, configuration, and chat endpoints. Full NetClaw hosts are macOS, Linux, and Windows through WSL2; native Windows support is component-specific.
+Open the local operations workspace for Canvas investigations, Claw/MCP drill-downs,
+reported LLMs, Jev assessments, RAG uploads and retrieval, Tokenomics, service Logs,
+masked Configuration, Security mode/enforcement panels, and Documentation. Basic/Advanced presentation and optional
+Three.js views keep evidence accessible. See the [HUD guide](docs/HUD-FUNCTION-FIRST.md).
+The service remains local to the host; the new UI does not change its access controls.
 
 ## Resources
 
@@ -280,20 +288,32 @@ claw
 ## Visual HUD
 
 <p align="center">
-  <img src="ui/netclaw-visual/logos/netclawvisualhud.png" alt="NetClaw Visual HUD — 3D Network Operations Dashboard" width="800">
+  <img src="ui/netclaw-visual/logos/netclawvisualhud.png" alt="NetClaw Visual HUD — operations workspace" width="800">
 </p>
 
-NetClaw includes a Three.js 3D operations dashboard that computes its integration and skill inventory live from the codebase (currently 173 MCP integrations and 233 skills) each time it's opened, alongside your device fleet and live BGP peering topology — so the dashboard never drifts out of sync with what's actually installed. Chat with NetClaw directly from the browser, watch integrations light up as tools execute, and inspect every node in the graph. The Canvas/A2UI visualization skill renders inline topology maps, health dashboards, alert cards, change timelines, config diffs, path traces, and health scorecards directly in the chat interface.
+The function-first HUD opens on an operations dashboard with a preserved, branching
+**Canvas** workspace. Inspect internal Claws, mobile edges and external neighbours;
+drill into reported MCPs and LLM identities; compare Jev evidence; upload/search RAG;
+review token usage, estimates and budgets; inspect LAB/production mode, DefenseClaw and OpenShell; filter service logs; and browse guides,
+CLI declarations, MCP signatures and the HUD OpenAPI reference. Three.js views are
+optional companions to the panels and tables. Configured capabilities, recorded
+usage and estimates stay distinct from verified live state.
 
 ```bash
 cd ui/netclaw-visual
 npm install
-npm run dev                   # opens at http://localhost:3000
+npm run dev                   # then open http://localhost:3000
 ```
 
 Requires the OpenClaw gateway to be running for live chat (`openclaw gateway run`).
+After updating your checkout, run `scripts/upgrade-hud.sh --check` from the repository
+root, then `scripts/upgrade-hud.sh --apply` to rebuild. Add `--install-deps` only when
+the lockfile dependencies need installation. This helper preserves configuration,
+security modes and Canvas storage; it does not pull Git or restart services.
 
-**[Full setup guide, peering instructions, and feature documentation >>>](ui/netclaw-visual/README.md)**
+[HUD guide](docs/HUD-FUNCTION-FIRST.md) · [Logging guide](docs/LOGGING-GUIDE.md) · [Security modes](docs/SECURITY-MODES.md) ·
+[CLI/interface reference](docs/reference/CLI-REFERENCE.md) · [HUD OpenAPI](docs/reference/hud-openapi.json) ·
+[Setup and legacy utilities](ui/netclaw-visual/README.md)
 
 ---
 

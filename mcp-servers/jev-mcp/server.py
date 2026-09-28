@@ -6,6 +6,7 @@ import argparse
 import importlib.util
 import json
 import os
+import re
 import sqlite3
 import stat
 import sys
@@ -58,7 +59,7 @@ def safe_status() -> dict:
                 "advisory_only": True, "message": exc.message if isinstance(exc, core.Refused) else "Local Jev status unavailable."}
 
 
-def serve():
+def serve(read_only: bool = False):
     from mcp.server.fastmcp import FastMCP
     mcp = FastMCP("jev-mcp")
 
@@ -90,6 +91,8 @@ def serve():
         command, retain the exact arguments, and do not claim a Slack confirmation
         alone records the grant. Use at most one reconsideration of a successful initial result.
         """
+        if read_only:
+            return {"status": "unavailable", "message": "This task-bound process permits assessment reads only."}
         return await core.evaluate(state, questions, purpose, evidence_metadata,
                                    data_classification, prepare_only, reconsideration_of)
 
@@ -110,6 +113,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--status", action="store_true", help="Print secret-free local status without inference")
     parser.add_argument("--env-file", metavar="PATH", help="Load allowlisted literal Jev settings from this operator-selected environment file")
+    parser.add_argument("--read-task-id", help="Operator-owned task binding for a read-only assessment process; never a model argument")
     args = parser.parse_args()
     if args.env_file is not None:
         try:
@@ -122,7 +126,11 @@ if __name__ == "__main__":
             else:
                 print(failure["message"], file=sys.stderr)
             raise SystemExit(2)
+    if args.read_task_id is not None:
+        if not re.fullmatch(r"[A-Za-z0-9_.:/-]{1,128}", args.read_task_id):
+            raise SystemExit("Invalid read task binding")
+        os.environ["JEV_TASK_ID"] = args.read_task_id
     if args.status:
         print(json.dumps(safe_status()))
     else:
-        serve()
+        serve(read_only=args.read_task_id is not None)

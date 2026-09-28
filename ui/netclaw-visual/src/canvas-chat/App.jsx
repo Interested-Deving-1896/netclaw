@@ -7,6 +7,8 @@
  */
 import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { unbindImportedSession, openAssessment } from "./assessment-link.js";
+import { installDashboardBridge } from "./dashboard-bridge.js";
 import { createSessionGate } from "./session-gate.js";
 
 // ---- theme ---------------------------------------------------------------
@@ -184,7 +186,13 @@ function deriveSessionTitle(nodes) {
 const apiError = async (res) => { let detail = ""; try { const j = await res.json(); detail = j.error?.message || j.message || JSON.stringify(j.error || j); } catch {} return new Error("API " + res.status + (detail ? ": " + detail : "")); };
 
 // --- per-provider call shims; each returns assistant text or throws ---
-async function callNetClaw({ messages }) {
+let hudSessionReady;
+async function ensureHudSession() {
+  if (!hudSessionReady) hudSessionReady = fetch("/api/hud/session", { method: "POST" }).then(res => { if (!res.ok) throw new Error("HUD session unavailable"); }).catch(error => { hudSessionReady = null; throw error; });
+  return hudSessionReady;
+}
+async function callNetClaw({ messages, hudThread }) {
+  await ensureHudSession();
   const context = messages.map((m) => ({ role: m.role, content: openaiContent(m) }));
   const latestUser = [...context].reverse().find((m) => m.role === "user");
   const latestText = typeof latestUser?.content === "string"
@@ -198,17 +206,17 @@ async function callNetClaw({ messages }) {
     headers: { "Content-Type": "application/json" },
     // `message` drives NetClaw's activation visualization; `messages` carries
     // the complete branch context (including the answer-format instruction).
-    body: JSON.stringify({ message: requestText, messages: context }),
+    body: JSON.stringify({ message: requestText, messages: context, hudThread }),
   });
   if (!res.ok) throw await apiError(res);
   const data = await res.json();
-  return String(data.response || "").trim();
+  return { text: String(data.response || "").trim(), assessmentRefs: Array.isArray(data.assessmentRefs) ? data.assessmentRefs : [], fromGateway: data.fromGateway === true };
 }
 
-async function requestLLM(messages) {
-  const text = await callNetClaw({ messages });
-  if (!text) throw new Error("empty response from NetClaw");
-  return text;
+async function requestLLM(messages, hudThread) {
+  const result = await callNetClaw({ messages, hudThread });
+  if (!result.text) throw new Error("empty response from NetClaw");
+  return result;
 }
 
 // ---- image attachments (vision) ------------------------------------------
@@ -297,7 +305,8 @@ The most authoritative references for this topic, named explicitly: exact RFC nu
 ===SUGGESTED ACTION===
 Concrete next steps to investigate or resolve this, as a short prioritized list. Be specific and operational (commands to run, things to check, what to rule out). If nothing actionable applies, say so.
 
-Use those literal delimiter lines. Do not output any other section headers.`;
+Use those literal delimiter lines. Do not output any other section headers.
+If you used Jev and have an actual assessment ID from its tool result, include within Summary a fenced jev-influence JSON object with assessment_id, status (supported/challenged/changed/unavailable), and explanation of your own interpretation. Never invent an ID or treat this interpretation as execution permission. Omit this object if no assessment was obtained.`;
 
 function parseTabs(raw) {
   const t = String(raw);
@@ -360,7 +369,7 @@ export default function App() {
   const [nodes, setNodes] = useState([ROOT]);
   const [sessionError, setSessionError] = useState(null);
   const sessionGate = useRef(createSessionGate());
-  const callLLM = (messages) => sessionGate.current.request(() => requestLLM(messages));
+  const callLLM = (messages, thread) => sessionGate.current.request(() => requestLLM(messages, thread));
   const runSessionChange = async (work) => {
     try { await sessionGate.current.change(work); setSessionError(null); }
     catch (error) { setSessionError(String(error.message || error)); }
@@ -368,6 +377,15 @@ export default function App() {
   const [active, setActive] = useState("root");
   const [branchHint, setBranchHint] = useState(null);
   const [drafts, setDrafts] = useState({});
+  // Dashboard context is additive and never submits the conversation.
+  const dashboardAccept = useRef(null);
+  dashboardAccept.current = (content) => {
+    sessionGate.current.assertIdle();
+    if (!active || !nodes.some(node => node.id === active && !node.closed)) throw new Error("Select an open canvas thread first.");
+    setDrafts(previous => ({ ...previous, [active]: [previous[active], content].filter(Boolean).join("\n\n") }));
+  };
+  useEffect(() => installDashboardBridge({ window, accept: content => dashboardAccept.current(content) }), []);
+
   const [quotes, setQuotes] = useState({});   // per-node pending quote attached to the next question
   const [attachments, setAttachments] = useState({});   // per-node pending image attachments
   const interaction = useRef(null);   // {type, id, mx, my, x, y, w, h}
@@ -906,8 +924,9 @@ export default function App() {
     const instruction = { role: "user", content: `Step back from the detail. The messages above began in the main thread and branched down into this tangent.${focus} In 2 to 4 sentences, explain plainly how this connects back to what was originally being investigated: what it clarified, confirmed, changed, or added, and name the concrete link. Do not restate the branch; bridge it to the origin.` };
     patch(nodeId, { loading: true, error: null });
     try {
-      const text = await callLLM(toAPIMessages([...ctx, instruction]));
-      append(nodeId, { role: "assistant", relate: true, content: text });
+      if (!currentSession?.id) throw new Error("Wait for the canvas session to load.");
+      const result = await callLLM(toAPIMessages([...ctx, instruction]), currentSession.id + ":" + nodeId);
+      append(nodeId, { role: "assistant", relate: true, content: result.text, assessmentRefs: result.assessmentRefs, fromGateway: result.fromGateway });
     } catch (e) { patch(nodeId, { error: String(e.message || e) }); }
     finally { patch(nodeId, { loading: false }); }
   };
@@ -953,13 +972,14 @@ export default function App() {
   const openFile = (e) => {
     const f = e.target.files && e.target.files[0]; if (!f) return;
     const reader = new FileReader();
-    reader.onload = () => runSessionChange(() => loadState(JSON.parse(String(reader.result))));
+    reader.onload = () => runSessionChange(() => loadState(unbindImportedSession(JSON.parse(String(reader.result)))));
     reader.readAsText(f);
     e.target.value = "";
   };
 
   // ---- session persistence (IndexedDB) ----
-  const [currentSession, setCurrentSession] = useState(null); // { id, createdAt }
+  const [currentSession, setCurrentSession] = useState(null);
+  useEffect(() => { if (window.parent !== window) window.parent.postMessage({ type: "netclaw:session-changed" }, location.origin); }, [currentSession?.id]); // { id, createdAt }
   const [showSessions, setShowSessions] = useState(false);
   const [sessionList, setSessionList] = useState([]);
   const [sessSearch, setSessSearch] = useState("");
@@ -1160,9 +1180,11 @@ export default function App() {
 
       // Tool selection and execution stay inside NetClaw/OpenClaw. The browser
       // contributes only this branch's conversation context and attachments.
-      const raw = await callLLM(msgs);
+      if (!currentSession?.id) throw new Error("Wait for the canvas session to load.");
+      const result = await callLLM(msgs, currentSession.id + ":" + nodeId);
+      const raw = result.text;
       const tabs = parseTabs(raw);
-      append(nodeId, tabs ? { role: "assistant", content: tabs.context, tabs } : { role: "assistant", content: raw });
+      append(nodeId, { ...(tabs ? { role: "assistant", content: tabs.context, tabs } : { role: "assistant", content: raw }), assessmentRefs: result.assessmentRefs, assessmentBinding: result.assessmentRefs.length ? "bound" : "unbound", fromGateway: result.fromGateway });
     }
     catch (e) { patch(nodeId, { error: String(e.message || e) }); }
     finally { patch(nodeId, { loading: false }); }
@@ -2718,9 +2740,9 @@ function Lane({ node, color, isActive, selected, highlights, synthSources, anima
               <div onMouseUp={onSelect} style={{ padding: "9px 11px", fontSize: 13.5, lineHeight: 1.5, color: C.ink, cursor: "text" }}>{renderMarkdown(m.content, highlights)}</div>
             </div>
           ) : m.tabs ? (
-            <TabbedAnswer key={i} tabs={m.tabs} color={color} onSelect={onSelect} highlights={highlights} defaultTab={defaultTab} />
+            <React.Fragment key={i}><TabbedAnswer tabs={m.tabs} color={color} onSelect={onSelect} highlights={highlights} defaultTab={defaultTab} /><AssessmentLinks message={m} /></React.Fragment>
           ) : (
-            <div key={i} onMouseUp={onSelect} style={{ alignSelf: "flex-start", maxWidth: "94%", background: C.card, color: C.ink, padding: "9px 11px", border: `1px solid ${C.hairline}`, borderRadius: "10px 10px 10px 2px", fontSize: 13.5, lineHeight: 1.5, cursor: "text" }}>{renderMarkdown(m.content, highlights)}</div>
+            <div key={i} onMouseUp={onSelect} style={{ alignSelf: "flex-start", maxWidth: "94%", background: C.card, color: C.ink, padding: "9px 11px", border: `1px solid ${C.hairline}`, borderRadius: "10px 10px 10px 2px", fontSize: 13.5, lineHeight: 1.5, cursor: "text" }}> {renderMarkdown(m.content, highlights)}<AssessmentLinks message={m} /></div>
           )
         )}
         {node.loading && <div style={{ alignSelf: "flex-start", fontSize: 12, color: C.muted, fontStyle: "italic", display: "flex", gap: 6, alignItems: "center" }}><span style={{ width: 7, height: 7, borderRadius: "50%", background: color, display: "inline-block", animation: "pulse 1s infinite" }} /> thinking…</div>}
@@ -2929,4 +2951,13 @@ function Tutorial({ onClose }) {
       </div>
     </div>
   );
+}
+
+// Additive message affordance; the four original answer tabs stay intact.
+function AssessmentLinks({ message }) {
+  return <div style={{ padding: "6px 10px", fontSize: 12, color: C.muted }}>
+    {message.fromGateway === false && <p>Local fallback response · gateway unavailable</p>}
+    {(message.assessmentRefs || []).map(ref => <button key={ref.assessmentId} onClick={() => openAssessment(ref)} style={{ background: C.cardAlt, color: C.ink, border: `1px solid ${C.hairline}`, padding: "7px 10px", borderRadius: 5, cursor: "pointer", marginRight: 6 }}>Jev evidence ↗</button>)}
+    {message.assessmentBinding === "unbound" && <span>Jev: no trusted assessment link for this message</span>}
+  </div>;
 }

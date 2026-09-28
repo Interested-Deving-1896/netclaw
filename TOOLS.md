@@ -905,3 +905,14 @@ Dynamic questions only. Noul probability, Choice/Score confidence and Score rubr
 are distinct. Advisory service is visible separately from execution members. No write tools.
 Private disclosure approval binds exact prepared request digest, destination and task;
 credentials excluded. See [guide](docs/JEV-SCIENCE-OFFICER.md) for failure and consent workflow.
+
+## Function-first HUD (spec127)
+
+Same local Vite/Express runtime and ports. Dashboard `/`, full Adam canvas
+`/canvas.html`, previous controls `/classic.html`, task-bound detail `/assessment.html`.
+Browser-owned HUD task mappings: `~/.openclaw/hud-bindings`, private and expiring.
+Detailed Jev reads require exact gateway transcript tool-result provenance; unsupported
+wrappers remain unbound. Read-only Jev CLI flag `--read-task-id` fixes a reader's task
+and disables evaluation. No new integration count or provider credential. See
+[HUD guide](docs/HUD-FUNCTION-FIRST.md); runtime/browser/host acceptance limits remain
+explicit in spec127 verification.
