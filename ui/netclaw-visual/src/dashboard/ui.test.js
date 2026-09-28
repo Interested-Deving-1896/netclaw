@@ -7,7 +7,7 @@ const js=output.outputFiles.find(f=>f.path.endsWith('.js')).text;
 const settle=()=>new Promise(resolve=>setTimeout(resolve,30));
 async function app(t, preview=true, fetcher){const errors=[];const virtualConsole=new VirtualConsole();virtualConsole.on('jsdomError',e=>errors.push(e.message));const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost:3000',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole});dom.window.NETCLAW_PREVIEW=preview;if(fetcher)dom.window.fetch=fetcher;dom.window.AbortSignal=AbortSignal;dom.window.AbortController=AbortController;dom.window.eval(js);t.after(()=>dom.window.close());await settle();return {document:dom.window.document,window:dom.window,errors};}
 function click(document,label){const button=[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===label || b.textContent.trim().startsWith(label));assert.ok(button,`button ${label}`);button.click();}
-test('production dashboard renders and Basic/Advanced retains navigation without errors',async t=>{const {document,errors}=await app(t);assert.match(document.body.textContent,/SYNTHETIC PREVIEW/);assert.match(document.body.textContent,/Execution members/);click(document,'Advanced');await settle();assert.equal(document.querySelector('button[aria-pressed=true]').textContent,'Advanced');for(const label of ['Risk of Claws','External neighbours','Mobile devices','Science Officer','Network','Knowledge','Operations','Integrations','Settings','RAG','Configuration','Canvas','Tokenomics','Documentation','Logs','Security']){const button=[...document.querySelectorAll('nav button')].find(b=>b.textContent.includes(label));assert.ok(button,label);button.click();await settle();assert.match(document.querySelector('h1').textContent,new RegExp(label));}assert.deepEqual(errors,[]);});
+test('production dashboard renders and Basic/Advanced retains navigation without errors',async t=>{const {document,errors}=await app(t);assert.match(document.body.textContent,/SYNTHETIC PREVIEW/);assert.match(document.querySelector('h1').textContent,/^Chat/);click(document,'01Overview');await settle();assert.match(document.body.textContent,/Execution members/);click(document,'Advanced');await settle();assert.equal(document.querySelector('button[aria-pressed=true]').textContent,'Advanced');for(const label of ['Risk of Claws','External neighbours','Mobile devices','Science Officer','Network','Knowledge','Operations','Integrations','Settings','RAG','Configuration','Canvas','Tokenomics','Documentation','Logs','Security']){const button=[...document.querySelectorAll('nav button')].find(b=>b.textContent.includes(label));assert.ok(button,label);button.click();await settle();assert.match(document.querySelector('h1').textContent,new RegExp(label));}assert.deepEqual(errors,[]);});
 test('member inspector uses exact identity; Three.js not required for selection',async t=>{const {document,errors}=await app(t);click(document,'03Risk of Claws');await settle();document.querySelector('button[aria-label="Inspect Network Claw"]').click();await settle();assert.match(document.querySelector('.inspector').textContent,/demo\/network/);assert.match(document.querySelector('.inspector').textContent,/Execution member/);assert.equal(document.querySelector('canvas'),null);assert.deepEqual(errors,[]);});
 test('typed assessment comparison shows Noul probability, Choice answer and Score separately',async t=>{const {document,errors}=await app(t);click(document,'06Science Officer');await settle();click(document,'Inspect synthetic original');await settle();assert.equal(document.querySelectorAll('.assessment').length,2);assert.match(document.body.textContent,/0.72/);assert.match(document.body.textContent,/interfaces/);assert.match(document.body.textContent,/Rubric position/);assert.match(document.body.textContent,/not network health/);assert.match(document.body.textContent,/Border's interpretation/);assert.deepEqual(errors,[]);});
 
@@ -66,5 +66,65 @@ test('Logs filters synthetic tail and hands exact selected evidence to Canvas wi
 });
 
 test('Overview labels LAB separately and Security distinguishes DefenseClaw, OpenShell and host confinement',async t=>{
-  const {document}=await app(t);assert.match(document.body.textContent,/LAB bypass enabled/);click(document,'Inspect Security');await settle();assert.match(document.body.textContent,/Host member confinement/);assert.match(document.body.textContent,/OpenShell is not required/);assert.match(document.body.textContent,/Observe mode/);click(document,'DefenseClaw logs');await settle();assert.equal(document.querySelector('select').value,'defenseclaw');assert.match(document.body.textContent,/tail -n 200 ~\/\.defenseclaw\/gateway.log/);
+  const {document}=await app(t);click(document,'01Overview');await settle();assert.match(document.body.textContent,/LAB bypass enabled/);click(document,'Inspect Security');await settle();assert.match(document.body.textContent,/Host member confinement/);assert.match(document.body.textContent,/OpenShell is not required/);assert.match(document.body.textContent,/Observe mode/);click(document,'DefenseClaw logs');await settle();assert.equal(document.querySelector('select').value,'defenseclaw');assert.match(document.body.textContent,/tail -n 200 ~\/\.defenseclaw\/gateway.log/);
+});
+
+function typeChat(window, document, value) {
+  const input = document.querySelector('#standard-chat-message');
+  Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype,'value').set.call(input,value);
+  input.dispatchEvent(new window.Event('input',{bubbles:true}));
+}
+function submitChat(window, document) {
+  document.querySelector('.chat-composer').dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true}));
+}
+test('Chat is default; native OpenClaw opens separately and Canvas and Chat drafts survive navigation',async t=>{
+  const {document,window,errors}=await app(t,false,async url=>({ok:true,json:async()=>url==='/api/hud/runtime'?{controlUi:{available:true,port:19443,basePath:'/ops',tls:true}}:{}}));
+  assert.match(document.querySelector('h1').textContent,/^Chat/);
+  typeChat(window,document,'Unsent private question');await settle();
+  const link=document.querySelector('.chat-switch a');assert.equal(link.href,'https://127.0.0.1:19443/ops/');assert.equal(link.target,'_blank');assert.match(link.rel,/noopener/);assert.match(link.rel,/noreferrer/);assert.equal(link.getAttribute('referrerpolicy'),'no-referrer');
+  click(document,'02Canvas');await settle();const frame=document.querySelector('iframe');assert.ok(frame);
+  link.addEventListener('click',e=>e.preventDefault());link.click();await settle();assert.equal(document.querySelector('iframe'),frame);
+  click(document,'Advanced');click(document,'00Chat');await settle();assert.equal(document.querySelector('#standard-chat-message').value,'Unsent private question');
+  click(document,'02Canvas');await settle();assert.equal(document.querySelector('iframe'),frame);assert.deepEqual(errors,[]);
+});
+test('standard Chat bootstraps scoped session, sends isolated chronological turns and retains response while hidden',async t=>{
+  const calls=[];let deliver;const reply=new Promise(resolve=>deliver=resolve);
+  const {document,window,errors}=await app(t,false,async(url,options={})=>{calls.push([url,options]);if(url==='/api/chat')return reply;return{ok:true,json:async()=>({})};});
+  typeChat(window,document,'First question');await settle();submitChat(window,document);submitChat(window,document);await settle();
+  assert.equal(calls.filter(([url])=>url==='/api/chat').length,1);
+  assert.ok(calls.findIndex(([url])=>url==='/api/hud/session')<calls.findIndex(([url])=>url==='/api/chat'));
+  const body=JSON.parse(calls.find(([url])=>url==='/api/chat')[1].body);assert.match(body.hudThread,/^chat-/);assert.deepEqual(body.messages,[{role:'user',content:'First question'}]);
+  assert.equal([...document.querySelectorAll('button')].find(b=>b.textContent==='New chat').disabled,true);
+  click(document,'02Canvas');await settle();const frame=document.querySelector('iframe');
+  deliver({ok:true,json:async()=>({fromGateway:true,response:'Verified synthetic response <img src=x onerror=alert(1)>',assessmentRefs:[{taskRef:'owned-task',assessmentId:'owned-assessment'},{taskRef:'bad/../../',assessmentId:'unsafe'}]})});await settle();
+  click(document,'00Chat');await settle();assert.equal(document.querySelectorAll('.chat-message').length,2);assert.equal(document.querySelector('.chat-message img'),null);assert.match(document.querySelector('.chat-message.assistant').textContent,/Verified synthetic/);
+  assert.equal(document.querySelector('.chat-message.assistant a').getAttribute('href'),'/assessment.html?task=owned-task&assessment=owned-assessment');assert.equal(document.querySelectorAll('.chat-message.assistant a').length,1);
+  assert.equal(document.querySelector('iframe'),frame);assert.equal(calls.some(([url])=>url==='/api/chat/history'),false);assert.deepEqual(errors,[]);
+});
+test('failed bootstrap, HTTP failure, gateway fallback and empty replies restore drafts without fabricated assistant messages',async t=>{
+  for(const mode of ['bootstrap','http','fallback','empty','network']){
+    const calls=[];const {document,window}=await app(t,false,async(url,options)=>{calls.push(url);if(url==='/api/hud/session')return {ok:mode!=='bootstrap'};if(url==='/api/chat'){if(mode==='network')throw new window.TypeError('private transport detail');return{ok:mode!=='http',status:503,json:async()=>({fromGateway:mode!=='fallback',response:mode==='empty'?'':'UNVERIFIED FALLBACK'})};}return{ok:true,json:async()=>({})};});
+    typeChat(window,document,'Retain this draft');await settle();submitChat(window,document);await settle();
+    assert.equal(document.querySelector('#standard-chat-message').value,'Retain this draft',mode);assert.equal(document.querySelectorAll('.chat-message.assistant').length,0,mode);assert.ok(document.querySelector('[role=alert]'),mode);assert.doesNotMatch(document.querySelector('[role=alert]').textContent,/UNVERIFIED|private transport/);
+    assert.equal(calls.filter(url=>url==='/api/chat').length,mode==='bootstrap'?0:1,mode);
+  }
+});
+test('new chat changes task identity after confirmation and does not send old history',async t=>{
+  const sent=[];const {document,window}=await app(t,false,async(url,options)=>{if(url==='/api/chat'){sent.push(JSON.parse(options.body));return{ok:true,json:async()=>({fromGateway:true,response:'Synthetic answer'})};}return{ok:true,json:async()=>({})};});
+  for(const question of ['One','Two']){typeChat(window,document,question);await settle();submitChat(window,document);await settle();}
+  assert.equal(sent[0].hudThread,sent[1].hudThread);assert.equal(sent[1].messages.length,3);
+  window.confirm=()=>false;click(document,'New chat');await settle();assert.equal(document.querySelectorAll('.chat-message').length,4);
+  window.confirm=()=>true;click(document,'New chat');await settle();assert.equal(document.querySelectorAll('.chat-message').length,0);
+  typeChat(window,document,'Fresh');await settle();submitChat(window,document);await settle();assert.notEqual(sent[2].hudThread,sent[1].hudThread);assert.deepEqual(sent[2].messages,[{role:'user',content:'Fresh'}]);
+});
+test('native switch remains disabled for failed runtime reads and synthetic preview never sends',async t=>{
+  const {document}=await app(t,false,async url=>({ok:url!=='/api/hud/runtime',json:async()=>({})}));assert.equal(document.querySelector('.chat-switch a'),null);assert.equal(document.querySelector('.chat-unavailable button').disabled,true);
+  const preview=await app(t);assert.equal(preview.document.querySelector('#standard-chat-message').disabled,true);assert.equal(preview.document.querySelector('.chat-switch a'),null);assert.match(preview.document.querySelector('.chat-transcript').textContent,/Synthetic example/);
+});
+test('composer Enter sends but Shift+Enter and IME composition do not',async t=>{
+  const sent=[];const {document,window}=await app(t,false,async(url,options)=>{if(url==='/api/chat')sent.push(JSON.parse(options.body));return{ok:true,json:async()=>url==='/api/chat'?{fromGateway:true,response:'Synthetic answer'}:{}};});
+  typeChat(window,document,'Keyboard question');await settle();const input=document.querySelector('#standard-chat-message');
+  input.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Enter',shiftKey:true,bubbles:true,cancelable:true}));
+  input.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Enter',isComposing:true,bubbles:true,cancelable:true}));await settle();assert.equal(sent.length,0);
+  input.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));await settle();assert.equal(sent.length,1);
 });

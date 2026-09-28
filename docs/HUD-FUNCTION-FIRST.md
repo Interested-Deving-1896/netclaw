@@ -1,6 +1,6 @@
-# Function-first HUD (spec 127)
+# Function-first HUD (specs 127 and 130)
 
-The HUD opens on a panel-first overview. Basic emphasizes common investigations;
+The HUD opens on standard Chat, with the operations Overview one click away. Basic emphasizes common investigations;
 Advanced adds technical detail and more navigation. Both retain the same operational
 permissions, change-management gates and evidence boundaries.
 
@@ -11,7 +11,7 @@ API: loopback port 3001. Existing `HUD_UI_PORT` / `HUD_PORT` overrides still app
 Use the supported authenticated tunnel for remote access; do not open the listener
 publicly for mobile testing.
 
-- `/` — dashboard, capability search, RISK, neighbours, mobile, Jev, network,
+- `/` — standard Chat, dashboard, capability search, RISK, neighbours, mobile, Jev, network,
   knowledge, operations, RAG, Configuration and settings.
 - `/canvas.html` — the complete Canvas context/chat workspace, with the existing
   session library, branches, synthesis, attachments and four answer tabs.
@@ -25,6 +25,16 @@ active draft. Neither action sends a message or runs a tool. Canvas session chan
 remain blocked during pending replies/saves. The original IndexedDB database name,
 version, object stores and direct canvas origin are unchanged. Import/export keeps
 message content and relationships; imported assessment references lose authority.
+
+## Choose a chat interface
+
+The header offers **Chat**, **Canvas**, and **OpenClaw ↗** in both Basic and Advanced modes.
+
+- **Chat** is the default: a chronological conversation with the configured gateway. Enter sends; Shift+Enter adds a line. The transcript, draft and in-flight reply stay intact while you navigate this HUD tab. Reload clears the in-memory view; gateway-side records follow runtime retention. New chat asks for confirmation and creates a separate thread; it does not delete gateway records. The latest 40 messages are sent as context. Missing or unconfirmed gateway replies are errors, never substitute assistant evidence. There is no automatic retry or request cancellation.
+- **Canvas** remains the full branching workspace. Its iframe stays mounted after first use. Existing IndexedDB sessions and drafts are unchanged. Evidence-selection actions continue to hand context to a Canvas draft for review.
+- **OpenClaw ↗** opens the native Control UI in a separate tab; it deliberately retains its own authentication and conversation history. OpenClaw denies iframe embedding. The HUD does not strip those headers, expose a token, or change origin/auth settings. The destination uses only the configured gateway port, validated `gateway.controlUi.basePath` and `gateway.tls.enabled`, on `127.0.0.1`. It is configured navigation, not a reachability claim. Missing/malformed configuration or `gateway.controlUi.enabled=false` disables the link. Unsupported paths should be opened through OpenClaw directly.
+
+For remote use through an SSH tunnel, forward the configured gateway port as well as the HUD ports. The interfaces do not synchronize histories or transfer drafts. Opening a tab or changing views never sends a prompt. Detailed Jev links in standard Chat use only the task-bound references returned by the existing API.
 
 ## What the views mean
 

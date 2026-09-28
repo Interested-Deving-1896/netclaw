@@ -881,3 +881,8 @@ evaluated and rejected for live-infra members — empty, egress-denied; host-lev
 confinement is what works.)*
 
 **Full security documentation:** [docs/DEFENSECLAW.md](docs/DEFENSECLAW.md) | [docs/SOUL-DEFENSE.md](docs/SOUL-DEFENSE.md)
+
+
+## HUD conversation choices (spec130)
+
+Standard Chat is the default linear conversation view. Canvas remains the branching investigation workspace; OpenClaw opens its native Control UI separately. Drafts/history are independent, and switching never sends a prompt. Standard Chat uses authenticated task binding and refuses to present local fallback prose as gateway evidence. Its in-memory transcript survives navigation but not reload; runtime records have their own retention. Native UI navigation never includes credentials or bypasses framing/authentication protections.
