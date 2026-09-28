@@ -1,3 +1,13 @@
+import { securitySettings, openshellStatus } from './src/hud-server/security-posture.js';
+import { mountLogs } from './src/hud-server/logs.js';
+import { mountDocumentation } from './src/hud-server/documentation.js';
+import { readUsage, runtimeInventory } from './src/hud-server/tokenomics.js';
+import { configurationInventory } from './src/hud-server/configuration.js';
+import { ragSearchHandler } from './src/hud-server/rag-search.js';
+import { assessmentAudit } from './src/hud-server/audit.js';
+import { Bindings, cookieFrom, newMessageRef, readTranscript, assessmentProofs, attachInfluences, displayBorderText } from './src/hud-server/bindings.js';
+import { mountAssessmentRoutes } from './src/hud-server/assessment-routes.js';
+import { createJevReader } from './src/hud-server/jev-reader.js';
 import { resourceFile } from './src/security/resource-path.js';
 import { resolveBudgetPolicy } from './src/security/budget-policy.js';
 import { parseEnvData, updateEnvironment, writePrivateAtomic } from './src/security/private-files.js';
@@ -25,6 +35,10 @@ app.use(localAccessMiddleware(allowedLocalRequest));
 // its context. Keep the cap explicit so those requests work without making the
 // API an unbounded JSON sink.
 app.use(express.json({ limit: '4mb' }));
+mountDocumentation(app, ROOT);
+mountLogs(app, os.homedir());
+const hudBindings = new Bindings(path.join(os.homedir(), '.openclaw', 'hud-bindings'));
+mountAssessmentRoutes(app, { bindings: hudBindings, audit: assessmentAudit(ROOT), readAssessment: createJevReader(ROOT, () => ({ ...parseEnvFile(), ...process.env })) });
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({
@@ -129,6 +143,21 @@ const INTEGRATION_CATALOG = [
 // ── ENV variable mapping per integration ────────────────────────────
 // Maps integration IDs to their relevant .env keys and testbed fields.
 const ENV_MAP = {
+  security: {
+    env: ['NETCLAW_LAB_MODE', 'N2N_RISK_MODE', 'N2N_STRICT_ALL', 'DEFENSECLAW_GUARD_PORT'],
+    files: ['~/.openclaw/config/openclaw.json', '~/.defenseclaw/config.yaml', 'scripts/in2n-services.py', 'scripts/netclaw-secure-start.sh'],
+    notes: 'Security mode values appear in Security. Presence here does not establish live enforcement. DefenseClaw security.mode belongs in ~/.openclaw/config/openclaw.json, not the gateway config.',
+  },
+  rag: {
+    env: ['RAG_DATA_DIR', 'RAG_EMBEDDING_MODEL', 'RAG_RERANKER_MODEL', 'RAG_RERANK_ENABLED', 'RAG_RELEVANCE_FLOOR', 'RAG_MAX_DOC_MB', 'RAG_MAX_DOC_PAGES', 'RAG_CRAWL_MAX_PAGES', 'RAG_SNAPSHOT_WARN_DAYS', 'RAG_MAX_ROUNDS'],
+    files: ['mcp-servers/rag-mcp/config.py'],
+    notes: 'Local retrieval and indexing configuration. Defaults apply to unset optional variables.',
+  },
+  jev: {
+    env: ['JEV_ENABLED', 'TYPESAFE_API_KEY', 'JEV_API_KEY', 'JEV_BASE_URL', 'JEV_MODEL', 'JEV_COMPATIBLE_API_KEY', 'JEV_COMPATIBLE_KEY_ENDPOINT', 'JEV_DAILY_LIMIT_USD', 'JEV_CASE_LIMIT_USD', 'JEV_TIMEOUT_SECONDS', 'JEV_DATA_DIR'],
+    files: ['config/openclaw.json'],
+    notes: 'Optional Science Officer. Use python3 scripts/jev-settings.py setup for provider configuration.',
+  },
   pyats: {
     env: ['NETCLAW_USERNAME', 'NETCLAW_PASSWORD', 'NETCLAW_ENABLE_PASSWORD', 'PYATS_TESTBED_PATH', 'PYATS_MCP_SCRIPT'],
     files: ['testbed/testbed.yaml'],
@@ -910,6 +939,42 @@ function buildGraph() {
 
 export { buildGraph };
 
+app.get('/api/hud/security', (_req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  let defense = null, guard = null;
+  try { defense = JSON.parse(readText(path.join(os.homedir(), '.openclaw/config/openclaw.json'))); } catch {}
+  try { guard = yaml.load(readText(path.join(os.homedir(), '.defenseclaw/config.yaml'))); } catch {}
+  res.json({ ...securitySettings({ ...parseEnvFile(), ...process.env }, defense, guard), generatedAt:new Date().toISOString() });
+});
+let openshellCache = null, openshellReadAt = 0, openshellPending = null;
+app.get('/api/hud/openshell', async (_req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  if (!openshellCache || Date.now() - openshellReadAt > 30000) {
+    if (!openshellPending) openshellPending = openshellStatus().then(commands => {
+      openshellReadAt = Date.now(); return openshellCache = { commands, generatedAt:new Date().toISOString() };
+    }).finally(() => { openshellPending = null; });
+    await openshellPending;
+  }
+  res.json(openshellCache);
+});
+
+let usageCache = null, usageReadAt = 0;
+app.get('/api/hud/tokenomics', (_req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  if (!usageCache || Date.now() - usageReadAt > 30000) {
+    usageCache = readUsage(path.join(os.homedir(), '.openclaw', 'agents', 'main', 'sessions'));
+    usageReadAt = Date.now();
+  }
+  res.json(usageCache);
+});
+app.get('/api/hud/runtime', (_req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  try {
+    const config = JSON.parse(readText(path.join(os.homedir(), '.openclaw', 'openclaw.json')));
+    res.json({ available: true, ...runtimeInventory(config), generatedAt:new Date().toISOString() });
+  } catch { res.status(503).json({ available:false, error:'Runtime configuration unavailable' }); }
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ ok: true, service: 'netclaw-visual-api', generatedAt: new Date().toISOString() });
 });
@@ -1172,6 +1237,14 @@ app.get('/api/skill/:skillId', (req, res) => {
   const result = parseSkillMarkdown(req.params.skillId);
   if (!result) return res.status(404).json({ error: 'Skill not found or no SKILL.md' });
   res.json(result);
+});
+
+// Configuration inventory deliberately returns presence only, never .env values.
+app.get('/api/hud/configuration', (_req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  const values = parseEnvFile();
+  const environmentFile = fs.existsSync(OPENCLAW_ENV) ? '~/.openclaw/.env (overrides repository .env per key)' : '.env';
+  res.json(configurationInventory(ENV_MAP, values, environmentFile));
 });
 
 // ── ENV config per integration ─────────────────────────────────────
@@ -1522,7 +1595,21 @@ function getGatewayConfig() {
 }
 
 app.post('/api/chat', async (req, res) => {
-  const { message, messages } = req.body || {};
+  const { message, messages, hudThread } = req.body || {};
+  let hudTask = null, releaseTask = () => {}, beforeTranscript = [];
+  const hudCookie = cookieFrom(req);
+  if (hudThread !== undefined) {
+    try {
+      hudBindings.read(hudCookie);
+      hudTask = hudBindings.task(hudCookie, hudThread);
+      releaseTask = hudBindings.begin(hudCookie, hudTask.id);
+      beforeTranscript = readTranscript(SESSIONS_DIR, hudTask.gatewayKey);
+      if (hudTask.newlyCreated && beforeTranscript === null) beforeTranscript = [];
+      res.on('finish', releaseTask);
+
+    } catch { return res.status(409).json({ error: 'Authenticated canvas thread unavailable or busy. Reload and retry.' }); }
+  }
+  res.set('Cache-Control', 'no-store');
   const contextMessages = normalizeChatContext(messages);
   const latestContextMessage = contextMessages
     ? [...contextMessages].reverse().find((entry) => entry.role === 'user')
@@ -1540,14 +1627,14 @@ app.post('/api/chat', async (req, res) => {
 
   const timestamp = new Date().toISOString();
   const historyText = userMessage || '[attachment]';
-  chatHistory.push({ role: 'user', text: historyText, timestamp });
+  if (!contextMessages && !hudTask) chatHistory.push({ role: 'user', text: historyText, timestamp });
 
   // Analyze the message to determine which integrations/skills are relevant
   const graph = buildGraph();
   const activations = resolveActivations(historyText, graph);
 
   // Broadcast activation events to all WS clients so the 3D scene lights up
-  broadcastWS('chat:activations', {
+  if (!contextMessages && !hudTask) broadcastWS('chat:activations', {
     message: historyText,
     activations,
     timestamp,
@@ -1569,6 +1656,7 @@ app.post('/api/chat', async (req, res) => {
         'Authorization': `Bearer ${gw.token}`,
         'Content-Type': 'application/json',
         'x-openclaw-agent-id': 'main',
+        ...(hudTask ? { 'x-openclaw-session-key': hudTask.gatewayKey } : {}),
       },
       body: JSON.stringify({
         model: 'openclaw',
@@ -1601,11 +1689,17 @@ app.post('/api/chat', async (req, res) => {
     responseText = buildChatResponse(historyText, activations, graph, gatewayFallback);
   }
 
-  chatHistory.push({ role: 'assistant', text: responseText, timestamp: new Date().toISOString() });
+  if (!contextMessages && !hudTask) chatHistory.push({ role: 'assistant', text: responseText, timestamp: new Date().toISOString() });
 
   // After gateway response, scan latest transcript for tool_use events
-  if (fromGateway) {
-    setTimeout(() => extractAndBroadcastToolCalls(graph), 500);
+  // Private tool outputs never use global latest-session scans/broadcasts.
+  let assessmentRefs = [];
+  if (hudTask && fromGateway) {
+    try {
+      const afterTranscript = readTranscript(SESSIONS_DIR, hudTask.gatewayKey);
+      const proofs = attachInfluences(assessmentProofs(beforeTranscript, afterTranscript), beforeTranscript, afterTranscript);
+      assessmentRefs = hudBindings.register(hudCookie, hudTask.id, proofs, newMessageRef());
+    } catch { /* no proof means unbound, never timestamp matching */ }
   }
 
   // After a delay, send deactivation
@@ -1613,11 +1707,14 @@ app.post('/api/chat', async (req, res) => {
     broadcastWS('chat:deactivate', { timestamp: new Date().toISOString() });
   }, 6000);
 
+  releaseTask();
   res.json({
-    response: responseText,
+    response: displayBorderText(responseText),
     activations,
     fromGateway,
     gatewayIssue: fromGateway ? null : gatewayFallback,
+    assessmentRefs,
+    assessmentBinding: assessmentRefs.length ? 'bound' : 'unbound',
     timestamp,
   });
 });
@@ -1659,7 +1756,7 @@ function extractToolCalls(sessionFile, sinceMs = 0) {
         // Look for toolCall content blocks in assistant messages
         if (msg.role === 'assistant' && Array.isArray(msg.content)) {
           for (const block of msg.content) {
-            if (block.type === 'toolCall') {
+            if (block.type === 'toolCall' && !/jev/i.test(block.name || '')) {
               toolCalls.push({
                 tool: block.name || 'unknown',
                 input: block.input ? Object.keys(block.input).slice(0, 4) : [],
@@ -1734,6 +1831,11 @@ app.get('/api/sessions', (req, res) => {
 });
 
 app.get('/api/session/:id/tools', (req, res) => {
+  // Scoped HUD transcripts may contain private assessment evidence.
+  try {
+    const sessions = JSON.parse(readText(path.join(SESSIONS_DIR, 'sessions.json')) || '{}');
+    if (Object.entries(sessions).some(([key, value]) => key.startsWith('agent:main:hud:') && value.sessionId === req.params.id)) return res.status(404).json({ error: 'Session not found' });
+  } catch { return res.status(503).json({ error: 'Session ownership unavailable' }); }
   const sessionFile = resourceFile(SESSIONS_DIR, req.params.id, '.jsonl');
   if (!sessionFile) return res.status(404).json({ error: 'Session not found' });
   const calls = extractToolCalls(sessionFile);
@@ -1947,6 +2049,8 @@ function ragStartProgressPolling() {
     }
   }, 3000);
 }
+
+app.post('/api/rag/search', ragSearchHandler(callRagTool));
 
 app.get('/api/rag/documents', async (req, res) => {
   try {

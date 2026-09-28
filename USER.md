@@ -30,3 +30,9 @@
 - HUD preference (2026-09-27): function over flash; preserve Adam's reusable context/chat canvas and add detailed Science Officer data views during the new HUD phase.
 
 - Roadmap clarification (2026-09-27): spec126 is the small README refresh; HUD is127, preserving Adam's canvas. Phase4 scope is README plus a common utility to upgrade existing NetClaw installations to the latest build.
+
+- HUD127 scope (2026-09-27): panel-first dashboards with Basic/Advanced presentation; Three.js where relationship/topology views help. Cover standalone, iN2N Risk of Claws, eN2N external neighbours, Jev Science Officer and mobile devices. Adam Mason's full context/chat canvas must survive, including existing saved work and investigation affordances.
+
+- HUD refinement: name the preserved workspace Canvas; provide direct RAG uploads/retrieval and a masked configuration inventory in the menu.
+
+- HUD additions: per-Claw MCP/LLM introspection, Tokenomics, Documentation and CLI/API references, direct Logs with filters/commands, Sean Mahoney's guide panel, and early LAB/production plus DefenseClaw/OpenShell views. README should lead with the new HUD rather than the old SSH migration callout. Keep Canvas and hold pushes for review.

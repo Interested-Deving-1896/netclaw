@@ -20,7 +20,9 @@ export default defineConfig({
     rollupOptions: {
       input: {
         hud: resolve(rootDir, 'index.html'),
+        classic: resolve(rootDir, 'classic.html'),
         canvas: resolve(rootDir, 'canvas.html'),
+        assessment: resolve(rootDir, 'assessment.html'),
       },
     },
   },

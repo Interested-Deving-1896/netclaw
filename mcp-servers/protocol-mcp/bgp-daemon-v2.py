@@ -729,6 +729,7 @@ async def handle_n2n(method, path, body):
                          "note": "restart the daemon to (re)start iN2N listeners/dialers"}
 
         if path == "/n2n/members" and method == "GET":
+            from bgp.federation.member_inventory import stored_inventory
             def _spec_names(scope):
                 out = []
                 for e in fed.risk._scope_list(scope):
@@ -741,6 +742,7 @@ async def handle_n2n(method, path, body):
             return 200, {"members": [
                 {"member_id": m["member_id"], "display_name": m["display_name"],
                  "profile": m["profile"], "state": m["state"],
+                 "inventory": stored_inventory(m),
                  "transport_binding": m["transport_binding"],
                  "node_type": m["node_type"],
                  "specialty_count": fed.risk.specialty_count(m["scope"]),

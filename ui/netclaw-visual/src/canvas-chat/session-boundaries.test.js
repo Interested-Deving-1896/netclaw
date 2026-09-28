@@ -69,3 +69,16 @@ test('pending session save blocks new requests and overlapping switches', async 
   resolve(); await save;
   assert.equal(await gate.request(() => 'correct conversation'), 'correct conversation');
 });
+
+test('relate-to-origin keeps its text response and uses the existing thread binding',async()=>{
+ const source=fs.readFileSync(new URL('./App.jsx',import.meta.url),'utf8');
+ const start=source.indexOf('  const relateToOrigin =');const end=source.indexOf('\n  // --- local persistence',start);
+ let called, appended;const context={nodes:[{id:'root',parentId:null,messages:[{role:'user',content:'Original'}]},{id:'n1',parentId:'root',messages:[{role:'user',content:'Branch'}]}],currentSession:{id:'saved'},patch(){},toAPIMessages:x=>x,callLLM:async(messages,thread)=>{called={messages,thread};return {text:'Connects to the original question.',assessmentRefs:[],fromGateway:true};},append:(id,message)=>appended={id,message}};
+ vm.createContext(context);vm.runInContext(source.slice(start,end)+'\nglobalThis.relate=relateToOrigin;',context);await context.relate('n1','focus');assert.equal(called.thread,'saved:n1');assert.equal(appended.message.content,'Connects to the original question.');assert.equal(appended.message.relate,true);
+});
+test('production canvas serializer and loader preserve old saved graph, tabs, attachments and layout',()=>{
+ const source=fs.readFileSync(new URL('./App.jsx',import.meta.url),'utf8');const start=source.indexOf('  const serialize =');const end=source.indexOf('  const saveToFile =',start);
+ const fixture={v:1,active:'n3',nodes:[{id:'root',depth:0,parentId:null,x:40,y:40,w:360,h:260,messages:[{role:'user',content:'Investigate',files:[{name:'fixture.txt',content:'evidence'}]}]},{id:'n1',depth:1,parentId:'root',sourceQuote:'First branch',x:450,y:40,w:360,h:260,messages:[{role:'assistant',content:'Answer',tabs:{context:'detail',summary:'summary',sources:'source',action:'action'}}]},{id:'n2',depth:1,parentId:'root',x:450,y:350,w:360,h:260,messages:[]},{id:'n3',depth:2,parentId:'n1',synthFrom:['n1','n2'],x:900,y:200,w:360,h:260,messages:[]}]};
+ const context={nodes:[],active:null,_seq:0,setNodes:n=>context.nodes=n,setActive:a=>context.active=a,setDrafts(){},setQuotes(){},setAttachments(){}};vm.createContext(context);vm.runInContext(source.slice(start,end)+'\nglobalThis.roundtrip=value=>{loadState(value);return serialize();};',context);const result=JSON.parse(JSON.stringify(context.roundtrip(fixture)));assert.equal(result.active,'n3');assert.deepEqual(result.nodes.map(({loading,error,...node})=>node),fixture.nodes);assert.equal(context._seq,3);
+ for(const invariant of ['const DB_NAME = "netclaw-canvas"','const DB_VER = 2','const SESS_STORE = "sessions"','const KV_STORE = "kv"'])assert.ok(source.includes(invariant));
+});

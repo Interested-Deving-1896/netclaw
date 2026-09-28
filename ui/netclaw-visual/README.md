@@ -4,6 +4,13 @@
 
 # NetClaw Visual HUD
 
+Spec 127 adds a **panel-first dashboard** with Basic/Advanced presentation, dedicated
+Risk/peer/mobile/Jev views, optional Three.js relationship maps and the preserved
+full Adam Mason canvas. See the [function-first guide](../../docs/HUD-FUNCTION-FIRST.md)
+for routes, scope, Jev task binding and verification limits. The earlier scene and
+its existing utility controls remain at `/classic.html`; `/canvas.html` stays available.
+
+
 A Three.js 3D network operations dashboard for [NetClaw](https://github.com/automateyournetwork/netclaw). Visualizes the registered MCP integrations, deployed skills, your device fleet, and live BGP peering topology in a real-time interactive scene. Includes a chat terminal wired directly to the OpenClaw gateway for live tool execution from the browser. Supports bidirectional Slack and WebEx channels.
 
 ---
@@ -559,3 +566,10 @@ TWITTER_ACCESS_TOKEN=your_access_token
 TWITTER_ACCESS_SECRET=your_access_secret
 TWITTER_HEARTBEAT_ENABLED=true  # Optional: enable autonomous tweets
 ```
+
+
+Spec 127 adds direct RAG uploads/search, masked Configuration, exact Claw MCP/LLM
+inspectors, Tokenomics, bounded service Logs, and Documentation with Sean's guide,
+CLI/MCP references and [HUD OpenAPI](../../docs/reference/hud-openapi.json).
+[Logging guide](../../docs/LOGGING-GUIDE.md) · [Function-first guide](../../docs/HUD-FUNCTION-FIRST.md).
+Regenerate references with `python3 scripts/build-hud-reference.py` from repo root.

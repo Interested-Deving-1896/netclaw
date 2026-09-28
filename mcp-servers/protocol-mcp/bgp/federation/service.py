@@ -1263,7 +1263,9 @@ class FederationService:
         """A member advertises its (scoped) capabilities. We already know its
         scope from enrollment; record freshness and ack (no secrets, reused guard)."""
         if channel.member_id:
-            self.risk.update_health(channel.member_id, inventory_at=time.time())
+            from .member_inventory import project_inventory
+            self.risk.update_health(channel.member_id, inventory_at=time.time(),
+                                    inventory=project_inventory(params))
         return {"accepted": True}
 
     # ---- feature 066: edge (phone) connections -------------------------
@@ -2217,6 +2219,12 @@ class FederationService:
             # every internal channel regardless of how well authenticated it is.
             ch.attestation = "possession"
             self.border_channel = ch
+            # Optional content-free configuration observation; never changes scope.
+            from .member_inventory import local_inventory
+            try:
+                await ch.call("n2n/inventory", local_inventory(), timeout=3.0)
+            except Exception:
+                logger.info("iN2N: member configuration inventory unavailable")
             logger.info("iN2N: dialed Border %s:%s as %s (%s)", host, port, member_id,
                         {k: v for k, v in resp.items() if k not in ("risk_ca", "hub_attestation")})
             return resp
