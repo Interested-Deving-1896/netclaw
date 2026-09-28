@@ -28,7 +28,7 @@ Implementation checkmarks describe existing work, not spec-first compliance.
 
 - [x] T011 Record spec/research/plan without claiming historical ratification.
 - [x] T012 Register CI family and run local equivalents/declaration checks; publish evidence. Linux CI remains T015.
-- [ ] T013 Commit reviewed files, push fork branch and open draft PR.
+- [x] T013 Commit reviewed files, push fork branch and open [draft PR #275](https://github.com/automateyournetwork/netclaw/pull/275).
 - [ ] T014 Maintainer scope, MCP-native architecture and Local/Lab audit review.
 - [ ] T015 Linux full HUD/Canvas validation and live acceptance on an authorized lab.
 - [ ] T016 Coordinate completed-feature release bump and release notes before merge.
