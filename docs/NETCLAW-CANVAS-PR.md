@@ -1,5 +1,11 @@
 # Canvas terminal integration — PR scope and validation
 
+Draft contribution: [spec131](../specs/131-canvas-terminal-workflows/spec.md),
+[adoption plan](../specs/131-canvas-terminal-workflows/plan.md), and
+[verification](../specs/131-canvas-terminal-workflows/verification.md).
+Implementation preceded these artifacts; maintainer scope/policy approval and
+Linux validation are required before this draft is ready to merge.
+
 This branch integrates the browser-based terminal workflow into NetClaw's
 existing Canvas. It is based on upstream `40425bb` and preserves the current
 Chat dashboard, classic view, assessment/session integration and loopback-only
@@ -57,8 +63,9 @@ same dependencies. They involve POSIX permission assertions, symlink privileges,
 and a dashboard test's URL-to-filesystem conversion. They have not been bypassed
 or reported as passing. Linux validation is still required before merge.
 
-There is no claim of live-router, live-provider, model-backed VPN execution or
-visual-browser acceptance testing for this assembled branch. Installer tests
+The optimization pass includes a synthetic browser smoke check of terminal,
+route context and Genie view loading, not full visual acceptance. There is no
+claim of live-router, live-provider or model-backed VPN execution. Installer tests
 mock package operations; actual pyATS installation remains unverified here
 because the host's WSL runtime cannot start. Existing upstream private-directory
 checks also limit Windows HUD session binding; this PR does not weaken them.

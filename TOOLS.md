@@ -921,3 +921,14 @@ explicit in spec127 verification.
 ## Chat / Canvas / OpenClaw switch (spec130)
 
 HUD root now defaults to in-memory standard Chat; Overview remains available. Scoped `/api/hud/session` + `/api/chat` with a separate hudThread; no shared global history. Chat retains draft/in-flight replies during navigation, reload clears its local view, New chat does not delete runtime history. Header Canvas retains the persistent iframe. Native OpenClaw uses validated controlUi port/basePath/TLS metadata from `/api/hud/runtime`, loopback-only, separate tab and native auth; no token projection. Forward gateway port as well for remote SSH use. OpenClaw blocks framing; do not strip its protections. No integration count changes.
+
+## Proposed Canvas terminal workflows (draft spec131)
+
+Browser SSH and optional context tools extend the existing Canvas, not a separate
+desktop application. Read [PR scope](docs/NETCLAW-CANVAS-PR.md) and
+[draft adoption plan](specs/131-canvas-terminal-workflows/plan.md) before deployment.
+Testbed edits preserve existing structures; collection needs explicit read-only
+consent. Genie uses a local Python runtime, not an AI JSON generator. Provider
+adapters are bounded/opt-in; VMware and ExtraHop remain planned. No new MCP server
+count or registration is claimed. The loopback API is not a multi-user RBAC service.
+Direct adapter and Local/Lab policy adoption still require maintainer review.
