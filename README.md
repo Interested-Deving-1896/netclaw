@@ -10,6 +10,8 @@ Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one Ne
 
 **Start here:** [Install](#quick-install) · [Capabilities](#what-it-does) · [RAG](#rag--answers-grounded-in-your-documents) · [GCF](#gcf--compact-network-evidence) · [Mobile](#netclaw-mobile--your-network-in-your-pocket) · [Zoom](#zoom--network-investigations-in-the-meeting) · [HUD](#visual-hud) · [Jev](#optional-jev-science-officer)
 
+**Project:** [Release 1.0.0](https://github.com/automateyournetwork/netclaw/releases/tag/v1.0.0) · [Release notes](docs/releases/1.0.0.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
+
 **Reference:** [Architecture](#architecture) · [MCP servers](#mcp-servers-173) · [Skills](#skills-233) · [Workflows](#standard-workflows) · [Safety](#safety)
 
 The function-first HUD adds panels, Basic/Advanced presentation and detailed Jev
@@ -290,6 +292,8 @@ claw
 <p align="center">
   <img src="ui/netclaw-visual/logos/netclawvisualhud.png" alt="NetClaw Visual HUD — operations workspace" width="800">
 </p>
+
+The capability catalogue covers currently 173 MCP integrations and 233 skills; configured entries are not proof of live connectivity.
 
 The function-first HUD opens on an operations dashboard with a preserved, branching
 **Canvas** workspace. Inspect internal Claws, mobile edges and external neighbours;
