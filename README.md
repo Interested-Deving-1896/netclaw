@@ -10,11 +10,12 @@ Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one Ne
 
 **Start here:** [Install](#quick-install) · [Capabilities](#what-it-does) · [RAG](#rag--answers-grounded-in-your-documents) · [GCF](#gcf--compact-network-evidence) · [Mobile](#netclaw-mobile--your-network-in-your-pocket) · [Zoom](#zoom--network-investigations-in-the-meeting) · [HUD](#visual-hud) · [Jev](#optional-jev-science-officer)
 
-**Project:** [Release 1.0.0](https://github.com/automateyournetwork/netclaw/releases/tag/v1.0.0) · [Release notes](docs/releases/1.0.0.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
+**Project:** [Release 1.1.0](https://github.com/automateyournetwork/netclaw/releases/tag/v1.1.0) · [Release notes](docs/releases/1.1.0.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 
 **Reference:** [Architecture](#architecture) · [MCP servers](#mcp-servers-173) · [Skills](#skills-233) · [Workflows](#standard-workflows) · [Safety](#safety)
 
-The function-first HUD adds panels, Basic/Advanced presentation and detailed Jev
+The function-first HUD opens on standard Chat, with a Chat / Canvas / OpenClaw interface switch,
+operations panels, Basic/Advanced presentation and detailed Jev
 views while preserving the full Canvas workspace. See the [HUD guide](docs/HUD-FUNCTION-FIRST.md)
 for local review and current acceptance limits.
 
@@ -54,7 +55,8 @@ Live meeting context and historical meeting search serve different purposes: RTM
 
 ## Function-first HUD
 
-Open the local operations workspace for Canvas investigations, Claw/MCP drill-downs,
+Start with standard Chat, switch to Canvas for branching investigations, or open the native
+OpenClaw interface in a separate tab. The local operations workspace also provides Claw/MCP drill-downs,
 reported LLMs, Jev assessments, RAG uploads and retrieval, Tokenomics, service Logs,
 masked Configuration, Security mode/enforcement panels, and Documentation. Basic/Advanced presentation and optional
 Three.js views keep evidence accessible. See the [HUD guide](docs/HUD-FUNCTION-FIRST.md).
@@ -295,7 +297,7 @@ claw
 
 The capability catalogue covers currently 173 MCP integrations and 233 skills; configured entries are not proof of live connectivity.
 
-The function-first HUD opens on an operations dashboard with a preserved, branching
+The function-first HUD opens on standard Chat, with an operations dashboard and a preserved, branching
 **Canvas** workspace. Inspect internal Claws, mobile edges and external neighbours;
 drill into reported MCPs and LLM identities; compare Jev evidence; upload/search RAG;
 review token usage, estimates and budgets; inspect LAB/production mode, DefenseClaw and OpenShell; filter service logs; and browse guides,

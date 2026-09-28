@@ -1,3 +1,4 @@
+import { controlUiLocation } from './src/hud-server/control-ui.js';
 import { securitySettings, openshellStatus } from './src/hud-server/security-posture.js';
 import { mountLogs } from './src/hud-server/logs.js';
 import { mountDocumentation } from './src/hud-server/documentation.js';
@@ -971,7 +972,7 @@ app.get('/api/hud/runtime', (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   try {
     const config = JSON.parse(readText(path.join(os.homedir(), '.openclaw', 'openclaw.json')));
-    res.json({ available: true, ...runtimeInventory(config), generatedAt:new Date().toISOString() });
+    res.json({ available: true, ...runtimeInventory(config), controlUi: controlUiLocation(config), generatedAt:new Date().toISOString() });
   } catch { res.status(503).json({ available:false, error:'Runtime configuration unavailable' }); }
 });
 
@@ -1607,7 +1608,7 @@ app.post('/api/chat', async (req, res) => {
       if (hudTask.newlyCreated && beforeTranscript === null) beforeTranscript = [];
       res.on('finish', releaseTask);
 
-    } catch { return res.status(409).json({ error: 'Authenticated canvas thread unavailable or busy. Reload and retry.' }); }
+    } catch { return res.status(409).json({ error: 'Authenticated chat thread unavailable or busy. Reload and retry.' }); }
   }
   res.set('Cache-Control', 'no-store');
   const contextMessages = normalizeChatContext(messages);
@@ -1674,8 +1675,10 @@ app.post('/api/chat', async (req, res) => {
 
     if (gwRes.ok) {
       const gwData = await gwRes.json();
-      responseText = gwData.choices?.[0]?.message?.content || gwData.choices?.[0]?.text || '';
-      fromGateway = true;
+      const candidate = gwData.choices?.[0]?.message?.content || gwData.choices?.[0]?.text || '';
+      responseText = typeof candidate === 'string' ? candidate.trim() : '';
+      fromGateway = Boolean(responseText);
+      if (!fromGateway) gatewayFallback = 'OpenClaw returned an empty chat response. Check the gateway before retrying.';
     } else {
       gatewayFallback = `OpenClaw rejected the chat request (HTTP ${gwRes.status}). Check the gateway terminal for details.`;
     }

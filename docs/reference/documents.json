@@ -1,5 +1,11 @@
 [
   {
+    "id": "eca12c0a30e25b4b",
+    "path": "CONTRIBUTING.md",
+    "title": "Contributing to NetClaw",
+    "category": "Guides"
+  },
+  {
     "id": "b647344ecdb5abef",
     "path": "N2N-PEERING-NETCLAWS.md",
     "title": "N2N \u2014 Peering NetClaws",
@@ -98,7 +104,7 @@
   {
     "id": "3a14669b95781005",
     "path": "docs/HUD-FUNCTION-FIRST.md",
-    "title": "Function-first HUD (spec 127)",
+    "title": "Function-first HUD (specs 127 and 130)",
     "category": "Guides"
   },
   {
@@ -189,6 +195,12 @@
     "id": "fe69db7c99496002",
     "path": "docs/REDFISH-TLS-MIGRATION.md",
     "title": "Redfish certificate verification",
+    "category": "Guides"
+  },
+  {
+    "id": "8936340d2e7844f9",
+    "path": "docs/RELEASING.md",
+    "title": "Releasing NetClaw",
     "category": "Guides"
   },
   {
@@ -424,6 +436,36 @@
     "path": "docs/reference/interfaces.json",
     "title": "interfaces",
     "category": "Reference"
+  },
+  {
+    "id": "47b55c54fbc2b632",
+    "path": "docs/releases/1.0.0-announcement.md",
+    "title": "Announcement draft \u2014 NetClaw 1.0.0",
+    "category": "Guides"
+  },
+  {
+    "id": "c6791b70d399988a",
+    "path": "docs/releases/1.0.0-content-handoff.md",
+    "title": "Content-agent handoff: NetClaw 1.0.0 official release",
+    "category": "Guides"
+  },
+  {
+    "id": "c45fbfd040e60d25",
+    "path": "docs/releases/1.0.0.md",
+    "title": "NetClaw 1.0.0 \u2014 the network engineering workspace",
+    "category": "Guides"
+  },
+  {
+    "id": "5d38896f0e84438f",
+    "path": "docs/releases/1.1.0-content-handoff.md",
+    "title": "Content-agent addendum: NetClaw 1.1.0",
+    "category": "Guides"
+  },
+  {
+    "id": "6f88cec3ef10650a",
+    "path": "docs/releases/1.1.0.md",
+    "title": "NetClaw 1.1.0 \u2014 choose your conversation workspace",
+    "category": "Guides"
   },
   {
     "id": "402d1bf13daa564f",

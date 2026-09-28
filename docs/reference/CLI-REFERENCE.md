@@ -2182,6 +2182,20 @@ L248: # running. Delegates entirely to `netclaw risk enroll-mobile` rather than
 L255: # finished -- only this bonus step should stop, not the whole wizard.
 ```
 
+## scripts/prepare-release.py
+
+Static source declarations; lexical flags may include delegated commands. No execution performed.
+
+Flags mentioned: `--apply`, `--bump`, `--check`, `--spec`
+
+```text
+L82: argparse.ArgumentParser(description=__doc__)
+L84: mode.add_argument("--bump", choices=("minor", "patch"))
+L85: mode.add_argument("--check", action="store_true", help="Validate current version, notes and changelog")
+L86: parser.add_argument("--spec", help="Number of the completed spec, e.g. 130")
+L87: parser.add_argument("--apply", action="store_true", help="Write prepared files (default: preview only)")
+```
+
 ## scripts/probe-mist-mcp.py
 
 Static source declarations; lexical flags may include delegated commands. No execution performed.
@@ -2395,6 +2409,15 @@ L685: # --- Cisco WebEx ---
 L769: --template "$NETCLAW_DIR/config/twilio-voice.json.example"
 L868: echo -e "    ${CYAN}hermes chat${NC}              # or: hermes --tui"
 L875: echo -e "    ${CYAN}openclaw chat --new${NC}       # Terminal 2"
+```
+
+## scripts/test-prepare-release.py
+
+Static source declarations; lexical flags may include delegated commands. No execution performed.
+
+Flags mentioned: none
+
+```text
 ```
 
 ## scripts/trace-skill.py

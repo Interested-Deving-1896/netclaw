@@ -1,5 +1,6 @@
 // The catalogue describes capability, not operational reachability.
 export const VIEWS = [
+  ['chat', 'Chat', '00'],
   ['overview', 'Overview', '01'], ['canvas', 'Canvas', '02'],
   ['risk', 'Risk of Claws', '03'], ['neighbours', 'External neighbours', '04'],
   ['mobile', 'Mobile devices', '05'], ['science', 'Science Officer', '06'],

@@ -1,3 +1,5 @@
+> The current HUD opens on **Chat**. Use the header to switch to **Canvas** or open **OpenClaw ↗** in a separate tab. See the [current HUD guide](../../docs/HUD-FUNCTION-FIRST.md) for conversation retention, native authentication and port-forward requirements. The visual and classic surfaces below remain available.
+
 <p align="center">
   <img src="logos/netclawvisualhud.png" alt="NetClaw Visual HUD — 3D Network Operations Dashboard" width="800">
 </p>

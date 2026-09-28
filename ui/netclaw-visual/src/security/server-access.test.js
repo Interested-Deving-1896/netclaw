@@ -89,4 +89,42 @@ test('real HUD server rejects hostile HTTP and WebSocket requests before fixture
   assert.equal(budget.sessionBudgetUsd, 0);
   assert.equal(budget.maxToolCallsPerTurn, 0);
   assert.equal(budget.status, 'halted');
+  fs.writeFileSync(path.join(root, '.openclaw', 'openclaw.json'), JSON.stringify({ gateway: { port:19443, tls:{enabled:true}, controlUi:{basePath:'/operations'}, auth:{token:'never-project-this'} } }));
+  const runtimeResponse = await fetch(`http://127.0.0.1:${port}/api/hud/runtime`);
+  const runtime = await runtimeResponse.json();
+  assert.equal(runtimeResponse.headers.get('cache-control'), 'no-store');
+  assert.deepEqual(runtime.controlUi, {available:true,port:19443,basePath:'/operations',tls:true});
+  assert.doesNotMatch(JSON.stringify(runtime), /never-project-this|token/);
+  const requests = []; let emptyReply = false;
+  const gateway = http.createServer((req, res) => {
+    let body = ''; req.on('data', chunk => { body += chunk; }); req.on('end', () => {
+      requests.push({ path:req.url, headers:req.headers, body:JSON.parse(body) });
+      res.writeHead(200, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({choices:[{message:{content:emptyReply ? '' : 'Synthetic gateway reply'}}]}));
+    });
+  });
+  gateway.listen(0, '127.0.0.1'); await once(gateway, 'listening');
+  t.after(() => new Promise(resolve => gateway.close(resolve)));
+  fs.writeFileSync(path.join(root, '.openclaw', 'openclaw.json'), JSON.stringify({gateway:{port:gateway.address().port,auth:{token:'fixture-only-token'},http:{endpoints:{chatCompletions:{enabled:true}}}}}));
+  const bootstrap = await fetch(`http://127.0.0.1:${port}/api/hud/session`, {method:'POST'});
+  assert.equal(bootstrap.status, 200);
+  const cookie = bootstrap.headers.get('set-cookie').split(';')[0];
+  for (const hudThread of ['chat-fixture-one','chat-fixture-one','chat-fixture-two']) {
+    const result = await fetch(`http://127.0.0.1:${port}/api/chat`, {method:'POST',headers:{'Content-Type':'application/json',Cookie:cookie},body:JSON.stringify({message:'Synthetic question',messages:[{role:'user',content:'Synthetic question'}],hudThread})});
+    assert.equal(result.status, 200);const reply = await result.json();
+    assert.equal(reply.fromGateway,true);assert.equal(reply.response,'Synthetic gateway reply');
+  }
+  assert.equal(requests.length, 3);
+  assert.equal(requests[0].path, '/v1/chat/completions');
+  assert.equal(requests[0].headers.authorization,'Bearer fixture-only-token');
+  assert.deepEqual(requests[0].body.messages,[{role:'user',content:'Synthetic question'}]);
+  assert.ok(requests[0].headers['x-openclaw-session-key']);
+  assert.equal(requests[0].headers['x-openclaw-session-key'],requests[1].headers['x-openclaw-session-key']);
+  assert.notEqual(requests[1].headers['x-openclaw-session-key'],requests[2].headers['x-openclaw-session-key']);
+  emptyReply = true;
+  const empty = await (await fetch(`http://127.0.0.1:${port}/api/chat`, {method:'POST',headers:{'Content-Type':'application/json',Cookie:cookie},body:JSON.stringify({message:'Empty reply fixture',messages:[{role:'user',content:'Empty reply fixture'}],hudThread:'chat-empty-fixture'})})).json();
+  assert.equal(empty.fromGateway,false);assert.match(empty.gatewayIssue,/empty chat response/);
+  assert.deepEqual(await (await fetch(`http://127.0.0.1:${port}/api/chat/history`)).json(),[]);
+
+
 });
