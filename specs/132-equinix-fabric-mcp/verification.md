@@ -32,3 +32,7 @@ Release rerun: all 288 HUD unit tests pass. Canvas Local/Lab policy test also ne
 a canonical temporary root on macOS (`/var` aliases `/private/var`); its fixture now
 uses realpath without weakening the production symlink guard. The targeted policy
 test passes. Full Canvas harness rerun follows in PR CI.
+
+All 27 Canvas suites and bundle-budget/build checks pass. The installer mock suite
+also canonicalizes its temporary root for the same macOS path alias; 10 installer
+tests and 9 Genie adapter tests pass. These are fixture-only portability repairs.
