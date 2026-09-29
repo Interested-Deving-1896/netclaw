@@ -4,7 +4,7 @@
 
 # NetClaw
 
-A CCIE-level AI network engineering coworker built on [OpenClaw](https://github.com/openclaw/openclaw), with **233 skills and 173 MCP integrations**. Investigate live networks, learn from your own documentation, coordinate specialist agents, and carry out approved changes with baselines, verification and an immutable audit trail.
+A CCIE-level AI network engineering coworker built on [OpenClaw](https://github.com/openclaw/openclaw), with **235 skills and 174 MCP integrations**. Investigate live networks, learn from your own documentation, coordinate specialist agents, and carry out approved changes with baselines, verification and an immutable audit trail.
 
 Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one NetClaw, or build [a risk of specialist NetClaws](#a-risk-of-netclaws-in2n) behind a single Border.
 
@@ -12,7 +12,7 @@ Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one Ne
 
 **Project:** [Release 1.1.0](https://github.com/automateyournetwork/netclaw/releases/tag/v1.1.0) · [Release notes](docs/releases/1.1.0.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 
-**Reference:** [Architecture](#architecture) · [MCP servers](#mcp-servers-173) · [Skills](#skills-233) · [Workflows](#standard-workflows) · [Safety](#safety)
+**Reference:** [Architecture](#architecture) · [MCP servers](#mcp-servers-174) · [Skills](#skills-235) · [Workflows](#standard-workflows) · [Safety](#safety)
 
 The function-first HUD opens on standard Chat, with a Chat / Canvas / OpenClaw interface switch,
 operations panels, Basic/Advanced presentation and detailed Jev
@@ -295,7 +295,7 @@ claw
   <img src="ui/netclaw-visual/logos/netclawvisualhud.png" alt="NetClaw Visual HUD — operations workspace" width="800">
 </p>
 
-The capability catalogue covers currently 173 MCP integrations and 233 skills; configured entries are not proof of live connectivity.
+The capability catalogue covers currently 174 MCP integrations and 235 skills; configured entries are not proof of live connectivity.
 
 The function-first HUD opens on standard Chat, with an operations dashboard and a preserved, branching
 **Canvas** workspace. Inspect internal Claws, mobile edges and external neighbours;
@@ -341,7 +341,7 @@ security modes and Canvas storage; it does not pull Git or restart services.
 <details>
 <summary>Full platform capability overview</summary>
 
-A CCIE-level AI network engineering coworker. Built on [OpenClaw](https://github.com/openclaw/openclaw) with Anthropic Claude, 233 skills, and 173 MCP integrations for complete network automation with ITSM gating, source-of-truth reconciliation, immutable audit trails, gNMI streaming telemetry, NetFlow/IPFIX flow telemetry, Canvas/A2UI inline network visualizations, packet capture analysis, GitHub config-as-code, GitLab DevOps (issues, merge requests, pipelines, repositories, wikis), Jenkins CI/CD (job monitoring, build triggering, log analysis, SCM tracking), Chrome DevTools browser automation (visualization render QA, controller GUI gap-filling, undocumented API discovery, headless or watchable-headed), Computer Use full-desktop automation (legacy desktop-only tools with no browser or API path, virtual XFCE desktop with VNC/noVNC Watch Mode), Cisco CML lab simulation, ContainerLab containerized network labs, Cisco NSO orchestration, Cisco SD-WAN vManage monitoring, Grafana observability (dashboards, Prometheus, Loki, alerting, incidents), Prometheus direct PromQL monitoring, Kubeshark Kubernetes traffic analysis, Cisco Meraki Dashboard management, Cisco ThousandEyes network intelligence, AWS and Azure cloud networking, Cisco Secure Firewall policy auditing, Check Point Security (15 MCPs: policy, threat intel, gateway, SASE, malware), Itential network orchestration, Juniper JunOS device automation, Arista CloudVision Portal monitoring, F5 BIG-IP pyATS iControl REST coverage, Infoblox DDI, Palo Alto Panorama, FortiManager, Batfish offline configuration analysis, UML diagram generation, EVPN/VXLAN fabric workflows, live BGP/OSPF control-plane participation, OSPF/IS-IS link-state and BGP topology analysis over stored Topolograph snapshots, nmap network scanning, gtrace path analysis and IP enrichment, Slack-native operations, Cisco WebEx-native operations, Microsoft 365 integration, Twilio voice/SMS, Twitter/X integration, Claroty OT/IoT asset management, Forward Networks digital twin, Ollama local LLM routing, an offline agentic RAG document knowledge base (cited answers from user-uploaded vendor guides and standards), layered Memory MCP, MemPalace persistent AI memory, and Lantronix Percepxion/SLC out-of-band console-server management (fleet-wide and direct single-device).
+A CCIE-level AI network engineering coworker. Built on [OpenClaw](https://github.com/openclaw/openclaw) with Anthropic Claude, 235 skills, and 174 MCP integrations for complete network automation with ITSM gating, source-of-truth reconciliation, immutable audit trails, gNMI streaming telemetry, NetFlow/IPFIX flow telemetry, Canvas/A2UI inline network visualizations, packet capture analysis, GitHub config-as-code, GitLab DevOps (issues, merge requests, pipelines, repositories, wikis), Jenkins CI/CD (job monitoring, build triggering, log analysis, SCM tracking), Chrome DevTools browser automation (visualization render QA, controller GUI gap-filling, undocumented API discovery, headless or watchable-headed), Computer Use full-desktop automation (legacy desktop-only tools with no browser or API path, virtual XFCE desktop with VNC/noVNC Watch Mode), Cisco CML lab simulation, ContainerLab containerized network labs, Cisco NSO orchestration, Cisco SD-WAN vManage monitoring, Grafana observability (dashboards, Prometheus, Loki, alerting, incidents), Prometheus direct PromQL monitoring, Kubeshark Kubernetes traffic analysis, Cisco Meraki Dashboard management, Cisco ThousandEyes network intelligence, AWS and Azure cloud networking, Cisco Secure Firewall policy auditing, Check Point Security (15 MCPs: policy, threat intel, gateway, SASE, malware), Itential network orchestration, Juniper JunOS device automation, Arista CloudVision Portal monitoring, F5 BIG-IP pyATS iControl REST coverage, Infoblox DDI, Palo Alto Panorama, FortiManager, Batfish offline configuration analysis, UML diagram generation, EVPN/VXLAN fabric workflows, live BGP/OSPF control-plane participation, OSPF/IS-IS link-state and BGP topology analysis over stored Topolograph snapshots, nmap network scanning, gtrace path analysis and IP enrichment, Slack-native operations, Cisco WebEx-native operations, Microsoft 365 integration, Twilio voice/SMS, Twitter/X integration, Claroty OT/IoT asset management, Forward Networks digital twin, Ollama local LLM routing, an offline agentic RAG document knowledge base (cited answers from user-uploaded vendor guides and standards), layered Memory MCP, MemPalace persistent AI memory, and Lantronix Percepxion/SLC out-of-band console-server management (fleet-wide and direct single-device).
 
 </details>
 
@@ -634,7 +634,7 @@ NetClaw ships with the full set of OpenClaw workspace markdown files. These are 
 
 ---
 
-## MCP Servers (173)
+## MCP Servers (174)
 
 **Existing voice installations:** complete the [voice authentication migration](docs/VOICE-SECURITY.md) before restarting the upgraded Twilio webhook service. Callbacks now require valid signatures; alert triggers require a separate bearer token.
 
@@ -762,6 +762,8 @@ NetClaw ships with the full set of OpenClaw workspace markdown files. These are 
 | 134 | Topolograph | [Vadims06/topolograph-mcp-server](https://github.com/Vadims06/topolograph-mcp-server) | HTTP (remote) | **OSPF/IS-IS link-state and BGP topology analysis, read-only** — reasons over the whole area's LSDB from a stored Topolograph snapshot: shortest/backup path, per-area nodes/edges with role flags, edge and node failure simulation, MPLS-TE/CSPF feasibility, a topology-change event timeline, plus BGP speakers/sessions/route search, VRF/VPN inventory, and BGP-to-IGP graph binding (27 read tools). Remote HTTP against the operator's own Topolograph instance (`TOPOLOGRAPH_MCP_URL`), bearer `TOPOLOGRAPH_API_TOKEN`. Not vendored — fronts an operator-run API developed upstream. The server runs `TOPOLOGRAPH_MCP_READ_ONLY=true`, so mutation tools (`upload_graph`, `*_lsp`) are absent from `tools/list`; NetClaw scopes further with `defenseclaw tool allow`. See [spec 119](specs/119-topolograph-mcp-onboarding/spec.md) (IGP) and [spec 120](specs/120-topolograph-bgp-mcp-onboarding/spec.md) (BGP) |
 | 135 | Jev Science Officer | Built-in (`jev-mcp`) | stdio (Python, isolated venv) | Optional dynamic Noul/Choice/Score advisor; status, evaluate and assessment tools; persistent budgets and scoped disclosure approval (3 tools) |
 
+| 136 | Equinix Fabric + Network Edge | [Official MCP](https://mcp.equinix.com/fabric) | stdio policy/OAuth bridge to HTTP | Provider inventory and gated create/update/actions. No delete tools. [Guide](docs/EQUINIX.md) |
+
 ### Additional Server Notes
 
 All MCP servers communicate via stdio (JSON-RPC 2.0) through `scripts/mcp-call.py`, except where noted below (HTTP/remote endpoints).
@@ -800,7 +802,7 @@ All MCP servers communicate via stdio (JSON-RPC 2.0) through `scripts/mcp-call.p
 
 ---
 
-## Skills (233)
+## Skills (235)
 
 ### Jev Science Officer (6)
 
@@ -2504,7 +2506,7 @@ netclaw/
 ├── MISSION01.md                          # Completed — core pyATS + 11 skills
 ├── MISSION02.md                          # Completed — full platform, 78 skills, 32 MCP
 ├── workspace/
-│   └── skills/                           # 233 skill definitions (source of truth)
+│   └── skills/                           # 235 skill definitions (source of truth)
 │       ├── pyats-network/                # Core device automation (8 MCP tools)
 │       ├── pyats-health-check/           # Health + NetBox cross-ref + pCall
 │       ├── pyats-routing/                # OSPF, BGP, EIGRP, IS-IS analysis

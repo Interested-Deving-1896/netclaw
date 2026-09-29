@@ -1327,6 +1327,21 @@
         "JEV_COMPATIBLE_API_KEY": "${JEV_COMPATIBLE_API_KEY:-}",
         "JEV_COMPATIBLE_KEY_ENDPOINT": "${JEV_COMPATIBLE_KEY_ENDPOINT:-}"
       }
+    },
+    "equinix-mcp": {
+      "command": "python3",
+      "args": [
+        "-u",
+        "scripts/equinix-stdio.py"
+      ],
+      "env": {
+        "EQUINIX_ENABLED": "${EQUINIX_ENABLED:-false}",
+        "EQUINIX_ALLOW_WRITES": "${EQUINIX_ALLOW_WRITES:-false}",
+        "EQUINIX_AUTH_DIR": "${EQUINIX_AUTH_DIR:-}",
+        "EQUINIX_SERVICENOW_URL": "${EQUINIX_SERVICENOW_URL:-}",
+        "EQUINIX_SERVICENOW_USERNAME": "${EQUINIX_SERVICENOW_USERNAME:-}",
+        "EQUINIX_SERVICENOW_PASSWORD": "${EQUINIX_SERVICENOW_PASSWORD:-}"
+      }
     }
   }
 }

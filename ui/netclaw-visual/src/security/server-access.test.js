@@ -37,7 +37,7 @@ test('real HUD server rejects hostile HTTP and WebSocket requests before fixture
   fs.mkdirSync(path.join(root, 'testbed'));
   fs.writeFileSync(path.join(root, 'testbed', 'testbed.yaml'), 'devices: {}\n');
   // The API composes sibling feature modules; include them in this isolated fixture.
-  for (const name of fs.readdirSync(source).filter(name => name.endsWith('.js') || name === 'package.json')) {
+  for (const name of fs.readdirSync(source).filter(name => name.endsWith('.js') || name === 'genie_parse.py' || name === 'package.json')) {
     fs.copyFileSync(path.join(source, name), path.join(ui, name));
   }
   for (const name of ['node_modules', 'src']) fs.symlinkSync(path.join(source, name), path.join(ui, name), 'dir');

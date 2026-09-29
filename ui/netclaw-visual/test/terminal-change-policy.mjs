@@ -7,7 +7,7 @@ import express from 'express';
 import { createLocalChangePolicy } from '../terminal-change-policy.js';
 import { createIntentExecutionService, parseExecutionReport, buildExecutionMessages, registerIntentExecutionRoutes } from '../terminal-intent-execution.js';
 
-const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'netclaw-lab-policy-test-'));
+const dir = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'netclaw-lab-policy-test-'));
 let devices = [{ id: 'LAB-A', name: 'Example A', host: '192.0.2.1', port: 22, protocol: 'ssh', supported: true }, { id: 'LAB-B', name: 'Example B', host: '192.0.2.2', port: 22, protocol: 'ssh', supported: true }, { id: 'PROD', name: 'Production', host: '192.0.2.3', port: 22, protocol: 'ssh', supported: true }];
 const policy = createLocalChangePolicy({ directory: dir, listDevices: () => devices });
 const gateway = () => ({ port: 18789, token: 'synthetic-only', chatCompletionsEnabled: true });

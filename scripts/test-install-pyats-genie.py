@@ -20,7 +20,7 @@ class InstallerTests(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory(prefix='netclaw-installer-test-')
         self.addCleanup(self.directory.cleanup)
-        self.target = Path(self.directory.name) / 'venv with spaces'
+        self.target = Path(self.directory.name).resolve() / 'venv with spaces'
         self.args = argparse.Namespace(venv=str(self.target), version='26.8', yes=True, upgrade=False, check_only=False)
         self.platform = patch.object(installer, 'check_platform')
         self.platform.start()

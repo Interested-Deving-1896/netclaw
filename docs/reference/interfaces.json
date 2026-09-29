@@ -5843,66 +5843,70 @@
         },
         {
           "line": 466,
+          "declaration": "# --- Equinix Fabric + Network Edge ---"
+        },
+        {
+          "line": 489,
           "declaration": "# --- AWS Cloud ---"
         },
         {
-          "line": 485,
+          "line": 508,
           "declaration": "# --- Google Cloud Platform ---"
         },
         {
-          "line": 510,
+          "line": 533,
           "declaration": "# --- Cisco Meraki ---"
         },
         {
-          "line": 529,
+          "line": 552,
           "declaration": "# --- Cisco FMC (Secure Firewall) ---"
         },
         {
-          "line": 553,
+          "line": 576,
           "declaration": "# --- Palo Alto Panorama ---"
         },
         {
-          "line": 568,
+          "line": 591,
           "declaration": "# --- FortiManager ---"
         },
         {
-          "line": 583,
+          "line": 606,
           "declaration": "# --- Ansible Automation Platform (AAP) ---"
         },
         {
-          "line": 603,
+          "line": 626,
           "declaration": "# --- Cisco ThousandEyes ---"
         },
         {
-          "line": 620,
+          "line": 643,
           "declaration": "# --- Cisco RADKit ---"
         },
         {
-          "line": 639,
+          "line": 662,
           "declaration": "# --- ContainerLab ---"
         },
         {
-          "line": 667,
+          "line": 690,
           "declaration": "# --- HumanRail ---"
         },
         {
-          "line": 685,
+          "line": 708,
           "declaration": "# --- Cisco WebEx ---"
         },
         {
-          "line": 769,
+          "line": 792,
           "declaration": "--template \"$NETCLAW_DIR/config/twilio-voice.json.example\""
         },
         {
-          "line": 868,
+          "line": 891,
           "declaration": "echo -e \"    ${CYAN}hermes chat${NC}              # or: hermes --tui\""
         },
         {
-          "line": 875,
+          "line": 898,
           "declaration": "echo -e \"    ${CYAN}openclaw chat --new${NC}       # Terminal 2\""
         }
       ],
-      "sha256": "e74f64a898b3cc6c2b359b3de3444f85efac5ec766d248775585fa59f1e2d3f7",
+      "sha256": "4682417071d3ce1386896f3640627b52a0015ccb3b7452753de553612806c0d9",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -6193,6 +6197,24 @@
       ],
       "sha256": "ff6c989521c27423dae9a26210eaa1ce97083e5e1061ec6ee77af5a1e7388dd6",
       "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
+    },
+    {
+      "path": "scripts/equinix-stdio.py",
+      "kind": "Python",
+      "flags": [
+        "--transport"
+      ],
+      "declarations": [],
+      "sha256": "39159f423d51d5d62e34fab763d8d1da558773951f05305e5efb744daa8de3c4",
+      "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
+    },
+    {
+      "path": "scripts/lib/equinix/policy.py",
+      "kind": "Python",
+      "flags": [],
+      "declarations": [],
+      "sha256": "d0d85745cf972430053725d200027ef86eed55f17e5bc3f6efc6238c16633721",
+      "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     }
   ],
   "mcps": [
@@ -8955,6 +8977,12 @@
     {
       "name": "zscaler-mcp",
       "transport": "HTTP",
+      "tools": [],
+      "coverage": "External, generated or non-decorator tools: runtime tools/list required; schema not inferred."
+    },
+    {
+      "name": "equinix-mcp",
+      "transport": "stdio",
       "tools": [],
       "coverage": "External, generated or non-decorator tools: runtime tools/list required; schema not inferred."
     }
