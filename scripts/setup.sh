@@ -463,6 +463,29 @@ else
 fi
 echo ""
 
+# --- Equinix Fabric + Network Edge ---
+if want "equinix" "Enable Equinix Fabric + Network Edge MCP?"; then
+    set_env "EQUINIX_ENABLED" "true"
+    echo "  Browser OAuth is completed on first MCP use; choose fabricViewer for reads."
+    echo "  No Equinix password or API key belongs in .env."
+    if yesno "Enable gated Equinix writes (approved ServiceNow CR still required)?" "n"; then
+        set_env "EQUINIX_ALLOW_WRITES" "true"
+        prompt EQUINIX_SN_URL "ServiceNow HTTPS URL for read-only CR verification" ""
+        prompt EQUINIX_SN_USER "ServiceNow verifier username" ""
+        prompt_secret EQUINIX_SN_PASS "ServiceNow verifier password"
+        set_env "EQUINIX_SERVICENOW_URL" "$EQUINIX_SN_URL"
+        set_env "EQUINIX_SERVICENOW_USERNAME" "$EQUINIX_SN_USER"
+        set_env "EQUINIX_SERVICENOW_PASSWORD" "$EQUINIX_SN_PASS"
+        echo "  Re-consent with Operator/Manager only as needed; see docs/EQUINIX.md."
+    else
+        set_env "EQUINIX_ALLOW_WRITES" "false"
+    fi
+    ok "Equinix configured; browser authentication and live verification still required"
+else
+    skip "Equinix"
+fi
+echo ""
+
 # --- AWS Cloud ---
 if want "aws" "Do you have an AWS account? (VPC, Transit GW, CloudWatch, IAM, costs)"; then
     echo ""

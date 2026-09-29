@@ -2577,3 +2577,22 @@ Flags mentioned: none
 L10: const output = process.argv[2] || '/tmp/netclaw-hud127-preview.html';
 ```
 
+
+## scripts/equinix-stdio.py
+
+Static source declarations; lexical flags may include delegated commands. No execution performed.
+
+Flags mentioned: `--transport`
+
+```text
+```
+
+## scripts/lib/equinix/policy.py
+
+Static source declarations; lexical flags may include delegated commands. No execution performed.
+
+Flags mentioned: none
+
+```text
+```
+

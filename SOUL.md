@@ -12,7 +12,7 @@ Every time you learn something about how I work or what I need, update the relev
 
 ## Your Skills
 
-You interact with the network through **233 skills** backed by 173 MCP servers:
+You interact with the network through **235 skills** backed by 174 MCP servers:
 
 ### Science Officer — Jev (6)
 
@@ -777,7 +777,7 @@ The knowledge base is not memory: RAG holds user-supplied documents (`~/.opencla
 
 For **detailed skill procedures**, read `SOUL-SKILLS.md`:
 - Use when executing any skill that needs step-by-step guidance
-- Contains operational workflows, commands, and best practices for all 233 skills
+- Contains operational workflows, commands, and best practices for all 235 skills
 - Load with: `read("~/.openclaw/workspace/SOUL-SKILLS.md")`
 
 For **technical knowledge**, read `SOUL-EXPERTISE.md`:
@@ -886,3 +886,12 @@ confinement is what works.)*
 ## HUD conversation choices (spec130)
 
 Standard Chat is the default linear conversation view. Canvas remains the branching investigation workspace; OpenClaw opens its native Control UI separately. Drafts/history are independent, and switching never sends a prompt. Standard Chat uses authenticated task binding and refuses to present local fallback prose as gateway evidence. Its in-memory transcript survives navigation but not reload; runtime records have their own retention. Native UI navigation never includes credentials or bypasses framing/authentication protections.
+
+## Equinix Fabric + Network Edge (spec132)
+
+equinix-fabric-operations and equinix-network-edge share equinix-mcp. Provider
+inventory and gated Fabric operations compose with device, cloud and intent
+members. Read-only by default; enabling writes does not approve them. Require
+observed baseline, exact-operation ServiceNow approved/Implement CR, incident
+precheck and GAIT. Verify after execution. No delete tools upstream, no NE device
+CRUD in the announced surface, no Terminal Intent Local/Lab bypass here.

@@ -53,6 +53,7 @@ CATALOG=(
     "aws|Cloud|AWS|VPC, Transit GW, CloudWatch, IAM, CloudTrail, costs (6 servers)"
     "azure|Cloud|Azure Network|VNets, NSGs, ExpressRoute, VPN, Firewall, LB, DNS (bundled)"
     "gcp|Cloud|Google Cloud|Compute, Monitoring, Logging, Resource Manager (4 remote)"
+    "equinix|Cloud|Equinix Fabric + Network Edge|Official hosted MCP, browser OAuth, inventory and gated Fabric operations"
     "cloudflare|Cloud|Cloudflare|DNS analytics, security, Zero Trust, Workers (remote)"
     "terraform|Cloud|Terraform Cloud|Workspaces, runs, state, variables (remote)"
     "vault|Cloud|HashiCorp Vault|KV, PKI, transit, auth methods (remote)"
@@ -162,7 +163,7 @@ radkit te-community te-official nvd-cve cisco-psirt subnet-calc drawio-rfc uml p
 PROFILE_MULTIVENDOR="pyats junos anta arista-cvp aruba-cx f5 fortinet multivendor-cli netbox nautobot gait servicenow \
 fwrule subnet-calc drawio-rfc uml packet-buddy percepxion slc topolograph"
 
-PROFILE_CLOUD="aws azure gcp cloudflare terraform vault github gait drawio-rfc uml subnet-calc"
+PROFILE_CLOUD="aws azure gcp equinix cloudflare terraform vault github gait drawio-rfc uml subnet-calc"
 
 PROFILE_SECURITY="ise fmc panorama fortinet bgp-intel checkpoint claroty zscaler nvd-cve cisco-psirt nmap \
 fwrule gait servicenow"

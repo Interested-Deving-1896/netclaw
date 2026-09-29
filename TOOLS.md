@@ -922,7 +922,7 @@ explicit in spec127 verification.
 
 HUD root now defaults to in-memory standard Chat; Overview remains available. Scoped `/api/hud/session` + `/api/chat` with a separate hudThread; no shared global history. Chat retains draft/in-flight replies during navigation, reload clears its local view, New chat does not delete runtime history. Header Canvas retains the persistent iframe. Native OpenClaw uses validated controlUi port/basePath/TLS metadata from `/api/hud/runtime`, loopback-only, separate tab and native auth; no token projection. Forward gateway port as well for remote SSH use. OpenClaw blocks framing; do not strip its protections. No integration count changes.
 
-## Proposed Canvas terminal workflows (draft spec131)
+## Proposed Canvas terminal workflows (draft spec132)
 
 Browser SSH and optional context tools extend the existing Canvas, not a separate
 desktop application. Read [PR scope](docs/NETCLAW-CANVAS-PR.md) and
@@ -932,3 +932,14 @@ consent. Genie uses a local Python runtime, not an AI JSON generator. Provider
 adapters are bounded/opt-in; VMware and ExtraHop remain planned. No new MCP server
 count or registration is claimed. The loopback API is not a multi-user RBAC service.
 Direct adapter and Local/Lab policy adoption still require maintainer review.
+
+## Equinix (spec132)
+
+Official upstream: https://mcp.equinix.com/fabric (Fabric and Network Edge together).
+Local policy: scripts/equinix-stdio.py; pinned mcp-remote@0.14.3 handles OAuth.
+EQUINIX_ENABLED / EQUINIX_ALLOW_WRITES default false. Browser consent is separate.
+EQUINIX_AUTH_DIR optionally sets private cache base; N2N_MEMBER_ID partitions it.
+EQUINIX_SERVICENOW_URL, EQUINIX_SERVICENOW_USERNAME and
+EQUINIX_SERVICENOW_PASSWORD are dedicated read-only verifier settings.
+See docs/EQUINIX.md. Source integration tested offline; account OAuth still pending.
+No native setup.exe source exists in this checkout; shared installer/setup covers WSL.

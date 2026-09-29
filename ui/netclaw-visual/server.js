@@ -185,6 +185,7 @@ const INTEGRATION_CATALOG = [
   { id: 'terraform', name: 'Terraform Cloud', category: 'Infrastructure', prefixes: ['terraform-'], color: '#7b42bc', transport: 'http', toolEstimate: 40, description: 'Infrastructure as Code — workspaces, runs, state management, variables, and policy compliance for Terraform Cloud/Enterprise.' },
   { id: 'vault', name: 'HashiCorp Vault', category: 'Security', prefixes: ['vault-'], color: '#000000', transport: 'http', toolEstimate: 35, description: 'Secrets management — KV secrets, PKI certificates, transit encryption, authentication methods, and audit logging.' },
   { id: 'zscaler', name: 'Zscaler', category: 'Security', prefixes: ['zscaler-'], color: '#0090d4', transport: 'http', toolEstimate: 300, description: 'Zero Trust security — ZIA (SWG), ZPA (ZTNA), ZDX (DEM), identity management, and security insights.' },
+  { id: 'equinix', name: 'Equinix Fabric + Network Edge', category: 'Cloud', prefixes: ['equinix-'], color: '#e31837', transport: 'stdio', toolEstimate: 0, description: 'Official hosted MCP through local OAuth/policy bridge. Fabric and Network Edge visibility; gated create/update/actions. Delete unsupported. Live tool count requires discovery.' },
   { id: 'cloudflare', name: 'Cloudflare', category: 'Edge Platform', prefixes: ['cloudflare-'], color: '#f48120', transport: 'http', toolEstimate: 50, description: 'Edge platform — DNS analytics, WAF/DDoS security, Zero Trust access, traffic analytics, and Workers compute.' },
   { id: 'checkpoint', name: 'Check Point', category: 'Security', prefixes: ['checkpoint-', 'chkp-'], color: '#e21d38', transport: 'stdio', toolEstimate: 60, description: 'Enterprise security — 15 MCPs for policy management, threat intelligence, gateway diagnostics, SASE, threat prevention, malware analysis, HTTPS inspection, and exposure management.' },
   { id: 'auvik', name: 'Auvik', category: 'Observability', prefixes: ['auvik-'], color: '#0a9396', transport: 'stdio', toolEstimate: 20, description: 'Read-only Auvik network monitoring — inventory, alerts, lifecycle/warranty, and performance statistics across MSP tenants.' },
@@ -602,6 +603,11 @@ const ENV_MAP = {
     env: ['ZSCALER_ZIA_API_KEY', 'ZSCALER_ZIA_USERNAME', 'ZSCALER_ZIA_PASSWORD', 'ZSCALER_ZIA_CLOUD', 'ZSCALER_ZPA_CLIENT_ID', 'ZSCALER_ZPA_CLIENT_SECRET', 'ZSCALER_ZPA_CUSTOMER_ID'],
     files: [],
     notes: 'Zscaler MCP Server via remote HTTP. ZIA credentials for internet access, ZPA credentials for private access. Multiple clouds supported.',
+  },
+  equinix: {
+    env: ['EQUINIX_ENABLED', 'EQUINIX_ALLOW_WRITES', 'EQUINIX_AUTH_DIR', 'EQUINIX_SERVICENOW_URL', 'EQUINIX_SERVICENOW_USERNAME', 'EQUINIX_SERVICENOW_PASSWORD'],
+    files: ['scripts/equinix-stdio.py', 'docs/EQUINIX.md'],
+    notes: 'Browser OAuth required. Viewer for reads; Operator/Manager plus exact approved Implement CR, baseline and GAIT for writes. OAuth cache is member-isolated. Configured does not mean authenticated; no delete tools.',
   },
   cloudflare: {
     env: ['CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID', 'CLOUDFLARE_ZONE_ID'],

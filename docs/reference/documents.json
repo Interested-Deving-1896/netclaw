@@ -1870,5 +1870,41 @@
     "path": "workspace/skills/zscaler-zpa/SKILL.md",
     "title": "Zscaler Private Access (ZPA) Skill",
     "category": "Skills"
+  },
+  {
+    "id": "fdbd821f01e52666",
+    "path": "docs/EQUINIX.md",
+    "title": "Equinix Fabric + Network Edge",
+    "category": "Guides"
+  },
+  {
+    "id": "eea620a3db9578e5",
+    "path": "docs/blog/2026-09-29-equinix-composable-operations.md",
+    "title": "From an Equinix question to an approved network operation",
+    "category": "Guides"
+  },
+  {
+    "id": "fa6efa114997f417",
+    "path": "docs/blog/2026-09-29-equinix-editorial-handoff.md",
+    "title": "Editorial handoff \u2014 Equinix",
+    "category": "Guides"
+  },
+  {
+    "id": "20c09b9ec7f1dc91",
+    "path": "docs/releases/1.2.0.md",
+    "title": "NetClaw 1.2.0",
+    "category": "Guides"
+  },
+  {
+    "id": "693e0a28594bdaa1",
+    "path": "workspace/skills/equinix-fabric-operations/SKILL.md",
+    "title": "Equinix Fabric operations",
+    "category": "Skills"
+  },
+  {
+    "id": "d9ae4b9c1878b136",
+    "path": "workspace/skills/equinix-network-edge/SKILL.md",
+    "title": "Network Edge visibility",
+    "category": "Skills"
   }
 ]

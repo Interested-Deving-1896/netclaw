@@ -4354,3 +4354,17 @@ component_install_jev() {
         log_info "Enable and configure Jev: python3 scripts/jev-settings.py --env-file '$RUNTIME_ENV' setup"
     fi
 }
+
+# Spec 132: OAuth remains interactive, never claim registration proves access.
+component_install_equinix() {
+    log_step "Preparing Equinix Fabric + Network Edge..."
+    if ! command -v npx >/dev/null 2>&1; then
+        log_warn "Equinix requires Node.js/npm (npx). Install Node.js before connecting."
+        return 1
+    fi
+    log_info "Policy bridge: scripts/equinix-stdio.py; OAuth bridge: mcp-remote@0.14.3"
+    log_info "Run setup to opt in, then complete browser consent from the MCP client."
+    log_info "Viewer for inventory; Operator/Manager only for gated operations."
+    log_info "Writes also require EQUINIX_ALLOW_WRITES, baseline, exact approved CR and GAIT."
+    log_info "Authentication not verified. See docs/EQUINIX.md. No delete tools upstream."
+}
