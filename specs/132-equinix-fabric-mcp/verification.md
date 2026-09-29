@@ -35,4 +35,4 @@ test passes. Full Canvas harness rerun follows in PR CI.
 
 All 27 Canvas suites and bundle-budget/build checks pass. The installer mock suite
 also canonicalizes its temporary root for the same macOS path alias; 10 installer
-tests and 9 Genie adapter tests pass. These are fixture-only portability repairs.
+tests and 1 Genie adapter test pass. These are fixture-only portability repairs.
