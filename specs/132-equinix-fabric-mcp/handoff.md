@@ -86,3 +86,11 @@ writes, and no Terminal Intent Local/Lab bypass exists for this integration.
 
 No live network discovery: pyATS startup failed without PYATS_TESTBED_PATH. MemPalace
 not exposed by current tools. No tickets created. Daily file records session locally.
+
+### Audit correction
+
+Final gait_log exposed a runtime detail: gait_branch creates without switching.
+The initial session entries (190f0156, 9d5d75bb, 131fcd28) landed on the previously
+active GAIT branch. They remain immutable. Explicit gait_checkout to
+132-equinix-fabric-mcp followed by a correction record links all three and the source
+commit 7b8a041. Future sessions must call gait_checkout after gait_branch.
