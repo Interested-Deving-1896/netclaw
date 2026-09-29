@@ -4,6 +4,9 @@ NetClaw source releases use `1.x.y`. Feature specs increment the minor version a
 
 ## [1.2.0] - 2026-09-29
 
+- Equinix Fabric and Network Edge MCP integration with two skills, OAuth, scoped Risk membership, installer/setup and HUD entries.
+- Documented Fabric create/update/actions gated by observed baselines, exact-operation ServiceNow approval and GAIT; delete is not exposed upstream.
+
 Spec [132-equinix-fabric-mcp](specs/132-equinix-fabric-mcp/spec.md). See [release notes](docs/releases/1.2.0.md).
 
 ## [1.1.0] - 2026-09-28
