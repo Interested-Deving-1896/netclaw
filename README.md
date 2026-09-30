@@ -35,6 +35,8 @@ GCF gives participating MCP integrations a compact representation of structured 
 
 Choose `NETCLAW_GCF_MODE=full`, `graph`, `generic` or `off`; session/delta behavior also requires the caller to enable it. Savings depend on the payload and model. The recorded 1,000-node fixture used **98,859 graph-output characters versus 139,881 compact-JSON characters** (about 29% less); serializer token counts use a characters/4 estimate, not a model tokenizer or a guaranteed billing reduction.
 
+Optional: `NETCLAW_TABULAR_FORMAT=bpp` encodes flat, non-graph results (the payloads that would otherwise use the GCF generic profile) with [bpp](https://github.com/E7lektronXF/bpp) instead. It requires `pip install bpp-format`, is off by default, never affects graph, session or delta encoding, and falls back to GCF generic if bpp is missing or its round trip is not lossless.
+
 [Serializer and mode reference](src/netclaw_tokens/gcf_serializer.py) · [Recorded benchmark](specs/124-flagship-audit/evidence/gcf-cost-cached.json) · [Reproduce the benchmark](benchmarks/audit124/gcf_cost.py)
 
 ## NetClaw Mobile — your network in your pocket
