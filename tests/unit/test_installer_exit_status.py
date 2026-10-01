@@ -41,6 +41,9 @@ component_install_pyats() {
              'FIXTURE_FAILURE': failure, 'NETCLAW_MANIFEST': str(tmp_path / 'manifest')},
         stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=30)
     assert (result.returncode == 0) == (failure == 'none'), result.stdout + result.stderr
+    if failure in ('component', 'swallowed-pip'):
+        assert 'installation failed; artifact verification skipped' in result.stdout
+        assert 'Cisco pyATS: OK' not in result.stdout
 
 
 def test_core_tokens_propagates_package_failure(tmp_path):

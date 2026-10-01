@@ -1,6 +1,6 @@
 # Spec 133: Installer Python isolation
 
-Status: implemented; PR publication pending GitHub authentication. Date: 2026-10-01.
+Status: implemented; under review in PR #279. Date: 2026-10-01.
 
 ## Problem and acceptance
 

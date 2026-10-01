@@ -33,3 +33,22 @@ def test_default_interpreter_matches_path():
     env=dict(os.environ);env.pop('NETCLAW_PY',None);env.pop('NETCLAW_VENV',None)
     p=subprocess.run(['bash','-c','source "$1/scripts/lib/pip-helper.sh"; test "$NETCLAW_PY" = "$(command -v python3)"','probe',str(ROOT)],env=env)
     assert p.returncode==0
+
+
+def test_uml_constraints_apply_only_in_its_isolated_runtime(tmp_path):
+    runtime = tmp_path / 'runtimes/uml-component-bounds'
+    (runtime / 'bin').mkdir(parents=True)
+    (runtime / '.netclaw-managed').write_text('uml\n')
+    python = runtime / 'bin/python'
+    log = tmp_path / 'args'
+    python.write_text('#!/bin/sh\ncase "$*" in *--version*) exit 0;; esac\nprintf "%s\\n" "$@" > "$INSTALL_ARGS"\n')
+    python.chmod(0o700)
+    env = dict(os.environ, NETCLAW_INSTALL_COMPONENT='uml',
+        NETCLAW_RUNTIME_ROOT=str(runtime.parent), INSTALL_ARGS=str(log))
+    env.pop('NETCLAW_VENV', None)
+    subprocess.run(['bash', '-c', 'source scripts/lib/pip-helper.sh; netclaw_pip_install uml-mcp'],
+        cwd=ROOT, env=env, check=True, capture_output=True)
+    assert 'python-components/uml.txt' in log.read_text()
+    assert 'python-shared-constraints.txt' not in log.read_text()
+    assert not (tmp_path / 'runtimes/uml').exists()
+    assert (tmp_path / 'runtimes/records/uml').read_text().strip() == str(python)

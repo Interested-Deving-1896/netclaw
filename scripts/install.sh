@@ -597,7 +597,7 @@ verify_component() {
         twitter)         verify_file "$name" "$TWITTER_MCP_DIR/server.py" ;;
         twilio)          verify_file "$name" "$TWILIO_MCP_DIR/server.py" ;;
         gait)            verify_file "$name" "$GAIT_MCP_DIR/gait_mcp.py" ;;
-        mempalace)       verify_file "$name" "$MEMPALACE_MCP_DIR/mempalace/mcp_server.py" ;;
+        mempalace)       verify_cmd_or_module "$name" mempalace-mcp mempalace.mcp_server "MemPalace module or console entry point missing" ;;
         humanrail)       verify_file "$name" "$HUMANRAIL_MCP_DIR/server.py" ;;
         *)               log_info "$name: configured (no local artifact to check)"
                          SERVERS_OK=$((SERVERS_OK + 1)) ;;
@@ -606,6 +606,12 @@ verify_component() {
 
 VERIFY_FAILED_COMPONENTS=""
 for id in $SELECTED; do
+    if [[ " $FAILED_COMPONENTS " == *" $id "* ]]; then
+        log_error "$(catalog_field "$id" 3): installation failed; artifact verification skipped"
+        SERVERS_FAIL=$((SERVERS_FAIL + 1))
+        VERIFY_FAILED_COMPONENTS="$VERIFY_FAILED_COMPONENTS $id"
+        continue
+    fi
     FAILS_BEFORE=$SERVERS_FAIL
     verify_component "$id"
     if [ "$SERVERS_FAIL" -gt "$FAILS_BEFORE" ]; then

@@ -9,3 +9,5 @@ Use Bash for component orchestration and the existing Python helpers for JSON ha
 5. Document migration and limitations, prepare patch release metadata, publish a PR.
 
 Constitution: keep dependencies isolated, do not override PEP 668, preserve operator state, and report test coverage honestly. No tools, device interfaces or HUD behavior added; those surfaces need no feature changes. Analyze requirement-to-test coverage before PR.
+
+Follow-up: retain isolation but use explicit component-specific UML bounds for its newer SDK. Declare Memory MCP package contents. Use a module launcher and import check for MemPalace, whose upstream file became a package. Extend tests for these observed installer failures.

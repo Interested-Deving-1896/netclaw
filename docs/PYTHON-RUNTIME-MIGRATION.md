@@ -14,8 +14,11 @@ use it only for a compatible, deliberately selected component runtime.
 The helper tries virtualenv, the standard library venv module, then installed uv
 with pip seeding. If none can create an environment, installation fails with a
 remedy. It does not bootstrap tools into protected system Python. Automatic
-legacy environments retain `config/python-shared-constraints.txt` bounds to avoid
-changing SDK major versions as part of this migration.
+legacy environments retain `config/python-shared-constraints.txt` bounds. Components
+with explicit bounds under `config/python-components/` use a separate
+`<component>-component-bounds` environment, preserving any partially installed
+legacy runtime. UML uses this path for MCP2 and FastMCP4; those bounds never
+apply to other components or system Python.
 
 Successful Python installs record the exact interpreter. The installer uses it
 for MCP Python commands and installed console entry points, with absolute repo
@@ -72,3 +75,9 @@ may leave `<environment>.previous-*` beside the new environment: preserve both,
 move the partial new directory aside, then move the recovery copy back to the
 original path before using its Python. A relocated virtualenv is not directly
 runnable. Contract artifacts remain checksum-verified separately.
+
+MemPalace launches as `python -m mempalace.mcp_server`, which supports both
+upstream file and package layouts. The installer records its interpreter in
+`MEMPALACE_MCP_PYTHON`; skills use `scripts/mempalace-stdio.py` through the existing
+`MEMPALACE_MCP_SCRIPT` setting. Rerun `--add "uml memory-mcp mempalace"` after
+upgrading to repair these selections and refresh their launch settings.

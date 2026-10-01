@@ -1557,25 +1557,24 @@ fi
 
 if [ -d "$UML_MCP_DIR" ]; then
     PY_MINOR=$(python3 -c 'import sys; print(sys.version_info.minor)' 2>/dev/null || echo "0")
-    if [ "$PY_MINOR" -ge 10 ]; then
-        log_info "Python 3.$PY_MINOR detected (3.10+ required for UML MCP)"
+    if [ "$PY_MINOR" -ge 12 ]; then
+        log_info "Python 3.$PY_MINOR detected (3.12+ required for UML MCP)"
         if [ -f "$UML_MCP_DIR/pyproject.toml" ]; then
             log_info "Installing UML MCP dependencies..."
-            cd "$UML_MCP_DIR" && netclaw_pip_install -e . || {
-                log_warn "Full UML MCP install failed — installing core deps..."
-                netclaw_pip_install fastmcp httpx pillow graphviz || \
-                    log_warn "UML MCP core deps install failed"
-            }
-            cd "$NETCLAW_DIR"
+            netclaw_pip_install -e "$UML_MCP_DIR" || return 1
+        else
+            log_error "UML MCP pyproject.toml is missing"
+            return 1
         fi
         log_info "UML MCP installed (stdio transport via FastMCP)"
         log_info "  Rendering: Kroki (public by default, configurable for local instance)"
     else
-        log_warn "Python 3.10+ required for UML MCP (found 3.$PY_MINOR)"
-        log_info "UML MCP skipped — upgrade Python or install manually"
+        log_warn "Python 3.12+ required for UML MCP (found 3.$PY_MINOR)"
+        return 1
     fi
 else
-    log_warn "UML MCP clone failed"
+    log_error "UML MCP clone failed"
+    return 1
 fi
 
 echo ""
@@ -2497,11 +2496,10 @@ MEMPALACE_MCP_DIR="$MCP_DIR/mempalace"
 clone_or_pull "$MEMPALACE_MCP_DIR" "https://github.com/milla-jovovich/mempalace.git"
 
 log_info "Installing MemPalace dependencies..."
-netclaw_pip_install -e "$MEMPALACE_MCP_DIR" || \
-    log_warn "MemPalace install failed. Install manually: pip3 install mempalace"
+netclaw_pip_install -e "$MEMPALACE_MCP_DIR" || return 1
 
 if python3 -c "import mempalace" 2>/dev/null; then
-    log_info "MemPalace MCP ready: python3 -u $MEMPALACE_MCP_DIR/mempalace/mcp_server.py"
+    log_info "MemPalace MCP ready: python3 -m mempalace.mcp_server"
 else
     log_warn "MemPalace not importable after install"
 fi
@@ -2915,7 +2913,12 @@ _set_env_var "SDWAN_MCP_SCRIPT"         "$SDWAN_MCP_DIR/sdwan_mcp_server.py"
 _set_env_var "INFOBLOX_MCP_CMD"         "$INFOBLOX_MCP_CMD_DETECTED"
 _set_env_var "PANOS_MCP_CMD"            "$PANOS_MCP_CMD_DETECTED"
 _set_env_var "FORTIMANAGER_MCP_CMD"     "$FORTIMANAGER_MCP_CMD_DETECTED"
-_set_env_var "MEMPALACE_MCP_SCRIPT"     "$MEMPALACE_MCP_DIR/mempalace/mcp_server.py"
+_set_env_var "MEMPALACE_MCP_SCRIPT"     "$NETCLAW_DIR/scripts/mempalace-stdio.py"
+if [ -f "$NETCLAW_RUNTIME_ROOT/records/mempalace" ]; then
+    local mempalace_python
+    read -r mempalace_python < "$NETCLAW_RUNTIME_ROOT/records/mempalace"
+    _set_env_var "MEMPALACE_MCP_PYTHON" "$mempalace_python"
+fi
 _set_env_var "HUMANRAIL_MCP_SCRIPT"    "$HUMANRAIL_MCP_DIR/server.py"
 _set_env_var "HUMANRAIL_MCP_URL"       "http://127.0.0.1:8100/mcp"
 

@@ -36,4 +36,26 @@ GAIT was unavailable at the initial inspection; a local development audit was re
 
 ## Publication
 
-`git push --dry-run` could not authenticate to GitHub. A connected GitHub account or local Git credential is required to publish this branch and create the PR. No PR URL or CI result is claimed before publication.
+Initial HTTPS push authentication was unavailable. SSH subsequently authenticated and pushed the branch; the operator opened [PR #279](https://github.com/automateyournetwork/netclaw/pull/279). Remote CI is distinct from the local checks above.
+
+## Follow-up: 34-component operator run
+
+The larger selection exposed three additional failures. UML upstream 1.4 requires
+MCP2/FastMCP4, incompatible with legacy shared bounds. Its component-specific
+bounds now select a separate environment rather than modifying the failed legacy
+runtime. Memory MCP lacked Hatch wheel file selection; its wheel now includes
+the top-level module, storage package, SQLite schema and embedding package.
+MemPalace 3.10 moved the server file into a package; verification and skill launch
+now use the stable module path and installed interpreter.
+
+Measured local MCP initialize/tools-list: UML 5 tools, Memory MCP 10 tools,
+MemPalace 47 tools. UML dependencies were freshly installed. Memory was tested
+from its built wheel with existing contract dependencies; a fresh download of
+all Torch/embedding dependencies and semantic model operations was not tested.
+MemPalace used the interpreter installed by the operator's run, with a temporary
+palace path. No network/service tools were invoked.
+
+PR publication was subsequently completed by the operator as #279. Follow-up
+commits are pushed to its existing branch through SSH.
+
+Follow-up checks: 52 targeted tests passed; installer smoke suite (including actual Memory wheel build) and all six declaration reconciliation surfaces passed.

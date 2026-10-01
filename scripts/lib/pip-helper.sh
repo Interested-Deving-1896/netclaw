@@ -66,6 +66,11 @@ _netclaw_pip_install() {
     # Python for these calls; manual helper callers retain explicit selection.
     if [ -n "${NETCLAW_INSTALL_COMPONENT:-}" ] && [ -z "${NETCLAW_VENV:-}" ]; then
         local target="$NETCLAW_RUNTIME_ROOT/$NETCLAW_INSTALL_COMPONENT"
+        if [ -f "$(dirname "$NETCLAW_SHARED_CONSTRAINTS")/python-components/$NETCLAW_INSTALL_COMPONENT.txt" ]; then
+            # Do not upgrade a partially installed legacy SDK in place. Its
+            # distributions may share import names with the newer SDK.
+            target="$target-component-bounds"
+        fi
         if [ -L "$target" ] || { [ -e "$target" ] && [ ! -f "$target/.netclaw-managed" ]; }; then
             echo "Refusing to adopt an unmanaged Python environment: $target" >&2
             return 1
@@ -93,11 +98,22 @@ _netclaw_pip_install() {
     # Constrain the shared legacy runtime. Dedicated environments carry their
     # own manifests and must not inherit incompatible shared MCP1 constraints.
     if [ -z "${NETCLAW_VENV:-}" ]; then
-        if [ ! -f "$NETCLAW_SHARED_CONSTRAINTS" ]; then
+        local constraints="$NETCLAW_SHARED_CONSTRAINTS"
+        # A newer SDK may be used only in its automatic isolated runtime.
+        # Keep the legacy shared contract for manual/system helper calls.
+        if [ -n "${NETCLAW_INSTALL_COMPONENT:-}" ]; then
+            local component_constraints="$(dirname "$NETCLAW_SHARED_CONSTRAINTS")/python-components/$NETCLAW_INSTALL_COMPONENT.txt"
+            [ ! -f "$component_constraints" ] || constraints="$component_constraints"
+        fi
+        if [ ! -f "$constraints" ]; then
             echo "Missing tracked shared Python constraints; refusing unbounded install." >&2
             return 1
         fi
-        set -- -c "$NETCLAW_SHARED_CONSTRAINTS" "$@"
+        if [ "$constraints" = "$NETCLAW_SHARED_CONSTRAINTS" ]; then
+            set -- -c "$NETCLAW_SHARED_CONSTRAINTS" "$@"
+        else
+            set -- -c "$constraints" "$@"
+        fi
     fi
     local out rc
     out="$("$py" -m pip install "$@" 2>&1)"; rc=$?
@@ -106,6 +122,8 @@ _netclaw_pip_install() {
         if [ -n "${NETCLAW_INSTALL_COMPONENT:-}" ]; then
             mkdir -p "$NETCLAW_RUNTIME_ROOT/records" || return 1
             printf '%s\n' "$py" > "$NETCLAW_RUNTIME_ROOT/records/$NETCLAW_INSTALL_COMPONENT"
+            PATH="$(dirname "$py"):$PATH"
+            export PATH
         fi
         return 0
     fi
