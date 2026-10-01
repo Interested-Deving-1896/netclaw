@@ -2,6 +2,13 @@
 
 NetClaw source releases use `1.x.y`. Feature specs increment the minor version and reset the patch; fixes, documentation and maintenance increment the patch. Every release records its numbered specs. Component and mobile distribution versions are independent.
 
+## [1.3.0] - 2026-10-01
+
+- NetClaw can be connected to a ChatGPT Dot as an OAuth-protected MCP plugin (`netclaw-dot-mcp`): three read-only synthetic tools plus an asynchronous `netclaw_ask` / `netclaw_job_result` bridge to the local agent.
+- Single-owner OAuth 2.1 (authorization code + PKCE, passphrase-gated approval), audit-first execution, nginx installer helper and operator guide; experimental and lab-data only.
+
+Spec [134-netclaw-dot](specs/134-netclaw-dot/spec.md). See [release notes](docs/releases/1.3.0.md).
+
 ## [1.2.1] - 2026-10-01
 
 - Isolate legacy installer Python dependencies and bind MCP launchers to their runtimes.
