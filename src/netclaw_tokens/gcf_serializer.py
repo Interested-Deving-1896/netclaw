@@ -33,6 +33,22 @@ logger = logging.getLogger("netclaw_tokens.gcf_serializer")
 # ---------------------------------------------------------------------------
 _GCF_MODE = os.environ.get("NETCLAW_GCF_MODE", "full").lower()
 
+# ---------------------------------------------------------------------------
+# NETCLAW_TABULAR_FORMAT is an opt-in override for payloads that would
+# otherwise use the GCF generic profile (flat, non-graph tool results).
+#
+#   gcf - GCF generic profile (default, unchanged behavior)
+#   bpp - bpp (https://github.com/E7lektronXF/bpp), only if `bpp-format` is
+#         installed and the encoding round-trips losslessly; otherwise GCF
+#         generic is used exactly as before.
+#
+# Graph, session and delta encoding are never affected.
+# ---------------------------------------------------------------------------
+_TABULAR_FORMAT = os.environ.get("NETCLAW_TABULAR_FORMAT", "gcf").lower()
+if _TABULAR_FORMAT not in ("gcf", "bpp"):
+    logger.warning("Unknown NETCLAW_TABULAR_FORMAT=%s, defaulting to gcf", _TABULAR_FORMAT)
+    _TABULAR_FORMAT = "gcf"
+
 
 def _resolve_mode() -> tuple[bool, bool, bool]:
     """Return (prefer_graph, use_session, use_delta) from NETCLAW_GCF_MODE."""
@@ -322,6 +338,17 @@ def _lossless_generic(data: Any) -> str:
     return _validated_generic(data)
 
 
+def _validated_bpp(data: Any) -> str:
+    """Encode with bpp only when its decoder preserves JSON values and types."""
+    import bpp  # optional dependency: pip install bpp-format
+    encoded = bpp.dumps(data)
+    original = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    decoded = json.dumps(bpp.loads(encoded), sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    if decoded != original:
+        raise ValueError("bpp round-trip changed source data")
+    return encoded
+
+
 def _with_source_snapshot(graph_text: str, source_text: str) -> str:
     # Graph symbols are a projection: they cannot carry arbitrary device fields,
     # error envelopes or observation timestamps. Even a delta must include the
@@ -347,6 +374,9 @@ def serialize_response(
       graph   - graph auto-detect, no session/delta
       generic - generic profile only
       off     - JSON passthrough
+
+    NETCLAW_TABULAR_FORMAT=bpp (opt-in) encodes payloads that would use the
+    generic profile with bpp instead, falling back to GCF generic on any error.
 
     Args:
         data: Any JSON-serializable data structure.
@@ -418,6 +448,18 @@ def serialize_response(
                     "Graph profile failed (%s: %s); trying generic",
                     type(exc).__name__, exc,
                 )
+
+    # Opt-in: bpp for payloads that would use the generic profile
+    if _TABULAR_FORMAT == "bpp":
+        try:
+            bpp_str = _validated_bpp(data)
+            bpp_token_count = _estimate_token_count(bpp_str)
+            return _result(bpp_str, json_token_count, bpp_token_count, False, "bpp")
+        except Exception as exc:
+            logger.debug(
+                "bpp encoding unavailable (%s: %s); using GCF generic",
+                type(exc).__name__, exc,
+            )
 
     # Fall back to generic profile
     try:
