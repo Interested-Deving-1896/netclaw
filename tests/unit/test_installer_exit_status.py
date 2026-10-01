@@ -7,7 +7,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 
 
-@pytest.mark.parametrize('failure', ['component', 'verification', 'tokens', 'none'])
+@pytest.mark.parametrize('failure', ['component', 'verification', 'tokens', 'swallowed-pip', 'none'])
 def test_cli_failure_is_visible_to_automation(tmp_path, failure):
     scripts = tmp_path / 'scripts'
     scripts.mkdir()
@@ -28,7 +28,12 @@ core_gateway_check() { :; }
 core_mcpdir() { :; }
 core_deploy() { :; }
 core_tokens() { [ "$FIXTURE_FAILURE" != tokens ]; }
-component_install_pyats() { [ "$FIXTURE_FAILURE" != component ]; }
+component_install_pyats() {
+    if [ "$FIXTURE_FAILURE" = swallowed-pip ]; then
+        ( _netclaw_pip_install() { return 23; }; netclaw_pip_install example ) || true
+    fi
+    [ "$FIXTURE_FAILURE" != component ]
+}
 ''')
     (scripts / 'install.sh').write_text(source)
     result = subprocess.run(['bash', str(scripts / 'install.sh'), '--components', 'pyats'],
@@ -36,6 +41,9 @@ component_install_pyats() { [ "$FIXTURE_FAILURE" != component ]; }
              'FIXTURE_FAILURE': failure, 'NETCLAW_MANIFEST': str(tmp_path / 'manifest')},
         stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=30)
     assert (result.returncode == 0) == (failure == 'none'), result.stdout + result.stderr
+    if failure in ('component', 'swallowed-pip'):
+        assert 'installation failed; artifact verification skipped' in result.stdout
+        assert 'Cisco pyATS: OK' not in result.stdout
 
 
 def test_core_tokens_propagates_package_failure(tmp_path):

@@ -1,0 +1,5 @@
+# UML 1.4 uses MCP2 / FastMCP4. Applied only inside the UML component runtime.
+mcp>=2,<3
+fastmcp-slim>=4,<5
+fastapi>=0.141.1,<0.200
+rich>=15,<16
