@@ -83,7 +83,7 @@ export function createIntentExecutionService({ getGatewayConfig, listDevices, fe
   async function execute(job, input, gateway) {
     job.status = 'running';
     job.updatedAt = new Date().toISOString();
-    const sessionKey = `agent:main:netclaw-terminal-intent:${job.sessionId}`;
+    const sessionKey = `agent:${gateway.agentId || 'main'}:netclaw-terminal-intent:${job.sessionId}`;
     const append = event => {
       job.activity.push({ id: crypto.randomUUID(), at: new Date().toISOString(), source: 'netclaw', ...event });
       while (job.activity.length > 200 || job.activity.reduce((size, item) => size + (item.detail?.length || 0) + item.title.length, 0) > 100000) {
@@ -115,7 +115,7 @@ export function createIntentExecutionService({ getGatewayConfig, listDevices, fe
         }
         append({ kind: 'lifecycle', title: `Work segment ${segment} submitted`, detail: 'Waiting for actual tool events or the agent report. No estimated percentage or simulated steps.' });
         const response = await fetchImpl(`http://127.0.0.1:${gateway.port}/v1/chat/completions`, {
-          method: 'POST', headers: { Authorization: `Bearer ${gateway.token}`, 'Content-Type': 'application/json', 'x-openclaw-agent-id': 'main', 'x-openclaw-session-key': sessionKey },
+          method: 'POST', headers: { Authorization: `Bearer ${gateway.token}`, 'Content-Type': 'application/json', 'x-openclaw-agent-id': gateway.agentId || 'main', 'x-openclaw-session-key': sessionKey },
           body: JSON.stringify({ model: 'openclaw', user: `netclaw-terminal-intent:${job.sessionId}`, messages, stream: false }), signal,
         });
         if (!response.ok) throw new Error(`Gateway returned HTTP ${response.status}`);

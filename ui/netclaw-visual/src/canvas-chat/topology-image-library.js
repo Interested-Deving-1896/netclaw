@@ -1,3 +1,4 @@
+import { randomId } from '../shared/random-id.js';
 import { database } from './topology-image-store.js';
 import { validDevicePoints } from './topology-image-markers.js';
 
@@ -106,7 +107,7 @@ export async function loadDeviceTopology(deviceId) {
   let library = await access();
   if (!own(library.devices, deviceId)) {
     const legacy = await legacyFor(deviceId);
-    library = await access({ kind: 'migrate', deviceId, id: crypto.randomUUID(), record: legacy });
+    library = await access({ kind: 'migrate', deviceId, id: randomId(), record: legacy });
   }
   return { ...resolveTopology(library, deviceId), networkAvailable: Boolean(library.networkId) };
 }

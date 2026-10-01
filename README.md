@@ -17,7 +17,9 @@ Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one Ne
 The function-first HUD opens on standard Chat, with a Chat / Canvas / OpenClaw interface switch,
 operations panels, Basic/Advanced presentation and detailed Jev
 views while preserving the full Canvas workspace. See the [HUD guide](docs/HUD-FUNCTION-FIRST.md)
-for local review and current acceptance limits.
+for local review and current acceptance limits. Standard Chat includes model and effort
+controls, runtime context and account quota indicators, refresh persistence and a
+Previous chats picker that resumes browser-owned gateway conversations.
 
 ## RAG — answers grounded in your documents
 

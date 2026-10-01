@@ -1,15 +1,19 @@
+import { chatTimeouts } from './src/hud-server/chat-transport.js';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { hudPorts, createLocalAccess, localAccessMiddleware } from './src/security/local-access.js';
+import { hudPorts, hudHost, createLocalAccess, guardHudServer } from './src/security/local-access.js';
 
 const ports = hudPorts();
+const chatDeadlines = chatTimeouts();
+const host = hudHost();
+const allowed = createLocalAccess(ports, { host, allowRemote: true });
 const localOnly = () => ({
   name: 'netclaw-local-access',
-  configureServer(server) { server.middlewares.use(localAccessMiddleware(createLocalAccess(ports))); },
-  configurePreviewServer(server) { server.middlewares.use(localAccessMiddleware(createLocalAccess(ports))); },
+  configureServer(server) { guardHudServer(server, allowed); },
+  configurePreviewServer(server) { guardHudServer(server, allowed); },
 });
 
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
@@ -27,19 +31,20 @@ export default defineConfig({
       },
     },
   },
-  preview: { host: '127.0.0.1', port: ports.ui, strictPort: true },
+  preview: { host, port: ports.ui, strictPort: true },
   server: {
-    host: '127.0.0.1',
+    host,
     port: ports.ui,
     strictPort: true,
     proxy: {
       '/api': {
         target: `http://127.0.0.1:${ports.api}`,
-        timeout: 300000,
+        timeout: chatDeadlines.proxy,
+        proxyTimeout: chatDeadlines.proxy,
         configure: (proxy) => {
           proxy.on('proxyReq', (_proxyReq, _req, res) => {
-            // Keep socket alive for 5 minutes (gateway may run many tools)
-            res.setTimeout(300000);
+            // Let the API send its structured deadline response before the proxy closes.
+            res.setTimeout(chatDeadlines.proxy);
           });
         },
       },

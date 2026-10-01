@@ -2,6 +2,13 @@
 
 NetClaw source releases use `1.x.y`. Feature specs increment the minor version and reset the patch; fixes, documentation and maintenance increment the patch. Every release records its numbered specs. Component and mobile distribution versions are independent.
 
+## [1.4.0] - 2026-10-01
+
+- Add trusted-interface HUD access, configured-agent compatibility, model/effort controls, context/account quota indicators and runtime Settings.
+- Preserve active chats and reopen previous browser-owned conversations with their original gateway context.
+
+Coordinated specs 135–140; see the [release plan](specs/140-hud-chat-workflows/release-plan.md) and [release notes](docs/releases/1.4.0.md).
+
 ## [1.3.0] - 2026-10-01
 
 - NetClaw can be connected to a ChatGPT Dot as an OAuth-protected MCP plugin (`netclaw-dot-mcp`): three read-only synthetic tools plus an asynchronous `netclaw_ask` / `netclaw_job_result` bridge to the local agent.

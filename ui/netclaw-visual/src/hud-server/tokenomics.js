@@ -1,3 +1,4 @@
+import { gatewayAgentId } from './gateway-agent.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { readBounded } from './bindings.js';
@@ -36,9 +37,11 @@ export function readUsage(directory) {
 }
 export function runtimeInventory(config) {
   const defaults = config?.agents?.defaults || {};
-  const model = (Array.isArray(config?.agents?.list) ? config.agents.list : []).find(a => a.id === 'main')?.model ?? defaults.model;
+  const id = gatewayAgentId(config);
+  const agent = config?.agents?.entries?.[id] || config?.agents?.list?.find(a => a.id === id);
+  const model = agent?.model ?? defaults.model;
   const servers = config?.mcp?.servers ?? config?.mcpServers ?? {};
-  return { llm: { primary_model: label(typeof model === 'string' ? model : model?.primary), fallbacks: (Array.isArray(model?.fallbacks) ? model.fallbacks : []).map(label) },
+  return { llm: { primary_model: label(typeof model === 'string' ? model : model?.primary).split('@')[0], fallbacks: (Array.isArray(model?.fallbacks) ? model.fallbacks : []).map(value => label(value).split('@')[0]) },
     source:'Local runtime configuration; not execution telemetry',
-    mcp_servers: Object.entries(servers).map(([name,s]) => ({ name:label(name), transport:s?.url ? 'HTTP' : 'stdio', tools: (Array.isArray(s?.tools) ? s.tools : []).map(t => label(typeof t === 'string' ? t : t?.name)) })) };
+    mcp_servers: Object.entries(servers).map(([name,s]) => ({ name:label(name), enabled:s?.enabled !== false, transport:s?.url ? 'HTTP' : 'stdio', tools: (Array.isArray(s?.tools) ? s.tools : []).map(t => label(typeof t === 'string' ? t : t?.name)) })) };
 }
