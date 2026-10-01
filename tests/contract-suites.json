@@ -708,6 +708,26 @@
         "prepend_path": false
       },
       "timeout_seconds": 600
+    },
+    "dot": {
+      "kind": "pytest",
+      "paths": [
+        "tests/dot"
+      ],
+      "environment": {
+        "path": ".contract-test-envs/dot",
+        "requirements": [],
+        "packages": [
+          "pytest>=8,<9",
+          "mcp>=1.12,<2"
+        ],
+        "required_imports": [
+          "pytest",
+          "mcp"
+        ],
+        "prepend_path": true
+      },
+      "timeout_seconds": 300
     }
   }
 }

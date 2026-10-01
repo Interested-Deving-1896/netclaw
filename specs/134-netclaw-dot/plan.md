@@ -1,6 +1,6 @@
 # Implementation Plan: NetClaw Dot integration
 
-**Branch:** `132-netclaw-dot` | **Date:** 2026-09-29 | **Spec:** [spec.md](spec.md)
+**Branch:** `134-netclaw-dot` | **Date:** 2026-09-29 | **Spec:** [spec.md](spec.md)
 
 ## Summary
 Implement a narrow read-only facade and small plugin/skill package after proving the supported Dot connection. Keep NetClaw local, retain its policy and audit authority, and return only classified non-sensitive summaries. Research proof precedes transport selection.

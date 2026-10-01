@@ -2,7 +2,7 @@
 
 ## Start here
 
-**Date:** 2026-09-29. **Git branch:** `132-netclaw-dot`. **Base:** `9c4bce2bd24a353f78737f4b0f7561da9330dabf`.
+**Date:** 2026-09-29. **Git branch:** `134-netclaw-dot`. **Base:** `9c4bce2bd24a353f78737f4b0f7561da9330dabf`.
 **Status:** RESUMED 2026-09-30 — Dots now available on owner account. Server + tests built (synthetic mode); Dot connection, exposure and acceptance pending.
 **Resume only when the owner requests it.** Then recheck account availability and current official documentation before T003 in [tasks.md](tasks.md). Read this file first after every context reset and update it after each milestone.
 This is a build handoff requested by the owner, not a claim that NetClaw is already installed as a Dot.
@@ -15,7 +15,7 @@ The announcement confirms cloud computers, plugins and optional connected comput
 
 ## Resume prompt (paste into Sonnet)
 
-> Work in `/home/johncapobianco/netclaw` on `132-netclaw-dot`. Read `specs/132-netclaw-dot/HANDOFF.md`, then spec, plan, contracts, tasks and verification. Follow AGENTS.md and the Spec Kit constitution. Complete the next unchecked task, preserving all prior unrelated changes. Use synthetic data first. Never invent Dot SDKs, manifests, account access, approval or live test results. Keep credentials, raw configs and private topology local. Checkpoint task IDs, changed paths, commands/results, blockers and the next exact action in HANDOFF.md after each milestone and before stopping. Carry out independent implementation and verification work while account-dependent tests remain explicitly blocked. Do not deploy, publish, send messages or change devices under this handoff alone.
+> Work in `/home/johncapobianco/netclaw` on `134-netclaw-dot`. Read `specs/134-netclaw-dot/HANDOFF.md`, then spec, plan, contracts, tasks and verification. Follow AGENTS.md and the Spec Kit constitution. Complete the next unchecked task, preserving all prior unrelated changes. Use synthetic data first. Never invent Dot SDKs, manifests, account access, approval or live test results. Keep credentials, raw configs and private topology local. Checkpoint task IDs, changed paths, commands/results, blockers and the next exact action in HANDOFF.md after each milestone and before stopping. Carry out independent implementation and verification work while account-dependent tests remain explicitly blocked. Do not deploy, publish, send messages or change devices under this handoff alone.
 
 ## Existing state to preserve
 
@@ -77,3 +77,5 @@ C4 — 2026-09-29: Owner confirmed Dots unavailable on their plan and explicitly
 C5 — 2026-09-30: Owner resumed; Dots available. Docs recheck: Dots call plugins; a personal plugin = MCP server via public HTTPS `/mcp` URL or Secure MCP Tunnel (Developer mode in Settings → Security and login). Built `mcp-servers/netclaw-dot-mcp/{core,server}.py` (3 read tools, bearer auth, audit-first, live mode denied) + `tests/dot/test_dot.py` (14 pass: `python3 -m pytest tests/dot -q`). Local MCP client smoke over streamable HTTP with public Host header passed. Exposure plan: nginx location `/netclaw-dot/` on existing zoom.automateyournetwork.ca vhost (snippet in mcp-servers/netclaw-dot-mcp/nginx-netclaw-dot.conf.snippet; needs owner sudo). ngrok here is TCP-only for mesh — not used. Open: does the Dot plugin UI support bearer auth? T003/T010 not done. No README/catalog/counts/reconcile yet (T011).
 
 C6 — 2026-09-30: Plugin connected to real Dot via OAuth (user-defined client; endpoints under /netclaw-dot on zoom vhost; OAuth in oauth.py, 25 tests pass). netclaw_ask is now async (job_id) + netclaw_job_result; agent replies labelled mode=agent. Live: member johns-risk/pyats returned real R1 interface data in ~minutes (task 880b964a); one earlier task b64e95d9 failed with no error text. pyATS direct read verified. GAIT repo ~/.openclaw/n2n/gait repaired (3 zero-byte objects removed, master reset to last intact commit 03daa594 of 2026-08-12; backup gait.bak-*-dotfix kept). Member cgroup "7 GB" is page cache (anon 23 MB), not a leak. Open: T011 docs/catalog/counts, plugin skill package, (k3s process resolved: it is the OpenShell cluster container openshell-cluster-openshell, required by production members; leave running).
+
+C7 — 2026-10-01: Renumbered 132 → 134 (132 is Equinix, 133 is the installer isolation fix); branch renamed 134-netclaw-dot. Released as NetClaw 1.3.0. The GAIT branch name 132-netclaw-dot-20260929 is historical and unchanged.

@@ -114,7 +114,7 @@ GROUPED_EXTERNAL_COVERAGE = {
 # the only way to silence it is to state why -- which is human knowledge that
 # cannot be inferred from the source.
 VENDORED_STATE_REASONS = {
-    "netclaw-dot-mcp": "operator-run HTTP service (netclaw-dot.service) that ChatGPT Dots call over OAuth; deliberately NOT registered as an agent MCP (spec 132)",
+    "netclaw-dot-mcp": "operator-run HTTP service (netclaw-dot.service) that ChatGPT Dots call over OAuth; deliberately NOT registered as an agent MCP (spec 134)",
     "gait_mcp": "registered as 'gait-mcp'; underscore/hyphen naming mismatch",
     "pyATS_MCP": "external — installed on demand via pip (EXTERNAL_INTEGRATIONS: pyATS)",
     "ISE_MCP": "external — installed on demand (EXTERNAL_INTEGRATIONS: Cisco ISE)",

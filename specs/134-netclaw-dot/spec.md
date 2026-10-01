@@ -2,9 +2,9 @@
 
 **Resumed 2026-09-30:** Dots now available on the owner account. MVP server built; real-Dot acceptance (T010) and repository coherence (T011) still open.
 
-**Feature Branch:** `132-netclaw-dot`  
+**Feature Branch:** `134-netclaw-dot`  
 **Created:** 2026-09-29  
-**Status:** Draft — implementation ratification pending  
+**Status:** Implemented (experimental) — see verification.md  
 **Input:** Owner requests Dot feasibility, a branch, SDD, a Sonnet takeover guide and operator usage.
 
 ## User Scenarios & Testing

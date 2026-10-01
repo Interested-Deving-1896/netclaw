@@ -1,6 +1,6 @@
 # netclaw-dot-mcp
 
-A single-owner MCP facade that lets a **ChatGPT Dot** use NetClaw (spec 132). It is an operator-run
+A single-owner MCP facade that lets a **ChatGPT Dot** use NetClaw (spec 134). It is an operator-run
 HTTP service, not an agent-registered stdio MCP, so it has no entry in `config/openclaw.json`.
 
 ## Tools

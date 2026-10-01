@@ -1,6 +1,6 @@
 # Using NetClaw as a Dot
 
-**Status (2026-10-01): working end to end on the owner's account (experimental).** Real Dot calls over OAuth are in the audit log; see [verification](../specs/132-netclaw-dot/verification.md). Build notes: [handoff](../specs/132-netclaw-dot/HANDOFF.md). Server: [mcp-servers/netclaw-dot-mcp](../mcp-servers/netclaw-dot-mcp/README.md).
+**Status (2026-10-01): working end to end on the owner's account (experimental).** Real Dot calls over OAuth are in the audit log; see [verification](../specs/134-netclaw-dot/verification.md). Build notes: [handoff](../specs/134-netclaw-dot/HANDOFF.md). Server: [mcp-servers/netclaw-dot-mcp](../mcp-servers/netclaw-dot-mcp/README.md).
 
 ## What is possible
 
