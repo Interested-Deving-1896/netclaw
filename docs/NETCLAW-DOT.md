@@ -1,21 +1,21 @@
 # Using NetClaw as a Dot
 
-**Status (2026-09-29): deferred by owner because Dots are unavailable on the current plan. No deployable Dot adapter/plugin yet; resume only on owner request.**
-Build and checkpoint guide: [Sonnet handoff](../specs/132-netclaw-dot/HANDOFF.md).
+**Status (2026-10-01): working end to end on the owner's account (experimental).** Real Dot calls over OAuth are in the audit log; see [verification](../specs/132-netclaw-dot/verification.md). Build notes: [handoff](../specs/132-netclaw-dot/HANDOFF.md). Server: [mcp-servers/netclaw-dot-mcp](../mcp-servers/netclaw-dot-mcp/README.md).
 
 ## What is possible
 
 A Dot can become the conversational front end for bounded NetClaw capabilities while NetClaw runs locally. This is our proposed design, subject to actual connection tests. [OpenAI's announcement](https://openai.com/index/introducing-dots/) describes plugins and connected computers; specialist Dots are an enterprise pilot. It does not document converting an OpenClaw agent into a Dot.
 
-## Setup sequence
+## Setup sequence (verified 2026-09-30/10-01)
 
-1. Open ChatGPT in the desktop app or desktop browser and check whether Dot creation is available for your account/workspace. Follow the offered setup and choose the name NetClaw. If unavailable, obtain account/admin access; no repository command can enable a rollout.
-2. Keep NetClaw installed on its current host. Read the handoff; the plugin and adapter must be implemented and validated before the later steps are executable. Do not upload `.env`, testbed files, private TOOLS/memory, device configurations or topology.
-3. Prove a supported computer/plugin connection with synthetic data. Record whether the Dot calls tools directly or delegates to Work/Codex. [Local MCP](https://learn.chatgpt.com/docs/extend/mcp) is supported on Codex hosts, but this does not establish direct Dot support. Imported MCP plugins can be [desktop-only](https://learn.chatgpt.com/docs/enterprise/plugin-management), including HTTPS configurations.
-4. Install the reviewed NetClaw package on the proven surface using the exact instructions produced by implementation task T009. Authenticate using supported host controls; never paste a credential into chat. Select only the synthetic profile initially.
-5. Set the instructions below and request synthetic inventory. Confirm the result says synthetic and carries an observation time and request ID. Inspect local GAIT/evidence; do not interpret fixtures as device health.
-6. Enable an operational profile only after the adapter enforces a reviewed non-sensitive output schema and scope. Private network data must stay local; a local connector still sends returned tool output to the hosted model. If the boundary cannot be met, use the Dot for synthetic demonstrations and public documentation only.
-7. Test revoke/disconnect and the desktop-offline case. Only schedule background work after the actual Dot capability and scope have been proven. Do not assume an always-on Dot makes an offline local host reachable.
+1. **Secrets** (never in chat): create `~/.openclaw/dot/env` (mode 0600) with `NETCLAW_DOT_TOKEN`, `NETCLAW_DOT_CLIENT_ID=netclaw-dot`, `NETCLAW_DOT_CLIENT_SECRET`, `NETCLAW_DOT_PUBLIC_HOST=<your domain>`, `NETCLAW_DOT_ENABLE_AGENT=1`, `NETCLAW_DOT_AGENT_TIMEOUT=1200`. The token doubles as the passphrase on the approval page.
+2. **Service**: run `mcp-servers/netclaw-dot-mcp/server.py` as a user systemd unit with that `EnvironmentFile`. It binds 127.0.0.1:8765 and refuses to start without secrets.
+3. **Expose**: `sudo scripts/dot-nginx-enable.sh` adds `/netclaw-dot/` and the OAuth discovery paths to your existing TLS vhost (backs up, runs `nginx -t`, rolls back on failure). Check `POST https://<host>/netclaw-dot/mcp` returns 401.
+4. **ChatGPT**: Settings → Security and login → Developer mode. Plugins → **+** → name it, connect the URL `https://<host>/netclaw-dot/mcp`, authentication **OAuth**, registration **User-Defined OAuth Client** (client ID `netclaw-dot`, your secret, `client_secret_basic`). Approve with the passphrase.
+5. **Dot**: create your dot, enable the plugin for it, paste the instructions below. Tools added later need the plugin refreshed and a **new conversation**.
+6. **Prove it**: ask for inventory, then a read-only lab question, and compare the answer with `~/.openclaw/dot/audit.jsonl`.
+
+Private network data returned by `netclaw_ask` is sent to the hosted model. Use lab data only. If the host is off, every call fails with a generic "internal error".
 
 ## Suggested Dot instructions (after package exists)
 
