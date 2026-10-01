@@ -2,6 +2,13 @@
 
 NetClaw source releases use `1.x.y`. Feature specs increment the minor version and reset the patch; fixes, documentation and maintenance increment the patch. Every release records its numbered specs. Component and mobile distribution versions are independent.
 
+## [1.2.1] - 2026-10-01
+
+- Isolate legacy installer Python dependencies and bind MCP launchers to their runtimes.
+- Report dependency failures accurately; fix independent component paths, Nautobot source selection and gNMI startup.
+
+Spec [133-installer-python-isolation](specs/133-installer-python-isolation/spec.md). See [release notes](docs/releases/1.2.1.md).
+
 ## [1.2.0] - 2026-09-29
 
 - Equinix Fabric and Network Edge MCP integration with two skills, OAuth, scoped Risk membership, installer/setup and HUD entries.

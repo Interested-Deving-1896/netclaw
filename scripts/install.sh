@@ -378,22 +378,40 @@ core_mcpdir
 
 INSTALL_LOG_DIR="$RUNTIME_HOME/logs/install"
 mkdir -p "$INSTALL_LOG_DIR"
+NETCLAW_RUNTIME_ROOT="$RUNTIME_HOME/python-runtimes"
+export NETCLAW_RUNTIME_ROOT
 INTERACTIVE_COMPONENTS=" checkpoint forward ipfabric threejs-viz jev "
 
 run_component() {
     # $1 = component id, $2 = function name, $3 = display name
     local id="$1" fn="$2" name="$3" logf="$INSTALL_LOG_DIR/$1.log"
+    local NETCLAW_INSTALL_COMPONENT="$id"
+    local PATH="${NETCLAW_VENV:-$NETCLAW_RUNTIME_ROOT/$id}/bin:$PATH"
+    export PATH
+    local NETCLAW_INSTALL_FAILURE_FILE
+    NETCLAW_INSTALL_FAILURE_FILE="$(mktemp "$INSTALL_LOG_DIR/.failure.XXXXXX")"
+    export NETCLAW_INSTALL_COMPONENT NETCLAW_INSTALL_FAILURE_FILE
+    local rc=0 interactive=0
     if [ "${NETCLAW_VERBOSE:-0}" = "1" ] || [[ "$INTERACTIVE_COMPONENTS" == *" $id "* ]]; then
-        if ! "$fn"; then
-            log_warn "$name install reported an error — continuing."
-            return 1
-        fi
-        return 0
+        interactive=1
+        "$fn" || rc=$?
+    else
+        "$fn" > "$logf" 2>&1 || rc=$?
     fi
-    if "$fn" > "$logf" 2>&1; then
+    if [ -s "$NETCLAW_INSTALL_FAILURE_FILE" ]; then
+        cat "$NETCLAW_INSTALL_FAILURE_FILE" >> "$logf"
+        [ "$interactive" -eq 0 ] || cat "$NETCLAW_INSTALL_FAILURE_FILE" >&2
+        rc=1
+    fi
+    rm -f "$NETCLAW_INSTALL_FAILURE_FILE"
+    if [ "$interactive" -eq 1 ]; then
+        [ "$rc" -eq 0 ] || log_error "$name install failed; review the output above."
+        return "$rc"
+    fi
+    if [ "$rc" -eq 0 ]; then
         # Safety net for installers that log [ERROR] but still return 0 —
         # don't let a component claim success with errors in its log.
-        if grep -aq "\[ERROR\]" "$logf"; then
+        if [ -f "$logf" ] && grep -aq "\[ERROR\]" "$logf"; then
             log_error "$name reported errors despite finishing — last 15 log lines:"
             tail -15 "$logf" | sed -e 's/\x1b\[[0-9;]*m//g' -e 's/^/    /'
             log_warn "Full log: $logf — continuing."
@@ -403,7 +421,7 @@ run_component() {
         return 0
     fi
     log_error "$name install failed — last 15 log lines:"
-    tail -15 "$logf" | sed -e 's/\x1b\[[0-9;]*m//g' -e 's/^/    /'
+    [ ! -f "$logf" ] || tail -15 "$logf" | sed -e 's/\x1b\[[0-9;]*m//g' -e 's/^/    /'
     log_warn "Full log: $logf — continuing."
     return 1
 }
@@ -419,10 +437,12 @@ for id in $SELECTED; do
             FAILED_COMPONENTS="$FAILED_COMPONENTS $id"
     else
         log_warn "No installer found for '$id' — skipping."
+        FAILED_COMPONENTS="$FAILED_COMPONENTS $id"
     fi
 done
 
 CORE_FAILED=0
+export NETCLAW_INSTALL_COMPONENT=core-tokens
 if [ "${NETCLAW_VERBOSE:-0}" = "1" ]; then
     core_tokens || CORE_FAILED=1
 else
@@ -434,7 +454,7 @@ else
         tail -10 "$INSTALL_LOG_DIR/core-tokens.log" | sed 's/^/    /'
     fi
 fi
-core_deploy
+unset NETCLAW_INSTALL_COMPONENT
 
 # Record the selection so setup.sh only prompts for what's installed.
 # --add merges into the existing manifest; every other path records the
@@ -512,6 +532,12 @@ verify_remote() {
 
 verify_component() {
     local id="$1" name
+    local PATH="$PATH" runtime_python
+    if [ -f "$NETCLAW_RUNTIME_ROOT/records/$id" ]; then
+        read -r runtime_python < "$NETCLAW_RUNTIME_ROOT/records/$id"
+        PATH="$(dirname "$runtime_python"):$PATH"
+    fi
+    export PATH
     name="$(catalog_field "$id" 3)"
     case "$id" in
         pyats)           verify_file "$name" "$PYATS_MCP_DIR/pyats_mcp_server.py" ;;
@@ -590,6 +616,14 @@ verify_file "MCP Call Script" "$NETCLAW_DIR/scripts/mcp-call.py"
 
 echo ""
 log_info "Verification: $SERVERS_OK OK, $SERVERS_FAIL FAILED"
+
+SUCCESSFUL_COMPONENTS=""
+for id in $SELECTED; do
+    [[ " $FAILED_COMPONENTS $VERIFY_FAILED_COMPONENTS " == *" $id "* ]] || SUCCESSFUL_COMPONENTS="$SUCCESSFUL_COMPONENTS $id"
+done
+export SUCCESSFUL_COMPONENTS
+core_deploy || CORE_FAILED=1
+
 echo ""
 
 # ═══════════════════════════════════════════
@@ -605,7 +639,7 @@ echo ""
 
 SKILL_COUNT=$(ls -d "$NETCLAW_DIR/workspace/skills/"*/ 2>/dev/null | wc -l | tr -d ' ')
 
-echo "Installed MCP components ($SELECTED_COUNT of $TOTAL_COMPONENTS):"
+echo "Selected MCP components ($SELECTED_COUNT of $TOTAL_COMPONENTS):"
 SEL=" $SELECTED "
 LAST_CAT=""
 for entry in "${CATALOG[@]}"; do
@@ -718,7 +752,7 @@ if [ -n "$PROBLEM_COMPONENTS" ]; then
 fi
 
 if [ "$CORE_FAILED" -ne 0 ]; then
-    log_error "Required token dependencies did not install. Fix the errors in $INSTALL_LOG_DIR/core-tokens.log and rerun the installer."
+    log_error "Core installation or configuration deployment failed. Review the errors above and $INSTALL_LOG_DIR/core-tokens.log before retrying."
 fi
 if [ -n "$PROBLEM_COMPONENTS" ] || [ "$SERVERS_FAIL" -ne 0 ] || [ "$CORE_FAILED" -ne 0 ]; then
     exit 1

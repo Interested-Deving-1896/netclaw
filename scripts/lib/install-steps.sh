@@ -190,7 +190,7 @@ log_info "All prerequisites satisfied."
 # PEP 668 is a protection, not an installation error to override globally.
 # Shared MCP dependencies require an explicitly selected compatible runtime.
 if python3 -c 'import os,sys,sysconfig; sys.exit(0 if sys.prefix == sys.base_prefix and os.path.exists(os.path.join(sysconfig.get_path("stdlib"), "EXTERNALLY-MANAGED")) else 1)' 2>/dev/null; then
-    log_warn "System Python is externally managed. Select an isolated runtime before shared MCP installs."
+    log_info "System Python is externally managed. Installer Python dependencies use isolated component runtimes."
     log_info "See docs/PYTHON-RUNTIME-MIGRATION.md; system package protection remains enabled."
 fi
 
@@ -674,39 +674,10 @@ echo ""
 # ── Step 11: Nautobot MCP (clone + pip install) ─────────────────
 component_install_nautobot() {
 log_step "Installing Nautobot MCP Server..."
-echo "  Source: https://github.com/aiopnet/mcp-nautobot"
-echo "  Nautobot IPAM source of truth — IP addresses, prefixes, VRF/tenant/site filtering (5 tools)"
-
-NAUTOBOT_MCP_DIR="$MCP_DIR/mcp-nautobot"
-if [ -d "$NAUTOBOT_MCP_DIR" ]; then
-    log_info "Nautobot MCP already cloned, pulling latest..."
-    git -C "$NAUTOBOT_MCP_DIR" pull --quiet 2>/dev/null || true
-else
-    git clone https://github.com/aiopnet/mcp-nautobot.git "$NAUTOBOT_MCP_DIR" 2>/dev/null
-fi
-
-if [ -d "$NAUTOBOT_MCP_DIR" ]; then
-    PY_MINOR=$(python3 -c 'import sys; print(sys.version_info.minor)' 2>/dev/null || echo "0")
-    if [ "$PY_MINOR" -ge 13 ]; then
-        log_info "Python 3.$PY_MINOR detected (3.13+ required for Nautobot MCP)"
-        if [ -f "$NAUTOBOT_MCP_DIR/pyproject.toml" ]; then
-            cd "$NAUTOBOT_MCP_DIR" && netclaw_pip_install -e . || \
-                log_warn "Nautobot MCP editable install failed"
-            cd "$NETCLAW_DIR"
-        fi
-        log_info "Nautobot MCP installed (stdio transport via MCP SDK)"
-    else
-        log_warn "Python 3.13+ required for Nautobot MCP (found 3.$PY_MINOR)"
-        log_info "Installing core dependencies..."
-        netclaw_pip_install "mcp>=1.10.1" httpx "pydantic>=2.11.0" pydantic-settings python-dotenv || \
-            log_warn "Nautobot core deps install failed"
-        log_info "Nautobot MCP installed (some features may require Python 3.13+)"
-    fi
-else
-    log_warn "Nautobot MCP clone failed"
-fi
-
-echo ""
+# Install the server actually registered by config/openclaw.json.
+NAUTOBOT_MCP_DIR="$NETCLAW_DIR/mcp-servers/nautobot-mcp-v2"
+netclaw_pip_install -r "$NAUTOBOT_MCP_DIR/requirements.txt" || return 1
+log_info "Nautobot MCP dependencies installed"
 }
 
 # ── Step 12: Infrahub MCP (pip install) ─────────────────────────
@@ -2148,7 +2119,7 @@ echo "  Three planes: manager intent, device state, analyzer traffic. 21 tools, 
 # Vendored in-repo — nothing to clone. This replaces an earlier entry that cloned
 # jmpijll/fortimanager-mcp, a server that was never actually registered or
 # installable; the skill referencing it had no backing server at all (spec 080).
-FORTINET_MCP_DIR="$REPO_ROOT/mcp-servers/fortinet-mcp"
+FORTINET_MCP_DIR="$NETCLAW_DIR/mcp-servers/fortinet-mcp"
 
 if [ -d "$FORTINET_MCP_DIR" ]; then
     netclaw_pip_install -r "$FORTINET_MCP_DIR/requirements.txt" 2>/dev/null || \
@@ -2363,15 +2334,14 @@ clone_or_pull "$FWRULE_MCP_DIR" "https://github.com/AutomateIP/fwrule-mcp.git"
 
 if [ -d "$FWRULE_MCP_DIR" ]; then
     log_info "Installing fwrule MCP dependencies..."
-    if command -v uv &> /dev/null; then
-        (cd "$FWRULE_MCP_DIR" && uv sync) 2>/dev/null || log_warn "fwrule MCP uv sync failed — trying pip"
-    fi
     if [ -f "$FWRULE_MCP_DIR/pyproject.toml" ]; then
-        netclaw_pip_install -e "$FWRULE_MCP_DIR" || \
-            log_warn "fwrule MCP editable install failed"
+        netclaw_pip_install -e "$FWRULE_MCP_DIR" || return 1
+    else
+        log_error "fwrule MCP pyproject.toml is missing"
+        return 1
     fi
 
-    log_info "fwrule MCP ready: $FWRULE_MCP_DIR (run via 'uv run fwrule-mcp')"
+    log_info "fwrule MCP dependencies installed in its component runtime"
 else
     log_warn "fwrule MCP clone failed"
 fi
@@ -2855,13 +2825,20 @@ if [ ! -d "$OPENCLAW_DIR" ]; then
     log_info "Created $OPENCLAW_DIR"
 fi
 
+local generated_config="$RUNTIME_HOME/netclaw-selected-mcp.json"
+local NETCLAW_RUNTIME_ROOT="${NETCLAW_RUNTIME_ROOT:-$RUNTIME_HOME/python-runtimes}"
+if [ -f "$NETCLAW_DIR/config/openclaw.json" ]; then
+python3 "$NETCLAW_DIR/scripts/install-mcp-config.py" \
+    --repo "$NETCLAW_DIR" --runtime-root "$NETCLAW_RUNTIME_ROOT" \
+    --components "${SUCCESSFUL_COMPONENTS:-}" --output "$generated_config" || return 1
+
 if [ "$RUNTIME" = "hermes" ]; then
     # Port NetClaw's MCP registrations (config/openclaw.json → mcp_servers in
     # Hermes' config.yaml). hermes setup created config.yaml already; this
     # merges the servers in non-destructively.
     if [ -f "$NETCLAW_DIR/config/openclaw.json" ]; then
         if python3 "$NETCLAW_DIR/scripts/openclaw-to-hermes-mcp.py" \
-                --source "$NETCLAW_DIR/config/openclaw.json" \
+                --source "$generated_config" \
                 --repo   "$NETCLAW_DIR" \
                 --env    "$RUNTIME_ENV" \
                 --config "$RUNTIME_CONFIG" \
@@ -2874,24 +2851,13 @@ if [ "$RUNTIME" = "hermes" ]; then
         log_warn "config/openclaw.json not found in repo — no MCP servers registered"
     fi
 else
-    # Deploy openclaw.json config ONLY if onboard didn't already create one
-    if [ ! -f "$OPENCLAW_DIR/openclaw.json" ]; then
-        if [ -f "$NETCLAW_DIR/config/openclaw.json" ]; then
-            cp "$NETCLAW_DIR/config/openclaw.json" "$OPENCLAW_DIR/openclaw.json"
-            log_info "Deployed fallback openclaw.json (gateway.mode=local)"
-            # The template registers servers with repo-relative paths, but the
-            # gateway does not run from the repo — without an explicit cwd every
-            # one of them dies at launch with "can't open file".
-            python3 "$NETCLAW_DIR/scripts/normalize-mcp-cwd.py" \
-                --config "$OPENCLAW_DIR/openclaw.json" \
-                --repo   "$NETCLAW_DIR" \
-                || log_warn "Could not normalize MCP cwd entries — relative-path servers may fail to launch"
-        else
-            log_warn "config/openclaw.json not found in repo"
-        fi
-    else
-        log_info "openclaw.json already exists (created by onboard) — keeping it"
-    fi
+    python3 "$NETCLAW_DIR/scripts/install-mcp-config.py" \
+        --repo "$NETCLAW_DIR" --runtime-root "$NETCLAW_RUNTIME_ROOT" \
+        --components "${SUCCESSFUL_COMPONENTS:-}" --output "$generated_config" \
+        --config "$OPENCLAW_DIR/openclaw.json" || return 1
+fi
+else
+    log_warn "config/openclaw.json not found in repo; MCP registration skipped"
 fi
 
 # Deploy skills into the runtime's skills dir (workspace/skills for OpenClaw,
@@ -4042,7 +4008,7 @@ echo "  Source: mcp-servers/bgp-intel-mcp (NetClaw-authored, spec 081 / roadmap 
 echo "  RPKI origin validation, RDAP ownership, PeeringDB peering, routing visibility"
 echo "  Public unauthenticated APIs — NO credentials required"
 
-BGP_INTEL_MCP_DIR="$REPO_ROOT/mcp-servers/bgp-intel-mcp"
+BGP_INTEL_MCP_DIR="$NETCLAW_DIR/mcp-servers/bgp-intel-mcp"
 
 if [ -d "$BGP_INTEL_MCP_DIR" ]; then
     netclaw_pip_install -r "$BGP_INTEL_MCP_DIR/requirements.txt" 2>/dev/null || \
@@ -4062,7 +4028,7 @@ echo "  Source: mcp-servers/document-mcp (NetClaw-authored, spec 082 / roadmap R
 echo "  Change-record .docx, audit .xlsx, exec .pptx, PDF form filling"
 echo "  NO credentials required — writes files, touches no device and no ticket"
 
-DOCUMENT_MCP_DIR="$REPO_ROOT/mcp-servers/document-mcp"
+DOCUMENT_MCP_DIR="$NETCLAW_DIR/mcp-servers/document-mcp"
 
 if [ -d "$DOCUMENT_MCP_DIR" ]; then
     # These four libraries are almost certainly already present: rag-mcp (feature 062)
@@ -4087,7 +4053,7 @@ echo "  Source: mcp-servers/catc-mcp — NetClaw client over Cisco's OFFICIAL ca
 echo "  Upstream catalogue: cisco-en-programmability/catc-mcp-oss (Apache-2.0, release/2.3.7.11)"
 echo "  All 514 read-only operations via 8 grouped dispatchers; 1,821-token manifest"
 
-CATC_MCP_DIR="$REPO_ROOT/mcp-servers/catc-mcp"
+CATC_MCP_DIR="$NETCLAW_DIR/mcp-servers/catc-mcp"
 
 if [ -d "$CATC_MCP_DIR" ]; then
     # Only mcp + httpx. NetClaw uses the upstream CATALOGUE, not the upstream
@@ -4112,7 +4078,7 @@ echo "  Source: mcp-servers/zabbix-mcp (VENDORED third-party, GPL-3.0, pinned 07
 echo "  Upstream: github.com/mpeirone/zabbix-mcp-server -- adopted unmodified"
 echo "  3 tools, read-only. Polled history: what an interface WAS doing, over time"
 
-ZABBIX_MCP_DIR="$REPO_ROOT/mcp-servers/zabbix-mcp"
+ZABBIX_MCP_DIR="$NETCLAW_DIR/mcp-servers/zabbix-mcp"
 
 if [ -d "$ZABBIX_MCP_DIR" ]; then
     # DEDICATED VIRTUALENV -- NOT OPTIONAL, DO NOT "SIMPLIFY" THIS AWAY.

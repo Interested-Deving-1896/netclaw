@@ -60,9 +60,23 @@ _netclaw_resolve_py() {
 # FR-003b: fails loudly rather than silently falling back to a bare `pip`. A silent
 # fallback would reintroduce the exact bug this helper exists to prevent, while
 # looking like it had been fixed.
-netclaw_pip_install() {
+_netclaw_pip_install() {
     local py
-    if ! py="$(_netclaw_resolve_py)"; then
+    # Installer calls have a component context. Never fall through to distro
+    # Python for these calls; manual helper callers retain explicit selection.
+    if [ -n "${NETCLAW_INSTALL_COMPONENT:-}" ] && [ -z "${NETCLAW_VENV:-}" ]; then
+        local target="$NETCLAW_RUNTIME_ROOT/$NETCLAW_INSTALL_COMPONENT"
+        if [ -L "$target" ] || { [ -e "$target" ] && [ ! -f "$target/.netclaw-managed" ]; }; then
+            echo "Refusing to adopt an unmanaged Python environment: $target" >&2
+            return 1
+        fi
+        if [ ! -x "$target/bin/python" ] || ! "$target/bin/python" -m pip --version >/dev/null 2>&1; then
+            mkdir -p "$target" || return 1
+            printf '%s\n' "$NETCLAW_INSTALL_COMPONENT" > "$target/.netclaw-managed"
+            netclaw_venv_create "$target" || return 1
+        fi
+        py="$target/bin/python"
+    elif ! py="$(_netclaw_resolve_py)"; then
         echo "netclaw_pip_install: cannot determine a Python interpreter." >&2
         echo "  Set NETCLAW_PY to the interpreter your servers run under," >&2
         echo "  or NETCLAW_VENV to a virtualenv. Refusing to fall back to bare pip," >&2
@@ -89,6 +103,10 @@ netclaw_pip_install() {
     out="$("$py" -m pip install "$@" 2>&1)"; rc=$?
     if [ "$rc" -eq 0 ]; then
         printf '%s\n' "$out"
+        if [ -n "${NETCLAW_INSTALL_COMPONENT:-}" ]; then
+            mkdir -p "$NETCLAW_RUNTIME_ROOT/records" || return 1
+            printf '%s\n' "$py" > "$NETCLAW_RUNTIME_ROOT/records/$NETCLAW_INSTALL_COMPONENT"
+        fi
         return 0
     fi
 
@@ -103,6 +121,25 @@ netclaw_pip_install() {
     # path is that a failure is legible; discarding stderr defeats it.
     echo "netclaw_pip_install: FAILED installing: $*" >&2
     printf '%s\n' "$out" >&2
+    return "$rc"
+}
+
+netclaw_pip_install() {
+    local rc=0 output
+    if [ -n "${NETCLAW_INSTALL_FAILURE_FILE:-}" ]; then
+        output="$(mktemp "${NETCLAW_INSTALL_FAILURE_FILE}.output.XXXXXX")" || return 1
+        _netclaw_pip_install "$@" > "$output" 2>&1 || rc=$?
+        cat "$output"
+        if [ "$rc" -ne 0 ]; then
+            # Survive subshells, warning handlers and stderr suppression while
+            # retaining the actual package/venv error for the final report.
+            printf 'Python dependency installation failed (exit %s).\n' "$rc" >> "$NETCLAW_INSTALL_FAILURE_FILE"
+            cat "$output" >> "$NETCLAW_INSTALL_FAILURE_FILE"
+        fi
+        rm -f "$output"
+    else
+        _netclaw_pip_install "$@" || rc=$?
+    fi
     return "$rc"
 }
 
@@ -132,9 +169,12 @@ netclaw_venv_create() {
         "$base" -m venv "$dest" && return 0
     fi
 
+    if command -v uv >/dev/null 2>&1; then
+        uv venv --seed --python "$base" "$dest" && return 0
+    fi
+
     echo "netclaw_venv_create: cannot create a virtualenv at $dest" >&2
     echo "  $base has no ensurepip and 'virtualenv' is not installed." >&2
-    echo "  Remedy (no root needed):  $base -m pip install --user virtualenv" >&2
-    echo "  Or with root:             apt install python3-venv" >&2
+    echo "  Install uv or virtualenv, or your distribution's matching python3-venv package." >&2
     return 1
 }

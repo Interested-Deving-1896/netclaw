@@ -78,7 +78,7 @@ logger = logging.getLogger("gnmi-mcp")
 
 mcp = FastMCP(
     "gNMI Streaming Telemetry MCP Server",
-    description="gNMI Get, Set, Subscribe, and Capabilities operations for multi-vendor network devices",
+    instructions="gNMI Get, Set, Subscribe, and Capabilities operations for multi-vendor network devices",
 )
 
 # Load targets and create shared client wrapper

@@ -4,7 +4,10 @@
   "suites": {
     "canvas-terminal": {
       "kind": "shell",
-      "command": ["bash", "tests/canvas-terminal/run-tests.sh"],
+      "command": [
+        "bash",
+        "tests/canvas-terminal/run-tests.sh"
+      ],
       "environment": {
         "path": null,
         "requirements": [],
@@ -690,6 +693,21 @@
         "prepend_path": true
       },
       "timeout_seconds": 180
+    },
+    "installer": {
+      "kind": "shell",
+      "command": [
+        "bash",
+        "tests/installer/run-tests.sh"
+      ],
+      "environment": {
+        "path": null,
+        "requirements": [],
+        "packages": [],
+        "required_imports": [],
+        "prepend_path": false
+      },
+      "timeout_seconds": 600
     }
   }
 }
