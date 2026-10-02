@@ -1,3 +1,4 @@
+import { randomId } from '../shared/random-id.js';
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { validateTopologyImage } from './topology-image-store.js';
@@ -151,7 +152,7 @@ export default function TopologyImage({ address, temporary = false, onEngage, ac
       const { width, height } = bitmap; bitmap.close();
       if (width * height > 24000000 || width > 12000 || height > 12000) throw new Error('Image is too large: use at most 24 megapixels and 12,000 pixels per side.');
       const next = { file, name: file.name, width, height, savedAt: Date.now() };
-      if (!temporary) await update({ kind: 'upload', id: crypto.randomUUID(), record: next });
+      if (!temporary) await update({ kind: 'upload', id: randomId(), record: next });
       else if (alive.current) setRecord(next);
       if (alive.current) { setShareOpen(false); setNotice('Image applies to every interface, IP, route and VRF on this device.'); }
     } catch (e) { if (alive.current) setError(e.message); }

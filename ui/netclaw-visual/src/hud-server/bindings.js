@@ -17,11 +17,42 @@ export class Bindings {
   create() { this.ensure(); const cookie = token(); this.save(cookie, { version: 1, expires: this.clock() + 30 * 86400000, tasks: {} }); return cookie; }
   read(cookie) { const state = JSON.parse(readBounded(this.file(cookie))); if (state.version !== 1 || state.expires <= this.clock()) throw Error('Unauthenticated'); return state; }
   save(cookie, state) { writePrivateAtomic(this.file(cookie), JSON.stringify(state)); }
-  task(cookie, thread) {
+  task(cookie, thread, agentId = 'main') {
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(agentId)) throw Error('Invalid agent');
     if (!safeId(thread)) throw Error('Invalid thread');
-    const state = this.read(cookie); const key = digest(thread); let task = Object.values(state.tasks).find(t => t.thread === key); const newlyCreated = !task;
-    if (!task) { if (Object.keys(state.tasks).length >= 500) throw Error('Session task limit reached'); const id = token(); task = { id, thread: key, gatewayKey: `agent:main:hud:${id}`, assessments: {} }; state.tasks[id] = task; this.save(cookie, state); }
+    const state = this.read(cookie); const key = digest(thread); let task = Object.values(state.tasks).find(t => (t.thread === key || (t.resumeThread && digest(t.resumeThread) === key)) && t.gatewayKey.startsWith(`agent:${agentId}:hud:`)); const newlyCreated = !task;
+    if (!task) { if (Object.keys(state.tasks).length >= 500) throw Error('Session task limit reached'); const id = token(); task = { id, thread: key, publicThread: thread, createdAt: this.clock(), gatewayKey: `agent:${agentId}:hud:${id}`, assessments: {} }; state.tasks[id] = task; this.save(cookie, state); }
     return { ...task, newlyCreated };
+  }
+  lookupTask(cookie, thread, agentId) {
+    if (!safeId(thread) || !/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(agentId)) throw Error('Invalid chat');
+    const key = digest(thread);
+    return Object.values(this.read(cookie).tasks).find(t => (t.thread === key || (t.resumeThread && digest(t.resumeThread) === key)) && t.gatewayKey.startsWith(`agent:${agentId}:hud:`)) || null;
+  }
+  chats(cookie, agentId) {
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(agentId)) throw Error('Invalid agent');
+    return Object.values(this.read(cookie).tasks).filter(t => t.gatewayKey.startsWith(`agent:${agentId}:hud:`));
+  }
+  ownedChat(cookie, id, agentId) {
+    if (!safeId(id)) throw Error('Unavailable');
+    const task = this.chats(cookie, agentId).find(t => t.id === id);
+    if (!task) throw Error('Unavailable');
+    return task;
+  }
+  resumeChat(cookie, id, agentId) {
+    this.ownedChat(cookie, id, agentId);
+    const state = this.read(cookie), task = state.tasks[id];
+    if (!task.publicThread && !task.resumeThread) { task.resumeThread = `chat-${token()}`; this.save(cookie, state); }
+    return { ...task, publicThread: task.publicThread || task.resumeThread };
+  }
+  describeChat(cookie, id, agentId, metadata) {
+    this.ownedChat(cookie, id, agentId);
+    const state = this.read(cookie), task = state.tasks[id];
+    task.title ||= String(metadata.title || 'Chat').replace(/\s+/g, ' ').slice(0, 100);
+    task.updatedAt = this.clock();
+    if (typeof metadata.chatModel === 'string' && metadata.chatModel.length <= 128) task.chatModel = metadata.chatModel;
+    if (['','off','minimal','low','medium','high','xhigh','max','ultra'].includes(metadata.chatEffort)) task.chatEffort = metadata.chatEffort;
+    this.save(cookie, state);
   }
   begin(cookie, taskId) { const key = digest(cookie) + taskId; if (this.busy.has(key)) throw Error('Thread has an active request'); this.busy.add(key); return () => this.busy.delete(key); }
   register(cookie, taskId, refs, messageRef) {

@@ -109,12 +109,14 @@ test('failed bootstrap, HTTP failure, gateway fallback and empty replies restore
     assert.equal(calls.filter(url=>url==='/api/chat').length,mode==='bootstrap'?0:1,mode);
   }
 });
-test('new chat changes task identity after confirmation and does not send old history',async t=>{
+test('new chat archives history and previous chat restores its original context',async t=>{
   const sent=[];const {document,window}=await app(t,false,async(url,options)=>{if(url==='/api/chat'){sent.push(JSON.parse(options.body));return{ok:true,json:async()=>({fromGateway:true,response:'Synthetic answer'})};}return{ok:true,json:async()=>({})};});
   for(const question of ['One','Two']){typeChat(window,document,question);await settle();submitChat(window,document);await settle();}
   assert.equal(sent[0].hudThread,sent[1].hudThread);assert.equal(sent[1].messages.length,3);
-  window.confirm=()=>false;click(document,'New chat');await settle();assert.equal(document.querySelectorAll('.chat-message').length,4);
-  window.confirm=()=>true;click(document,'New chat');await settle();assert.equal(document.querySelectorAll('.chat-message').length,0);
+  click(document,'New chat');await settle();assert.equal(document.querySelectorAll('.chat-message').length,0);
+  const picker=document.querySelector('#previous-chat');picker.value=`local:${sent[0].hudThread}`;picker.dispatchEvent(new window.Event('change',{bubbles:true}));await settle();
+  assert.equal(document.querySelectorAll('.chat-message').length,4);
+  click(document,'New chat');await settle();
   typeChat(window,document,'Fresh');await settle();submitChat(window,document);await settle();assert.notEqual(sent[2].hudThread,sent[1].hudThread);assert.deepEqual(sent[2].messages,[{role:'user',content:'Fresh'}]);
 });
 test('native switch remains disabled for failed runtime reads and synthetic preview never sends',async t=>{

@@ -1,3 +1,10 @@
+import { mountChatHistory } from './src/hud-server/chat-history.js';
+import { runtimeSettings } from './src/hud-server/runtime-settings.js';
+import { createUsageReader } from './src/hud-server/chat-usage.js';
+import { createChatRuntime } from './src/hud-server/chat-runtime.js';
+import { publicChatModels, resolveChatModel, resolveChatEffort } from './src/hud-server/chat-models.js';
+import { chatTimeouts, postGatewayChat } from './src/hud-server/chat-transport.js';
+import { gatewayAgentId } from './src/hud-server/gateway-agent.js';
 import { createTerminalProfiles, cleanConfiguredValue, validateTerminalProfileInput } from './terminal-profiles.js';
 import { createTerminalHostStore, terminalHostFingerprint, terminalHostKeyType } from './terminal-host-store.js';
 import { controlUiLocation } from './src/hud-server/control-ui.js';
@@ -70,6 +77,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
 const app = express();
 const ports = hudPorts();
+const chatDeadlines = chatTimeouts();
 const allowedLocalRequest = createLocalAccess(ports);
 app.use(localAccessMiddleware(allowedLocalRequest));
 const TERMINAL_ENRICHMENT_FILE = path.join(process.env.OPENCLAW_HOME || path.join(os.homedir(), '.openclaw'), 'netclaw-terminal-enrichment.json');
@@ -91,7 +99,7 @@ registerGenieRoutes(app, { getEnv: () => ({ ...parseEnvFile(), ...process.env })
 registerObservabilityRoutes(app, { getEnv: () => ({ ...parseEnvFile(), ...process.env }) });
 registerIntentExecutionRoutes(app, { getGatewayConfig, listDevices: listTerminalProfiles,
   changePolicy: createLocalChangePolicy({ directory: () => path.join(OPENCLAW_HOME, 'netclaw-changes'), listDevices: listTerminalProfiles }),
-  createActivityReader: options => createTranscriptActivityReader({ ...options, directory: path.join(OPENCLAW_HOME, 'agents', 'main', 'sessions') }),
+  createActivityReader: options => createTranscriptActivityReader({ ...options, directory: path.join(OPENCLAW_HOME, 'agents', getGatewayConfig().agentId, 'sessions') }),
 });
 
 const server = http.createServer(app);
@@ -966,9 +974,9 @@ function pickDeviceConnection(device) {
 
 function parseConfig() {
   try {
-    return JSON.parse(readText(CONFIG_FILE));
+    return JSON.parse(readText(OPENCLAW_CONFIG));
   } catch {
-    return {};
+    return null;
   }
 }
 
@@ -1007,24 +1015,14 @@ function buildIntegrations(skills) {
   return integrations.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
 }
 
-function buildSettings(config, devices) {
-  const modelPrimary = config?.agents?.defaults?.model?.primary || 'unknown';
-  const modelFallbacks = config?.agents?.defaults?.model?.fallbacks || [];
-  return [
-    { label: 'Gateway Mode', value: config?.gateway?.mode || 'unknown' },
-    { label: 'Primary Model', value: modelPrimary.replace('anthropic/', '') },
-    { label: 'Fallback Models', value: modelFallbacks.length ? modelFallbacks.join(', ').replaceAll('anthropic/', '') : 'none' },
-    { label: 'Workspace', value: config?.agents?.defaults?.workspace || 'unknown' },
-    { label: 'Command Mode', value: config?.commands?.native || 'unknown' },
-    { label: 'Devices in Testbed', value: String(devices.length) },
-  ];
-}
-
 function buildGraph() {
   const identity = parseIdentity();
   const config = parseConfig();
   const skills = parseSkills();
   const devices = parseDevices();
+  let runtime;
+  try { runtime = runtimeSettings(config, devices.length, OPENCLAW_CONFIG); }
+  catch { runtime = runtimeSettings(null, devices.length, OPENCLAW_CONFIG); }
   const integrations = buildIntegrations(skills);
 
   const categories = [...new Set(integrations.map((entry) => entry.category))].map((category) => ({
@@ -1036,8 +1034,8 @@ function buildGraph() {
 
   return {
     identity,
-    config,
-    settings: buildSettings(config, devices),
+    config: runtime.config,
+    settings: runtime.settings,
     integrations,
     skills,
     devices,
@@ -1078,7 +1076,7 @@ let usageCache = null, usageReadAt = 0;
 app.get('/api/hud/tokenomics', (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (!usageCache || Date.now() - usageReadAt > 30000) {
-    usageCache = readUsage(path.join(os.homedir(), '.openclaw', 'agents', 'main', 'sessions'));
+    usageCache = readUsage(path.join(os.homedir(), '.openclaw', 'agents', getGatewayConfig().agentId, 'sessions'));
     usageReadAt = Date.now();
   }
   res.json(usageCache);
@@ -1086,7 +1084,7 @@ app.get('/api/hud/tokenomics', (_req, res) => {
 app.get('/api/hud/runtime', (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   try {
-    const config = JSON.parse(readText(path.join(os.homedir(), '.openclaw', 'openclaw.json')));
+    const config = JSON.parse(readText(OPENCLAW_CONFIG));
     res.json({ available: true, ...runtimeInventory(config), controlUi: controlUiLocation(config), generatedAt:new Date().toISOString() });
   } catch { res.status(503).json({ available:false, error:'Runtime configuration unavailable' }); }
 });
@@ -1692,7 +1690,7 @@ app.put('/api/budget/config', (req, res) => {
  */
 function estimateActiveSessionCost() {
   try {
-    const sessionsDir = path.join(process.env.HOME || '/root', '.openclaw', 'agents', 'main', 'sessions');
+    const sessionsDir = path.join(process.env.HOME || '/root', '.openclaw', 'agents', getGatewayConfig().agentId, 'sessions');
     const sessionsJson = path.join(sessionsDir, 'sessions.json');
     if (!fs.existsSync(sessionsJson)) return 0;
 
@@ -1873,13 +1871,14 @@ function getGatewayConfig() {
   try {
     const config = JSON.parse(readText(OPENCLAW_CONFIG));
     return {
+      agentId: gatewayAgentId(config),
       port: config?.gateway?.port || 18789,
       token: config?.gateway?.auth?.token || '',
       chatCompletionsEnabled:
         config?.gateway?.http?.endpoints?.chatCompletions?.enabled === true,
     };
   } catch {
-    return { port: 18789, token: '', chatCompletionsEnabled: false };
+    return { agentId: 'main', port: 18789, token: '', chatCompletionsEnabled: false };
   }
 }
 
@@ -1954,14 +1953,49 @@ app.post('/api/terminal/terra', async (req, res) => {
   }
 });
 
+const readChatUsage = createUsageReader();
+const chatRuntime = createChatRuntime();
+mountChatHistory(app, { bindings: hudBindings, config: () => JSON.parse(readText(OPENCLAW_CONFIG)), configPath: OPENCLAW_CONFIG, runtime: chatRuntime });
+app.post('/api/chat/usage', async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  try {
+    const config = JSON.parse(readText(OPENCLAW_CONFIG));
+    const agentId = gatewayAgentId(config);
+    const selectedModel = resolveChatModel(config, req.body?.chatModel ?? '', await chatRuntime.catalog(config, OPENCLAW_CONFIG));
+    let key = null;
+    const cookie = cookieFrom(req);
+    if (cookie && req.body?.hudThread) {
+      try { key = hudBindings.lookupTask(cookie, req.body.hudThread, agentId)?.gatewayKey || null; }
+      catch { return res.status(403).json({ error: 'Chat session unavailable.' }); }
+    }
+    res.json(await readChatUsage({ agentId, key, selectedModel }));
+  } catch { res.status(503).json({ error: 'Usage information is unavailable.' }); }
+});
+
+app.get('/api/chat/models', async (_req, res) => {
+  res.set('Cache-Control', 'no-store');
+  try { const config = JSON.parse(readText(OPENCLAW_CONFIG));
+    res.json(publicChatModels(config, await chatRuntime.catalog(config, OPENCLAW_CONFIG))); }
+  catch { res.status(503).json({ error: 'Configured models are unavailable.' }); }
+});
+
 app.post('/api/chat', async (req, res) => {
+  let selectedModel, selectedEffort;
+  if (req.body?.chatModel !== undefined || req.body?.chatEffort !== undefined) {
+    try {
+      const config = JSON.parse(readText(OPENCLAW_CONFIG));
+      const discovered = await chatRuntime.catalog(config, OPENCLAW_CONFIG);
+      selectedModel = resolveChatModel(config, req.body.chatModel, discovered);
+      selectedEffort = resolveChatEffort(config, req.body.chatModel, req.body.chatEffort, discovered);
+    } catch { return res.status(400).json({ error: 'Choose an available model and supported effort. Refresh the model list.' }); }
+  }
   const { message, messages, hudThread } = req.body || {};
   let hudTask = null, releaseTask = () => {}, beforeTranscript = [];
   const hudCookie = cookieFrom(req);
   if (hudThread !== undefined) {
     try {
       hudBindings.read(hudCookie);
-      hudTask = hudBindings.task(hudCookie, hudThread);
+      hudTask = hudBindings.task(hudCookie, hudThread, getGatewayConfig().agentId);
       releaseTask = hudBindings.begin(hudCookie, hudTask.id);
       beforeTranscript = readTranscript(SESSIONS_DIR, hudTask.gatewayKey);
       if (hudTask.newlyCreated && beforeTranscript === null) beforeTranscript = [];
@@ -1985,6 +2019,10 @@ app.post('/api/chat', async (req, res) => {
     });
   }
 
+  if (hudTask) {
+    try { hudBindings.describeChat(hudCookie, hudTask.id, getGatewayConfig().agentId, { title: userMessage, chatModel: req.body.chatModel, chatEffort: req.body.chatEffort }); }
+    catch { releaseTask(); return res.status(503).json({ error: 'Chat metadata could not be saved.' }); }
+  }
   const timestamp = new Date().toISOString();
   const historyText = userMessage || '[attachment]';
   if (!contextMessages && !hudTask) chatHistory.push({ role: 'user', text: historyText, timestamp });
@@ -2010,12 +2048,17 @@ app.post('/api/chat', async (req, res) => {
 
   try {
     if (!gw.chatCompletionsEnabled) throw new Error('chat-completions-disabled');
-    const gwRes = await fetch(`http://127.0.0.1:${gw.port}/v1/chat/completions`, {
+    if (selectedEffort !== undefined) {
+      try { await chatRuntime.apply({ key: hudTask?.gatewayKey, model: selectedModel, effort: selectedEffort, port: gw.port, configPath: OPENCLAW_CONFIG }); }
+      catch { gatewayFallback = 'OpenClaw could not apply the selected model and effort. No message was sent. Refresh the model list and try again.'; throw Error('chat-settings-rejected'); }
+    }
+    const gwRes = await postGatewayChat(`http://127.0.0.1:${gw.port}/v1/chat/completions`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${gw.token}`,
         'Content-Type': 'application/json',
-        'x-openclaw-agent-id': 'main',
+        'x-openclaw-agent-id': gw.agentId,
+        ...(selectedModel ? { 'x-openclaw-model': selectedModel } : {}),
         ...(hudTask ? { 'x-openclaw-session-key': hudTask.gatewayKey } : {}),
       },
       body: JSON.stringify({
@@ -2029,7 +2072,7 @@ app.post('/api/chat', async (req, res) => {
           .map((m) => ({ role: m.role, content: m.text || m.response || '' })),
         stream: false,
       }),
-      signal: AbortSignal.timeout(300000),
+      timeoutMs: chatDeadlines.gateway,
     });
 
     if (gwRes.ok) {
@@ -2042,7 +2085,9 @@ app.post('/api/chat', async (req, res) => {
       gatewayFallback = `OpenClaw rejected the chat request (HTTP ${gwRes.status}). Check the gateway terminal for details.`;
     }
   } catch (error) {
-    if (error?.message !== 'chat-completions-disabled') {
+    if (error?.name === 'TimeoutError') {
+      gatewayFallback = `The gateway did not finish within ${chatDeadlines.gateway / 60000} minutes. The HTTP request was cancelled; check the gateway for any tool actions before retrying.`;
+    } else if (!['chat-completions-disabled', 'chat-settings-rejected'].includes(error?.message)) {
       gatewayFallback = 'OpenClaw gateway could not complete the chat request. Check the gateway terminal for details.';
     }
   }
@@ -2086,7 +2131,7 @@ app.get('/api/chat/history', (req, res) => {
 });
 
 // ── Session transcript tool call extraction (Section H) ─────────
-const SESSIONS_DIR = path.join(process.env.HOME || '/root', '.openclaw', 'agents', 'main', 'sessions');
+const SESSIONS_DIR = path.join(process.env.HOME || '/root', '.openclaw', 'agents', getGatewayConfig().agentId, 'sessions');
 
 function getLatestSessionFile() {
   try {
@@ -2196,7 +2241,7 @@ app.get('/api/session/:id/tools', (req, res) => {
   // Scoped HUD transcripts may contain private assessment evidence.
   try {
     const sessions = JSON.parse(readText(path.join(SESSIONS_DIR, 'sessions.json')) || '{}');
-    if (Object.entries(sessions).some(([key, value]) => key.startsWith('agent:main:hud:') && value.sessionId === req.params.id)) return res.status(404).json({ error: 'Session not found' });
+    if (Object.entries(sessions).some(([key, value]) => key.startsWith(`agent:${getGatewayConfig().agentId}:hud:`) && value.sessionId === req.params.id)) return res.status(404).json({ error: 'Session not found' });
   } catch { return res.status(503).json({ error: 'Session ownership unavailable' }); }
   const sessionFile = resourceFile(SESSIONS_DIR, req.params.id, '.jsonl');
   if (!sessionFile) return res.status(404).json({ error: 'Session not found' });

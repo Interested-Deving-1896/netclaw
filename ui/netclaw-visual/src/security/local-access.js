@@ -1,5 +1,6 @@
-// The HUD can edit local credentials and invoke the operator's agent. It is a
-// loopback-only application. Remote access must use an authenticated SSH tunnel.
+import { isIP } from 'node:net';
+
+// Remote access is an explicit trusted-interface opt-in, not authentication.
 const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
 
 export function hudPorts(env = process.env) {
@@ -16,11 +17,24 @@ export function hudPorts(env = process.env) {
   return { api, ui };
 }
 
-export function createLocalAccess(ports = hudPorts()) {
+export function hudHost(env = process.env) {
+  const host = env.HUD_HOST ?? '127.0.0.1';
+  if (!isIP(host) || ['0.0.0.0', '::'].includes(host)) {
+    throw new Error('HUD_HOST must be a concrete interface IP (not a wildcard or hostname)');
+  }
+  return host;
+}
+
+export function createLocalAccess(ports = hudPorts(), {
+  host = hudHost(), allowRemote = false,
+} = {}) {
   const authorities = new Set([ports.api, ports.ui].flatMap(port =>
     ['127.0.0.1', 'localhost', '[::1]'].map(host => `${host}:${port}`)));
+  const authority = `${isIP(host) === 6 ? '[' + host + ']' : host}:${ports.ui}`;
+  authorities.add(authority);
   return req => {
-    if (!LOOPBACK.has(req.socket?.remoteAddress)) return false;
+    if (!LOOPBACK.has(req.socket?.remoteAddress) &&
+        !(allowRemote && !LOOPBACK.has(host) && req.headers.host === authority)) return false;
     // Ignore proxy-supplied headers: an arbitrary Host must not bypass the
     // loopback boundary through DNS rebinding or a public development proxy.
     if (!authorities.has(req.headers.host)) return false;
@@ -40,6 +54,14 @@ export function localAccessMiddleware(allowed) {
   return (req, res, next) => {
     if (allowed(req)) return next();
     res.writeHead(403, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
-    res.end(JSON.stringify({ error: 'HUD access requires a trusted local origin. Use an SSH tunnel for remote access.' }));
+    res.end(JSON.stringify({ error: 'HUD access requires a configured interface and trusted origin.' }));
   };
+}
+
+// Vite proxies WebSocket upgrades outside its HTTP middleware stack.
+export function guardHudServer(server, allowed) {
+  server.middlewares.use(localAccessMiddleware(allowed));
+  server.httpServer?.prependListener('upgrade', (req, socket) => {
+    if (!allowed(req)) socket.destroy();
+  });
 }

@@ -53,3 +53,19 @@ test('Border interpretation is linked only to proven assessment IDs; user prose 
  assert.deepEqual(attachInfluences([],[],[entry]),[]);
  assert.match(displayBorderText(block),/Check the other side/);assert.doesNotMatch(displayBorderText(block),/```/);
 });
+test('configured agent owns the session key and cannot reuse another agent task', t => {
+ const { bindings, cookie, task } = setup(t);
+ const selected = bindings.task(cookie, 'canvas:root', 'senior-engineer');
+ assert.match(selected.gatewayKey, /^agent:senior-engineer:hud:/);
+ assert.notEqual(selected.id, task.id);
+ assert.equal(bindings.task(cookie, 'canvas:root', 'senior-engineer').id, selected.id);
+ assert.throws(() => bindings.task(cookie, 'canvas:root', '../outside'));
+});
+test('usage lookup cannot read another cookie or create a task', t => {
+ const {bindings,cookie,task}=setup(t);
+ assert.equal(bindings.lookupTask(cookie,'canvas:root','main').id,task.id);
+ assert.equal(bindings.lookupTask(bindings.create(),'canvas:root','main'),null);
+ assert.equal(bindings.lookupTask(cookie,'unknown','main'),null);
+ assert.equal(bindings.lookupTask(cookie,'canvas:root','other'),null);
+ assert.equal(Object.keys(bindings.read(cookie).tasks).length,1);
+});

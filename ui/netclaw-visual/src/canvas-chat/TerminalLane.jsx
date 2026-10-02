@@ -1,3 +1,4 @@
+import { randomId } from '../shared/random-id.js';
 // Extracted from NetClaw Canvas; see LICENSE for the adapted workflow.
 import { escHtml, nodeTitle, downloadTextFile, branchFileName } from "./canvas-export.js";
 import React, { useRef, useState, useCallback, useEffect, useMemo } from "react";
@@ -1059,7 +1060,7 @@ function TerminalLane({ node, color, isActive, selected, animate, dark, laneRef,
       setIntentError('In Change control, authorize your lab devices and select the devices for this request first.');
       return;
     }
-    const id = crypto.randomUUID();
+    const id = randomId();
     const previousMode = intentRun?.changeControl?.mode || 'production';
     const sameChangeScope = previousMode === intentChangeControl.mode && (previousMode !== 'local-lab' ||
       (intentRun?.changeControl?.revision === intentChangeControl.policyRevision &&

@@ -8,8 +8,8 @@ permissions, change-management gates and evidence boundaries.
 
 From `ui/netclaw-visual`, run `npm run dev`. Default UI: `http://localhost:3000`;
 API: loopback port 3001. Existing `HUD_UI_PORT` / `HUD_PORT` overrides still apply.
-Use the supported authenticated tunnel for remote access; do not open the listener
-publicly for mobile testing.
+For a trusted LAN, select a concrete interface with `HUD_HOST=<host-IP> npm run dev`.
+See [HUD access](HUD-ACCESS.md) for the trust boundary and authenticated SSH alternative.
 
 - `/` — standard Chat, dashboard, capability search, RISK, neighbours, mobile, Jev, network,
   knowledge, operations, RAG, Configuration and settings.
@@ -30,7 +30,7 @@ message content and relationships; imported assessment references lose authority
 
 The header offers **Chat**, **Canvas**, and **OpenClaw ↗** in both Basic and Advanced modes.
 
-- **Chat** is the default: a chronological conversation with the configured gateway. Enter sends; Shift+Enter adds a line. The transcript, draft and in-flight reply stay intact while you navigate this HUD tab. Reload clears the in-memory view; gateway-side records follow runtime retention. New chat asks for confirmation and creates a separate thread; it does not delete gateway records. The latest 40 messages are sent as context. Missing or unconfirmed gateway replies are errors, never substitute assistant evidence. There is no automatic retry or request cancellation.
+- **Chat** is the default: a chronological conversation with the configured gateway. Enter sends; Shift+Enter adds a line. The transcript, draft and in-flight reply stay intact while you navigate this HUD tab. Reload restores the saved view in the same browser tab; gateway-side records follow runtime retention. New chat asks for confirmation and creates a separate thread; it does not delete gateway records. The latest 40 messages are sent as context. Missing or unconfirmed gateway replies are errors, never substitute assistant evidence. There is no automatic retry or request cancellation.
 - **Canvas** remains the full branching workspace. Its iframe stays mounted after first use. Existing IndexedDB sessions and drafts are unchanged. Evidence-selection actions continue to hand context to a Canvas draft for review.
 - **OpenClaw ↗** opens the native Control UI in a separate tab; it deliberately retains its own authentication and conversation history. OpenClaw denies iframe embedding. The HUD does not strip those headers, expose a token, or change origin/auth settings. The destination uses only the configured gateway port, validated `gateway.controlUi.basePath` and `gateway.tls.enabled`, on `127.0.0.1`. It is configured navigation, not a reachability claim. Missing/malformed configuration or `gateway.controlUi.enabled=false` disables the link. Unsupported paths should be opened through OpenClaw directly.
 
@@ -210,3 +210,63 @@ or service is altered; keep the same hostname/port for existing Canvas data.
 Restart the existing HUD process through the normal operator workflow, then verify
 live sources. Agent members require their own update/reconnect for new metadata.
 This is a scoped asset upgrade helper, not the planned whole-installation utility.
+
+## Choose a model in Chat
+
+The Model selector in the bottom toolbar of the standard Chat composer applies to the next
+message. Agent default follows the selected agent's configured primary model.
+Other choices come from the selected agent's available runtime catalog, with configured
+references retained as a fallback if discovery fails. The adjacent effort slider uses
+supported reasoning levels for the chosen model; it is not a price ranking. Runtime
+account pricing is not available. Native Codex metadata narrows supported levels when
+available. Settings are validated and applied to the private gateway session before
+inference, without changing global defaults. A failed settings change stops the send.
+Use default effort clears the override. Controls stay locked while a reply is pending.
+Refresh models reloads the catalog, which is coalesced and cached for up to one minute.
+Canvas retains its existing agent-default behavior.
+
+## Context and account usage
+
+The bottom composer toolbar includes context and quota indicators. Open their
+details for the last recorded session context, context capacity, provider quota
+windows, remaining percentages, reset times and source timestamps.
+
+Context uses OpenClaw's fresh totalTokens and contextTokens for this browser-owned
+chat only. It does not include unsent draft text or sum billing tokens. A new
+chat, stale runtime count, changed model or missing capacity is shown as
+unavailable until matching data is reported. Provider quotas are shared account
+limits, not chat spending budgets; unsupported quota reports are unavailable.
+
+Reads are bounded and coalesced. Provider reports are cached for five minutes;
+session reads for 15 seconds. The active visible Chat view refreshes every 30
+seconds and after turn state changes. Hidden views do not poll. Account emails,
+billing details and other sessions are never projected to the browser.
+
+## Runtime Settings and chat refresh
+
+Settings reads the actual OpenClaw configuration under OPENCLAW_HOME (default
+~/.openclaw), including the selected agent's model and workspace overrides.
+The source path is displayed. Only safe display fields are returned; missing
+configuration is unavailable rather than replaced with repository examples.
+
+Standard Chat saves the conversation, draft, model, effort and thread identifier
+in sessionStorage for the current origin and browser tab. Refresh restores them.
+New chat preserves previous conversations and drafts in a bounded per-tab archive
+(up to 100 entries / 4 MiB); storage failures are visible and prevent switching away
+from an unsaved chat. No uncertain request is automatically resent.
+
+Use **Previous chats** above the transcript to reopen a browser-owned gateway
+conversation. **Refresh chats** reloads the index; **Reload chat** retrieves replies
+that arrived while the page was closed. The original gateway session key is retained
+for follow-ups, including legacy bindings that use a server-issued resume alias.
+Models, effort and local drafts are restored. Running sessions must be reloaded before
+sending another message. Tool output, system messages and reasoning are excluded from
+the visible transcript. Display reads are bounded to 1,000 entries / 2 MiB, with a
+notice when older transcript entries are omitted; runtime context retention is
+unchanged.
+
+The gateway history index is limited to the selected agent and the owning private
+browser cookie. It works across tabs sharing that cookie; drafts remain per-tab.
+Unbound legacy conversations, expired or different browser cookies, and deleted
+gateway transcripts are not automatically recovered. Browser-only history cannot be
+recovered after its storage is cleared.
