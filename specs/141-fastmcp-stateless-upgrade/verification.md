@@ -111,3 +111,17 @@ vendor-tool execution is implied by publication.
 
 GAIT release branch: `release-fastmcp-2026-10-05`. Startup device discovery again
 failed because PYATS_TESTBED_PATH was absent. No device state was inferred.
+
+The first Linux PR run exposed three stale test harness assumptions: Dot's suite
+still installed SDK1 without standalone FastMCP; Zabbix asserted FastMCP3 and used
+SDK1 client imports; installer discovery hardcoded the former runtime path and
+used the old client. The suites now consume current Dot requirements, assert
+Zabbix's exact modern pins, use public FastMCP clients in both protocol modes,
+and select the installer-recorded interpreter. Dot and offline Zabbix re-runs
+pass; Zabbix's live credential checks remain explicitly unavailable. The failed
+initial CI run is retained in PR #282; no check was bypassed.
+
+The fresh installer harness also passes with Python 3.12, including discovery in
+both protocol modes from newly installed runtimes. An initial local invocation
+used host Python 3.10 and correctly rejected memory-mcp's Python >=3.11 metadata;
+rerunning with an isolated Python 3.12 interpreter matches the CI baseline.

@@ -716,14 +716,16 @@
       ],
       "environment": {
         "path": ".contract-test-envs/dot",
-        "requirements": [],
+        "requirements": [
+          "mcp-servers/netclaw-dot-mcp/requirements.txt"
+        ],
         "packages": [
-          "pytest>=8,<9",
-          "mcp>=1.12,<2"
+          "pytest>=8,<9"
         ],
         "required_imports": [
           "pytest",
-          "mcp"
+          "mcp",
+          "fastmcp"
         ],
         "prepend_path": true
       },

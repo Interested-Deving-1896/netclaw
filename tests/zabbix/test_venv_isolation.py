@@ -1,8 +1,8 @@
 """The dedicated venv, and proof it does not disturb the system interpreter.
 Spec 083, FR-037a/b/c, SC-026/027.
 
-This is not hygiene. The vendored server requires fastmcp 3.x; FIVE NetClaw servers pin
-fastmcp<3. A shared install breaks all five — spec 076's cryptography incident verbatim.
+Spec 141 pins FastMCP 4 / MCP 2 in a dedicated runtime. Legacy low-level SDK
+consumers still require isolation from these framework dependencies.
 """
 from __future__ import annotations
 import json, os, re, subprocess
@@ -19,12 +19,13 @@ def _version(python_exe: str, dist: str) -> str | None:
         capture_output=True, text=True)
     return out.stdout.strip() if out.returncode == 0 else None
 
-def test_venv_exists_and_holds_fastmcp_3():
+def test_venv_exists_and_holds_modern_framework():
     if not os.path.exists(VENV_PY):
         skip("venv checks", "venv not built — run the installer")
         return
     v = _version(VENV_PY, "fastmcp")
-    check("the venv resolves fastmcp 3.x", bool(v) and v.startswith("3."), f"got {v}")
+    check("the venv resolves pinned FastMCP", v == "4.0.11", f"got {v}")
+    check("the venv resolves pinned MCP SDK", _version(VENV_PY, "mcp") == "2.3.0")
     check("the venv has the vendored package installed",
           _version(VENV_PY, "zabbix-mcp-server") is not None, "not installed")
 
@@ -63,7 +64,7 @@ def test_installer_never_uses_bare_venv():
     check("the installer uses netclaw_venv_create or uv",
           "netclaw_venv_create" in fn or "uv venv" in fn, "no supported venv creation path")
     check("the installer explains why the venv exists",
-          "fastmcp" in fn and ("<3" in fn or "3.x" in fn),
+          "isolated" in fn.lower() and "fastmcp" in fn.lower(),
           "without the rationale a maintainer will 'simplify' it away")
 
 def test_registration_points_at_the_venv():
@@ -87,7 +88,7 @@ def test_venv_is_gitignored():
                          capture_output=True, cwd=repo()).returncode != 0,
           "the vendored tree is invisible to git")
 
-TESTS = [test_venv_exists_and_holds_fastmcp_3, test_runtime_excludes_system_packages, test_installer_never_uses_bare_venv,
+TESTS = [test_venv_exists_and_holds_modern_framework, test_runtime_excludes_system_packages, test_installer_never_uses_bare_venv,
          test_registration_points_at_the_venv, test_venv_is_gitignored]
 
 if __name__ == "__main__":

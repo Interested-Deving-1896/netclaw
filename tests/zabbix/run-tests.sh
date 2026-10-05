@@ -33,7 +33,7 @@ run() {
 }
 
 run "read-only  — forced by NetClaw, deny-list non-vacuous (FR-021a/b, SC-018a/b)" tests/zabbix/test_readonly_forced.py
-run "venv       — fastmcp 3.x isolated from five <3 pins (FR-037a/b/c, SC-026/027)"  tests/zabbix/test_venv_isolation.py
+run "venv       — FastMCP 4 / MCP 2 isolated runtime (FR-037a/b/c, SC-026/027)"  tests/zabbix/test_venv_isolation.py
 run "skills     — a followable PROCEDURE, not a warning (FR-006a, FR-045..049)"      tests/zabbix/test_skill_procedure.py
 run "manifest   — <= 5,000 tokens, 3-tool surface stable (FR-044, SC-021/030)"       tests/zabbix/test_manifest_size.py
 

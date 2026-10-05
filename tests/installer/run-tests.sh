@@ -46,4 +46,5 @@ components='bgp-intel gnmi nautobot suzieq'
 python3 scripts/install-mcp-config.py --repo "$INSTALLER_TEST_REPO" \
     --runtime-root "$NETCLAW_RUNTIME_ROOT" --components "$components" \
     --output "$INSTALLER_TEST_DIR/selected.json"
-"$NETCLAW_RUNTIME_ROOT/bgp-intel/bin/python" tests/installer/discover.py "$INSTALLER_TEST_DIR"
+INSTALLER_DISCOVERY_PY="$(cat "$NETCLAW_RUNTIME_ROOT/records/bgp-intel")"
+"$INSTALLER_DISCOVERY_PY" tests/installer/discover.py "$INSTALLER_TEST_DIR"
