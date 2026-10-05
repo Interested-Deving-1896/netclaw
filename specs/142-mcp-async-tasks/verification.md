@@ -9,6 +9,8 @@
 - Total: **298 tools across 35 task-capable integrations**. This is distinct from the 35 owned servers in the framework migration.
 - `dependency-resolution.json`: all 34 new extension manifests/fallback dependency sets resolve for Python 3.12 with uv. Resolution is not live acceptance or every-platform compatibility.
 
+`patch-verification.json` records eight successful pristine-source/previously-patched upgrade scenarios across the four external components, including idempotent second application. Operator clones were read only.
+
 ## Executed checks
 
 `python3 scripts/run-contract-tests.py --suite <name> --prepare`:
