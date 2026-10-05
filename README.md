@@ -642,6 +642,8 @@ NetClaw ships with the full set of OpenClaw workspace markdown files. These are 
 
 **Existing voice installations:** complete the [voice authentication migration](docs/VOICE-SECURITY.md) before restarting the upgraded Twilio webhook service. Callbacks now require valid signatures; alert triggers require a separate bearer token.
 
+**FastMCP modernization:** see the [upgrade, rollback and compatibility guide](docs/FASTMCP-UPGRADE.md) for spec 141 and the remaining external exceptions.
+
 > Adding one? Follow **[docs/ADDING-AN-MCP.md](docs/ADDING-AN-MCP.md)** and run
 > `python3 scripts/reconcile-mcp.py` before pushing — CI enforces it.
 

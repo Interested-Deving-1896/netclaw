@@ -156,7 +156,7 @@ if [ "$HAVE_MCP" = "1" ]; then
 import asyncio, json, server
 tools = asyncio.run(server.mcp.list_tools())
 tot = sum(len(json.dumps({"name": t.name, "description": t.description,
-                          "inputSchema": t.inputSchema})) // 4 for t in tools)
+                          "inputSchema": t.parameters})) // 4 for t in tools)
 print("PASS" if len(tools) == 6 and tot < 2000 else f"{len(tools)} tools, {tot} tokens")'
 else
     skip "tool-surface measurement (the mcp package is not installed here)"

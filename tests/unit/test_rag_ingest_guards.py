@@ -7,6 +7,19 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'mcp-servers/rag-mcp'))
 
+
+@pytest.fixture(autouse=True)
+def isolated_gait_audit(tmp_path, monkeypatch):
+    """Keep real audit writes local even when gait-ai is installed on the host."""
+    monkeypatch.chdir(tmp_path)
+    try:
+        from gait.repo import GaitRepo
+    except ImportError:
+        return
+    repo = GaitRepo(tmp_path)
+    repo.init()
+    monkeypatch.setattr(GaitRepo, 'discover', staticmethod(lambda *args, **kwargs: repo))
+
 @pytest.fixture(scope='module')
 def server(tmp_path_factory):
     # Set before import: server startup must never inspect the operator's corpus.

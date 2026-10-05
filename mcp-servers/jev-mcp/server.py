@@ -60,7 +60,7 @@ def safe_status() -> dict:
 
 
 def serve(read_only: bool = False):
-    from mcp.server.fastmcp import FastMCP
+    from fastmcp import FastMCP
     mcp = FastMCP("jev-mcp")
 
     @mcp.tool()

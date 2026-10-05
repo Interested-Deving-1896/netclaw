@@ -25,7 +25,7 @@ netclaw_venv_create() { mkdir -p "$1/bin"; cp "$FAKE_PY" "$1/bin/python"; }
 netclaw_pip_install example
 ''', NETCLAW_PY='/nonexistent/system-python', FAKE_PY=str(fake))
     assert result.returncode == 0, result.stderr
-    python = tmp_path / 'runtimes/gnmi/bin/python'
+    python = tmp_path / 'runtimes/gnmi-component-bounds/bin/python'
     assert (tmp_path / 'runtimes/records/gnmi').read_text().strip() == str(python)
     assert not (tmp_path / 'failure').exists()
 
@@ -49,7 +49,7 @@ netclaw_venv_create() { echo "fixture: seed installation failed" >&2; return 17;
 
 
 def test_unmanaged_environment_preserved(tmp_path):
-    target = tmp_path / 'runtimes/gnmi'
+    target = tmp_path / 'runtimes/gnmi-component-bounds'
     target.mkdir(parents=True)
     (target / 'operator-file').write_text('preserve me')
     result = run(tmp_path, 'netclaw_pip_install example')
@@ -67,4 +67,4 @@ def test_explicit_environment_wins(tmp_path):
     result = run(tmp_path, 'netclaw_pip_install example', NETCLAW_VENV=str(target.parent))
     assert result.returncode == 0, result.stderr
     assert (tmp_path / 'runtimes/records/gnmi').read_text().strip() == str(python)
-    assert not (tmp_path / 'runtimes/gnmi').exists()
+    assert not (tmp_path / 'runtimes/gnmi-component-bounds').exists()

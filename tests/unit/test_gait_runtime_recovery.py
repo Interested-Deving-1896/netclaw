@@ -8,6 +8,17 @@ m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
 
 
+@pytest.fixture(autouse=True)
+def synthetic_source_bundle(monkeypatch):
+    # Runtime clones are intentionally absent in a clean checkout/CI. These
+    # transaction tests stub source copying and subprocesses; the real bundle
+    # is separately exercised by the spec 141 staging smoke test.
+    def copy_source(source, destination, **kwargs):
+        destination.mkdir(parents=True)
+        (destination / 'gait_mcp.py').write_text('# fixture source\n')
+    monkeypatch.setattr(m.shutil, 'copytree', copy_source)
+
+
 def old_runtime(tmp_path):
     target = tmp_path / 'gait'
     target.mkdir()
@@ -15,7 +26,7 @@ def old_runtime(tmp_path):
     return target
 
 
-@pytest.mark.parametrize('fail_step', [1, 2, 3])
+@pytest.mark.parametrize('fail_step', [1, 2, 3, 4, 5])
 def test_creation_install_or_verification_failure_keeps_old_runtime(tmp_path, monkeypatch, fail_step):
     target = old_runtime(tmp_path)
     calls = []

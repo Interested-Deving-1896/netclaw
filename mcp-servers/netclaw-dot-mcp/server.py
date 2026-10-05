@@ -12,19 +12,22 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import core  # noqa: E402
 import oauth as oauth_mod  # noqa: E402
-from mcp.server.fastmcp import FastMCP  # noqa: E402
+from fastmcp import FastMCP  # noqa: E402
 
-from mcp.server.transport_security import TransportSecuritySettings  # noqa: E402
 
 PUBLIC_HOST = os.environ.get("NETCLAW_DOT_PUBLIC_HOST", "")  # e.g. zoom.automateyournetwork.ca
 _hosts = ["127.0.0.1:*", "localhost:*"] + ([PUBLIC_HOST] if PUBLIC_HOST else [])
-mcp = FastMCP(
-    "netclaw-dot",
-    host=os.environ.get("NETCLAW_DOT_HOST", "127.0.0.1"),
-    port=int(os.environ.get("NETCLAW_DOT_PORT", "8765")),
-    streamable_http_path="/mcp",
-    transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=True, allowed_hosts=_hosts),
-)
+HTTP_HOST = os.environ.get("NETCLAW_DOT_HOST", "127.0.0.1")
+HTTP_PORT = int(os.environ.get("NETCLAW_DOT_PORT", "8765"))
+mcp = FastMCP("netclaw-dot")
+
+
+def http_app():
+    """Sessionless transport with explicit host/origin protection; bearer gate wraps it."""
+    return mcp.http_app(path="/mcp", stateless_http=True,
+                        host_origin_protection=True, allowed_hosts=_hosts,
+                        allowed_origins=[])
+
 RO = {"readOnlyHint": True, "destructiveHint": False}
 PRINCIPAL = "owner"  # single-owner MVP; identity is the bearer token holder
 
@@ -128,7 +131,7 @@ def main():
         sys.exit("NETCLAW_DOT_CLIENT_ID and NETCLAW_DOT_CLIENT_SECRET (>=24 chars) are required")
     redirects = [u for u in os.environ.get("NETCLAW_DOT_REDIRECTS", "").split(",") if u]
     oa = oauth_mod.OAuth(token, cid, csec, base, redirects=redirects)
-    uvicorn.run(DotAuth(mcp.streamable_http_app(), token, oa), host=mcp.settings.host, port=mcp.settings.port, log_level="warning")
+    uvicorn.run(DotAuth(http_app(), token, oa), host=HTTP_HOST, port=HTTP_PORT, log_level="warning")
 
 
 if __name__ == "__main__":

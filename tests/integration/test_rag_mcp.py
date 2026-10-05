@@ -42,6 +42,19 @@ class HashEmbedder:
         return len(text.split())
 
 
+
+@pytest.fixture(autouse=True)
+def isolated_gait_audit(tmp_path, monkeypatch):
+    """Keep real audit writes local even when gait-ai is installed on the host."""
+    monkeypatch.chdir(tmp_path)
+    try:
+        from gait.repo import GaitRepo
+    except ImportError:
+        return
+    repo = GaitRepo(tmp_path)
+    repo.init()
+    monkeypatch.setattr(GaitRepo, 'discover', staticmethod(lambda *args, **kwargs: repo))
+
 @pytest.fixture(autouse=True)
 def fake_embedder():
     server.embedder = HashEmbedder()
@@ -165,6 +178,14 @@ def test_unsupported_and_size_errors_surface():
 def test_gait_absent_does_not_crash(tmp_path, monkeypatch):
     # No test may write the operator's actual GAIT history.
     monkeypatch.chdir(tmp_path)
+    try:
+        from gait.repo import GaitRepo
+    except ImportError:
+        pass
+    else:
+        def unavailable(*args, **kwargs):
+            raise FileNotFoundError('fixture: no audit repository')
+        monkeypatch.setattr(GaitRepo, 'discover', staticmethod(unavailable))
     result = server.gait_log("test", "synthetic event")
     assert result["status"] == "unavailable"
 

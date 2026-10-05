@@ -29,6 +29,25 @@ check_command() {
 
 clone_or_pull() {
     local dir="$1" url="$2"
+    local revision="" manifest="${NETCLAW_DIR:-}/config/fastmcp-external-patches.json"
+    if [ -f "$manifest" ]; then
+        revision="$(python3 - "$manifest" "$(basename "$dir")" <<'PYREV'
+import json, sys
+entries = json.load(open(sys.argv[1]))['components'].values()
+print(next((e['reviewed_commit'] or '' for e in entries if e['directory'] == sys.argv[2]), ''))
+PYREV
+)" || return 1
+    fi
+    if [ -n "$revision" ]; then
+        if [ -d "$dir" ]; then
+            log_info "Keeping reviewed checkout and operator edits; compatibility hashes will be checked."
+        else
+            log_info "Cloning reviewed revision $revision from $url..."
+            git clone --no-checkout "$url" "$dir" || return 1
+            git -C "$dir" checkout --detach "$revision" || return 1
+        fi
+        return 0
+    fi
     if [ -d "$dir" ]; then
         log_info "Already cloned. Pulling latest..."
         git -C "$dir" pull || log_warn "git pull failed, using existing version"

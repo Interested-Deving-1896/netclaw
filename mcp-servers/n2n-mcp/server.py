@@ -22,7 +22,7 @@ import os
 from typing import Optional
 
 import httpx
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 BGP_DAEMON_API = os.environ.get("BGP_DAEMON_API", "http://127.0.0.1:8179")
 

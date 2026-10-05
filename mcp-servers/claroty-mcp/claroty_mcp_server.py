@@ -24,7 +24,7 @@ import sys
 # Allow `from clients...`, `from tools...`, etc. when run as a script.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 from clients.claroty_client import client
 from tools.alerts import (

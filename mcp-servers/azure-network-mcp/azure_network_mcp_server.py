@@ -14,7 +14,7 @@ from typing import Optional
 # Add the server directory to the path for local imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 from clients.azure_client import azure_client_factory
 from utils.rate_limiter import format_error_response

@@ -41,9 +41,14 @@ def setup(target, python=sys.executable, restore=False, preview=False, rebuild=F
         print('Previous runtime restored; replaced generation retained at:', retained)
         return
     if target.is_symlink() and (target / '.netclaw-gait-generation').is_file() and not rebuild:
-        subprocess.run([str(target / 'bin/python'), '-c', 'import gait, mcp, fastmcp'], check=True)
-        print('Current managed GAIT runtime verifies; unchanged. Use --rebuild for an explicit replacement.')
-        return
+        try:
+            subprocess.run([str(target / 'bin/python'), '-c', "import gait, fastmcp; from importlib.metadata import version; assert version('fastmcp') == '4.0.11' and version('mcp') == '2.3.0'"], check=True)
+        except subprocess.CalledProcessError:
+            print('Managed runtime needs an upgrade; staging a replacement.')
+        else:
+            if (target / 'netclaw-source/mcp-servers/gait_mcp/gait_mcp.py').is_file():
+                print('Current managed GAIT runtime verifies; unchanged. Use --rebuild for an explicit replacement.')
+                return
     if exists(backup):
         raise ValueError('Previous runtime already retained; archive it deliberately before another rebuild')
     if exists(target) and not target.is_dir():
@@ -59,8 +64,21 @@ def setup(target, python=sys.executable, restore=False, preview=False, rebuild=F
         subprocess.run([uv, 'venv', str(candidate), '--python', python], check=True)
         runtime_python = candidate / 'bin/python'
         subprocess.run([uv, 'pip', 'install', '--python', str(runtime_python),
-                        'gait-ai', 'mcp>=1.0.0,<2', 'fastmcp>=2.0.0,<3'], check=True)
-        subprocess.run([str(runtime_python), '-c', 'import gait, mcp, fastmcp'], check=True)
+                        'gait-ai', 'mcp==2.3.0', 'fastmcp==4.0.11'], check=True)
+        subprocess.run([str(runtime_python), '-c', "import gait, fastmcp; from importlib.metadata import version; assert version('fastmcp') == '4.0.11' and version('mcp') == '2.3.0'"], check=True)
+        # Bundle source with its interpreter: runtime rollback must also restore
+        # the matching source, without rewriting the operator's checkout.
+        root = Path(__file__).resolve().parents[1]
+        source_root = candidate / 'netclaw-source'
+        shutil.copytree(root / 'mcp-servers/gait_mcp', source_root / 'mcp-servers/gait_mcp',
+                        ignore=shutil.ignore_patterns('.git', '.venv', '__pycache__', '*.pyc', '.env', '.env.*'))
+        subprocess.run([sys.executable, str(root / 'scripts/apply-fastmcp-patches.py'),
+                        '--root', str(source_root), '--component', 'gait'], check=True)
+        subprocess.run([str(runtime_python), '-c',
+                        "import sys, asyncio; sys.path.insert(0, sys.argv[1]); "
+                        "from gait_mcp import mcp; "
+                        "assert any(t.name == 'gait_log' for t in asyncio.run(mcp.list_tools()))",
+                        str(source_root / 'mcp-servers/gait_mcp')], check=True)
         (candidate / '.netclaw-gait-generation').write_text('Verified GAIT generation; setup-gait-runtime.py\n')
         link.symlink_to(candidate, target_is_directory=True)
         had_target = exists(target)

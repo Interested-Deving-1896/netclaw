@@ -20,22 +20,24 @@ VENV_PY = os.environ.get(
 
 PROBE = r'''
 import asyncio, json, os, sys
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
+from fastmcp import Client
+from fastmcp.client.transports import StdioTransport
 async def main():
     env = dict(os.environ)
     env["ZABBIX_URL"] = "http://127.0.0.1:1"
     env["ZABBIX_TOKEN"] = "placeholder"
     env["READ_ONLY"] = "true"
-    p = StdioServerParameters(command=sys.executable,
-                              args=["-u", sys.argv[1]], env=env)
-    async with stdio_client(p) as (r, w):
-        async with ClientSession(r, w) as s:
-            await s.initialize()
-            tools = (await s.list_tools()).tools
-            m = "\n".join(f"{t.name}\n{t.description or ''}\n{t.inputSchema}" for t in tools)
-            print(json.dumps({"names": [t.name for t in tools],
-                              "chars": len(m), "lines": m.count("\n")}))
+    catalogs = []
+    for mode in ('legacy', '2026-07-28'):
+        transport = StdioTransport(command=sys.executable,
+                                   args=["-u", sys.argv[1]], env=env)
+        async with Client(transport, mode=mode) as client:
+            tools = await client.list_tools()
+            catalogs.append([t.model_dump(mode='json') for t in tools])
+    assert catalogs[0] == catalogs[1], 'protocol catalogs differ'
+    m = "\n".join(f"{t.name}\n{t.description or ''}\n{t.input_schema}" for t in tools)
+    print(json.dumps({"names": [t.name for t in tools],
+                      "chars": len(m), "lines": m.count("\n")}))
 asyncio.run(main())
 '''
 

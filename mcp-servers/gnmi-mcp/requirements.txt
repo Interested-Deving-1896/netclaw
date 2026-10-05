@@ -1,5 +1,7 @@
+# FastMCP 4 / MCP 2 tested runtime (spec 141); install in an isolated environment.
+fastmcp==4.0.11
+mcp==2.3.0
 # gNMI MCP Server Dependencies
-fastmcp>=0.1.0
 grpcio>=1.60.0
 grpcio-tools>=1.60.0
 pygnmi>=0.8.0,<1

@@ -30,6 +30,9 @@ on:
       - 'scripts/lib/install-steps.sh'
       - 'scripts/verify-*.py'
       - 'scripts/check-mcp-portability.py'
+      - 'scripts/*fastmcp*.py'
+      - 'config/python-components/**'
+      - 'config/fastmcp-external-patches.json'
       - 'scripts/reconcile-mcp.py'
       - 'scripts/run-contract-tests.py'
       - 'specs/**'
@@ -85,6 +88,9 @@ jobs:
       # Stdlib only, reads only the repo -- same SC-013 posture as everything above.
       - name: Verify spec SDD artifacts
         run: python3 scripts/verify-spec-artifacts.py
+
+      - name: Audit owned FastMCP version coverage
+        run: python3 scripts/check-fastmcp-compat.py
 
       - name: Reconcile MCP registration surfaces
         run: |

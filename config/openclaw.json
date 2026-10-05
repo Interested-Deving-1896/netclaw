@@ -246,10 +246,8 @@
       }
     },
     "infrahub-mcp": {
-      "command": "uvx",
-      "args": [
-        "infrahub-mcp"
-      ],
+      "command": "infrahub-mcp",
+      "args": [],
       "env": {
         "INFRAHUB_ADDRESS": "${INFRAHUB_ADDRESS}",
         "INFRAHUB_API_TOKEN": "${INFRAHUB_API_TOKEN}"
@@ -830,22 +828,12 @@
       }
     },
     "arista-cvp-mcp": {
-      "command": "uv",
+      "command": "fastmcp",
       "args": [
         "run",
-        "--directory",
-        "mcp-servers/mcp-cvp-fun",
-        "--with",
-        "fastmcp",
-        "--with",
-        "urllib3",
-        "--with",
-        "python-dotenv",
-        "fastmcp",
-        "run",
+        "mcp-servers/mcp-cvp-fun/mcp_server_rest.py",
         "--transport",
-        "stdio",
-        "mcp_server_rest.py"
+        "stdio"
       ],
       "env": {
         "CVP": "${CVP}",
@@ -882,7 +870,11 @@
     "aws-network-mcp": {
       "command": "uvx",
       "args": [
-        "awslabs.aws-network-mcp-server@latest"
+        "--with",
+        "fastmcp==4.0.11",
+        "--with",
+        "mcp==2.3.0",
+        "awslabs.aws-network-mcp-server==0.0.17"
       ],
       "env": {
         "AWS_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID}",

@@ -22,7 +22,7 @@ from typing import Any
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from mcp.server.fastmcp import FastMCP  # noqa: E402
+from fastmcp import FastMCP  # noqa: E402
 
 import gates  # noqa: E402
 from credentials import MissingCredential, load  # noqa: E402

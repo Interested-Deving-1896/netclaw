@@ -22,7 +22,7 @@ from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 from nautobot_client import NautobotClient, NautobotError
 from bgp_helpers import (

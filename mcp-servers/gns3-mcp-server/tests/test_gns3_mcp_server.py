@@ -202,7 +202,7 @@ class TestResponseFormat:
 
         # Get registered tools
         import asyncio
-        tools = asyncio.run(mcp.get_tools())
+        tools = asyncio.run(mcp.list_tools())
 
         # Expected tool names based on contracts
         expected_tools = [
@@ -246,7 +246,7 @@ class TestResponseFormat:
 
         # This test documents expected tools
         # Actual registration check depends on FastMCP implementation
-        assert set(expected_tools) <= set(tools)
+        assert set(expected_tools) <= {tool.name for tool in tools}
 
 
 if __name__ == "__main__":

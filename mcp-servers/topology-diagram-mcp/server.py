@@ -29,7 +29,7 @@ import math
 from typing import Optional
 
 import networkx as nx
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 from PIL import Image, ImageDraw, ImageFont
 
 mcp = FastMCP("topology-diagram-mcp")

@@ -33,7 +33,7 @@ from typing import Any
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import httpx
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 mcp = FastMCP("catc-mcp")
 CATALOG = Path(__file__).resolve().parent / "catalog"

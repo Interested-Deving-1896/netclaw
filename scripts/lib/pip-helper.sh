@@ -62,6 +62,12 @@ _netclaw_resolve_py() {
 # looking like it had been fixed.
 _netclaw_pip_install() {
     local py
+    # Source patches are reviewed and hash-checked before package resolution.
+    # Never apply a speculative substitution to an upstream/operator-edited clone.
+    if [ -n "${NETCLAW_INSTALL_COMPONENT:-}" ] && [ -n "${NETCLAW_DIR:-}" ]; then
+        python3 "$(dirname "$NETCLAW_SHARED_CONSTRAINTS")/../scripts/apply-fastmcp-patches.py" \
+            --root "$NETCLAW_DIR" --component "$NETCLAW_INSTALL_COMPONENT" || return 1
+    fi
     # Installer calls have a component context. Never fall through to distro
     # Python for these calls; manual helper callers retain explicit selection.
     if [ -n "${NETCLAW_INSTALL_COMPONENT:-}" ] && [ -z "${NETCLAW_VENV:-}" ]; then

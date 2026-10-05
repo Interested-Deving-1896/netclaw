@@ -459,11 +459,11 @@
           "numpy>=1.26,<3",
           "httpx>=0.27,<1",
           "chromadb>=0.5,<2",
-          "mcp>=1.2.0,<2",
+          "mcp==2.3.0",
           "networkx>=3,<4",
           "rank_bm25>=0.2,<1",
           "beautifulsoup4>=4.12,<5",
-          "fastmcp>=2.0,<3",
+          "fastmcp==4.0.11",
           "flask>=3,<4",
           "twilio>=9,<10",
           "pytz>=2024.1",
@@ -511,11 +511,11 @@
           "Pillow>=10,<12",
           "numpy>=1.26,<3",
           "chromadb>=0.5,<2",
-          "mcp>=1.2.0,<2",
+          "mcp==2.3.0",
           "networkx>=3,<4",
           "rank_bm25>=0.2,<1",
           "beautifulsoup4>=4.12,<5",
-          "fastmcp>=2.0,<3",
+          "fastmcp==4.0.11",
           "flask>=3,<4",
           "twilio>=9,<10",
           "pytz>=2024.1",
@@ -648,12 +648,12 @@
         "packages": [
           "pytest>=8,<9",
           "pytest-asyncio>=0.24,<2",
-          "mcp>=1.13,<2",
+          "mcp==2.3.0",
           "websockets>=14,<16",
           "httpx>=0.27,<1",
           "python-dotenv>=1,<2",
           "cryptography>=46,<51",
-          "fastmcp>=2,<3"
+          "fastmcp==4.0.11"
         ],
         "required_imports": [
           "pytest",
@@ -716,18 +716,45 @@
       ],
       "environment": {
         "path": ".contract-test-envs/dot",
-        "requirements": [],
+        "requirements": [
+          "mcp-servers/netclaw-dot-mcp/requirements.txt"
+        ],
         "packages": [
-          "pytest>=8,<9",
-          "mcp>=1.12,<2"
+          "pytest>=8,<9"
         ],
         "required_imports": [
           "pytest",
-          "mcp"
+          "mcp",
+          "fastmcp"
         ],
         "prepend_path": true
       },
       "timeout_seconds": 300
+    },
+    "fastmcp": {
+      "kind": "pytest",
+      "environment": {
+        "path": ".contract-test-envs/fastmcp",
+        "requirements": [
+          "mcp-servers/multivendor-cli-mcp/requirements.txt",
+          "mcp-servers/netclaw-dot-mcp/requirements.txt"
+        ],
+        "packages": [
+          "pytest",
+          "pytest-asyncio",
+          "httpx"
+        ],
+        "required_imports": [
+          "fastmcp",
+          "mcp",
+          "pytest"
+        ],
+        "prepend_path": true
+      },
+      "timeout_seconds": 300,
+      "paths": [
+        "tests/fastmcp"
+      ]
     }
   }
 }
