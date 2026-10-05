@@ -895,3 +895,7 @@ members. Read-only by default; enabling writes does not approve them. Require
 observed baseline, exact-operation ServiceNow approved/Implement CR, incident
 precheck and GAIT. Verify after execution. No delete tools upstream, no NE device
 CRUD in the announced surface, no Terminal Intent Local/Lab bypass here.
+
+## Asynchronous MCP Tasks
+
+Optional Tasks support covers 298 tools across 35 integrations, led by 22 pyATS SSH/automation tools. Task-aware clients receive handles and poll; other clients retain foreground results. pyATS retains completed results in SQLite; the other enabled FastMCP integrations default to ephemeral memory. Approval, baseline and verification controls still apply. See [Tasks guide](docs/MCP-TASKS.md) for exact coverage, cancellation, storage and rollout limits.

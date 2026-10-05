@@ -621,7 +621,7 @@ NETBOX_MCP_DIR="$MCP_DIR/netbox-mcp-server"
 clone_or_pull "$NETBOX_MCP_DIR" "https://github.com/netboxlabs/netbox-mcp-server.git"
 
 log_info "Installing NetBox dependencies..."
-netclaw_pip_install httpx "fastmcp==4.0.11" requests pydantic pydantic-settings 2>/dev/null || \
+netclaw_pip_install httpx "fastmcp==4.0.11" "fastmcp-tasks==4.0.11" requests pydantic pydantic-settings 2>/dev/null || \
     log_warn "Some NetBox deps failed"
 
 log_info "NetBox MCP ready: python3 -m netbox_mcp_server.server"
@@ -739,7 +739,7 @@ WIKIPEDIA_MCP_DIR="$MCP_DIR/Wikipedia_MCP"
 clone_or_pull "$WIKIPEDIA_MCP_DIR" "https://github.com/automateyournetwork/Wikipedia_MCP.git"
 
 log_info "Installing Wikipedia dependencies..."
-netclaw_pip_install fastmcp wikipedia pydantic 2>/dev/null || \
+netclaw_pip_install fastmcp "fastmcp-tasks==4.0.11" wikipedia pydantic 2>/dev/null || \
     log_warn "Some Wikipedia deps failed"
 
 [ -f "$WIKIPEDIA_MCP_DIR/main.py" ] && \
@@ -1515,11 +1515,11 @@ if [ -d "$SDWAN_MCP_DIR" ]; then
     if [ -f "$SDWAN_MCP_DIR/requirements.txt" ]; then
         netclaw_pip_install -r "$SDWAN_MCP_DIR/requirements.txt" || {
             log_warn "SD-WAN MCP requirements.txt install failed — installing core deps..."
-            netclaw_pip_install fastmcp requests python-dotenv || \
+            netclaw_pip_install fastmcp "fastmcp-tasks==4.0.11" requests python-dotenv || \
                 log_warn "SD-WAN MCP core deps install failed"
         }
     else
-        netclaw_pip_install fastmcp requests python-dotenv || \
+        netclaw_pip_install fastmcp "fastmcp-tasks==4.0.11" requests python-dotenv || \
             log_warn "SD-WAN MCP deps install failed"
     fi
     [ -f "$SDWAN_MCP_DIR/sdwan_mcp_server.py" ] && \

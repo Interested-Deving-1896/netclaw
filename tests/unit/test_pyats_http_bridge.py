@@ -100,3 +100,28 @@ for line in sys.stdin:
     result=subprocess.run([sys.executable,str(ROOT/'scripts/mcp-call.py'),f'{sys.executable} {server}','test'],capture_output=True,text=True,timeout=15)
     assert result.returncode==0,result.stderr
     assert json.loads(result.stdout)=={'content':[]}
+
+@pytest.mark.parametrize('method,params', [
+    ('tools/call', {'name':'pyats_run_show_command','arguments':{'device_name':'fixture','command':'show version'}}),
+    ('tasks/get', {'taskId':'task-fixture'}),
+    ('tasks/cancel', {'taskId':'task-fixture'}),
+    ('tasks/update', {'taskId':'task-fixture','inputResponses':{}}),
+])
+def test_modern_task_metadata_and_routing_survive_stdio_bridge(rpc_server,method,params):
+    url,seen=rpc_server
+    params={**params,'_meta':{'io.modelcontextprotocol/protocolVersion':'2026-07-28',
+            'io.modelcontextprotocol/clientCapabilities':{'extensions':{'io.modelcontextprotocol/tasks':{}}}}}
+    message={'jsonrpc':'2.0','id':8,'method':method,'params':params}
+    bridge.forward(url,message,2)
+    received,headers=seen[-1];headers={k.lower():v for k,v in headers.items()}
+    assert received==message
+    assert headers['mcp-protocol-version']=='2026-07-28'
+    assert headers['mcp-method']==method
+    assert headers['mcp-name']==params.get('taskId',params.get('name'))
+
+
+def test_bridge_rejects_header_injection(rpc_server):
+    url,seen=rpc_server
+    with pytest.raises(ValueError,match='protocol'):
+        bridge.forward(url,{'method':'tasks/get','params':{'_meta':{'io.modelcontextprotocol/protocolVersion':'2026-07-28\r\nX-Test: bad'}}},2)
+    assert not seen

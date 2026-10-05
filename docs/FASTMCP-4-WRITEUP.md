@@ -18,7 +18,7 @@ External integrations use checked-in revision and hash metadata with reviewed pa
 
 GAIT builds a candidate interpreter with matching bundled source and validates discovery before promotion. Restore selects the matching retained generation. Fixes also address Azure subscription package separation, external dependency conflicts, SDK exception construction, HTTP launch configuration and diagnostic output.
 
-The migration intentionally does not enable automatic retries, caching, background tasks or code execution across all tools. Those features would alter side effects or persistence and require separate specifications. Sessionless MCP transport alone does not make local databases, files or application sessions distributable.
+The migration intentionally does not enable automatic retries, caching or code execution across all tools. Those features would alter side effects or persistence and require separate specifications. Sessionless MCP transport alone does not make local databases, files or application sessions distributable.
 
 ## Test evidence and its limits
 
@@ -57,3 +57,7 @@ Low-level SDK, custom-protocol, remote, Go and Node servers are outside this Fas
 Follow the [upgrade guide](FASTMCP-UPGRADE.md). Retain source, runtimes and configuration before installation, validate in a separate release checkout, perform authorized read-only vendor checks, then switch managed launch paths. Restore matching source and interpreter on failure. General pip upgrades are not transactional. Application data and GAIT history must be preserved.
 
 [Release notes](releases/1.5.0.md) accompany the PR and GitHub source release. The PR and exact-commit workflow records provide remote CI results; publication must wait for applicable checks without bypassing failures.
+
+## Coordinated Tasks extension (spec 142)
+
+The owner extended this unpublished release to include Tasks. [Spec 142](../specs/142-mcp-async-tasks/spec.md) adds 242 task-enabled tools across 30 owned servers, 34 across four external servers, and pins the 22-tool pyATS implementation: 298 tools across 35 integrations. The [operational guide](MCP-TASKS.md) distinguishes ephemeral FastMCP storage from persistent pyATS results. See the [verification](../specs/142-mcp-async-tasks/verification.md) and [social post](social/MCP-TASKS-POST.md).

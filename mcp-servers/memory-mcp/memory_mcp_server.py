@@ -40,6 +40,9 @@ log = logging.getLogger("MemoryMCP")
 # ---------------------------------------------------------------------
 # MCP
 # ---------------------------------------------------------------------
+from functools import wraps
+from fastmcp.utilities.async_utils import call_sync_fn_in_threadpool
+from fastmcp_tasks import TasksExtension
 from fastmcp import FastMCP
 
 # ---------------------------------------------------------------------
@@ -78,6 +81,17 @@ else:
 # FastMCP Server
 # ---------------------------------------------------------------------
 mcp = FastMCP("memory-mcp")
+mcp.add_extension(TasksExtension(name="netclaw-memory-mcp", concurrency=1))
+
+
+def _task_tool(fn):
+    """Register a threaded MCP task while preserving the direct Python callable."""
+    @wraps(fn)
+    async def run(*args, **kwargs):
+        return await call_sync_fn_in_threadpool(fn, *args, **kwargs)
+    mcp.tool(task=True)(run)
+    return fn
+
 
 
 # ---------------------------------------------------------------------
@@ -143,7 +157,7 @@ def memory_record_fact(
     return result
 
 
-@mcp.tool()
+@_task_tool
 def memory_get_facts(
     entity: str,
     key: Optional[str] = None,
@@ -190,7 +204,7 @@ def memory_invalidate(
     return result
 
 
-@mcp.tool()
+@_task_tool
 def memory_timeline(
     entity: str,
     after: Optional[str] = None,
@@ -246,7 +260,7 @@ def memory_store_session(
     return result
 
 
-@mcp.tool()
+@_task_tool
 def memory_recall(
     query: str,
     top_k: int = 5,
@@ -310,7 +324,7 @@ def memory_record_decision(
     return result
 
 
-@mcp.tool()
+@_task_tool
 def memory_get_decisions(
     entity: Optional[str] = None,
     after: Optional[str] = None,
@@ -371,7 +385,7 @@ def memory_link_entities(
     return result
 
 
-@mcp.tool()
+@_task_tool
 def memory_query_graph(
     entity: str,
     direction: str = "both",

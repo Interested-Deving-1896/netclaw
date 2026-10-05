@@ -10,6 +10,7 @@ dependencies = [
     # Spec 141: tested modern framework; retain existing storage bounds.
     "mcp==2.3.0",
     "fastmcp==4.0.11",
+    "fastmcp-tasks==4.0.11",
     "chromadb>=0.4.0,<2",
     "sentence-transformers>=2.2.0",
     "torch>=2.0.0",

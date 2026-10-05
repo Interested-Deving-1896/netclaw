@@ -18,6 +18,7 @@ import os
 import sys
 from typing import Optional
 
+from fastmcp_tasks import TasksExtension
 from fastmcp import FastMCP
 
 # Add netclaw_tokens to path for GCF serialization
@@ -70,6 +71,7 @@ except ValueError as exc:
 # FastMCP server
 # ---------------------------------------------------------------------------
 mcp = FastMCP("suzieq-mcp")
+mcp.add_extension(TasksExtension(name="netclaw-suzieq-mcp", concurrency=1))
 
 
 # ---------------------------------------------------------------------------
@@ -232,7 +234,7 @@ def format_path_response(
 # ---------------------------------------------------------------------------
 # Tool: suzieq_show (US1 + US2)
 # ---------------------------------------------------------------------------
-@mcp.tool()
+@mcp.tool(task=True)
 async def suzieq_show(
     table: str,
     namespace: Optional[str] = None,
@@ -316,7 +318,7 @@ async def suzieq_show(
 # ---------------------------------------------------------------------------
 # Tool: suzieq_summarize (US4)
 # ---------------------------------------------------------------------------
-@mcp.tool()
+@mcp.tool(task=True)
 async def suzieq_summarize(
     table: str,
     namespace: Optional[str] = None,
@@ -372,7 +374,7 @@ async def suzieq_summarize(
 # ---------------------------------------------------------------------------
 # Tool: suzieq_assert (US3)
 # ---------------------------------------------------------------------------
-@mcp.tool()
+@mcp.tool(task=True)
 async def suzieq_assert(
     table: str,
     namespace: Optional[str] = None,
@@ -419,7 +421,7 @@ async def suzieq_assert(
 # ---------------------------------------------------------------------------
 # Tool: suzieq_unique (US4)
 # ---------------------------------------------------------------------------
-@mcp.tool()
+@mcp.tool(task=True)
 async def suzieq_unique(
     table: str,
     column: str,
@@ -474,7 +476,7 @@ async def suzieq_unique(
 # ---------------------------------------------------------------------------
 # Tool: suzieq_path (US5)
 # ---------------------------------------------------------------------------
-@mcp.tool()
+@mcp.tool(task=True)
 async def suzieq_path(
     namespace: str,
     source: str,

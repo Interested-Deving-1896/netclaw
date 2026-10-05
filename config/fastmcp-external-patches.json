@@ -77,22 +77,131 @@
         {
           "path": "requirements.txt",
           "before_sha256": "12f899cf97d1e6d75b018f018e25ab8859fa331e0ee05f9b37313e889a931513",
-          "after_sha256": "90e1b4e454fce02f7f89f777c1775127053de421961ac2ece6d351f9e7caff5f",
+          "after_sha256": "6989cbb1928e0a5edd798289575cbc3c3bd6a793065b1dada2ba66da67c729b1",
           "edits": [
             {
-              "start": 0,
-              "old": "fastmcp\n",
-              "new": "fastmcp==4.0.11\nmcp==2.3.0\n"
+              "start": 7,
+              "old": "",
+              "new": "==4.0.11\nmcp==2.3.0"
             },
             {
-              "start": 18,
-              "old": "pydantic",
-              "new": "pydantic\n"
+              "start": 26,
+              "old": "",
+              "new": "\n\nfastmcp-tasks==4.0.11\n"
+            }
+          ],
+          "variants": [
+            {
+              "before_sha256": "90e1b4e454fce02f7f89f777c1775127053de421961ac2ece6d351f9e7caff5f",
+              "edits": [
+                {
+                  "start": 46,
+                  "old": "",
+                  "new": "\nfastmcp-tasks==4.0.11\n"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "path": "main.py",
+          "before_sha256": "6030dde8e99ac0d870da91308d501e673e2865dcc76ceada1b9d03a56c7f3bc3",
+          "after_sha256": "11ec9db0002b1b68f5f36e8cbfc4ac343adc8590cab71b716e086fa55fbc6032",
+          "edits": [
+            {
+              "start": 14,
+              "old": "",
+              "new": "\nfrom fastmcp_tasks import TasksExtension\nfrom functools import wraps\nfrom fastmcp.utilities.async_utils import call_sync_fn_in_threadpool"
+            },
+            {
+              "start": 484,
+              "old": "",
+              "new": "mcp.add_extension(TasksExtension(name=\"netclaw-wikipedia\", concurrency=1))\n\n\ndef _task_tool(**options):\n    \"\"\"NetClaw spec 142: preserve upstream callables and offload blocking reads.\"\"\"\n    def register(fn):\n        @wraps(fn)\n        async def run(*args, **kwargs):\n            return await call_sync_fn_in_threadpool(fn, *args, **kwargs)\n        mcp.tool(task=True, **options)(run)\n        return fn\n    return register\n\n"
+            },
+            {
+              "start": 894,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 1186,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 1493,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 1777,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 2074,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 2370,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 2694,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 3012,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 3289,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 3588,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 3877,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 4174,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 4572,
+              "old": "mcp.",
+              "new": "_task_"
             }
           ]
         }
       ],
-      "verification": "wikipedia: pass"
+      "verification": "Spec 141 framework catalog passed; spec 142 Tasks validation recorded separately.",
+      "task_tools": [
+        "check_page_exists",
+        "disambiguation_options",
+        "get_categories",
+        "get_content",
+        "get_html",
+        "get_images",
+        "get_links",
+        "get_page_id",
+        "get_references",
+        "get_summary",
+        "get_title",
+        "get_url",
+        "search_pages"
+      ]
     },
     "catalyst-center-legacy": {
       "directory": "catalyst-center-mcp",
@@ -121,8 +230,118 @@
     "sdwan": {
       "directory": "cisco-sdwan-mcp",
       "reviewed_commit": "fe2fdf6d0dae4bfde37f7e00176a9fbda63645a7",
-      "patches": [],
-      "verification": "sdwan: pass"
+      "patches": [
+        {
+          "path": "sdwan_mcp_server.py",
+          "before_sha256": "4297fbf0969f936d5a53f69ea8ab365aee2d3163d0929dddcea5b92761ee1097",
+          "after_sha256": "63dadf336fd9c755afea498b1b5731112e763dc93870b80f14bb448b5ed5f599",
+          "edits": [
+            {
+              "start": 44,
+              "old": "",
+              "new": "\nfrom fastmcp_tasks import TasksExtension\nfrom functools import wraps\nfrom fastmcp.utilities.async_utils import call_sync_fn_in_threadpool"
+            },
+            {
+              "start": 689,
+              "old": "",
+              "new": "\n\nmcp.add_extension(TasksExtension(name=\"netclaw-sdwan\", concurrency=1))\n\n\ndef _task_tool(**options):\n    \"\"\"NetClaw spec 142: preserve upstream callables and offload blocking reads.\"\"\"\n    def register(fn):\n        @wraps(fn)\n        async def run(*args, **kwargs):\n            return await call_sync_fn_in_threadpool(fn, *args, **kwargs)\n        mcp.tool(task=True, **options)(run)\n        return fn\n    return register"
+            },
+            {
+              "start": 3673,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 3982,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 4319,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 4865,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 5335,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 5607,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 5888,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 13974,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 14196,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 14373,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 14820,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 15111,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 15359,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 15781,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 16041,
+              "old": "mcp.",
+              "new": "_task_"
+            }
+          ]
+        }
+      ],
+      "verification": "Spec 141 framework catalog passed; spec 142 Tasks validation recorded separately.",
+      "task_tools": [
+        "get_alarms",
+        "get_bfd_sessions",
+        "get_centralized_policies",
+        "get_control_connections",
+        "get_device_template_details",
+        "get_device_templates",
+        "get_devices",
+        "get_events",
+        "get_feature_template_details",
+        "get_feature_templates",
+        "get_interface_stats",
+        "get_omp_routes",
+        "get_running_config",
+        "get_template_variables",
+        "get_wan_edge_inventory"
+      ]
     },
     "containerlab": {
       "directory": "clab-mcp-server",
@@ -450,44 +669,147 @@
         {
           "path": "mcp_nvd/server.py",
           "before_sha256": "a7964bc665856fc7d91ae54b71eb1739e81eaa493079722ca9c6474977093039",
-          "after_sha256": "8ffd516b107b89901442187d9e400806a5b4fd621b7a54904126912384382c9d",
+          "after_sha256": "5b61ac140c2bae3e1b5a0b5d46cf935a2817e172110dd4005cc5571c4bcd5a5a",
           "edits": [
             {
-              "start": 1063,
-              "old": "from mcp.server.fastmcp import FastMCP\n",
-              "new": "from fastmcp import FastMCP\n"
+              "start": 1068,
+              "old": "",
+              "new": "fast"
             },
             {
-              "start": 1702,
-              "old": "mcp = FastMCP(MCP_SERVER_NAME, dependencies=deps)\n",
-              "new": "mcp = FastMCP(MCP_SERVER_NAME)\n"
+              "start": 1071,
+              "old": ".",
+              "new": "_ta"
+            },
+            {
+              "start": 1073,
+              "old": "",
+              "new": "ks import TasksExt"
+            },
+            {
+              "start": 1074,
+              "old": "",
+              "new": "nsion\nf"
+            },
+            {
+              "start": 1075,
+              "old": "ver.",
+              "new": "om "
+            },
+            {
+              "start": 1731,
+              "old": "",
+              "new": ")\n\nmcp.add_extension(TasksExtension(name=\"netclaw-nvd-cve\""
+            },
+            {
+              "start": 1733,
+              "old": "depe",
+              "new": "co"
+            },
+            {
+              "start": 1738,
+              "old": "d",
+              "new": "curr"
+            },
+            {
+              "start": 1742,
+              "old": "ies",
+              "new": "y"
+            },
+            {
+              "start": 1746,
+              "old": "deps",
+              "new": "1)"
+            },
+            {
+              "start": 6514,
+              "old": "",
+              "new": "task=True"
+            },
+            {
+              "start": 7020,
+              "old": "",
+              "new": "task=True"
+            }
+          ],
+          "variants": [
+            {
+              "before_sha256": "8ffd516b107b89901442187d9e400806a5b4fd621b7a54904126912384382c9d",
+              "edits": [
+                {
+                  "start": 1075,
+                  "old": "",
+                  "new": "_tasks import TasksExtension\nfrom fastmcp"
+                },
+                {
+                  "start": 1720,
+                  "old": "",
+                  "new": ")\n\nmcp.add_extension(TasksExtension(name=\"netclaw-nvd-cve\", concurrency=1)"
+                },
+                {
+                  "start": 6484,
+                  "old": "",
+                  "new": "task=True"
+                },
+                {
+                  "start": 6990,
+                  "old": "",
+                  "new": "task=True"
+                }
+              ]
             }
           ]
         },
         {
           "path": "pyproject.toml",
           "before_sha256": "e552f7d9f4a6487545cd315fa3b80fea24b81eb101fe5188be474e69c49fcdd1",
-          "after_sha256": "d05522e32f7252e62cce46afc872b7ba8ca1121a4a49470e1b95dcd92aa86bbf",
+          "after_sha256": "5fed26b65354452146fb61fa06390ce7b4f5a8701fb791e1513057584e56b89b",
           "edits": [
             {
-              "start": 181,
+              "start": 182,
               "old": "",
-              "new": "    \"fastmcp==4.0.11\",\n"
+              "new": "   \"fastmcp==4.0.11\",\n    \"fastmcp-tasks==4.0.11\",\n "
             },
             {
-              "start": 199,
-              "old": " \"mcp>=1.0.0\",\n",
-              "new": " \"mcp==2.3.0\",\n"
+              "start": 204,
+              "old": ">",
+              "new": ""
             },
             {
-              "start": 428,
-              "old": "keywords = [\"mcp\", \"llm\", \"cybersecurity\"]\n",
-              "new": "keywords = [\"mcp==2.3.0\", \"llm\", \"cybersecurity\"]\n"
+              "start": 206,
+              "old": "1",
+              "new": "=2"
+            },
+            {
+              "start": 208,
+              "old": "0",
+              "new": "3"
+            },
+            {
+              "start": 444,
+              "old": "",
+              "new": "==2.3.0"
+            }
+          ],
+          "variants": [
+            {
+              "before_sha256": "d05522e32f7252e62cce46afc872b7ba8ca1121a4a49470e1b95dcd92aa86bbf",
+              "edits": [
+                {
+                  "start": 193,
+                  "old": "",
+                  "new": "==4.0.11\",\n    \"fastmcp-tasks"
+                }
+              ]
             }
           ]
         }
       ],
-      "verification": "nvd-cve: pass"
+      "verification": "Spec 141 framework catalog passed; spec 142 Tasks validation recorded separately.",
+      "task_tools": [
+        "get_cve",
+        "search_cve"
+      ]
     },
     "meraki": {
       "directory": "meraki-magic-mcp-community",
@@ -606,17 +928,124 @@
         {
           "path": "pyproject.toml",
           "before_sha256": "216013ba9a571affbd522975c2b61f2f46d0d7951e6bc63117530e082b94109d",
-          "after_sha256": "a45894f71ba7bdbe824321406460d18e42eed81fc5718b3dbe03f0d93a4f4e2b",
+          "after_sha256": "fdc8bd73973a9cf70611d8c506abdd0bbe1f6ee5453082027d0a1e14efcbbb44",
           "edits": [
             {
-              "start": 272,
-              "old": "    \"fastmcp>=2.14.0,<3\",\n",
-              "new": "    \"fastmcp==4.0.11\",\n"
+              "start": 284,
+              "old": ">",
+              "new": ""
+            },
+            {
+              "start": 286,
+              "old": "2.1",
+              "new": "="
+            },
+            {
+              "start": 292,
+              "old": "",
+              "new": ".11\""
+            },
+            {
+              "start": 293,
+              "old": "<3",
+              "new": "\n    \"fastmcp-tasks==4.0.11"
+            }
+          ],
+          "variants": [
+            {
+              "before_sha256": "a45894f71ba7bdbe824321406460d18e42eed81fc5718b3dbe03f0d93a4f4e2b",
+              "edits": [
+                {
+                  "start": 284,
+                  "old": "",
+                  "new": "==4.0.11\",\n    \"fastmcp-tasks"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "path": "src/netbox_mcp_server/server.py",
+          "before_sha256": "277fceaca20bf0a3dc4b29d035c3c9d84152a4dcfcfa388ef5e3ce669d9c491c",
+          "after_sha256": "0d18915e1ee1f7c2bc20fae08d8690c7362ff10aa507a52dfbbfd5372366fc50",
+          "edits": [
+            {
+              "start": 76,
+              "old": "",
+              "new": "\nfrom fastmcp_tasks import TasksExtension\nfrom functools import wraps\nfrom fastmcp.utilities.async_utils import call_sync_fn_in_threadpool"
+            },
+            {
+              "start": 3280,
+              "old": "",
+              "new": "\nmcp.add_extension(TasksExtension(name=\"netclaw-netbox\", concurrency=1))\n\n\ndef _task_tool(**options):\n    \"\"\"NetClaw spec 142: preserve upstream callables and offload blocking reads.\"\"\"\n    def register(fn):\n        @wraps(fn)\n        async def run(*args, **kwargs):\n            return await call_sync_fn_in_threadpool(fn, *args, **kwargs)\n        mcp.tool(task=True, **options)(run)\n        return fn\n    return register\n"
+            },
+            {
+              "start": 4924,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 9962,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 9970,
+              "old": "",
+              "new": "()"
+            },
+            {
+              "start": 12135,
+              "old": "mcp.",
+              "new": "_task_"
+            },
+            {
+              "start": 12143,
+              "old": "",
+              "new": "()"
+            },
+            {
+              "start": 15098,
+              "old": "mcp.",
+              "new": "_task_"
+            }
+          ],
+          "variants": [
+            {
+              "before_sha256": "96f31267e410e44a11da5af455044024cd33668fb5ebae515ca3be7839170604",
+              "edits": [
+                {
+                  "start": 10524,
+                  "old": "mcp.",
+                  "new": "_task_"
+                },
+                {
+                  "start": 10532,
+                  "old": "",
+                  "new": "()"
+                },
+                {
+                  "start": 12697,
+                  "old": "mcp.",
+                  "new": "_task_"
+                },
+                {
+                  "start": 12705,
+                  "old": "",
+                  "new": "()"
+                }
+              ]
             }
           ]
         }
       ],
-      "verification": "netbox: pass"
+      "verification": "Spec 141 framework catalog passed; spec 142 Tasks validation recorded separately.",
+      "task_tools": [
+        "netbox_get_changelogs",
+        "netbox_get_object_by_id",
+        "netbox_get_objects",
+        "netbox_search_objects"
+      ]
     },
     "radkit": {
       "directory": "radkit-mcp-server-community",

@@ -31,6 +31,10 @@ on:
       - 'scripts/verify-*.py'
       - 'scripts/check-mcp-portability.py'
       - 'scripts/*fastmcp*.py'
+      - 'scripts/check-mcp-tasks.py'
+      - 'scripts/setup-pyats-runtime.py'
+      - 'scripts/pyats-stdio.py'
+      - 'config/mcp-task-tools.json'
       - 'config/python-components/**'
       - 'config/fastmcp-external-patches.json'
       - 'scripts/reconcile-mcp.py'
@@ -91,6 +95,9 @@ jobs:
 
       - name: Audit owned FastMCP version coverage
         run: python3 scripts/check-fastmcp-compat.py
+
+      - name: Audit MCP task adoption
+        run: python3 scripts/check-mcp-tasks.py
 
       - name: Reconcile MCP registration surfaces
         run: |

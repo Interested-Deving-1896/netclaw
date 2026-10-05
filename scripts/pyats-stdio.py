@@ -14,15 +14,31 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from urllib.parse import quote
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def forward(url, message, timeout):
-    request = urllib.request.Request(url, data=json.dumps(message).encode(), headers={
+    params = message.get('params') or {}
+    meta = params.get('_meta') or {}
+    protocol = meta.get('io.modelcontextprotocol/protocolVersion', '2025-06-18')
+    if not isinstance(protocol, str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', protocol):
+        raise ValueError('Invalid MCP protocol version')
+    method = message.get('method', '')
+    if not isinstance(method, str) or not re.fullmatch(r'[A-Za-z0-9_./-]+', method):
+        raise ValueError('Invalid MCP method')
+    headers = {
         'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream',
-        'MCP-Protocol-Version': '2025-06-18',
-    })
+        'MCP-Protocol-Version': protocol, 'MCP-Method': method,
+    }
+    name = params.get('taskId') if method.startswith('tasks/') else params.get('name')
+    if name is not None:
+        if not isinstance(name, str):
+            raise ValueError('Invalid MCP routing name')
+        headers['MCP-Name'] = quote(name, safe='')
+    request = urllib.request.Request(url, data=json.dumps(message).encode(), headers=headers)
     # Ignore proxy environment variables: private RPC must never go to a proxy.
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
     try:

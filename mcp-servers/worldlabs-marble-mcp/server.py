@@ -15,9 +15,11 @@ import json
 import os
 
 import httpx
+from fastmcp_tasks import TasksExtension
 from fastmcp import FastMCP
 
 mcp = FastMCP("worldlabs-marble-mcp")
+mcp.add_extension(TasksExtension(name="netclaw-worldlabs-marble-mcp", concurrency=1))
 
 WORLD_LABS_API_BASE = "https://api.worldlabs.ai/marble/v1"
 
@@ -196,7 +198,7 @@ async def generate_world(
     return generate_world_impl(text_prompt, display_name, user_confirmed, image_base64, image_extension, model)
 
 
-@mcp.tool()
+@mcp.tool(task=True)
 async def check_generation_status(operation_id: str) -> str:
     """Poll a previously started generation. Requires the caller to supply operation_id — this
     server keeps no record of any operation it has started (Clarifications session 2026-09-03, Q1).
@@ -207,7 +209,7 @@ async def check_generation_status(operation_id: str) -> str:
     return check_generation_status_impl(operation_id)
 
 
-@mcp.tool()
+@mcp.tool(task=True)
 async def get_world(world_id: str) -> str:
     """Durable, no-cost, read-only lookup of a completed world by id — the fallback path when an
     operation record has expired but the world it produced has not (research.md R4).

@@ -108,11 +108,22 @@ def probe(path):
                     tools = await client.list_tools()
                     catalogs.append(sorted([t.model_dump(by_alias=True, exclude_none=True)
                                             for t in tools], key=lambda t: t['name']))
-            if catalogs[0] != catalogs[1]:
-                raise AssertionError('legacy and modern catalogs differ')
-            return catalogs[0]
-        return {'status': 'pass', 'fastmcp': importlib.metadata.version('fastmcp'),
-                'mcp': importlib.metadata.version('mcp'), 'protocols': ['legacy', '2026-07-28'], 'tools': asyncio.run(catalog())}
+            # FastMCP emits legacy execution.taskSupport hints only in legacy mode.
+            # The modern extension is negotiated per request, not through that hint.
+            legacy = []
+            for tool in catalogs[0]:
+                tool = dict(tool)
+                execution = tool.get('execution')
+                if execution == {'taskSupport': 'optional'}:
+                    tool.pop('execution')
+                legacy.append(tool)
+            if legacy != catalogs[1]:
+                raise AssertionError('legacy and modern tool contracts differ beyond optional task hints')
+            return catalogs[1], sorted(t.name for t in await server.list_tools()
+                                        if t.task_config.supports_tasks())
+        tools, task_tools = asyncio.run(catalog())
+        return {'status': 'pass', 'task_tools': task_tools, 'fastmcp': importlib.metadata.version('fastmcp'),
+                'mcp': importlib.metadata.version('mcp'), 'protocols': ['legacy', '2026-07-28'], 'tools': tools}
     except BaseException as exc:
         return {'status': 'error', 'error': f'{type(exc).__name__}: {exc}'}
 

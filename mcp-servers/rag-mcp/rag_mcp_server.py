@@ -52,9 +52,23 @@ for _row in registry.sweep_interrupted():
         log.exception("Could not purge interrupted BM25 entries for %s", _row["id"])
     chroma.delete_document(_row["collection"], _row["id"])
 
+from functools import wraps
+from fastmcp.utilities.async_utils import call_sync_fn_in_threadpool
+from fastmcp_tasks import TasksExtension
 from fastmcp import FastMCP  # noqa: E402
 
 mcp = FastMCP("rag-mcp")
+mcp.add_extension(TasksExtension(name="netclaw-rag-mcp", concurrency=1))
+
+
+def _task_tool(fn):
+    """Register a threaded MCP task while preserving the direct Python callable."""
+    @wraps(fn)
+    async def run(*args, **kwargs):
+        return await call_sync_fn_in_threadpool(fn, *args, **kwargs)
+    mcp.tool(task=True)(run)
+    return fn
+
 
 
 # ---------------------------------------------------------------------
@@ -608,7 +622,7 @@ def _do_search(
     )
 
 
-@mcp.tool()
+@_task_tool
 def rag_search(
     query: str,
     k: int = 5,

@@ -10,7 +10,7 @@ import sys
 import tempfile
 import uuid
 
-REVISION = 'd4971436328369ef0a581ca5359dc8700fb2939b'
+REVISION = 'f11b02f06e0561392603cdd147d28f82373b5470'
 REPOSITORY = 'https://github.com/automateyournetwork/pyATS_MCP.git'
 MARKER = '.netclaw-pyats-generation'
 
@@ -22,8 +22,9 @@ def exists(path):
 def verify(target):
     subprocess.run([str(target/'bin/python'), '-c',
                     'import pyats, genie, unicon; from mcp.client.client import Client'], check=True)
-    if not (target/'upstream/pyats_mcp_server.py').is_file():
-        raise ValueError('Managed pyATS source is missing')
+    for source in ('pyats_mcp_server.py', 'pyats_tasks.py'):
+        if not (target/'upstream'/source).is_file():
+            raise ValueError('Managed pyATS source is missing: '+source)
 
 
 def setup(target, python='3.12', preview=False, restore=False, rebuild=False):
@@ -74,7 +75,7 @@ def setup(target, python='3.12', preview=False, restore=False, rebuild=False):
         subprocess.run(['git', 'clone', '--no-checkout', REPOSITORY, str(source)], check=True)
         subprocess.run(['git', '-C', str(source), 'checkout', '--detach', REVISION], check=True)
         subprocess.run([uv, 'pip', 'install', '--python', str(candidate/'bin/python'),
-                        '-r', str(source/'requirements.txt')], check=True)
+                        '-r', str(source/'requirements.txt'), 'mcp==2.3.0'], check=True)
         verify(candidate)
         (candidate/MARKER).write_text(json.dumps({'revision':REVISION})+'\n')
         link.symlink_to(candidate, target_is_directory=True)

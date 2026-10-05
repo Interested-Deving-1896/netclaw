@@ -24,12 +24,14 @@ import os
 import pkgutil
 import sys
 
+from fastmcp_tasks import TasksExtension
 from fastmcp import FastMCP
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import verdict as V  # noqa: E402
 
 mcp = FastMCP("anta-mcp")
+mcp.add_extension(TasksExtension(name="netclaw-anta-mcp", concurrency=1))
 
 _CATALOGUE: dict[str, dict] = {}
 
@@ -132,7 +134,7 @@ def anta_describe_test(test: str) -> dict:
     }
 
 
-@mcp.tool()
+@mcp.tool(task=True)
 async def anta_run_tests(
     host: str,
     tests: list[str] | None = None,

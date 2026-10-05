@@ -29,10 +29,13 @@ import math
 from typing import Optional
 
 import networkx as nx
+from fastmcp_tasks import TasksExtension
+from fastmcp.utilities.async_utils import call_sync_fn_in_threadpool
 from fastmcp import FastMCP
 from PIL import Image, ImageDraw, ImageFont
 
 mcp = FastMCP("topology-diagram-mcp")
+mcp.add_extension(TasksExtension(name="netclaw-topology-diagram-mcp", concurrency=1))
 
 CANVAS_SIZE = (1024, 1024)
 _MARGIN = 120
@@ -218,7 +221,7 @@ def render_diagram(devices: list[dict], links: list[dict]) -> tuple[bytes, dict[
     return buffer.getvalue(), positions
 
 
-@mcp.tool()
+@mcp.tool(task=True)
 async def render_structural(snapshot_id: str, devices: str, links: str) -> str:
     """Deterministically render a topology snapshot as a correct, role-iconed, labeled diagram.
     No diffusion model involved (spec 121 FR-001).
@@ -242,7 +245,7 @@ async def render_structural(snapshot_id: str, devices: str, links: str) -> str:
         if link["a"] not in hostnames or link["b"] not in hostnames:
             raise ValueError(f"link references unknown device: {link}")
 
-    png_bytes, positions = render_diagram(device_list, link_list)
+    png_bytes, positions = await call_sync_fn_in_threadpool(render_diagram, device_list, link_list)
 
     encoded = base64.b64encode(png_bytes).decode("ascii")
     if len(encoded) > MAX_ENCODED_BYTES:
