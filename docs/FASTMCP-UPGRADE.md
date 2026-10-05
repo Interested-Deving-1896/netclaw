@@ -18,7 +18,8 @@ choice, and RADKit requires its licensed dependency. See
 | Context and lifespan | External Infrahub and Itential use public lifespan context access; application caches and persistent stores remain application-owned. |
 | Validation and errors | Real malformed requests are rejected before fixture tool execution. CML exception construction uses the SDK2 API. |
 | Authentication | Existing bearer/OAuth, Host/Origin checks, read-only settings, and change-control gates remain authoritative. |
-| Tasks, automatic caching/retries, code mode, distributed storage | Not automatically enabled. These change persistence, side effects, or exposed capabilities and need their own specifications. |
+| Tasks | Selectively enabled under spec 142; see [Tasks guide](MCP-TASKS.md). |
+| Automatic caching/retries, code mode, distributed storage | Not globally enabled. These change persistence, side effects or exposed capabilities. |
 | Horizontal deployment | Sessionless transport alone does not make local SQLite/files, collectors, GAIT state, or application sessions safe across replicas. |
 
 Claroty's previously untyped `Any` fields now advertise unrestricted JSON rather

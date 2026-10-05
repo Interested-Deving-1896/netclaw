@@ -8,7 +8,9 @@ NetClaw source releases use `1.x.y`. Feature specs increment the minor version a
 - Add reviewed external source migrations, isolated bounds, safe GAIT runtime promotion/restore, and framework regression coverage.
 - Publish the migration inventory, test evidence and rollback guide; five external ports and licensed RADKit validation remain open.
 
-Spec [141-fastmcp-stateless-upgrade](specs/141-fastmcp-stateless-upgrade/spec.md). See [release notes](docs/releases/1.5.0.md).
+- Add current MCP Tasks for 298 tools across 35 integrations, including the pinned persistent pyATS runtime and selective FastMCP Tasks adoption.
+
+Coordinated specs [141](specs/141-fastmcp-stateless-upgrade/spec.md) and [142](specs/142-mcp-async-tasks/spec.md). See [release notes](docs/releases/1.5.0.md).
 
 ## [1.4.0] - 2026-10-01
 

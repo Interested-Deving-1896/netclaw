@@ -12,6 +12,7 @@ also proven non-vacuous below by feeding it a deliberately bad tool.
 
 from __future__ import annotations
 
+import ast
 import asyncio
 import inspect
 import re
@@ -103,7 +104,11 @@ def test_the_guard_is_not_vacuous():
 def test_every_tool_routes_through_the_chokepoint():
     """FR-005a/005b. There is exactly one way out of this server."""
     src = inspect.getsource(server)
-    tool_bodies = src.split("@mcp.tool()")[1:]
+    tool_bodies = [ast.get_source_segment(src, node) for node in ast.parse(src).body
+                   if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                   and any(isinstance(d, ast.Call) and isinstance(d.func, ast.Attribute)
+                           and isinstance(d.func.value, ast.Name) and d.func.value.id == "mcp"
+                           and d.func.attr == "tool" for d in node.decorator_list)]
     check("six tools are defined", len(tool_bodies) == 6, str(len(tool_bodies)))
     for body in tool_bodies:
         name = body.split("async def ", 1)[1].split("(", 1)[0]

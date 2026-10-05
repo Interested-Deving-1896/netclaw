@@ -94,9 +94,9 @@ def probe(root, component):
      for mode in ('legacy','2026-07-28'):
       async with Client(server,mode=mode) as c:catalogs.append(sorted(t.name for t in await c.list_tools()))
      assert catalogs[0]==catalogs[1]
-     return catalogs[0]
-    names=asyncio.run(run())
-    return {'status':'pass',**versions,'tools':names,'protocol_modes':['legacy','2026-07-28'],
+     return catalogs[0], sorted(t.name for t in await server.list_tools() if t.task_config.supports_tasks())
+    names, task_tools=asyncio.run(run())
+    return {'status':'pass',**versions,'task_tools':task_tools,'tools':names,'protocol_modes':['legacy','2026-07-28'],
             'fixture_note':'vendor client constructor stubbed; URL denial checked' if component=='cml' else 'no vendor tool invocation'}
 
 def main():

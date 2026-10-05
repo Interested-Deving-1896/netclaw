@@ -7,6 +7,7 @@ dependencies = [
     "gait-ai>=0.0.9,<1",
     "mcp==2.3.0",
     "fastmcp==4.0.11",
+    "fastmcp-tasks==4.0.11",
     "chromadb>=0.4.0,<2",
     "sentence-transformers>=2.2.0,<6",
     "torch>=2.0.0,<3",

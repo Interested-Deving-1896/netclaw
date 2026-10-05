@@ -7,6 +7,8 @@ import json
 import logging
 import os
 import sys
+import asyncio
+from fastmcp.utilities.async_utils import call_sync_fn_in_threadpool
 import functools
 from datetime import datetime, timezone
 from typing import Optional
@@ -14,6 +16,7 @@ from typing import Optional
 # Add the server directory to the path for local imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from fastmcp_tasks import TasksExtension
 from fastmcp import FastMCP
 
 from clients.azure_client import azure_client_factory
@@ -38,6 +41,7 @@ logger = logging.getLogger("azure-network-mcp")
 
 # Initialize FastMCP server
 mcp = FastMCP("azure-network-mcp")
+mcp.add_extension(TasksExtension(name="netclaw-azure-network-mcp", concurrency=1))
 
 
 # --- Operation Logging (session GAIT recording is separate) ---
@@ -70,7 +74,7 @@ def with_operation_logging(tool_name: str):
                 "resource_group") or "all"
             log_operation(tool_name, target, subscription_id, "started")
             try:
-                result = await func(*args, **kwargs)
+                result = await call_sync_fn_in_threadpool(asyncio.run, func(*args, **kwargs))
                 log_operation(tool_name, target, subscription_id, "returned")
                 return result
             except Exception as e:
@@ -154,7 +158,7 @@ tools_to_register = [
 ]
 
 for tool in tools_to_register:
-    mcp.tool()(with_operation_logging(tool.__name__)(tool))
+    mcp.tool(task=True)(with_operation_logging(tool.__name__)(tool))
 
 
 def main():
