@@ -2,6 +2,14 @@
 
 NetClaw source releases use `1.x.y`. Feature specs increment the minor version and reset the patch; fixes, documentation and maintenance increment the patch. Every release records its numbered specs. Component and mobile distribution versions are independent.
 
+## [1.5.0] - 2026-10-05
+
+- Upgrade 35 owned FastMCP servers to FastMCP 4.0.11 / MCP SDK 2.3.0 with modern and legacy protocol support and explicit stateless HTTP for Dot and reviewed UML.
+- Add reviewed external source migrations, isolated bounds, safe GAIT runtime promotion/restore, and framework regression coverage.
+- Publish the migration inventory, test evidence and rollback guide; five external ports and licensed RADKit validation remain open.
+
+Spec [141-fastmcp-stateless-upgrade](specs/141-fastmcp-stateless-upgrade/spec.md). See [release notes](docs/releases/1.5.0.md).
+
 ## [1.4.0] - 2026-10-01
 
 - Add trusted-interface HUD access, configured-agent compatibility, model/effort controls, context/account quota indicators and runtime Settings.

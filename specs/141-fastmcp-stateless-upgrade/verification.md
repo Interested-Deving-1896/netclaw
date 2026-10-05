@@ -1,8 +1,9 @@
 # Verification — 2026-10-04
 
 **Status: implementation verified for the migrated scope; fleet-wide completion is
-still blocked by the explicit external exceptions below.** No deployment, Git push,
+still blocked by the explicit external exceptions below.** At the implementation checkpoint, no deployment, Git push,
 provider tool call, device configuration, ServiceNow ticket, or external message occurred.
+See the release follow-up below for subsequent source publication work.
 
 ## Evidence
 
@@ -91,3 +92,22 @@ manually after reviewing the implementation and its remaining exceptions.
 GAIT branch: `fastmcp-upgrade-2026-10-04`. Initial implementation checkpoint:
 `95109018`; verification progress checkpoint: `ea54308b`. Final audit log is
 recorded at session end. Git branch remains separate from `main`.
+
+## Release follow-up — 2026-10-05
+
+The owner authorized source release publication, PR merge and branch cleanup.
+Version 1.5.0 ships the verified migration scope; the five native ports and licensed
+RADKit acceptance remain open. See the [writeup](../../docs/FASTMCP-4-WRITEUP.md)
+and [release notes](../../docs/releases/1.5.0.md).
+
+Fresh pre-push checks passed: six release-helper tests, release metadata, 35-server
+static coverage, 71-server dependency pins, 127-spec artifact checks (four legacy
+exceptions), six registration reconciliation surfaces, and 43 framework/installer/GAIT
+regression tests. The earlier temporary interpreter was no longer present; the
+checked-in contract runner rebuilt the isolated FastMCP environment and passed
+before the 43-test selection was rerun. Remote PR and exact-main CI results are
+recorded by GitHub workflows and must pass before tagging. No live deployment or
+vendor-tool execution is implied by publication.
+
+GAIT release branch: `release-fastmcp-2026-10-05`. Startup device discovery again
+failed because PYATS_TESTBED_PATH was absent. No device state was inferred.
