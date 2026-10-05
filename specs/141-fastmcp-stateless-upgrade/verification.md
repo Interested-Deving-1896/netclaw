@@ -78,6 +78,7 @@ Center clones are recorded separately from active registrations.
 - CVP's embedded dependency metadata, foreign log path and missing HTTP client broke fresh startup.
 - GAIT could select host Python with an obsolete framework, and runtime-only rollback could mismatch source. Generations now bundle and verify source before promotion.
 - Cross-suite `storage` module collisions and RAG fixture dimension contamination occurred when unrelated suites shared one process; separate runs passed. These failed exploratory runs were not counted as product regressions or hidden as passes.
+- Final GAIT log inspection exposed RAG fixture audit writes into the session branch (disposable data, but the wrong audit destination). Unit guard and integration fixtures now initialize and select temporary GAIT repositories. Re-runs passed 10 and 18 tests; the session GAIT head remained `bf8a5d11` before and after. Existing immutable fixture audit events were retained and a correction recorded.
 - New test runner initially used unsupported client mode `modern`; corrected to the actual `2026-07-28` API.
 
 ## Operational limits and audit
