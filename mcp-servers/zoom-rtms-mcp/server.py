@@ -18,7 +18,7 @@ import logging
 import os
 import threading
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 import panel_feed
 import recognition

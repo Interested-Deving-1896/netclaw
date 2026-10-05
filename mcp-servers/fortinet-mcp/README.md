@@ -137,9 +137,8 @@ usually leak.
 netclaw_pip_install -r mcp-servers/fortinet-mcp/requirements.txt
 ```
 
-Two dependencies: `mcp>=1.2.0,<2` and `httpx>=0.27.0,<1`. The `mcp` upper bound is
-**load-bearing** — 2.0.0 removed `mcp.server.fastmcp`, which this server imports
-(spec 077).
+Uses standalone `fastmcp==4.0.11` with `mcp==2.3.0` in an isolated runtime (spec 141).
+See [the migration and rollback guide](../../docs/FASTMCP-UPGRADE.md).
 
 No Fortinet SDK. `pyFMG`, `fortiosapi` and `fortigate-api` were all evaluated and
 rejected: JSON-RPC here is a POST with `method`/`params`/`session`, and an SDK would

@@ -34,7 +34,7 @@ import time
 from typing import Optional
 
 import httpx
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 mcp = FastMCP("image-style-mcp")
 

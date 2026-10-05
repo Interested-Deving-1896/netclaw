@@ -7,11 +7,9 @@ requires-python = ">=3.11"
 license = { text = "MIT" }
 dependencies = [
     "gait-ai>=0.0.9,<1",
-    # Upper bounds added by spec 082. mcp 2.0 removed mcp.server.fastmcp, which this
-    # server imports; chromadb is imported by submodule. Both describe installed majors
-    # (mcp 1.28.1, chromadb 1.5.9) and move nothing.
-    "mcp>=1.2.0,<2",
-    "fastmcp",
+    # Spec 141: tested modern framework; retain existing storage bounds.
+    "mcp==2.3.0",
+    "fastmcp==4.0.11",
     "chromadb>=0.4.0,<2",
     "sentence-transformers>=2.2.0",
     "torch>=2.0.0",

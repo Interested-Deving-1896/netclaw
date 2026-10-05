@@ -9,7 +9,7 @@ import os
 import sys
 from typing import Optional
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 from nautobot_client import NautobotClient, NautobotError, _esc
 from reconcile import reconcile_interfaces

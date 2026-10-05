@@ -59,7 +59,7 @@ def provider():
 
 
 def result_data(result):
-    assert not result.isError
+    assert not result.model_dump(by_alias=True).get('isError', False)
     return json.loads(next(content.text for content in result.content if content.type == 'text'))
 
 

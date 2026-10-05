@@ -551,55 +551,13 @@ echo "  Source: https://github.com/noredistribution/mcp-cvp-fun"
 echo "  Arista CVP automation — device inventory, events, connectivity monitor, tags (4 tools)"
 
 CVP_MCP_DIR="$MCP_DIR/mcp-cvp-fun"
-if [ -d "$CVP_MCP_DIR" ]; then
-    log_info "CVP MCP already cloned, pulling latest..."
-    git -C "$CVP_MCP_DIR" pull --quiet 2>/dev/null || true
-else
-    git clone https://github.com/noredistribution/mcp-cvp-fun.git "$CVP_MCP_DIR" 2>/dev/null
-fi
+clone_or_pull "$CVP_MCP_DIR" "https://github.com/noredistribution/mcp-cvp-fun.git" || return 1
 
 if [ -d "$CVP_MCP_DIR" ]; then
-    # Spec 090: upstream hardcodes logging.basicConfig(filename='/home/admin/app.log'), a
-    # foreign home directory that exists on no NetClaw host -- so the server raised
-    # FileNotFoundError before starting. Same defect class spec 075 was written for.
-    #
-    # Patched here rather than in the tree because this directory is a gitignored runtime
-    # clone: an edit to the working copy is lost on the next fresh install. Idempotent, and
-    # re-applied after every `git pull` above -- the same durable-patch shape the Slack
-    # fetch-interceptor issue taught us to use for vendored code.
-    CVP_SERVER="$CVP_MCP_DIR/mcp_server_rest.py"
-    if [ -f "$CVP_SERVER" ] && grep -q "filename='/home/admin/app.log'" "$CVP_SERVER"; then
-        python3 - "$CVP_SERVER" <<'CVPPATCH'
-import os, sys
-p = sys.argv[1]
-src = open(p, encoding="utf-8").read()
-old = "    filename='/home/admin/app.log',                # Log file name\n"
-new = ("    filename=os.environ.get('CVP_LOG_FILE',\n"
-       "        os.path.join(os.path.expanduser('~'), '.openclaw', 'logs',\n"
-       "                     'arista-cvp-mcp.log')),  # patched by NetClaw spec 090\n")
-if old in src:
-    src = src.replace(old, new, 1)
-    # basicConfig cannot create the directory itself.
-    src = src.replace("logging.basicConfig(",
-        "os.makedirs(os.path.dirname(os.environ.get('CVP_LOG_FILE',\n"
-        "    os.path.join(os.path.expanduser('~'), '.openclaw', 'logs', 'x'))),\n"
-        "    exist_ok=True)\nlogging.basicConfig(", 1)
-    open(p, "w", encoding="utf-8").write(src)
-    print("patched")
-CVPPATCH
-        log_info "Patched CVP MCP's hardcoded /home/admin/app.log log path"
-    fi
+    # Spec 141 applies the reviewed framework and stderr logging migration together.
+    netclaw_pip_install 'fastmcp==4.0.11' 'mcp==2.3.0' httpx urllib3 python-dotenv || return 1
+    log_info "CVP MCP ready in its isolated FastMCP runtime"
 
-    # The registration passes --with urllib3 --with python-dotenv alongside fastmcp: the
-    # server imports both, and `uv run` sees only what --with provides, never the system
-    # site-packages. urllib3 being installed host-wide is irrelevant here, which is why the
-    # obvious reading of the original ModuleNotFoundError was wrong.
-    if command -v uv &> /dev/null; then
-        log_info "CVP MCP ready (uv resolves fastmcp + urllib3 + python-dotenv at runtime)"
-    else
-        log_warn "CVP MCP cloned but 'uv' not found — install uv for runtime dependency resolution"
-        log_info "  Install uv: curl -LsSf https://astral.sh/uv/install.sh | sh"
-    fi
 else
     log_warn "CVP MCP clone failed"
 fi
@@ -663,7 +621,7 @@ NETBOX_MCP_DIR="$MCP_DIR/netbox-mcp-server"
 clone_or_pull "$NETBOX_MCP_DIR" "https://github.com/netboxlabs/netbox-mcp-server.git"
 
 log_info "Installing NetBox dependencies..."
-netclaw_pip_install httpx "fastmcp>=2.14.0,<3" requests pydantic pydantic-settings 2>/dev/null || \
+netclaw_pip_install httpx "fastmcp==4.0.11" requests pydantic pydantic-settings 2>/dev/null || \
     log_warn "Some NetBox deps failed"
 
 log_info "NetBox MCP ready: python3 -m netbox_mcp_server.server"
@@ -682,31 +640,11 @@ log_info "Nautobot MCP dependencies installed"
 
 # ── Step 12: Infrahub MCP (pip install) ─────────────────────────
 component_install_infrahub() {
-log_step "Installing OpsMill Infrahub MCP Server..."
-echo "  Source: https://github.com/opsmill/infrahub-mcp"
-echo "  Infrahub infrastructure source of truth — nodes, search, GraphQL, and branch-isolated writes via Proposed Changes (10 tools)"
-
-PY_MINOR=$(python3 -c 'import sys; print(sys.version_info.minor)' 2>/dev/null || echo "0")
-if [ "$PY_MINOR" -ge 13 ]; then
-    log_info "Python 3.$PY_MINOR detected (3.13+ required for Infrahub MCP)"
-    netclaw_pip_install infrahub-mcp || {
-        log_warn "pip install infrahub-mcp failed — trying from source..."
-        INFRAHUB_MCP_DIR="$MCP_DIR/infrahub-mcp"
-        if [ -d "$INFRAHUB_MCP_DIR" ]; then
-            git -C "$INFRAHUB_MCP_DIR" pull --quiet 2>/dev/null || true
-        else
-            git clone https://github.com/opsmill/infrahub-mcp.git "$INFRAHUB_MCP_DIR" 2>/dev/null
-        fi
-        if [ -d "$INFRAHUB_MCP_DIR" ] && command -v uv &> /dev/null; then
-            cd "$INFRAHUB_MCP_DIR" && uv sync 2>/dev/null; cd "$NETCLAW_DIR"
-        fi
-    }
-    log_info "Infrahub MCP installed (launched via 'uvx infrahub-mcp' — stdio transport)"
-else
-    log_warn "Python 3.13+ required for Infrahub MCP (found 3.$PY_MINOR) — skipping"
-fi
-
-echo ""
+log_step "Installing Infrahub MCP in its isolated runtime..."
+local INFRAHUB_MCP_DIR="$MCP_DIR/infrahub-mcp"
+clone_or_pull "$INFRAHUB_MCP_DIR" "https://github.com/opsmill/infrahub-mcp.git" || return 1
+netclaw_pip_install -e "$INFRAHUB_MCP_DIR" || return 1
+log_info "Infrahub MCP installed; register the recorded infrahub-mcp executable"
 }
 
 # ── Step 13: Itential MCP (pip install) ─────────────────────────
@@ -718,20 +656,9 @@ echo "  Itential Automation Platform — config mgmt, compliance, workflows, gol
 PY_MINOR=$(python3 -c 'import sys; print(sys.version_info.minor)' 2>/dev/null || echo "0")
 if [ "$PY_MINOR" -ge 10 ]; then
     log_info "Python 3.$PY_MINOR detected (3.10+ required for Itential MCP)"
-    netclaw_pip_install itential-mcp || {
-        log_warn "pip install itential-mcp failed — trying from source..."
-        ITENTIAL_MCP_DIR="$MCP_DIR/itential-mcp"
-        if [ -d "$ITENTIAL_MCP_DIR" ]; then
-            git -C "$ITENTIAL_MCP_DIR" pull --quiet 2>/dev/null || true
-        else
-            git clone https://github.com/itential/itential-mcp.git "$ITENTIAL_MCP_DIR" 2>/dev/null
-        fi
-        if [ -d "$ITENTIAL_MCP_DIR" ]; then
-            cd "$ITENTIAL_MCP_DIR" && netclaw_pip_install -e . || \
-                log_warn "Itential MCP source install failed"
-            cd "$NETCLAW_DIR"
-        fi
-    }
+    ITENTIAL_MCP_DIR="$MCP_DIR/itential-mcp"
+    clone_or_pull "$ITENTIAL_MCP_DIR" "https://github.com/itential/itential-mcp.git" || return 1
+    netclaw_pip_install -e "$ITENTIAL_MCP_DIR" || return 1
 
     if command -v itential-mcp &> /dev/null; then
         log_info "Itential MCP installed: itential-mcp run (stdio transport)"
@@ -848,7 +775,7 @@ SUBNET_MCP_DIR="$MCP_DIR/subnet-calculator-mcp"
 clone_or_pull "$SUBNET_MCP_DIR" "https://github.com/automateyournetwork/GeminiCLI_SubnetCalculator_Extension.git"
 
 log_info "Installing Subnet Calculator dependencies..."
-netclaw_pip_install pydantic python-dotenv mcp 2>/dev/null || \
+netclaw_pip_install pydantic python-dotenv "fastmcp==4.0.11" "mcp==2.3.0" 2>/dev/null || \
     log_warn "Some Subnet Calculator deps failed"
 
 [ -f "$SUBNET_MCP_DIR/servers/subnetcalculator_mcp.py" ] && \
@@ -1007,7 +934,7 @@ if ! command -v capinfos &> /dev/null; then
 fi
 
 log_info "Installing Packet Buddy MCP dependencies..."
-netclaw_pip_install fastmcp 2>/dev/null || log_warn "fastmcp install failed"
+netclaw_pip_install -r "$PACKET_BUDDY_MCP_DIR/requirements.txt" || return 1
 
 # Create pcap upload directory
 mkdir -p /tmp/netclaw-pcaps
@@ -1038,25 +965,10 @@ PY_MINOR=$(python3 -c 'import sys; print(sys.version_info.minor)' 2>/dev/null ||
 if [ "$PY_MINOR" -ge 12 ]; then
     log_info "Python 3.$PY_MINOR detected (3.12+ required for CML MCP)"
 
-    log_info "Installing CML MCP via pip..."
-    netclaw_pip_install cml-mcp || {
-            log_warn "CML MCP install failed. Install manually: pip3 install cml-mcp"
-    }
-
-    # Verify cml-mcp is importable
-    if python3 -c "import cml_mcp" 2>/dev/null; then
-        log_info "CML MCP installed successfully"
-        CML_MCP_CMD="cml-mcp"
-        if command -v cml-mcp &> /dev/null; then
-            log_info "CML MCP ready: cml-mcp (stdio transport)"
-        else
-            # Try finding via python module
-            CML_MCP_CMD="python3 -m cml_mcp"
-            log_info "CML MCP ready: python3 -m cml_mcp (stdio transport)"
-        fi
-    else
-        log_warn "CML MCP package not importable after install"
-    fi
+    CML_MCP_DIR="$MCP_DIR/cml-mcp"
+    clone_or_pull "$CML_MCP_DIR" "https://github.com/xorrkaz/cml-mcp.git" || return 1
+    netclaw_pip_install -e "$CML_MCP_DIR" || return 1
+    log_info "CML MCP ready in its isolated component runtime"
 
     # Optional: install with pyATS support for CLI execution
     echo ""
@@ -1082,7 +994,7 @@ if [ "$PY_MINOR" -ge 12 ]; then
     log_info "Python 3.$PY_MINOR detected (3.12+ required for NSO MCP)"
 
     log_info "Installing NSO MCP via pip..."
-    netclaw_pip_install cisco-nso-mcp-server || {
+    netclaw_pip_install cisco-nso-mcp-server==3.1.0 || {
             log_warn "NSO MCP install failed. Install manually: pip3 install cisco-nso-mcp-server"
     }
 
@@ -1109,12 +1021,7 @@ echo "  Source: https://github.com/CiscoDevNet/CiscoFMC-MCP-server-community"
 echo "  Cisco Secure Firewall policy search — access rules, FTD targeting, multi-FMC"
 
 FMC_MCP_DIR="$MCP_DIR/CiscoFMC-MCP-server-community"
-if [ -d "$FMC_MCP_DIR" ]; then
-    log_info "Cisco FMC MCP already cloned, pulling latest..."
-    git -C "$FMC_MCP_DIR" pull --quiet 2>/dev/null || true
-else
-    git clone https://github.com/CiscoDevNet/CiscoFMC-MCP-server-community.git "$FMC_MCP_DIR" 2>/dev/null
-fi
+clone_or_pull "$FMC_MCP_DIR" "https://github.com/CiscoDevNet/CiscoFMC-MCP-server-community.git" || return 1
 
 if [ -d "$FMC_MCP_DIR" ]; then
     if [ -f "$FMC_MCP_DIR/requirements.txt" ]; then
@@ -1352,12 +1259,7 @@ echo "  Source: https://github.com/CiscoDevNet/thousandeyes-mcp-community"
 echo "  ThousandEyes monitoring — tests, agents, path visualization, dashboards (9 read-only tools)"
 
 TE_COMMUNITY_MCP_DIR="$MCP_DIR/thousandeyes-mcp-community"
-if [ -d "$TE_COMMUNITY_MCP_DIR" ]; then
-    log_info "ThousandEyes Community MCP already cloned, pulling latest..."
-    git -C "$TE_COMMUNITY_MCP_DIR" pull --quiet 2>/dev/null || true
-else
-    git clone https://github.com/CiscoDevNet/thousandeyes-mcp-community.git "$TE_COMMUNITY_MCP_DIR" 2>/dev/null
-fi
+clone_or_pull "$TE_COMMUNITY_MCP_DIR" "https://github.com/CiscoDevNet/thousandeyes-mcp-community.git" || return 1
 
 if [ -d "$TE_COMMUNITY_MCP_DIR" ]; then
     PY_MINOR=$(python3 -c 'import sys; print(sys.version_info.minor)' 2>/dev/null || echo "0")
@@ -1371,7 +1273,7 @@ if [ -d "$TE_COMMUNITY_MCP_DIR" ]; then
     else
         log_warn "Python 3.12+ required for ThousandEyes Community MCP (found 3.$PY_MINOR)"
         log_info "Installing core dependencies..."
-        netclaw_pip_install httpx "mcp>=1.13" || \
+        netclaw_pip_install httpx "fastmcp==4.0.11" "mcp==2.3.0" || \
             log_warn "ThousandEyes Community deps install failed"
     fi
 else
@@ -1413,12 +1315,7 @@ echo "  Source: https://github.com/CiscoDevNet/radkit-mcp-server-community"
 echo "  Cloud-relayed remote device access — CLI execution, SNMP polling, device inventory (5 tools)"
 
 RADKIT_MCP_DIR="$MCP_DIR/radkit-mcp-server-community"
-if [ -d "$RADKIT_MCP_DIR" ]; then
-    log_info "RADKit MCP already cloned, pulling latest..."
-    git -C "$RADKIT_MCP_DIR" pull --quiet 2>/dev/null || true
-else
-    git clone https://github.com/CiscoDevNet/radkit-mcp-server-community.git "$RADKIT_MCP_DIR" 2>/dev/null
-fi
+clone_or_pull "$RADKIT_MCP_DIR" "https://github.com/CiscoDevNet/radkit-mcp-server-community.git" || return 1
 
 if [ -d "$RADKIT_MCP_DIR" ]; then
     PY_MINOR=$(python3 -c 'import sys; print(sys.version_info.minor)' 2>/dev/null || echo "0")
@@ -1548,12 +1445,7 @@ echo "  Source: https://github.com/antoinebou12/uml-mcp"
 echo "  27+ diagram types via Kroki — class, sequence, network, rack, packet, C4, Mermaid, D2, Graphviz (2 tools)"
 
 UML_MCP_DIR="$MCP_DIR/uml-mcp"
-if [ -d "$UML_MCP_DIR" ]; then
-    log_info "UML MCP already cloned, pulling latest..."
-    git -C "$UML_MCP_DIR" pull --quiet 2>/dev/null || true
-else
-    git clone https://github.com/antoinebou12/uml-mcp.git "$UML_MCP_DIR" 2>/dev/null
-fi
+clone_or_pull "$UML_MCP_DIR" "https://github.com/antoinebou12/uml-mcp.git" || return 1
 
 if [ -d "$UML_MCP_DIR" ]; then
     PY_MINOR=$(python3 -c 'import sys; print(sys.version_info.minor)' 2>/dev/null || echo "0")
@@ -1667,18 +1559,9 @@ echo "  Prometheus monitoring — PromQL queries, metric discovery, target healt
 
 PROMETHEUS_MCP_DIR="$MCP_DIR/prometheus-mcp-server"
 
-if netclaw_pip_install prometheus-mcp-server 2>/dev/null; then
-    log_info "Prometheus MCP installed via pip (prometheus-mcp-server)"
-    log_info "Prometheus MCP ready (runs via prometheus-mcp-server, stdio transport)"
-else
-    log_warn "pip3 install prometheus-mcp-server failed — trying git clone fallback"
-    if git clone https://github.com/pab1it0/prometheus-mcp-server.git "$PROMETHEUS_MCP_DIR" 2>/dev/null; then
-        netclaw_pip_install -e "$PROMETHEUS_MCP_DIR" 2>/dev/null || netclaw_pip_install -r "$PROMETHEUS_MCP_DIR/requirements.txt" 2>/dev/null || true
-        log_info "Prometheus MCP cloned and installed from source"
-    else
-        log_warn "Prometheus MCP: installation failed (pip and git clone both failed)"
-    fi
-fi
+clone_or_pull "$PROMETHEUS_MCP_DIR" "https://github.com/pab1it0/prometheus-mcp-server.git"
+netclaw_pip_install -e "$PROMETHEUS_MCP_DIR" || return 1
+log_info "Prometheus MCP ready in its isolated component runtime"
 
 echo ""
 }
@@ -1715,8 +1598,7 @@ NMAP_MCP_DIR="$MCP_DIR/nmap-mcp"
 clone_or_pull "$NMAP_MCP_DIR" "https://github.com/sbmilburn/nmap-mcp.git"
 
 # Install Python dependencies
-netclaw_pip_install python-nmap pyyaml 2>/dev/null || netclaw_pip_install python-nmap pyyaml 2>/dev/null || true
-# fastmcp already installed by earlier steps
+netclaw_pip_install -r "$NMAP_MCP_DIR/requirements.txt" || return 1
 
 # Install nmap binary if not present
 if command -v nmap &> /dev/null; then
@@ -1843,7 +1725,7 @@ TTS_MCP_DIR="$MCP_DIR/tts-mcp"
 mkdir -p "$TTS_MCP_DIR/output"
 
 # Install edge-tts and fastmcp
-netclaw_pip_install edge-tts fastmcp 2>/dev/null || netclaw_pip_install edge-tts fastmcp 2>/dev/null || true
+netclaw_pip_install -r "$TTS_MCP_DIR/requirements.txt" || return 1
 
 # Verify edge-tts is available
 if python3 -c "import edge_tts" 2>/dev/null; then
@@ -1890,12 +1772,8 @@ if [ -d "$PROTOCOL_MCP_DIR" ]; then
             # here produced a daemon that starts, reports healthy, and cannot
             # bind the mobile edge listener — diagnosed as a role problem.
             #
-            # Two further corrections to this list, both from requirements.txt's
-            # own load-bearing comments: `mcp` MUST carry <2 (2.0.0 removed
-            # mcp.server.fastmcp, which this server imports, so a bare `mcp`
-            # resolves 2.x and dies at import), and `fastmcp` is deliberately NOT
-            # here — spec 077 removed it as a dead pin nothing imports.
-            netclaw_pip_install scapy networkx 'mcp>=1.0.0,<2' websockets qrcode httpx h2 || \
+            # Spec 141: fallback must use the same modern framework pins.
+            netclaw_pip_install scapy networkx 'fastmcp==4.0.11' 'mcp==2.3.0' 'websockets>=12,<17' qrcode httpx h2 || \
                 log_warn "Protocol MCP core deps install failed"
         }
     fi
@@ -1934,7 +1812,7 @@ N2N_MCP_DIR="$MCP_DIR/n2n-mcp"
 if [ -d "$N2N_MCP_DIR" ]; then
     log_info "Installing n2n-mcp dependencies..."
     netclaw_pip_install -r "$N2N_MCP_DIR/requirements.txt" || \
-        netclaw_pip_install httpx fastmcp || \
+        netclaw_pip_install httpx "fastmcp==4.0.11" "mcp==2.3.0" || \
         { log_warn "n2n-mcp deps install failed — install httpx + fastmcp manually"; return 1; }
 else
     log_warn "n2n-mcp not found — it should be bundled at mcp-servers/n2n-mcp/"
@@ -2083,7 +1961,7 @@ log_step "Installing Infoblox DDI MCP Server..."
 echo "  Source: pip install infoblox-ddi-mcp"
 echo "  DNS records, DHCP scopes and leases, IPAM utilization"
 
-if netclaw_pip_install -q --upgrade infoblox-ddi-mcp 2>/dev/null; then
+if netclaw_pip_install -q infoblox-ddi-mcp==2.2.3 2>/dev/null; then
     log_info "Infoblox DDI MCP installed via pip"
 else
     log_warn "Infoblox DDI MCP install failed (pip3 install infoblox-ddi-mcp)"
@@ -2139,17 +2017,9 @@ echo "  Palo Alto Networks Prisma SD-WAN read-only visibility: sites, elements, 
 echo "  15+ tools: get_sites, get_elements, get_topology, get_alarms, get_events, get_interfaces, etc."
 
 PRISMA_SDWAN_MCP_DIR="$MCP_DIR/prisma-sdwan-mcp"
-if [ -d "$PRISMA_SDWAN_MCP_DIR" ]; then
-    log_info "Prisma SD-WAN MCP already cloned, pulling latest..."
-    git -C "$PRISMA_SDWAN_MCP_DIR" pull --quiet 2>/dev/null || true
-else
-    git clone https://github.com/iamdheerajdubey/prisma-sdwan-mcp.git "$PRISMA_SDWAN_MCP_DIR" 2>/dev/null || true
-fi
+clone_or_pull "$PRISMA_SDWAN_MCP_DIR" "https://github.com/iamdheerajdubey/prisma-sdwan-mcp.git" || return 1
 
 if [ -d "$PRISMA_SDWAN_MCP_DIR" ]; then
-    if command -v uv &> /dev/null; then
-        (cd "$PRISMA_SDWAN_MCP_DIR" && uv sync) 2>/dev/null || log_warn "Prisma SD-WAN MCP uv sync failed — trying pip"
-    fi
     if [ -f "$PRISMA_SDWAN_MCP_DIR/pyproject.toml" ]; then
         netclaw_pip_install -e "$PRISMA_SDWAN_MCP_DIR" || \
             log_warn "Prisma SD-WAN MCP editable install failed"
@@ -2261,25 +2131,11 @@ echo "  Read: system info, interfaces, VLANs, configs, routes, LLDP, MAC table, 
 echo "  Write: interface config, VLAN management, save config, ISSU, firmware (ITSM-gated)"
 
 ARUBA_CX_MCP_DIR="$MCP_DIR/aruba-cx-mcp"
-if [ -d "$ARUBA_CX_MCP_DIR" ]; then
-    log_info "Aruba CX MCP already cloned, pulling latest..."
-    git -C "$ARUBA_CX_MCP_DIR" pull --quiet 2>/dev/null || true
-else
-    git clone https://github.com/slientnight/aruba-cx-mcp-server.git "$ARUBA_CX_MCP_DIR" 2>/dev/null || true
-fi
+clone_or_pull "$ARUBA_CX_MCP_DIR" "https://github.com/slientnight/aruba-cx-mcp-server.git" || return 1
 
 if [ -d "$ARUBA_CX_MCP_DIR" ]; then
-    if command -v uv &> /dev/null; then
-        (cd "$ARUBA_CX_MCP_DIR" && uv sync) 2>/dev/null || log_warn "Aruba CX MCP uv sync failed — trying pip"
-    fi
-    if [ -f "$ARUBA_CX_MCP_DIR/pyproject.toml" ]; then
-        netclaw_pip_install -e "$ARUBA_CX_MCP_DIR" || \
-            log_warn "Aruba CX MCP editable install failed"
-    elif [ -f "$ARUBA_CX_MCP_DIR/requirements.txt" ]; then
-        netclaw_pip_install -r "$ARUBA_CX_MCP_DIR/requirements.txt" || \
-            log_warn "Aruba CX MCP requirements install failed"
-    fi
-    log_info "Aruba CX MCP prepared: $ARUBA_CX_MCP_DIR"
+    netclaw_pip_install -r "$ARUBA_CX_MCP_DIR/mcp-servers/aruba-cx-mcp/requirements.txt" || return 1
+    log_info "Aruba CX MCP prepared in its isolated component runtime: $ARUBA_CX_MCP_DIR"
 else
     log_warn "Aruba CX MCP clone failed"
 fi
@@ -2299,17 +2155,7 @@ clone_or_pull "$AAP_MCP_DIR" "https://github.com/sibilleb/AAP-Enterprise-MCP-Ser
 
 if [ -d "$AAP_MCP_DIR" ]; then
     log_info "Installing AAP MCP dependencies..."
-    if command -v uv &> /dev/null; then
-        (cd "$AAP_MCP_DIR" && uv sync) 2>/dev/null || log_warn "AAP MCP uv sync failed — trying pip"
-    fi
-    if [ -f "$AAP_MCP_DIR/pyproject.toml" ]; then
-        netclaw_pip_install -e "$AAP_MCP_DIR" || \
-            log_warn "AAP MCP editable install failed — trying requirements"
-    fi
-    if [ -f "$AAP_MCP_DIR/requirements.txt" ]; then
-        netclaw_pip_install -r "$AAP_MCP_DIR/requirements.txt" || \
-            log_warn "AAP MCP requirements install failed"
-    fi
+    netclaw_pip_install -e "$AAP_MCP_DIR" || return 1
 
     [ -f "$AAP_MCP_DIR/ansible.py" ] && \
         log_info "AAP MCP ready: $AAP_MCP_DIR/ansible.py" || \
@@ -2517,7 +2363,7 @@ HUMANRAIL_MCP_DIR="$MCP_DIR/humanrail-mcp-server"
 clone_or_pull "$HUMANRAIL_MCP_DIR" "https://github.com/prime001/humanrail-mcp-server.git"
 
 log_info "Installing HumanRail MCP dependencies..."
-netclaw_pip_install "mcp[cli]>=1.0.0" httpx || \
+netclaw_pip_install "fastmcp==4.0.11" "mcp==2.3.0" httpx || \
     log_warn "HumanRail MCP dependencies install failed"
 
 [ -f "$HUMANRAIL_MCP_DIR/server.py" ] && \
@@ -3987,7 +3833,7 @@ log_info "Installing dependencies (mcp, httpx — bounded pins)..."
 netclaw_pip_install -q -r "$PSIRT_DIR/requirements.txt" || \
     log_warn "Cisco PSIRT dependency install failed"
 
-if /usr/bin/python3 -c "import httpx, mcp.server.fastmcp" 2>/dev/null; then
+if "$(cat "$NETCLAW_RUNTIME_ROOT/records/cisco-psirt")" -c "import httpx, fastmcp" 2>/dev/null; then
     log_info "Cisco PSIRT MCP ready (6 tools, read-only)"
 else
     log_warn "Cisco PSIRT MCP installed but imports failed"
@@ -4059,11 +3905,7 @@ echo "  All 514 read-only operations via 8 grouped dispatchers; 1,821-token mani
 CATC_MCP_DIR="$NETCLAW_DIR/mcp-servers/catc-mcp"
 
 if [ -d "$CATC_MCP_DIR" ]; then
-    # Only mcp + httpx. NetClaw uses the upstream CATALOGUE, not the upstream
-    # runtime, so none of fastapi/uvicorn/fastmcp is pulled in. That is deliberate:
-    # upstream declares fastmcp>=2.0.0 UNBOUNDED, which resolves to 3.x and breaks
-    # five NetClaw servers pinning <3. Do not "simplify" this by installing their
-    # requirements instead.
+    # Use the curated catalogue with NetClaw's tested FastMCP4 runtime.
     netclaw_pip_install -r "$CATC_MCP_DIR/requirements.txt" 2>/dev/null || \
         log_warn "Catalyst Center MCP dependency install failed (mcp, httpx)"
     log_info "Catalyst Center MCP prepared: $CATC_MCP_DIR"
@@ -4084,12 +3926,8 @@ echo "  3 tools, read-only. Polled history: what an interface WAS doing, over ti
 ZABBIX_MCP_DIR="$NETCLAW_DIR/mcp-servers/zabbix-mcp"
 
 if [ -d "$ZABBIX_MCP_DIR" ]; then
-    # DEDICATED VIRTUALENV -- NOT OPTIONAL, DO NOT "SIMPLIFY" THIS AWAY.
-    # This server requires fastmcp 3.x. Five NetClaw servers pin fastmcp<3:
-    # netbox-mcp-server, CiscoFMC-MCP-server-community, Wikipedia_MCP, rag-mcp,
-    # ISE_MCP. A shared install breaks all five -- spec 076's cryptography
-    # incident verbatim, which is why multivendor-cli-mcp has its own venv too.
-    echo "  Creating a dedicated virtualenv (fastmcp 3.x conflicts with five other servers)"
+    # Keep the isolated runtime; spec 141 upgrades framework pins only.
+    echo "  Preparing isolated FastMCP 4 runtime"
 
     # Never bare `python3 -m venv`: measured on this host it fails outright
     # because ensurepip is unavailable (spec 077 hazard #3).
@@ -4106,7 +3944,7 @@ if [ -d "$ZABBIX_MCP_DIR" ]; then
     if [ -x "$ZABBIX_MCP_DIR/.venv/bin/python" ]; then
         # Install into the VENV interpreter, named explicitly. Deliberately NOT
         # netclaw_pip_install: that targets the system interpreter, which is the exact
-        # thing this venv exists to protect (fastmcp 3.x vs five servers pinning <3).
+        # isolation boundary required for dependency upgrades.
         # Naming --python satisfies the same rule netclaw_pip_install enforces --
         # packages land in the interpreter the server actually runs under.
         ( cd "$ZABBIX_MCP_DIR" && \
@@ -4189,14 +4027,9 @@ PERCEPXION_MCP_DIR="$MCP_DIR/percepxion-mcp-server"
 clone_or_pull "$PERCEPXION_MCP_DIR" "https://github.com/Lantronix/percepxion-mcp-server.git"
 
 if [ -d "$PERCEPXION_MCP_DIR" ]; then
-    # DEDICATED VIRTUALENV — NOT OPTIONAL, DO NOT "SIMPLIFY" THIS AWAY.
-    # This server pins fastmcp>=3.1.0,<4.0. Five NetClaw servers pin fastmcp<3:
-    # netbox-mcp-server, CiscoFMC-MCP-server-community, Wikipedia_MCP, rag-mcp,
-    # ISE_MCP. A shared install breaks all five — the same conflict shape as
-    # component_install_zabbix() (spec 076's cryptography incident), which is
-    # why this follows Zabbix's dedicated-venv pattern instead of pyATS/JunOS's
-    # shared-interpreter pattern (neither of those pins fastmcp at all).
-    echo "  Creating a dedicated virtualenv (fastmcp 3.x conflicts with five other servers)"
+    # Spec 141: install the reviewed project metadata under exact modern pins.
+    # The upstream requirements lock still targets FastMCP3 and is not used here.
+    echo "  Preparing isolated FastMCP 4 runtime"
 
     if command -v netclaw_venv_create >/dev/null 2>&1; then
         netclaw_venv_create "$PERCEPXION_MCP_DIR/.venv" || log_warn "Percepxion MCP venv creation failed"
@@ -4209,11 +4042,9 @@ if [ -d "$PERCEPXION_MCP_DIR" ]; then
     fi
 
     if [ -x "$PERCEPXION_MCP_DIR/.venv/bin/python" ]; then
-        # Install into the VENV interpreter, named explicitly. Deliberately NOT
-        # netclaw_pip_install: that targets the system interpreter, which is the
-        # exact thing this venv exists to protect.
+        # Explicit component bounds also apply when the caller selects a venv.
         ( cd "$PERCEPXION_MCP_DIR" && \
-          uv pip install -q --python "$PERCEPXION_MCP_DIR/.venv/bin/python" -r requirements.txt ) 2>/dev/null || \
+          NETCLAW_VENV="$PERCEPXION_MCP_DIR/.venv" netclaw_pip_install -c "$NETCLAW_DIR/config/python-components/percepxion.txt" -e . ) 2>/dev/null || \
             log_warn "Percepxion MCP dependency install failed (fastmcp, requests, python-dotenv)"
         log_info "Percepxion MCP prepared: $PERCEPXION_MCP_DIR (isolated venv)"
     fi
@@ -4244,9 +4075,9 @@ SLC_MCP_DIR="$MCP_DIR/slc-mcp-server"
 clone_or_pull "$SLC_MCP_DIR" "https://github.com/Lantronix/slc-mcp-server.git"
 
 if [ -d "$SLC_MCP_DIR" ]; then
-    # DEDICATED VIRTUALENV — same fastmcp>=3.1.0,<4.0 conflict as percepxion-mcp-server
-    # above. See that function's comment for the full explanation; identical reasoning.
-    echo "  Creating a dedicated virtualenv (fastmcp 3.x conflicts with five other servers)"
+    # Spec 141: install the reviewed project metadata under exact modern pins.
+    # The upstream requirements lock still targets FastMCP3 and is not used here.
+    echo "  Preparing isolated FastMCP 4 runtime"
 
     if command -v netclaw_venv_create >/dev/null 2>&1; then
         netclaw_venv_create "$SLC_MCP_DIR/.venv" || log_warn "SLC MCP venv creation failed"
@@ -4260,7 +4091,7 @@ if [ -d "$SLC_MCP_DIR" ]; then
 
     if [ -x "$SLC_MCP_DIR/.venv/bin/python" ]; then
         ( cd "$SLC_MCP_DIR" && \
-          uv pip install -q --python "$SLC_MCP_DIR/.venv/bin/python" -r requirements.txt ) 2>/dev/null || \
+          NETCLAW_VENV="$SLC_MCP_DIR/.venv" netclaw_pip_install -c "$NETCLAW_DIR/config/python-components/slc.txt" -e . ) 2>/dev/null || \
             log_warn "SLC MCP dependency install failed (fastmcp, requests, hvac, boto3, pyotp)"
         log_info "SLC MCP prepared: $SLC_MCP_DIR (isolated venv)"
     fi

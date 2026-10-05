@@ -943,3 +943,8 @@ EQUINIX_SERVICENOW_URL, EQUINIX_SERVICENOW_USERNAME and
 EQUINIX_SERVICENOW_PASSWORD are dedicated read-only verifier settings.
 See docs/EQUINIX.md. Source integration tested offline; account OAuth still pending.
 No native setup.exe source exists in this checkout; shared installer/setup covers WSL.
+
+
+### FastMCP migration branch — 2026-10-04 (spec 141)
+
+Branch `141-fastmcp-stateless-upgrade` uses FastMCP4.0.11/MCP2.3.0 for 35 owned servers and reviewed external upgrades. This supersedes historical FastMCP<3/MCP<2 advice for those migrated components only. No installed operator runtime or device was upgraded in this session. Source hashes, component bounds, fixture-only catalogs, rollback guidance and explicit unported upstream integrations are documented in `docs/FASTMCP-UPGRADE.md` and `specs/141-fastmcp-stateless-upgrade/verification.md`. Latest package constraints alone were insufficient: SDK1 imports, removed framework APIs and external transitive pins required migration. Preserve low-level SDK1 integrations in their isolated legacy runtimes.

@@ -15,7 +15,7 @@ import json
 import os
 
 import httpx
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 mcp = FastMCP("worldlabs-marble-mcp")
 

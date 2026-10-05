@@ -40,14 +40,7 @@ log = logging.getLogger("MemoryMCP")
 # ---------------------------------------------------------------------
 # MCP
 # ---------------------------------------------------------------------
-try:
-    from mcp.server.fastmcp import FastMCP
-except ImportError:
-    try:
-        from fastmcp import FastMCP  # type: ignore
-    except ImportError as e:
-        log.error("FastMCP not found. Install with: pip install mcp fastmcp")
-        raise
+from fastmcp import FastMCP
 
 # ---------------------------------------------------------------------
 # Storage backends

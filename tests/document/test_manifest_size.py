@@ -46,7 +46,7 @@ def _manifest_text() -> str:
     for tool in _tools():
         parts.append(tool.name)
         parts.append(tool.description or "")
-        parts.append(str(tool.inputSchema))
+        parts.append(str(tool.parameters))
     return "\n".join(parts)
 
 
@@ -66,7 +66,7 @@ def test_manifest_is_under_the_ceiling():
 
 def test_no_tool_accepts_an_infrastructure_parameter():
     for tool in _tools():
-        props = list((tool.inputSchema or {}).get("properties", {}).keys())
+        props = list((tool.parameters or {}).get("properties", {}).keys())
         bad = [p for p in props if FORBIDDEN_PARAMS.search(p)]
         check(
             f"{tool.name} accepts no device/credential/ticket parameter",

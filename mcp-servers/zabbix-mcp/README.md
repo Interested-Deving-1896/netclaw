@@ -34,10 +34,8 @@ it avoided rebuilding a solved problem.
 
 ## Why it runs in its own virtualenv
 
-**Not optional.** It requires **fastmcp 3.x**; five NetClaw servers pin `fastmcp<3` —
-`netbox-mcp-server`, `CiscoFMC-MCP-server-community`, `Wikipedia_MCP`, `rag-mcp`, `ISE_MCP`. A shared
-install breaks all five. Same class of conflict that gave `multivendor-cli-mcp` its own venv (spec 076's
-`cryptography` incident).
+Uses standalone `fastmcp==4.0.11` with `mcp==2.3.0` in an isolated runtime (spec 141).
+See [the migration and rollback guide](../../docs/FASTMCP-UPGRADE.md).
 
 The venv is created with `netclaw_venv_create`/`uv` — **never bare `python3 -m venv`**, which fails on hosts
 without `ensurepip` (measured on this one).
