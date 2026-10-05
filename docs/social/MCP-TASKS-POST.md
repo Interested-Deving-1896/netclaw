@@ -56,3 +56,5 @@ There is no measured live-network speedup claim. The demonstrated improvement is
 The protocol is the current [`io.modelcontextprotocol/tasks` extension](https://tasks.extensions.modelcontextprotocol.io/specification/2026-07-28/tasks). The Python SDK's removed experimental runtime is not the implementation used here: pyATS provides its reviewed runtime, while the other eligible servers use the maintained FastMCP Tasks package.
 
 [Implementation and operational details](https://github.com/automateyournetwork/netclaw/blob/main/docs/MCP-TASKS.md)
+
+[NetClaw implementation PR](https://github.com/automateyournetwork/netclaw/pull/283) · [NetClaw 1.5.0 release](https://github.com/automateyournetwork/netclaw/releases/tag/v1.5.0)

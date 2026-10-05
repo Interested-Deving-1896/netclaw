@@ -39,4 +39,4 @@ FastMCP memory queues are ephemeral, cancellation is cooperative and a running t
 
 ## Release
 
-PR 282 already merged the framework work into main. Spec 142 is a follow-up PR on `feat/mcp-async-tasks`; both are coordinated in the still-unpublished 1.5.0 release. Applicable CI must pass before merge and the exact merged main commit must pass before tagging. No published release is claimed by this verification file alone.
+PR 282 already merged the framework work into main. Spec 142 is [PR 283](https://github.com/automateyournetwork/netclaw/pull/283), a follow-up on `feat/mcp-async-tasks`; both are coordinated in the still-unpublished 1.5.0 release. Applicable CI must pass before merge and the exact merged main commit must pass before tagging. No published release is claimed by this verification file alone.
