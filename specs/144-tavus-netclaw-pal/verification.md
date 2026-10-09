@@ -62,3 +62,13 @@ To stop using Avatar, select Chat; no provider resource needs cleanup for local
 use. Revert the source release and restore matching npm dependencies to roll back
 code. Do not erase provider ledgers or private gateway backups. Hosted users must
 end/reconcile any provider call before disabling that experimental path.
+
+## PR CI integration follow-up
+
+PR #286's first Linux run passed HUD and 29 other checks, but three contract
+suites exposed stale fixtures after integrating current main's spec 049 installer
+changes. The new Python-version prerequisite ran before fake pip failures; tests
+must answer that probe successfully to exercise their intended pip-error branch.
+The Zabbix source assertion also needs to recognize the new component helper,
+while checking it delegates to supported isolated creation and validates Python.
+Updated these test fixtures without weakening runtime checks or skipping tests.

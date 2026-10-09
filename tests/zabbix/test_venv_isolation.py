@@ -61,8 +61,14 @@ def test_installer_never_uses_bare_venv():
     check("no executable line calls bare `python3 -m venv`", not offenders,
           f"bare venv fails on hosts without ensurepip (spec 077 hazard #3, hit live in "
           f"Phase 0). Offending line(s): {offenders}")
-    check("the installer uses netclaw_venv_create or uv",
-          "netclaw_venv_create" in fn or "uv venv" in fn, "no supported venv creation path")
+    helper = read("scripts", "lib", "pip-helper.sh")
+    component_helper = re.search(r"^netclaw_component_venv\(\) \{.*?^}", helper, re.M | re.S)
+    delegates_creation = ("netclaw_component_venv" in fn and component_helper
+                          and "netclaw_venv_create" in component_helper[0]
+                          and '_netclaw_require_python' in component_helper[0])
+    check("the installer uses a supported isolated venv creation path",
+          "netclaw_venv_create" in fn or "uv venv" in fn or delegates_creation,
+          "no supported venv creation path")
     check("the installer explains why the venv exists",
           "isolated" in fn.lower() and "fastmcp" in fn.lower(),
           "without the rationale a maintainer will 'simplify' it away")
