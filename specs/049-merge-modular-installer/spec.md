@@ -132,3 +132,23 @@ validate Python compatibility before claiming prerequisites are satisfied.
   virtualenvs. Keep existing compatible runtimes and package constraints.
 - Document Python selection and recovery without deleting runtime state or
   changing system packages during testing.
+
+## Full-log follow-up (2026-10-09)
+
+The received archive contains 104 component/core logs (excluding AppleDouble
+metadata). It confirms Python 3.9/pip 21.2.4 and exposes additional retry and
+portability problems. Keep this follow-up within installer reliability scope.
+
+- Refresh obsolete pip only inside a component virtualenv before modern
+  editable installation; never modify system pip.
+- Preserve unsupported component-specific source `.venv` directories and use
+  separate compatible replacements. Bind canonical template Python launches
+  to the successfully recorded replacement; preserve custom launch conflicts.
+- Multivendor uses the selected base/helper, not hardcoded `/usr/bin/python3`,
+  and fails visibly instead of silently skipping a required dependency.
+- Claw Certification installs its cryptography dependency in its component
+  environment, executes with that Python, and propagates issuance failures.
+- gtrace parses release metadata without GNU grep and reports success only
+  after binary placement/executable checks succeed.
+- Document remaining Docker, kubectl, Ollama and Linux-desktop limitations;
+  do not imply that a full macOS install supplies those external services.

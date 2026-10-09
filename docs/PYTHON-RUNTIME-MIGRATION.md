@@ -41,6 +41,24 @@ symlinks at replacement targets are refused, and explicit `NETCLAW_VENV`
 environments are never automatically replaced. Check configuration conflicts
 and server discovery before retiring an old runtime.
 
+The same recovery applies to dedicated source environments for ANTA, multivendor
+CLI, Zabbix, Percepxion, SLC and Jev. For example, an old `anta-mcp/.venv` is
+preserved while installation uses `anta-mcp/.venv-py3.12`. Canonical MCP launch
+templates follow the successfully recorded interpreter. Existing custom launch
+commands still require reconciliation.
+
+Apple's pip 21.2 cannot install modern editable `pyproject.toml` projects.
+The installer upgrades pip older than 21.3 to `pip>=23` inside the component
+environment before installing dependencies. It refuses to upgrade system pip.
+This addresses the missing `setup.py`/`setup.cfg` errors separately from Python
+version errors.
+
+An `--all` retry also needs prerequisites for the selected integrations. Docker,
+kubectl, Ollama, packet-capture tools and browser provisioning are separate from
+Python recovery. The Computer Use virtual desktop requires Linux. Configure
+credentials and reachable services only for the integrations you intend to use;
+installing Python packages does not establish that those services are ready.
+
 ## Component isolation
 
 The interactive and CLI installers automatically isolate legacy Python components

@@ -1115,19 +1115,9 @@ echo "  208 tests behind 4 tools, 1,272/5,000 tokens. Read-only: ANTA tests, it 
 ANTA_DIR="$NETCLAW_DIR/mcp-servers/anta-mcp"
 ANTA_VENV="$ANTA_DIR/.venv"
 
-if [ ! -x "$ANTA_VENV/bin/python" ]; then
-    log_info "Creating dedicated virtualenv at $ANTA_VENV"
-    # `python3 -m venv` fails on hosts without ensurepip (this one included); netclaw_venv_create
-    # handles that, and virtualenv is the fallback spec 076 already relies on.
-    netclaw_venv_create "$ANTA_VENV" || \
-        virtualenv -q -p /usr/bin/python3 "$ANTA_VENV" || {
-            log_error "anta-mcp virtualenv creation FAILED — the server will not start"
-            return 1
-        }
-fi
-
-NETCLAW_VENV="$ANTA_VENV" netclaw_pip_install -r "$ANTA_DIR/requirements.txt" || \
-    log_error "anta-mcp dependencies install FAILED — the server will not start"
+netclaw_component_venv "$ANTA_VENV" || return 1
+ANTA_VENV="$NETCLAW_COMPONENT_VENV"
+NETCLAW_VENV="$ANTA_VENV" netclaw_pip_install -r "$ANTA_DIR/requirements.txt" || return 1
 
 if "$ANTA_VENV/bin/python" -c "import anta, mcp" 2>/dev/null; then
     ANTA_V=$("$ANTA_VENV/bin/python" -c "import importlib.metadata as m; print(m.version('anta'))" 2>/dev/null)
@@ -1136,7 +1126,8 @@ if "$ANTA_VENV/bin/python" -c "import anta, mcp" 2>/dev/null; then
     SYS_CRYPTO=$(python3 -c "import importlib.metadata as m; print(m.version('cryptography'))" 2>/dev/null || echo "absent")
     log_info "  system cryptography still: $SYS_CRYPTO (venv holds its own copy)"
 else
-    log_warn "anta-mcp installed but imports failed — check $ANTA_VENV"
+    log_error "anta-mcp imports failed — check $ANTA_VENV"
+    return 1
 fi
 
 # THE POINT OF THIS BLOCK. ANTA reports a test for a feature the device does not run as
@@ -1428,7 +1419,7 @@ echo ""
 
 # Check for gcloud CLI (recommended for auth)
 if command -v gcloud &> /dev/null; then
-    GCLOUD_VERSION=$(gcloud version 2>/dev/null | head -1 | grep -oP '[\d.]+' || echo "unknown")
+    GCLOUD_VERSION=$(gcloud version 2>/dev/null | head -1 | grep -oE '[0-9.]+' || echo "unknown")
     log_info "gcloud CLI found (version: $GCLOUD_VERSION)"
 
     # Check for application-default credentials
@@ -1664,7 +1655,7 @@ GTRACE_BIN=""
 
 # Option A: Try go install if Go 1.24+ is available
 if command -v go &> /dev/null; then
-    GO_VER=$(go version 2>/dev/null | grep -oP '\d+\.\d+' | head -1)
+    GO_VER=$(go version 2>/dev/null | sed -n 's/.*go\([0-9][0-9]*\.[0-9][0-9]*\).*/\1/p' | head -1)
     GO_MAJOR=$(echo "$GO_VER" | cut -d. -f1)
     GO_MINOR=$(echo "$GO_VER" | cut -d. -f2)
     if [ "$GO_MAJOR" -ge 1 ] && [ "$GO_MINOR" -ge 24 ] 2>/dev/null; then
@@ -1672,9 +1663,10 @@ if command -v go &> /dev/null; then
         if go install github.com/hervehildenbrand/gtrace/cmd/gtrace@latest 2>/dev/null; then
             GOPATH_BIN="${GOPATH:-$HOME/go}/bin/gtrace"
             if [ -f "$GOPATH_BIN" ]; then
-                sudo cp "$GOPATH_BIN" /usr/local/bin/gtrace 2>/dev/null || true
-                GTRACE_BIN="/usr/local/bin/gtrace"
-                log_info "gtrace installed via go install"
+                if sudo cp "$GOPATH_BIN" /usr/local/bin/gtrace && [ -x /usr/local/bin/gtrace ]; then
+                    GTRACE_BIN="/usr/local/bin/gtrace"
+                    log_info "gtrace installed via go install"
+                fi
             fi
         fi
     fi
@@ -1695,18 +1687,27 @@ if [ -z "$GTRACE_BIN" ] || ! command -v gtrace &> /dev/null; then
     fi
 
     # Get latest release tag
-    GTRACE_LATEST=$(curl -sL "https://api.github.com/repos/hervehildenbrand/gtrace/releases/latest" 2>/dev/null | grep -oP '"tag_name":\s*"\K[^"]+' || echo "v0.9.7")
+    GTRACE_LATEST=$(curl -fsSL "https://api.github.com/repos/hervehildenbrand/gtrace/releases/latest" 2>/dev/null | \
+        "$NETCLAW_PY" -c 'import json,sys; print(json.load(sys.stdin)["tag_name"])') || {
+        log_error "Could not read the gtrace release tag — install manually: https://github.com/hervehildenbrand/gtrace/releases"
+        return 1
+    }
     GTRACE_VER="${GTRACE_LATEST#v}"
     GTRACE_URL="https://github.com/hervehildenbrand/gtrace/releases/download/${GTRACE_LATEST}/gtrace_${GTRACE_VER}_${GTRACE_OS}_${GTRACE_ARCH}.tar.gz"
 
     GTRACE_TMP=$(mktemp -d)
-    if curl -sL "$GTRACE_URL" -o "$GTRACE_TMP/gtrace.tar.gz" 2>/dev/null; then
-        tar xzf "$GTRACE_TMP/gtrace.tar.gz" -C "$GTRACE_TMP" 2>/dev/null
-        if [ -f "$GTRACE_TMP/gtrace" ]; then
-            sudo mv "$GTRACE_TMP/gtrace" /usr/local/bin/gtrace
-            sudo chmod +x /usr/local/bin/gtrace
-            GTRACE_BIN="/usr/local/bin/gtrace"
-            log_info "gtrace $GTRACE_VER installed from GitHub release ($GTRACE_OS/$GTRACE_ARCH)"
+    if curl -fsSL "$GTRACE_URL" -o "$GTRACE_TMP/gtrace.tar.gz" 2>/dev/null; then
+        if tar xzf "$GTRACE_TMP/gtrace.tar.gz" -C "$GTRACE_TMP" 2>/dev/null && [ -f "$GTRACE_TMP/gtrace" ]; then
+            if sudo mv "$GTRACE_TMP/gtrace" /usr/local/bin/gtrace && \
+               sudo chmod +x /usr/local/bin/gtrace && [ -x /usr/local/bin/gtrace ]; then
+                GTRACE_BIN="/usr/local/bin/gtrace"
+                log_info "gtrace $GTRACE_VER installed from GitHub release ($GTRACE_OS/$GTRACE_ARCH)"
+            else
+                log_error "Could not install gtrace in /usr/local/bin — check permissions and retry."
+                rm -f "$GTRACE_TMP/gtrace" "$GTRACE_TMP/gtrace.tar.gz"
+                rmdir "$GTRACE_TMP" 2>/dev/null || true
+                return 1
+            fi
         else
             log_warn "Could not extract gtrace binary — install manually: https://github.com/hervehildenbrand/gtrace/releases"
         fi
@@ -1728,7 +1729,8 @@ fi
 if command -v gtrace &> /dev/null; then
     log_info "gtrace MCP ready: $(gtrace --version 2>&1 | head -1) (6 tools: traceroute, mtr, globalping, asn_lookup, geo_lookup, reverse_dns)"
 else
-    log_warn "gtrace not installed — path analysis and IP enrichment skills will not work"
+    log_error "gtrace not installed — path analysis and IP enrichment skills will not work"
+    return 1
 fi
 
 echo ""
@@ -3741,6 +3743,13 @@ component_install_claw_certs() {
 log_step "Installing Claw Certification (N2N channel security, feature 060)..."
 # TLS credentials + risk CA + optional ACME domain identity + auto-rotation.
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+local cert_python runtime_root="${NETCLAW_RUNTIME_ROOT:-${RUNTIME_HOME:-$HOME/.openclaw}/python-runtimes}"
+netclaw_pip_install 'cryptography>=46,<47' || return 1
+if [ -f "$runtime_root/records/${NETCLAW_INSTALL_COMPONENT:-claw-certs}" ]; then
+    read -r cert_python < "$runtime_root/records/${NETCLAW_INSTALL_COMPONENT:-claw-certs}"
+else
+    cert_python="$(_netclaw_resolve_py)" || return 1
+fi
 
 # Fetch the lego ACME client (only strictly needed for the domain-verified path,
 # but install it now so `--domain` works later without a second step).
@@ -3748,7 +3757,7 @@ bash "$REPO_ROOT/scripts/lib/fetch-lego.sh" || log_warn "lego fetch skipped — 
 
 # Generate this claw's pinned-model credential + (on a Border) the risk CA now,
 # so a fresh claw comes up certificate-capable with no extra steps.
-python3 - "$REPO_ROOT" <<'PY'
+if ! "$cert_python" - "$REPO_ROOT" <<'PY'
 import sys, os
 sys.path.insert(0, os.path.join(sys.argv[1], "mcp-servers", "protocol-mcp"))
 from bgp.federation import certs
@@ -3766,8 +3775,12 @@ if rm.is_border():
 m.close()
 print("claw credential + (border) risk CA ready under ~/.openclaw/n2n/keys/")
 PY
+then
+    log_error "Claw credential generation failed — certification was not installed."
+    return 1
+fi
 
-log_success "Claw Certification installed."
+log_info "Claw Certification installed."
 log_info "Enable secured federation: set N2N_CERT_MODE=on (or 'enforce') in ~/.openclaw/.env"
 log_info "Domain-verified identity (optional): scripts/patch-claw-certs.sh --domain <name> --dns-provider <id>"
 log_info "Existing claws upgrade in one command: scripts/patch-claw-certs.sh"
@@ -3788,30 +3801,12 @@ MV_VENV="$MV_DIR/.venv"
 # NCFED uses for X.509 issuance (spec 060). Installing these shared would move
 # cryptography three major versions under the certificate stack.
 #
-# `virtualenv`, not `python3 -m venv`: Python 3.14 has no ensurepip on Ubuntu
-# unless python3.14-venv is installed, and that needs root (spec 076 research R12).
-if ! command -v virtualenv &> /dev/null; then
-    log_warn "virtualenv not found — required because Python 3.14 lacks ensurepip here."
-    log_warn "Install it with: python3 -m pip install --user virtualenv"
-    log_warn "Skipping Multivendor CLI Driver."
-    return 0
-fi
-
 CRYPTO_BEFORE=$(/usr/bin/python3 -c 'import importlib.metadata as m; print(m.version("cryptography"))' 2>/dev/null || echo "none")
 
-log_info "Creating dedicated virtualenv at $MV_VENV"
-virtualenv -q -p /usr/bin/python3 "$MV_VENV" || {
-    log_warn "virtualenv creation failed — skipping Multivendor CLI Driver."
-    return 0
-}
-
-# The venv's OWN pip. Never bare pip3: on some hosts pip3 targets a different
-# interpreter's site-packages than python3 (spec 076 research R7).
-log_info "Installing dependencies (~21 packages) into the virtualenv..."
-"$MV_VENV/bin/python" -m pip install -q -r "$MV_DIR/requirements.txt" || {
-    log_warn "dependency install failed — skipping Multivendor CLI Driver."
-    return 0
-}
+netclaw_component_venv "$MV_VENV" || return 1
+MV_VENV="$NETCLAW_COMPONENT_VENV"
+log_info "Installing dependencies into the dedicated virtualenv at $MV_VENV..."
+NETCLAW_VENV="$MV_VENV" netclaw_pip_install -r "$MV_DIR/requirements.txt" || return 1
 
 # FR-030c: the system cryptography must be untouched, or NCFED certificate
 # handling breaks rather than this server.
@@ -3826,7 +3821,8 @@ fi
 if "$MV_VENV/bin/python" -c "import nornir, napalm, netmiko, jdiff" 2>/dev/null; then
     log_info "Multivendor CLI Driver ready (read-only; set MULTIVENDOR_WRITE_ENABLED=true to allow writes)"
 else
-    log_warn "Multivendor CLI Driver installed but imports failed — check $MV_VENV"
+    log_error "Multivendor CLI Driver imports failed — check $MV_VENV"
+    return 1
 fi
 }
 
@@ -3950,33 +3946,16 @@ if [ -d "$ZABBIX_MCP_DIR" ]; then
 
     # Never bare `python3 -m venv`: measured on this host it fails outright
     # because ensurepip is unavailable (spec 077 hazard #3).
-    if command -v netclaw_venv_create >/dev/null 2>&1; then
-        netclaw_venv_create "$ZABBIX_MCP_DIR/.venv" || log_warn "Zabbix MCP venv creation failed"
-    elif command -v uv >/dev/null 2>&1; then
-        uv venv "$ZABBIX_MCP_DIR/.venv" >/dev/null 2>&1 || log_warn "Zabbix MCP venv creation failed (uv)"
-    else
-        log_warn "Neither netclaw_venv_create nor uv available -- cannot build the Zabbix venv."
-        log_warn "Do NOT fall back to 'python3 -m venv': ensurepip is unavailable on some hosts,"
-        log_warn "and installing into the system interpreter would break five other servers."
-    fi
-
-    if [ -x "$ZABBIX_MCP_DIR/.venv/bin/python" ]; then
-        # Install into the VENV interpreter, named explicitly. Deliberately NOT
-        # netclaw_pip_install: that targets the system interpreter, which is the exact
-        # isolation boundary required for dependency upgrades.
-        # Naming --python satisfies the same rule netclaw_pip_install enforces --
-        # packages land in the interpreter the server actually runs under.
-        ( cd "$ZABBIX_MCP_DIR" && \
-          uv pip install -q --python "$ZABBIX_MCP_DIR/.venv/bin/python" -r requirements.txt ) 2>/dev/null || \
-            log_warn "Zabbix MCP dependency install failed (fastmcp, zabbix_utils)"
-        log_info "Zabbix MCP prepared: $ZABBIX_MCP_DIR (isolated venv)"
-        log_info "Read-only is FORCED in config -- the upstream launcher defaults it to false"
-    fi
+    netclaw_component_venv "$ZABBIX_MCP_DIR/.venv" || return 1
+    ZABBIX_VENV="$NETCLAW_COMPONENT_VENV"
+    NETCLAW_VENV="$ZABBIX_VENV" netclaw_pip_install -r "$ZABBIX_MCP_DIR/requirements.txt" || return 1
+    log_info "Zabbix MCP prepared: $ZABBIX_MCP_DIR (runtime: $ZABBIX_VENV)"
+    log_info "Read-only is FORCED in config -- the upstream launcher defaults it to false"
 else
     log_warn "Zabbix MCP directory missing: $ZABBIX_MCP_DIR"
 fi
 
-ZABBIX_MCP_CMD_DETECTED="$ZABBIX_MCP_DIR/.venv/bin/python -u $NETCLAW_DIR/scripts/zabbix-stdio.py"
+ZABBIX_MCP_CMD_DETECTED="${ZABBIX_VENV:-$ZABBIX_MCP_DIR/.venv}/bin/python -u $NETCLAW_DIR/scripts/zabbix-stdio.py"
 }
 
 component_install_globalping() {
@@ -4050,23 +4029,10 @@ if [ -d "$PERCEPXION_MCP_DIR" ]; then
     # The upstream requirements lock still targets FastMCP3 and is not used here.
     echo "  Preparing isolated FastMCP 4 runtime"
 
-    if command -v netclaw_venv_create >/dev/null 2>&1; then
-        netclaw_venv_create "$PERCEPXION_MCP_DIR/.venv" || log_warn "Percepxion MCP venv creation failed"
-    elif command -v uv >/dev/null 2>&1; then
-        uv venv "$PERCEPXION_MCP_DIR/.venv" >/dev/null 2>&1 || log_warn "Percepxion MCP venv creation failed (uv)"
-    else
-        log_warn "Neither netclaw_venv_create nor uv available — cannot build the Percepxion venv."
-        log_warn "Do NOT fall back to 'python3 -m venv': ensurepip is unavailable on some hosts,"
-        log_warn "and installing into the system interpreter would break five other servers."
-    fi
-
-    if [ -x "$PERCEPXION_MCP_DIR/.venv/bin/python" ]; then
-        # Explicit component bounds also apply when the caller selects a venv.
-        ( cd "$PERCEPXION_MCP_DIR" && \
-          NETCLAW_VENV="$PERCEPXION_MCP_DIR/.venv" netclaw_pip_install -c "$NETCLAW_DIR/config/python-components/percepxion.txt" -e . ) 2>/dev/null || \
-            log_warn "Percepxion MCP dependency install failed (fastmcp, requests, python-dotenv)"
-        log_info "Percepxion MCP prepared: $PERCEPXION_MCP_DIR (isolated venv)"
-    fi
+    netclaw_component_venv "$PERCEPXION_MCP_DIR/.venv" || return 1
+    PERCEPXION_VENV="$NETCLAW_COMPONENT_VENV"
+    ( cd "$PERCEPXION_MCP_DIR" && NETCLAW_VENV="$PERCEPXION_VENV" netclaw_pip_install -c "$NETCLAW_DIR/config/python-components/percepxion.txt" -e . ) || return 1
+    log_info "Percepxion MCP prepared: $PERCEPXION_MCP_DIR (runtime: $PERCEPXION_VENV)"
 else
     log_warn "Percepxion MCP clone failed"
 fi
@@ -4098,22 +4064,10 @@ if [ -d "$SLC_MCP_DIR" ]; then
     # The upstream requirements lock still targets FastMCP3 and is not used here.
     echo "  Preparing isolated FastMCP 4 runtime"
 
-    if command -v netclaw_venv_create >/dev/null 2>&1; then
-        netclaw_venv_create "$SLC_MCP_DIR/.venv" || log_warn "SLC MCP venv creation failed"
-    elif command -v uv >/dev/null 2>&1; then
-        uv venv "$SLC_MCP_DIR/.venv" >/dev/null 2>&1 || log_warn "SLC MCP venv creation failed (uv)"
-    else
-        log_warn "Neither netclaw_venv_create nor uv available — cannot build the SLC venv."
-        log_warn "Do NOT fall back to 'python3 -m venv': ensurepip is unavailable on some hosts,"
-        log_warn "and installing into the system interpreter would break five other servers."
-    fi
-
-    if [ -x "$SLC_MCP_DIR/.venv/bin/python" ]; then
-        ( cd "$SLC_MCP_DIR" && \
-          NETCLAW_VENV="$SLC_MCP_DIR/.venv" netclaw_pip_install -c "$NETCLAW_DIR/config/python-components/slc.txt" -e . ) 2>/dev/null || \
-            log_warn "SLC MCP dependency install failed (fastmcp, requests, hvac, boto3, pyotp)"
-        log_info "SLC MCP prepared: $SLC_MCP_DIR (isolated venv)"
-    fi
+    netclaw_component_venv "$SLC_MCP_DIR/.venv" || return 1
+    SLC_VENV="$NETCLAW_COMPONENT_VENV"
+    ( cd "$SLC_MCP_DIR" && NETCLAW_VENV="$SLC_VENV" netclaw_pip_install -c "$NETCLAW_DIR/config/python-components/slc.txt" -e . ) || return 1
+    log_info "SLC MCP prepared: $SLC_MCP_DIR (runtime: $SLC_VENV)"
 else
     log_warn "SLC MCP clone failed"
 fi
@@ -4161,8 +4115,8 @@ component_install_jev() {
     [ -f "$jev_dir/requirements.txt" ] || {
         log_error "Jev requirements are missing: $jev_dir"; return 1;
     }
-    netclaw_venv_create "$jev_dir/.venv" || return 1
-    NETCLAW_VENV="$jev_dir/.venv" netclaw_pip_install -r "$jev_dir/requirements.txt" || return 1
+    netclaw_component_venv "$jev_dir/.venv" || return 1
+    NETCLAW_VENV="$NETCLAW_COMPONENT_VENV" netclaw_pip_install -r "$jev_dir/requirements.txt" || return 1
     _set_env_default JEV_ENABLED false || return 1
     _set_env_default JEV_DAILY_LIMIT_USD 5 || return 1
     _set_env_default JEV_CASE_LIMIT_USD 0.25 || return 1

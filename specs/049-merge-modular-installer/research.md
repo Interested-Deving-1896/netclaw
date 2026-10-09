@@ -105,3 +105,25 @@ Use Python 3.12 as operator guidance, matching pyATS' default. Existing
 automatic environments with unsupported Python must not be reused after
 changing NETCLAW_PY; use a separate version-suffixed target, with the same
 ownership checks and success-only interpreter records.
+
+## Received full-log evidence (2026-10-09)
+
+104 actual logs: 42 contain ResolutionImpossible, 11 contain old-pip editable
+installation errors, five report no matching distribution, and two staged
+runtimes fail for missing uv. These are message counts, not 104 failures or
+proof that every error is exclusively Python-related. The supplied version
+output confirms Python 3.9.6. pip 21.2.4 predates PEP 660 editable support
+added in pip 21.3 (https://pip.pypa.io/en/stable/news/#v21-3).
+
+Additional direct defects: gtrace uses grep -P (rejected by macOS grep), ignores
+failed sudo binary placement, and logs success; claw-certs lacks cryptography
+and calls undefined log_success; multivendor requires virtualenv and hardcodes
+/usr/bin/python3; dedicated ANTA/source environments can retain old Python on
+retry. Canonical `.venv/bin/python` templates currently ignore runtime records,
+so recovery must update binding for those known templates while retaining
+custom command conflicts and unrelated transports.
+
+The archive also warns of absent Docker, kubectl, Ollama, tshark/capinfos,
+Graphviz, browser provisioning and production guards. Computer Use is explicitly
+a Linux virtual desktop. These external prerequisites need operator setup
+or selection changes; do not misclassify them as Python resolver bugs.

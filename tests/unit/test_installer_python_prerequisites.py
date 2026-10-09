@@ -157,3 +157,71 @@ netclaw_pip_install example
     assert 'Python 3.10+' in result.stderr
     assert (target / 'bin/python').exists()
     assert not (tmp_path / 'runtimes').exists()
+
+
+def test_source_venv_retry_preserves_old_python_and_reuses_replacement(tmp_path):
+    old = tmp_path / 'source/.venv'
+    interpreter(old / 'bin/python', supported=False)
+    (old / 'sentinel').write_bytes(b'keep source environment')
+    interpreter(tmp_path / 'base-python')
+    result = run(tmp_path, '''
+source scripts/lib/pip-helper.sh
+netclaw_venv_create() { mkdir -p "$1/bin"; cp "$NETCLAW_PY" "$1/bin/python"; }
+netclaw_component_venv "$FIXTURE_SOURCE/.venv"
+test "$NETCLAW_COMPONENT_VENV" = "$FIXTURE_SOURCE/.venv-py3.12"
+netclaw_venv_create() { return 42; }
+netclaw_component_venv "$FIXTURE_SOURCE/.venv"
+''', FIXTURE_SOURCE=str(old.parent))
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert (old / 'sentinel').read_bytes() == b'keep source environment'
+    assert (old / 'bin/python').read_text().find('3.9') >= 0
+    assert (old.parent / '.venv-py3.12/.netclaw-managed').is_file()
+
+
+@pytest.mark.parametrize('symlink', [False, True])
+def test_source_venv_retry_refuses_unmanaged_replacement(tmp_path, symlink):
+    old = tmp_path / 'source/.venv'
+    interpreter(old / 'bin/python', supported=False)
+    interpreter(tmp_path / 'base-python')
+    replacement = old.parent / '.venv-py3.12'
+    if symlink:
+        destination = tmp_path / 'operator-runtime'
+        destination.mkdir()
+        (destination / '.netclaw-managed').touch()
+        replacement.symlink_to(destination, target_is_directory=True)
+    else:
+        replacement.mkdir()
+    result = run(tmp_path, '''
+source scripts/lib/pip-helper.sh
+netclaw_component_venv "$FIXTURE_SOURCE/.venv"
+''', FIXTURE_SOURCE=str(old.parent))
+    assert result.returncode != 0
+    assert 'Refusing to adopt an unmanaged' in result.stderr
+    assert not (replacement / 'bin').exists()
+
+
+@pytest.mark.parametrize('system, failure, expected', [(False, 0, 0), (False, 23, 1), (True, 0, 1)])
+def test_obsolete_pip_upgrade_is_isolated_and_failure_propagates(tmp_path, system, failure, expected):
+    fake = tmp_path / 'base-python'
+    fake.write_text('''#!/bin/sh
+if [ "$1" = -c ]; then
+    case "$2" in
+        *'version("pip")'*) exit 1 ;;
+        *'sys.prefix != sys.base_prefix'*) exit "$FIXTURE_SYSTEM" ;;
+    esac
+fi
+printf '%s\n' "$@" >> "$FIXTURE_CALLS"
+exit "$FIXTURE_UPGRADE_FAILURE"
+''')
+    fake.chmod(0o700)
+    calls = tmp_path / 'pip-calls'
+    result = run(tmp_path, '''
+source scripts/lib/pip-helper.sh
+_netclaw_modern_component_pip "$NETCLAW_PY"
+''', FIXTURE_SYSTEM=str(int(system)), FIXTURE_UPGRADE_FAILURE=str(failure), FIXTURE_CALLS=str(calls))
+    assert result.returncode == expected, result.stdout + result.stderr
+    if system:
+        assert not calls.exists()
+        assert 'Refusing to upgrade system pip' in result.stderr
+    else:
+        assert 'pip>=23' in calls.read_text()

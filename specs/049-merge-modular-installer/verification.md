@@ -68,3 +68,61 @@ rejects it with actionable guidance. No package constraints were loosened.
 
 PR 284 merged as c2cc6d4. Follow-up branch:
 `codex/fix-installer-python-prerequisites`, based on that upstream merge.
+
+## Full-log follow-up — 2026-10-09
+
+The supplied version output confirms Python 3.9.6. Read 104 actual logs from
+the archive without extracting it; excluded AppleDouble metadata. 42 contain
+resolver failures, 11 modern editable-install errors, five no-matching-package
+errors and two missing-uv staged failures. Counts describe messages, not a
+validated number of failed components. The raw archive and private analysis
+are not committed or uploaded to GitHub.
+
+- PASS: 124 tests under isolated Python 3.12.14/pytest 8.4.2, using:
+
+  ```bash
+  /private/tmp/netclaw-installer-tests/bin/python -m pytest \
+    tests/unit/test_installer_python_prerequisites.py \
+    tests/unit/test_installer_python_runtime.py \
+    tests/unit/test_installer_prerequisite_isolation.py \
+    tests/unit/test_installer_exit_status.py \
+    tests/unit/test_installer_constraints.py \
+    tests/unit/test_installer_component_paths.py \
+    tests/unit/test_installer_tui.py \
+    tests/unit/test_installer_mcp_config.py \
+    tests/unit/test_installer_log_followups.py \
+    tests/unit/test_jev_installer.py \
+    tests/unit/test_pyats_runtime_recovery.py \
+    tests/unit/test_gait_runtime_recovery.py \
+    tests/n2n/test_certs_060.py -q
+  ```
+
+  Includes dedicated-runtime preservation, ownership refusal and reuse,
+  obsolete-pip/system-pip boundaries, recorded launch binding, installation
+  and import failures, certificate runtime/dependency failures, and portable
+  gtrace parsing with failed placement. The certificate tests exercise real
+  cryptography 46.0.7 and temporary credential/database paths. One existing
+  utcnow deprecation warning; no test failures. New tests are collected by
+  the existing unit suite; certificate coverage belongs to the n2n suite.
+- Regression proof: six new cases fail against temporary copies of the
+  previous committed code (source venv recovery, three pip-upgrade boundary
+  cases, certificate setup and gtrace). No checkout reset was used.
+- PASS: `tests/installer/run-tests.sh`, with the temporary test interpreter
+  on PATH and selected as NETCLAW_PY. Memory MCP wheel includes its SQLite
+  schema; bgp-intel, gnmi, nautobot and suzieq install into temporary component
+  runtimes. Generated registrations launch these four servers and obtain
+  tool lists with both legacy and 2026-07-28 protocol versions. No endpoint
+  tools are invoked. fwrule: BLOCKED_DEPENDENCY, optional checkout absent.
+- PASS: Apple Bash 3.2 syntax, spec artifact checks, catalog/dependency/docs/
+  Meraki/package/portability reconciliation, suite inventory/matrix and diff
+  whitespace checks. No constraints for other integrations were loosened.
+- Limits: no full 108-component installation, live vendor/service discovery,
+  Greg's exact Terminal/macOS session, Linux or modern Bash validation.
+  Dedicated external integrations are covered with sanitized fixtures, not
+  live deployments. Docker, kubectl, Ollama, packet capture, browser setup and
+  Linux Computer Use requirements remain operator prerequisites. Existing
+  custom launch conflicts still require reconciliation before retiring old
+  environments. pip upgrades require package-index availability.
+
+This extends existing draft PR285. Release metadata remains pending maintainer
+coordination under CONTRIBUTING.md/docs/RELEASING.md; no release is claimed.

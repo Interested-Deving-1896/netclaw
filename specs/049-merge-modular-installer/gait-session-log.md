@@ -33,3 +33,21 @@ Greg's exact version remains unconfirmed; no full fleet installation claimed.
 Original PR 284 is merged. Prepared a separate follow-up commit/PR on
 `codex/fix-installer-python-prerequisites` from c2cc6d4. GAIT tools remain
 unavailable; this file records the session. No devices or credentials accessed.
+
+## 2026-10-09 — received full installer logs
+
+User supplied the full install archive after confirming Python 3.9.6. Read
+104 component/core logs locally without extracting the archive. Classified
+resolver/editable/missing-uv failures and verified distinct gtrace, certificate
+and multivendor defects. Updated spec, research, plan and tasks before code.
+Added isolated pip refresh, preserved dedicated source-runtime recovery,
+success-recorded canonical launch binding, accurate component failures and
+portable version/release parsing. Operator guidance distinguishes external
+service/platform prerequisites from Python recovery.
+
+124 focused tests and declaration/syntax checks pass. Installer contract
+checks install and discover four temporary MCP runtimes; optional fwrule
+checkout absent. Existing draft PR285 is the authorized publication target.
+Raw logs/private analysis remain local. No live services or network devices
+were operated, and no messages were sent to Greg. GAIT tools remain unavailable;
+this append-only record and daily memory document the session.

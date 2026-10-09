@@ -108,3 +108,17 @@ the specification, research, plan and task updates precede implementation.
 4. Document Homebrew Python 3.12/uv setup and rerun behavior; run focused
    installer regressions, syntax, spec and declaration checks. No global
    installation or full fleet deployment during validation.
+
+## Full-log follow-up plan (2026-10-09)
+
+1. Add safe component-specific venv selection and obsolete-pip refresh inside
+   virtualenvs; use it for ANTA, Jev, Zabbix, Percepxion, SLC and multivendor.
+2. Bind only canonical repository `.venv/bin/python` template commands to
+   recorded successful runtimes; keep custom/uvx/Node launches unchanged.
+3. Install bounded cryptography for claw-certs, run issuance with its recorded
+   Python and propagate failures; replace the nonexistent success logger.
+4. Replace gtrace GNU grep parsing with portable parsing and verify binary
+   placement; test failures without sudo/network/system changes.
+5. Extend focused tests and operator/evidence docs; update existing draft PR285
+   around final installer scope. No private logs committed or external services
+   operated. Full optional-component fleet coverage remains unverified.
