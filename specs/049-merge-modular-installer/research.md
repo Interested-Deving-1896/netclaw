@@ -73,3 +73,16 @@
 **Decision**: Complete this work directly on `pr-96-review` (local branch tracking `refs/pull/96/head`), then push the result to `calcuttin:feat/installer-tui-refactor`. Confirmed via `gh pr view 96` that `maintainerCanModify: true` — the contributor explicitly enabled maintainer edits, so this is both technically possible and clearly welcomed by them. This updates PR #96 in place rather than opening a new, competing PR, preserving the contributor's own commit and its authorship in the final history regardless of who pushes follow-up commits after it.
 
 **Fallback** (only if the push is rejected for a reason not visible from `maintainerCanModify`, e.g. branch protection on their fork): open a new PR that includes their original commit (via merge, not squash-and-reattribute) with an explicit comment on PR #96 crediting them and linking to the superseding PR, then close #96. Discussed and pre-approved by the operator; not expected to be needed.
+
+## macOS keyboard follow-up (2026-10-09)
+
+On the host's `/bin/bash` 3.2.57, `read -t 0.05` reports an invalid timeout.
+A pseudo-terminal reproduction sends Down to `tui_menu`: the tail read fails,
+returns `esc`, and the menu aborts. `select_runtime` then swallows that failure
+with `|| return 0`, continuing with OpenClaw. This matches the reported symptom;
+Greg's exact terminal and keystroke stream have not been tested.
+
+Use an integer one-second bound for escape-sequence tails, supported by Bash
+3.2 and modern Bash. Preserve the first blocking character read, propagate its
+failure, recognize both arrow encodings, and cancel instead of accepting a
+runtime on failure. A standalone Escape can take up to one second to resolve.
