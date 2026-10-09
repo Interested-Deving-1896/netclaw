@@ -1000,3 +1000,14 @@ Build passes; 358/359 HUD tests pass (remaining known 127.0.0.2 Mac fixture).
 Qwen3-TTS Base via MLX Audio is the researched own-voice candidate, not installed
 or benchmarked. Keep future recordings in ~/.openclaw/pal/voices, not the public
 asset directory. Research/license sources are in spec144/research.md.
+
+### Google Chat readiness research — 2026-10-09
+
+Installed OpenClaw is 2026.7.1-2; `plugins list` contains no Google Chat channel.
+The enabled `google` entry is the model/media provider, not messaging. Public
+npm metadata reports `@openclaw/googlechat` 2026.9.9 with peer OpenClaw >=2026.9.9.
+Older 2026.7.1 declares >=2026.7.1, but ordinary semver rejects the local -2 suffix;
+it is not a verified workaround. Test/pin a supported pair before installation.
+No runtime/channel/Google/ingress changes performed. Basic messaging uses the
+native plugin; NetClaw-managed setup/status and operational export/approval
+controls are planned in `specs/145-google-chat-channel/`.

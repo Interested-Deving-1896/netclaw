@@ -72,3 +72,15 @@ must answer that probe successfully to exercise their intended pip-error branch.
 The Zabbix source assertion also needs to recognize the new component helper,
 while checking it delegates to supported isolated creation and validates Python.
 Updated these test fixtures without weakening runtime checks or skipping tests.
+
+## Final merge evidence
+
+[PR #286](https://github.com/automateyournetwork/netclaw/pull/286) merged at
+2026-10-09T18:16:07Z as `aa90e7d3c977a32902c81099fb79d556b46e9dd0` after all
+33 PR checks passed for `7135308d6cfdf4edaf1a97e3a693a9406cc670c4`.
+[Contract CI](https://github.com/automateyournetwork/netclaw/actions/runs/37971777986)
+and the other PR checks passed without administrator bypass. Full local unit
+contracts, 14 standalone fixtures, 64 reconciliation assertions and Zabbix offline
+contracts also passed after the fixture repair. Zabbix live credentials were not
+available. Source version is 1.6.0; no release tag or GitHub release was published.
+Returned to updated main before creating the Google Chat draft branch.

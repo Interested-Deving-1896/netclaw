@@ -64,5 +64,5 @@ Status: closed for the local Avatar scope on 2026-10-09. Unchecked hosted and ex
 
 - [x] T039 Review the local-first scope, preserve deferred tasks and write final verification/compatibility limits.
 - [x] T040 Re-run HUD tests/build, Python boundary tests and repository declaration checks; report the existing macOS loopback fixture failure precisely.
-- [ ] T041 Create the requested PR, pass applicable Linux CI, merge, and return to main before creating spec 145.
+- [x] T041 PR #286 merged after all 33 checks passed; returned to main at aa90e7d before creating spec 145.
 - [x] T042 Repair stale installer fixtures exposed by integrating current main; preserve pip failure/credential/isolation assertions and re-run affected suites.
