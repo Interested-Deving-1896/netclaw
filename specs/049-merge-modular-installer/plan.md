@@ -94,3 +94,17 @@ README.md                             # PR #96's rewritten Quick Start, reconcil
 This is a small correction within spec 049's modular TUI scope, following its
 existing macOS support commitment. No slash-command integration is available;
 the specification, research, plan and task updates precede implementation.
+
+## Python prerequisites follow-up plan (2026-10-09)
+
+1. Add a shared Python minimum-version predicate and check both installer
+   python3 and NETCLAW_PY in core_prereqs; check uv for selected pyATS/GAIT.
+2. Enforce the minimum when creating and using component runtimes. Retain an
+   unsupported automatic runtime and create a version-suffixed environment
+   from the compatible base. Reject unmanaged/symlink targets; never recreate
+   an explicit operator virtualenv. Preserve existing component constraints.
+3. Add offline regressions for false prerequisite success, uv selection, base
+   override, supported runtime reuse and preservation/recovery on retry.
+4. Document Homebrew Python 3.12/uv setup and rerun behavior; run focused
+   installer regressions, syntax, spec and declaration checks. No global
+   installation or full fleet deployment during validation.

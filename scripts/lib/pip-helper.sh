@@ -38,6 +38,24 @@
 : "${NETCLAW_PY:=$(command -v python3)}"
 NETCLAW_SHARED_CONSTRAINTS="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../config" && pwd)/python-shared-constraints.txt"
 
+_netclaw_python_supported() {
+    "$1" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)' >/dev/null 2>&1
+}
+
+_netclaw_require_python() {
+    _netclaw_python_supported "$1" && return 0
+    echo "NetClaw requires Python 3.10+; unsupported interpreter: $1 ($("$1" --version 2>&1 || true))" >&2
+    echo "  Select a compatible NETCLAW_PY and put its python3 on PATH; see docs/PYTHON-RUNTIME-MIGRATION.md." >&2
+    return 1
+}
+
+_netclaw_check_runtime_target() {
+    if [ -L "$1" ] || { [ -e "$1" ] && [ ! -f "$1/.netclaw-managed" ]; }; then
+        echo "Refusing to adopt an unmanaged Python environment: $1" >&2
+        return 1
+    fi
+}
+
 _netclaw_resolve_py() {
     # An explicit venv always wins.
     if [ -n "${NETCLAW_VENV:-}" ]; then
@@ -77,9 +95,15 @@ _netclaw_pip_install() {
             # distributions may share import names with the newer SDK.
             target="$target-component-bounds"
         fi
-        if [ -L "$target" ] || { [ -e "$target" ] && [ ! -f "$target/.netclaw-managed" ]; }; then
-            echo "Refusing to adopt an unmanaged Python environment: $target" >&2
-            return 1
+        _netclaw_check_runtime_target "$target" || return 1
+        if [ -x "$target/bin/python" ] && ! _netclaw_python_supported "$target/bin/python"; then
+            local base version
+            base="$(_netclaw_resolve_py)" || return 1
+            _netclaw_require_python "$base" || return 1
+            version="$("$base" -c 'import sys; print("%s.%s" % sys.version_info[:2])')" || return 1
+            echo "Keeping unsupported Python environment at $target; using $target-py$version" >&2
+            target="$target-py$version"
+            _netclaw_check_runtime_target "$target" || return 1
         fi
         if [ ! -x "$target/bin/python" ] || ! "$target/bin/python" -m pip --version >/dev/null 2>&1; then
             mkdir -p "$target" || return 1
@@ -94,6 +118,7 @@ _netclaw_pip_install() {
         echo "  which on a split-toolchain host installs where nothing can import it." >&2
         return 1
     fi
+    _netclaw_require_python "$py" || return 1
     if ! "$py" -m pip --version >/dev/null 2>&1; then
         echo "netclaw_pip_install: $py has no usable pip module." >&2
         echo "  Remedy: $py -m ensurepip --upgrade   (or install the matching *-venv package)" >&2
@@ -181,6 +206,7 @@ netclaw_venv_create() {
     if [ -z "$base" ]; then
         echo "netclaw_venv_create: no base interpreter found" >&2; return 1
     fi
+    _netclaw_require_python "$base" || return 1
 
     if command -v virtualenv >/dev/null 2>&1; then
         virtualenv -q -p "$base" "$dest" "$@" && return 0

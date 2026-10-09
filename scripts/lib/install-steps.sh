@@ -160,6 +160,25 @@ done
 if ! check_command python3; then
     MISSING=1
     MISSING_IDS="$MISSING_IDS python3"
+elif ! _netclaw_require_python "$(command -v python3)"; then
+    MISSING=1
+    MISSING_IDS="$MISSING_IDS python3"
+fi
+if ! _netclaw_require_python "$NETCLAW_PY"; then
+    log_error "NETCLAW_PY must select a compatible Python 3.10+ interpreter."
+    MISSING=1
+fi
+case " ${SELECTED:-} " in
+    *" pyats "*|*" gait "*)
+        if ! check_command uv; then
+            log_error "uv is required to create the isolated pyATS/GAIT runtime."
+            log_info "Install uv: brew install uv (macOS), or https://docs.astral.sh/uv/getting-started/installation/"
+            MISSING=1
+        fi
+        ;;
+esac
+if [ "$MISSING" -eq 0 ]; then
+    log_info "Component Python: $NETCLAW_PY ($("$NETCLAW_PY" --version 2>&1))"
 fi
 if ! check_command git; then
     MISSING=1

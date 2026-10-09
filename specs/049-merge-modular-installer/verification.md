@@ -30,3 +30,41 @@
 Workaround on unpatched main: `./scripts/install.sh --runtime hermes
 --profile recommended` (run as a single command). This bypasses both selection
 menus; omitting `--profile recommended` keeps the component menu interactive.
+
+## Python prerequisites/retry follow-up — 2026-10-09
+
+Greg's log confirms missing uv. It uses `/usr/bin/python3` and pip 21.2.4,
+consistent with Apple's Python 3.9; Greg's exact version is still pending.
+Verified package metadata requires Python >=3.10 for fastmcp 4.0.11 and
+mcp 2.3.0. The local `/usr/bin/python3` is 3.9.6 and the new minimum check
+rejects it with actionable guidance. No package constraints were loosened.
+
+- Baseline regression proof: previous code incorrectly accepts old installer
+  Python, an old explicit base and missing uv; it reuses an old managed runtime.
+  Four corresponding checks fail against temporary copies of prior code.
+- PASS: 57 tests via isolated pytest 8.4.2 (`/private/tmp/netclaw-installer-tests/bin/python -m pytest ... -q`).
+  Test files: test_installer_python_prerequisites.py,
+  test_installer_prerequisite_isolation.py, test_installer_python_runtime.py,
+  test_installer_tui.py, test_installer_exit_status.py,
+  test_installer_constraints.py, test_installer_component_paths.py,
+  test_pyats_runtime_recovery.py and test_gait_runtime_recovery.py.
+  Includes prerequisite failure, selection-specific uv requirement, explicit
+  old runtime refusal, supported runtime reuse, preserved state/records on
+  failed retry, and rejection of unmanaged/symlink recovery destinations.
+- PASS: actual Python 3.9 stdlib venv retained byte-for-byte for its config and
+  sentinel; a new Python 3.12.14 runtime installed an offline fixture wheel
+  and recorded the new interpreter. No system or MCP component packages changed.
+  An initial smoke test incorrectly used `pip install --version`; it failed
+  because pip requires an install requirement. The corrected fixture-wheel
+  test exercises real installation and success recording.
+- PASS: Bash 3.2 syntax checks for install.sh, install-steps.sh, pip-helper.sh
+  and tui.sh; spec artifact checker; declaration reconciliation for catalog,
+  dependencies, docs, meraki-ids, packages and portability; `git diff --check`.
+- Pytest was installed only in an isolated temporary test environment.
+- Limits: Greg's version/full log pending; no full 108-component install,
+  real vendor/service discovery, Linux/modern Bash or existing config conflict
+  resolution validated. This corrects confirmed prerequisite/retry gaps without
+  claiming every reported component failure has been proven resolved.
+
+PR 284 merged as c2cc6d4. Follow-up branch:
+`codex/fix-installer-python-prerequisites`, based on that upstream merge.

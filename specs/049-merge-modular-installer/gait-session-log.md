@@ -18,3 +18,18 @@ the explicit Hermes CLI workaround. Changes remain local and uncommitted.
 The user requested committing the verified fix to the repository. Prepared
 the installer changes, PTY regression tests and spec 049 follow-up artifacts
 for a local commit on `codex/fix-macos-installer-arrows`. No push requested.
+
+## 2026-10-09 — Python prerequisites/retry follow-up
+
+Greg's next log confirmed uv missing and showed dependency resolution failures
+under Apple's python3/pip. Source/package metadata exposed absent Python
+minimum checks and blind reuse of old managed venvs. Updated spec/plan/tasks
+before implementation, added early minimum and uv checks, preserved old
+automatic runtimes while recovering into a separate compatible target, and
+documented the Homebrew remedy. 57 focused tests and declaration checks pass;
+real Python 3.9-to-3.12 retry verified with an offline fixture wheel.
+
+Greg's exact version remains unconfirmed; no full fleet installation claimed.
+Original PR 284 is merged. Prepared a separate follow-up commit/PR on
+`codex/fix-installer-python-prerequisites` from c2cc6d4. GAIT tools remain
+unavailable; this file records the session. No devices or credentials accessed.

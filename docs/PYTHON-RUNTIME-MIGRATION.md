@@ -1,5 +1,48 @@
 # Python installation compatibility
 
+The installer requires Python 3.10+ for both `python3` on PATH and the
+`NETCLAW_PY` component base. Selecting pyATS or GAIT also requires `uv` on
+PATH before component installation begins. Python 3.12 matches the staged
+pyATS installer's default and is a useful choice for a new macOS installation.
+
+## macOS prerequisites and recovery
+
+Apple's `/usr/bin/python3` can be Python 3.9. Installing current MCP/FastMCP
+packages into environments created from it can produce misleading pip
+dependency-conflict messages. Check the actual interpreter version; upgrading
+pip alone does not change Python's version.
+
+For Homebrew users, select Python explicitly in the same terminal that runs
+the installer:
+
+```bash
+brew install uv python@3.12
+export PATH="$(brew --prefix python@3.12)/libexec/bin:$PATH"
+export NETCLAW_PY="$(brew --prefix python@3.12)/bin/python3.12"
+python3 --version
+"$NETCLAW_PY" --version
+uv --version
+./scripts/install.sh --runtime hermes --all
+```
+
+Use the desired runtime and selection flags instead of `--runtime hermes --all`
+when appropriate. Homebrew documents the unversioned `python3` symlink directory
+in its [Python 3.12 formula](https://formulae.brew.sh/formula/python@3.12);
+see the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/)
+for other platforms.
+
+With the prerequisite/recovery fix installed, a retry detects automatic
+component environments whose Python cannot meet the minimum. It preserves
+the old directory and uses a separate version-suffixed target, such as
+`arista-cvp-component-bounds-py3.12`. A successful dependency installation
+records the replacement interpreter; a failure leaves the previous record
+unchanged. Existing compatible runtimes are reused. Unknown directories and
+symlinks at replacement targets are refused, and explicit `NETCLAW_VENV`
+environments are never automatically replaced. Check configuration conflicts
+and server discovery before retiring an old runtime.
+
+## Component isolation
+
 The interactive and CLI installers automatically isolate legacy Python components
 under the selected runtime home: `~/.openclaw/python-runtimes/<component>` or
 `~/.hermes/python-runtimes/<component>`. Each component has its own environment.

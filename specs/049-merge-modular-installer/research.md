@@ -86,3 +86,22 @@ Use an integer one-second bound for escape-sequence tails, supported by Bash
 3.2 and modern Bash. Preserve the first blocking character read, propagate its
 failure, recognize both arrow encodings, and cancel instead of accepting a
 runtime on failure. A standalone Escape can take up to one second to resolve.
+
+## Python prerequisites follow-up (2026-10-09)
+
+The supplied log explicitly shows pyATS failing because uv is missing. The
+shared helper creates component venvs from NETCLAW_PY (default: python3),
+then reuses existing runtimes solely on executable/pip availability. The
+prerequisite check does not validate Python version or require uv for the
+staged pyATS/GAIT installers. Apple Python 3.9 is available on this host;
+Greg's exact Python version remains unconfirmed.
+
+PyPI metadata for fastmcp 4.0.11 and mcp 2.3.0 declares Python >=3.10:
+https://pypi.org/pypi/fastmcp/4.0.11/json and
+https://pypi.org/pypi/mcp/2.3.0/json. These pins are compatible with each
+other's Python minimum; removing constraints would not repair Python 3.9.
+
+Use Python 3.12 as operator guidance, matching pyATS' default. Existing
+automatic environments with unsupported Python must not be reused after
+changing NETCLAW_PY; use a separate version-suffixed target, with the same
+ownership checks and success-only interpreter records.

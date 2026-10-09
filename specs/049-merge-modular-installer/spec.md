@@ -116,3 +116,19 @@ must support the system Bash 3.2 without silently accepting the default runtime.
 - Explicit `--runtime hermes --profile recommended` bypasses the menus.
 - Non-interactive defaults remain compatible. No packages or services are
   installed during regression tests.
+
+## Scoped follow-up: Python prerequisites and retry recovery (2026-10-09)
+
+Greg's next install log reports missing uv for pyATS and repeated resolution
+failures under `/usr/bin/python3` with pip 21.2.4. The modular installer must
+validate Python compatibility before claiming prerequisites are satisfied.
+
+- Require Python 3.10+ for installer scripts and the selected NETCLAW_PY base.
+- Require uv up front when pyATS or GAIT is selected; provide an install remedy.
+- Refuse unsupported bases before creating a virtualenv.
+- Retry an automatically managed component with an unsupported old Python in
+  a separate compatible environment, retaining the original environment.
+- Reject unmanaged/symlink recovery destinations and explicit unsupported
+  virtualenvs. Keep existing compatible runtimes and package constraints.
+- Document Python selection and recovery without deleting runtime state or
+  changing system packages during testing.
