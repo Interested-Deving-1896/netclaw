@@ -236,7 +236,7 @@ select_runtime() {
         "OpenClaw   — default NetClaw runtime (npm), fully integrated"
         "Hermes     — Nous Research agent (installed via its own installer)"
     )
-    tui_menu "Which agent runtime should NetClaw run on?" "${rt_opts[@]}" || return 0
+    tui_menu "Which agent runtime should NetClaw run on?" "${rt_opts[@]}" || { log_warn "Install cancelled."; exit 1; }
     case "$TUI_CHOICE" in
         0) NETCLAW_RUNTIME="openclaw" ;;
         1) NETCLAW_RUNTIME="hermes" ;;

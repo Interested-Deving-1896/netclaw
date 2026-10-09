@@ -103,3 +103,16 @@ A future contributor adding a new MCP server or skill needs to know, from the pr
 - The project's existing inventory-verification tooling (built for a prior documentation-reconciliation effort) is a reasonable starting point to extend for the new catalog-coverage check, since it already knows how to enumerate the live configuration and workspace skills.
 - The constitution amendment described here is a clarifying/extending change to existing principle text (not a redefinition or removal of a principle), consistent with a minor version bump under the constitution's own semantic-versioning rule.
 - The external contributor is not expected to make further changes themselves; this effort completes the coverage-parity and retrofit work directly on top of their contributed branch, preserving their authorship, before merging.
+
+## Scoped follow-up: macOS keyboard selection (2026-10-09)
+
+The original modular installer targets macOS as well as Linux. Its shared TUI
+must support the system Bash 3.2 without silently accepting the default runtime.
+
+- Down/Up followed by Enter selects the highlighted runtime and profile.
+- CSI (`ESC [ A/B/C/D`) and application (`ESC O A/B/C/D`) arrows work.
+- q, Escape, or failed keyboard input aborts runtime selection and the installer.
+- Checklist navigation/toggling and j/k shortcuts keep working.
+- Explicit `--runtime hermes --profile recommended` bypasses the menus.
+- Non-interactive defaults remain compatible. No packages or services are
+  installed during regression tests.

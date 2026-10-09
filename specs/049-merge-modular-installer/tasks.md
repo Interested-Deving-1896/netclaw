@@ -170,3 +170,12 @@ User Story 1 is the MVP — it's the one that turns "a great PR that would silen
 All 29 tasks completed 2026-07-08. The actual `scripts/lib/catalog.sh` / `scripts/lib/install-steps.sh` / `scripts/verify-catalog-coverage.py` / constitution changes were implemented directly on a local copy of PR #96's branch (`refs/pull/96/head`) and pushed to `calcuttin:feat/installer-tui-refactor` to preserve contributor attribution — see PR #96 for that diff and its own commit history. PR #96 went from `mergeStateStatus: DIRTY` / `mergeable: CONFLICTING` to `CLEAN` / `MERGEABLE` as a direct result. An explanatory comment was posted on PR #96 crediting the original contribution. This branch's job was the spec/plan/tasks record of that work, not the implementation itself.
 
 One unrelated, pre-existing bug was found and fixed along the way (separate commit on `main`, `dc5e411`): `.gitignore`'s `mcp-servers/*` rule had no exception for `atlassian-mcp/` or `chrome-devtools-mcp/`, so both directories' READMEs were silently never committed despite being referenced throughout the docs. Restored.
+
+## macOS keyboard follow-up (2026-10-09)
+
+- [X] T033 Reproduce the Bash 3.2 arrow failure and record the root cause.
+- [X] T034 Add PTY tests for arrow encodings, shortcuts, runtime cancellation,
+  checklist toggling, failed reads and explicit/non-interactive selection.
+- [X] T035 Fix `scripts/lib/tui.sh` and runtime cancellation in `scripts/install.sh`.
+- [X] T036 Run focused regressions, syntax and artifact/catalog checks; record
+  results and limitations in `verification.md` and session notes.

@@ -79,3 +79,18 @@ README.md                             # PR #96's rewritten Quick Start, reconcil
 ## Complexity Tracking
 
 > No constitution violations requiring justification. The one principle worth calling out explicitly: XIV (Human-in-the-Loop) — pushing to a third-party contributor's fork and any decision to close/supersede their PR are both actions visible to someone outside this session, and were explicitly discussed and confirmed with the operator before this plan was written, not assumed.
+
+## macOS keyboard follow-up plan (2026-10-09)
+
+1. Add dependency-free Python unittest PTY regressions under `tests/unit`
+   (also collected by the existing pytest unit suite). Synchronize input with
+   the terminal entering character-read mode to avoid racing Bash's read.
+2. Fix the shared escape reader, abort failed menu/checklist reads, and make
+   runtime cancellation terminate the installer. Keep non-interactive defaults.
+3. Test the real installer only through cancelled prompts; successful selection
+   tests stop before any installation side effect. Check shell syntax and
+   repository artifact/catalog validation. Record platform and coverage limits.
+
+This is a small correction within spec 049's modular TUI scope, following its
+existing macOS support commitment. No slash-command integration is available;
+the specification, research, plan and task updates precede implementation.
