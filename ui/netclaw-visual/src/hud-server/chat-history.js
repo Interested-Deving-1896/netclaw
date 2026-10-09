@@ -50,7 +50,7 @@ export function mountChatHistory(app, { bindings, config: readConfig, configPath
     if (readers >= 4) return res.status(429).json({ error: 'History reader busy. Try again shortly.' });
     readers++;
     try {
-      const history = await call('chat.history', { sessionKey: task.gatewayKey, agentId: ctx.agentId, limit: 1000, maxBytes: 2 * 1024 * 1024 }, ctx.port, configPath);
+      const history = await call('chat.history', { sessionKey: task.gatewayKey, agentId: ctx.agentId, limit: 1000, maxChars: 500000 }, ctx.port, configPath);
       if (!Array.isArray(history.messages)) throw Error('Invalid history');
       const catalog = publicChatModels(ctx.config, await runtime.catalog(ctx.config, configPath));
       bindings.ownedChat(ctx.cookie, task.id, ctx.agentId); // Expiry/revocation recheck after I/O.

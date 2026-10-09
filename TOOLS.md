@@ -952,3 +952,51 @@ Branch `141-fastmcp-stateless-upgrade` uses FastMCP4.0.11/MCP2.3.0 for 35 owned 
 ## Asynchronous MCP Tasks
 
 Optional Tasks support covers 298 tools across 35 integrations, led by 22 pyATS SSH/automation tools. Task-aware clients receive handles and poll; other clients retain foreground results. pyATS retains completed results in SQLite; the other enabled FastMCP integrations default to ephemeral memory. Approval, baseline and verification controls still apply. See [Tasks guide](docs/MCP-TASKS.md) for exact coverage, cancellation, storage and rollout limits.
+
+## Tavus Pal exploration — 2026-10-09 (draft spec 144)
+
+`TAVUS_API_KEY` is present in repository `.env`; authenticated GETs to Tavus faces, PALs and conversations succeeded. No conversation was created and no video minutes were used. This proves inventory access, not credit balance or creation entitlements. Proposed local HUD/MCP bridge and direct-connection alternatives are in `specs/144-tavus-netclaw-pal/`. No integration is installed. Private network data stays local; a hosted avatar receives whatever speech text is sent to it. Device inventory startup failed without a valid testbed environment, and the configured MemPalace script was missing during this session.
+
+### Tavus Pal implementation — 2026-10-09
+
+Branch `144-tavus-netclaw-pal` adds an optional HUD/MCP companion, setup scripts, a private budget ledger and local image picker. It targets only a separate all-tools-denied NetClaw agent. No live call, paid upgrade or custom face training has occurred. Runtime/provider activation and playback acceptance remain pending. See `docs/TAVUS-PAL.md`. Retrying pyATS with the configured testbed reached its parser but failed on the unsupported `connections.defaults.arguments` key; no current device evidence is available.
+
+### Local Pal prototype — 2026-10-09
+
+The same branch now adds John/Lobster GLBs generated with installed Blender 5.2.1,
+shared existing Chat routing, desktop avatar-left/chat-right layout and camera
+controls. Blender MCP exists in the repository config; no connected MCP tool was
+exposed here and localhost:9876 was not listening, so asset authoring used isolated
+Blender CLI. macOS local speech (`say` + `afconvert`) generated valid WAV in 1.38s
+in the measured adapter probe. This Apple Silicon host has 48 GiB RAM; local
+cloning/STT performance has not been benchmarked. `docs/john.png` is the requested
+HEIC conversion; no portrait/voice was uploaded.
+
+Gateway chat compatibility was disabled, causing the HUD's unavailable badge.
+After confirming no sessions updated within five minutes, backed up config at
+`~/.openclaw/backups/pal-local-20261009-133150.json`, enabled authenticated loopback
+chat completions and restarted the existing gateway. HUD now reports online;
+configured `anthropic/claude-sonnet-5` returned the exact synthetic test phrase
+through authenticated `/api/chat` in 3.33s. No operational tool call was requested.
+Local speech HTTP returned WAV 200. Browser automation blocked the local preview
+(`ERR_BLOCKED_BY_CLIENT`); do not claim live browser visual/playback acceptance.
+
+### Avatar runtime compatibility and polish — 2026-10-09
+
+Installed OpenClaw 2026.7.1-2 rejects --expect-url, old models.list agentId/
+includeDetails and chat.history maxBytes. HUD now pins loopback/auth via env,
+uses models.list view=configured and history maxChars, and runs the CLI with
+its own supported Node 24.19.0. Resolve the intended OpenClaw executable before
+prefixing Node's directory: otherwise a sibling CLI can shadow owner wrappers.
+The full UI-shaped chat request, model discovery and history reopen passed.
+Current local API process was refreshed after the user received their answer;
+15 models discovered. Local speech now supports 0.75–1.25× synthesis rate;
+real 0.8×/1.2× notice WAV durations were 3.34/2.61 seconds.
+
+The owner confirmed initial Avatar speech/animation works. Ten recorded polish
+passes add reliable activation, cancellation, remembered settings, bounded
+multi-clip reading, volume/speed, keyboard controls and graphics recovery.
+Build passes; 358/359 HUD tests pass (remaining known 127.0.0.2 Mac fixture).
+Qwen3-TTS Base via MLX Audio is the researched own-voice candidate, not installed
+or benchmarked. Keep future recordings in ~/.openclaw/pal/voices, not the public
+asset directory. Research/license sources are in spec144/research.md.

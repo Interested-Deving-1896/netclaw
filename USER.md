@@ -40,3 +40,11 @@
 - Release preference (2026-09-28): establish official NetClaw 1.0.0, then use 1.x.y versions as completed specs evolve the project; require numbered specs and Spec Kit artifacts for contributions/PRs. Feature specs use minor bumps, fixes/docs/maintenance use patches; source and mobile component versions remain independent.
 
 - Chat preference (2026-09-28): standard back-and-forth Chat should be the default HUD interface, with Canvas still available and native OpenClaw as a third option opening in a separate tab (explicitly approved).
+
+- Tavus exploration (2026-10-09): pursue a spec-driven NetClaw Pal assessment within Free only: 20 conversational minutes, stock faces and no paid upgrade. Spec 143 is abandoned; return to main before the new exploration.
+
+- 2026-10-09: Authorized moving to spec branch 144 and starting Pal implementation. Interested in using a lobster or personal smiley image. Keep the Tavus experiment on Free; local browser icon supported, custom Tavus training excluded.
+
+- Pal design clarification (2026-10-09, supersedes the initial Free-only product scope): Free default with optional custom face/voice on entitled accounts; each owner supplies their own key; full authorized NetClaw access through Border with existing approvals; optional downloadable John photo/voice pack; automatic non-sensitive summaries with private details local. No paid upgrade or provider training has been authorized. John then requested PNG conversion and recording guidance, questioned the paid custom-avatar limitation, and asked to explore local Blender and other services.
+- Local Pal approved (2026-10-09): start with John and Lobster selectable local avatars. Existing configured frontier model produces the chat answer; local speech/animation presents it. Keep Blender MCP in the authoring path when connected. Prove the two-character formula before offering custom uploads or an external conversion script. Avatar left, Chat visible on the right, selection below; include move/pan, rotate, zoom and reset controls. Keep the same chat session when switching views or characters.
+- Interface correction (2026-10-09): Avatar is the fourth Chat interface beside Chat, Canvas and OpenClaw, not a separate Pal sidebar tab.

@@ -112,6 +112,7 @@ CATALOG=(
     "computer-use|Analysis & Diagrams|Computer Use|Full-desktop automation for API-less/browser-less targets — Xvfb+XFCE virtual desktop, 17 actions, VNC Watch Mode (via ClawHub)"
 
     "tts|Voice & Social|Text-to-Speech|edge-tts voice replies for Slack/WebEx (2 tools)"
+    "tavus-pal|Voice & Social|Tavus Pal|Optional Free-plan stock-face HUD companion; isolated NetClaw agent, disabled by default (1 tool)"
     "twitter|Voice & Social|Twitter/X|Tweet posting, threads, heartbeat (bundled)"
     "twilio|Voice & Social|Twilio|Core API (SMS/messaging) plus bidirectional voice calls, emergency alerts (2 servers)"
     "zoom-rtms|Voice & Social|Zoom Meeting Intelligence|Realtime Media Streams meeting listener, live investigation routing, Zoom App panel + camera-overlay avatar (spec 118, 9 tools)"

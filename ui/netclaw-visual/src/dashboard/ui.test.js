@@ -7,6 +7,61 @@ const js=output.outputFiles.find(f=>f.path.endsWith('.js')).text;
 const settle=()=>new Promise(resolve=>setTimeout(resolve,30));
 async function app(t, preview=true, fetcher){const errors=[];const virtualConsole=new VirtualConsole();virtualConsole.on('jsdomError',e=>errors.push(e.message));const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost:3000',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole});dom.window.NETCLAW_PREVIEW=preview;if(fetcher)dom.window.fetch=fetcher;dom.window.AbortSignal=AbortSignal;dom.window.AbortController=AbortController;dom.window.eval(js);t.after(()=>dom.window.close());await settle();return {document:dom.window.document,window:dom.window,errors};}
 function click(document,label){const button=[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===label || b.textContent.trim().startsWith(label));assert.ok(button,`button ${label}`);button.click();}
+test('sending from Avatar unlocks voice before the request and speaks only a safe notice',async t=>{
+  const calls=[],order=[];let finish;
+  const {document,window,errors}=await app(t,false,async(url,options={})=>{
+    calls.push([url,options]);
+    if(url==='/api/chat'){order.push('chat');return await new Promise(resolve=>{finish=()=>resolve({ok:true,json:async()=>({fromGateway:true,response:'Private network answer 10.1.2.3'})});});}
+    if(url==='/api/pal/local/speech')return {ok:true,arrayBuffer:async()=>new ArrayBuffer(44)};
+    return {ok:true,json:async()=>url==='/api/pal/local/status'?{available:true,maxCharacters:1800}:url==='/api/chat/models'?{models:[]}:{}};
+  });
+  let starts=0;
+  window.AudioContext=class {
+    state='suspended';destination={};
+    createGain(){return {gain:{value:1},connect(){},disconnect(){}};}
+    async resume(){order.push('unlock');this.state='running';}
+    async close(){} async decodeAudioData(){return {};}
+    createBufferSource(){return {connect(){},disconnect(){},start(){starts++;},stop(){}};}
+    createAnalyser(){return {connect(){},disconnect(){},getFloatTimeDomainData(array){array.fill(.04);}};}
+  };
+  click(document,'Avatar');await settle();
+  assert.match(document.querySelector('.local-pal-state').textContent,/Voice off/);
+  typeChat(window,document,'Check this');await settle();
+  document.querySelector('.chat-composer').dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true}));await settle();
+  assert.deepEqual(order.slice(0,2),['unlock','chat']);
+  finish();await settle();await settle();
+  const speech=calls.filter(([url])=>url==='/api/pal/local/speech');
+  assert.equal(speech.length,1);assert.deepEqual(JSON.parse(speech[0][1].body),{kind:'notice',notice:'ready',rate:1});
+  assert.equal(starts,1);assert.match(document.querySelector('.local-pal-state').textContent,/Speaking/);
+  document.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));await settle();
+  assert.match(document.querySelector('.local-pal-state').textContent,/Voice ready/);
+  click(document,'Read latest reply');await settle();
+  assert.equal(JSON.parse(calls.filter(([url])=>url==='/api/pal/local/speech').at(-1)[1].body).text,'Private network answer 10.1.2.3');
+  assert.deepEqual(errors,[]);
+});
+test('local Pal shares the Chat draft and thread; avatar choice never starts Tavus or sends a model request',async t=>{
+  const calls=[];
+  const {document,window,errors}=await app(t,false,async(url,options={})=>{
+    calls.push([url,options]);return {ok:true,json:async()=>url==='/api/pal/local/status'?{available:true,maxCharacters:1800}:url==='/api/chat/models'?{models:[]}:{}};
+  });
+  typeChat(window,document,'Keep this question while I choose a Pal');await settle();
+  const chat=document.querySelector('.standard-chat');
+  click(document,'Avatar');await settle();
+  assert.deepEqual([...document.querySelector('[aria-label="Chat interface"]').querySelectorAll('button,a')].map(node=>node.textContent),['Chat','Canvas','OpenClaw ↗','Avatar']);
+  assert.equal([...document.querySelectorAll('nav button')].some(button=>/Avatar|Pal/.test(button.textContent)),false);
+  assert.equal(document.querySelector('.standard-chat'),chat);
+  assert.equal(document.querySelectorAll('#standard-chat-message').length,1);
+  assert.equal(document.querySelector('#standard-chat-message').value,'Keep this question while I choose a Pal');
+  const lobster=[...document.querySelectorAll('[aria-label="Avatar selection"] button')].find(button=>button.textContent.includes('Lobster'));
+  assert.ok(lobster);lobster.click();await settle();
+  assert.equal(lobster.getAttribute('aria-pressed'),'true');
+  assert.equal(window.localStorage.getItem('nc-pal-avatar-v1'),'lobster');
+  click(document,'00Chat');await settle();
+  assert.equal(document.querySelector('.standard-chat'),chat);
+  assert.equal(document.querySelector('#standard-chat-message').value,'Keep this question while I choose a Pal');
+  assert.equal(calls.some(([url])=>url==='/api/chat'||url==='/api/pal/sessions'||url==='/api/pal/status'),false);
+  assert.deepEqual(errors,[]);
+});
 test('production dashboard renders and Basic/Advanced retains navigation without errors',async t=>{const {document,errors}=await app(t);assert.match(document.body.textContent,/SYNTHETIC PREVIEW/);assert.match(document.querySelector('h1').textContent,/^Chat/);click(document,'01Overview');await settle();assert.match(document.body.textContent,/Execution members/);click(document,'Advanced');await settle();assert.equal(document.querySelector('button[aria-pressed=true]').textContent,'Advanced');for(const label of ['Risk of Claws','External neighbours','Mobile devices','Science Officer','Network','Knowledge','Operations','Integrations','Settings','RAG','Configuration','Canvas','Tokenomics','Documentation','Logs','Security']){const button=[...document.querySelectorAll('nav button')].find(b=>b.textContent.includes(label));assert.ok(button,label);button.click();await settle();assert.match(document.querySelector('h1').textContent,new RegExp(label));}assert.deepEqual(errors,[]);});
 test('member inspector uses exact identity; Three.js not required for selection',async t=>{const {document,errors}=await app(t);click(document,'03Risk of Claws');await settle();document.querySelector('button[aria-label="Inspect Network Claw"]').click();await settle();assert.match(document.querySelector('.inspector').textContent,/demo\/network/);assert.match(document.querySelector('.inspector').textContent,/Execution member/);assert.equal(document.querySelector('canvas'),null);assert.deepEqual(errors,[]);});
 test('typed assessment comparison shows Noul probability, Choice answer and Score separately',async t=>{const {document,errors}=await app(t);click(document,'06Science Officer');await settle();click(document,'Inspect synthetic original');await settle();assert.equal(document.querySelectorAll('.assessment').length,2);assert.match(document.body.textContent,/0.72/);assert.match(document.body.textContent,/interfaces/);assert.match(document.body.textContent,/Rubric position/);assert.match(document.body.textContent,/not network health/);assert.match(document.body.textContent,/Border's interpretation/);assert.deepEqual(errors,[]);});
@@ -129,4 +184,24 @@ test('composer Enter sends but Shift+Enter and IME composition do not',async t=>
   input.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Enter',shiftKey:true,bubbles:true,cancelable:true}));
   input.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Enter',isComposing:true,bubbles:true,cancelable:true}));await settle();assert.equal(sent.length,0);
   input.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));await settle();assert.equal(sent.length,1);
+});
+
+
+test('Avatar quiet preference survives switching views and never starts automatic speech',async t=>{
+  const speech=[];
+  const {document,window,errors}=await app(t,false,async(url,options={})=>{
+    if(url==='/api/pal/local/speech')speech.push(options);
+    return {ok:true,json:async()=>url==='/api/pal/local/status'?{available:true,maxCharacters:1800}:url==='/api/chat'?{fromGateway:true,response:'Saved answer'}:url==='/api/chat/models'?{models:[]}:{}};
+  });
+  click(document,'Avatar');await settle();
+  const select=document.querySelector('#local-pal-autospeak');select.value='off';select.dispatchEvent(new window.Event('change',{bubbles:true}));await settle();
+  click(document,'00Chat');await settle();click(document,'Avatar');await settle();
+  assert.equal(document.querySelector('#local-pal-autospeak').value,'off');
+  typeChat(window,document,'A quiet question');await settle();
+  document.querySelector('.chat-composer').dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true}));await settle();
+  assert.match(document.querySelector('.chat-transcript').textContent,/Saved answer/);
+  assert.equal(speech.length,0);assert.match(document.querySelector('.local-pal-state').textContent,/Voice off/);
+  click(document,'00Chat');await settle();click(document,'Avatar');await settle();
+  assert.ok([...document.querySelectorAll('button')].find(button=>button.textContent==='Read latest reply'));
+  assert.equal(speech.length,0);assert.deepEqual(errors,[]);
 });

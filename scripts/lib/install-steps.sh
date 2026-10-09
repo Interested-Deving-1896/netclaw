@@ -1716,6 +1716,20 @@ echo ""
 }
 
 # ── Step 43: TTS MCP Server (Text-to-Speech via edge-tts) ───────
+component_install_tavus_pal() {
+    log_step "Installing optional Tavus Pal companion..."
+    local pal_dir="$NETCLAW_DIR/mcp-servers/tavus-pal-mcp"
+    local pal_venv="$pal_dir/.venv"
+    [ -f "$pal_dir/server.py" ] || { log_error "Tavus Pal source is missing"; return 1; }
+    if [ ! -x "$pal_venv/bin/python" ]; then
+        netclaw_venv_create "$pal_venv" || return 1
+    fi
+    NETCLAW_VENV="$pal_venv" netclaw_pip_install -r "$pal_dir/requirements.txt" || return 1
+    _set_env_default NETCLAW_PAL_ENABLED false
+    log_info "Pal installed, disabled by default. No provider resources or conversations created."
+    log_info "Complete docs/TAVUS-PAL.md setup; HUD requires Node 22.14+ and npm ci."
+}
+
 component_install_tts() {
 log_step "Installing TTS MCP Server..."
 echo "  Source: edge-tts (Microsoft Edge Read Aloud)"

@@ -1,4 +1,6 @@
 import { mountChatHistory } from './src/hud-server/chat-history.js';
+import { mountPal } from './src/hud-server/pal-routes.js';
+import { mountLocalPal } from './src/hud-server/pal-local.js';
 import { runtimeSettings } from './src/hud-server/runtime-settings.js';
 import { createUsageReader } from './src/hud-server/chat-usage.js';
 import { createChatRuntime } from './src/hud-server/chat-runtime.js';
@@ -94,6 +96,7 @@ app.use(express.json({ limit: '4mb' }));
 mountDocumentation(app, ROOT);
 mountLogs(app, os.homedir());
 const hudBindings = new Bindings(path.join(os.homedir(), '.openclaw', 'hud-bindings'));
+mountLocalPal(app, { bindings: hudBindings });
 mountAssessmentRoutes(app, { bindings: hudBindings, audit: assessmentAudit(ROOT), readAssessment: createJevReader(ROOT, () => ({ ...parseEnvFile(), ...process.env })) });
 registerGenieRoutes(app, { getEnv: () => ({ ...parseEnvFile(), ...process.env }) });
 registerObservabilityRoutes(app, { getEnv: () => ({ ...parseEnvFile(), ...process.env }) });
@@ -659,6 +662,9 @@ const OPENCLAW_HOME = process.env.OPENCLAW_HOME || path.join(os.homedir(), '.ope
 const OPENCLAW_ENV = path.join(OPENCLAW_HOME, '.env');
 const OPENCLAW_CONFIG = path.join(OPENCLAW_HOME, 'openclaw.json');
 const ROOT_ENV = path.join(ROOT, '.env');
+
+mountPal(app, { root: ROOT, home: OPENCLAW_HOME, bindings: hudBindings,
+  getEnv: () => ({ ...parseEnvFile(), ...process.env }) });
 
 // Ordered list — first file wins per key, but we merge all
 const ENV_FILES = [OPENCLAW_ENV, ROOT_ENV];
