@@ -38,12 +38,14 @@ def bind_entry(entry, repo, runtime):
         python = Path(runtime)
         if not python.is_file() or not os.access(python, os.X_OK):
             raise ValueError('Recorded Python runtime is not executable')
-        if command in ('python', 'python3'):
+        if command in ('python', 'python3') or (
+            command.startswith('mcp-servers/') and command.endswith('/.venv/bin/python')
+        ):
             result['command'] = str(python)
         elif '/' not in command and (python.parent / command).is_file():
             result['command'] = str(python.parent / command)
-        # Explicit dedicated interpreters, uvx and Node commands retain their
-        # existing runtime. Never redirect these to the legacy component venv.
+        # Canonical source-venv templates follow the successful runtime record
+        # after recovery. Custom interpreters, uvx and Node retain their command.
     value = result.get('command', '')
     if value.startswith(('mcp-servers/', 'scripts/')):
         result['command'] = str(repo / value)

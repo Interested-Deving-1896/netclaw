@@ -65,7 +65,10 @@ source scripts/lib/common.sh
 source scripts/lib/install-steps.sh
 NETCLAW_DIR="$FIXTURE_REPO"
 RUNTIME_ENV="$FIXTURE_ENV"
-netclaw_venv_create() { test "$1" = "$FIXTURE_REPO/mcp-servers/jev-mcp/.venv"; }
+netclaw_component_venv() {
+    test "$1" = "$FIXTURE_REPO/mcp-servers/jev-mcp/.venv" || return 9
+    NETCLAW_COMPONENT_VENV="$1"
+}
 netclaw_pip_install() { test "$NETCLAW_VENV" = "$FIXTURE_REPO/mcp-servers/jev-mcp/.venv" || return 9; return "$FIXTURE_RC"; }
 component_install_jev
 '''

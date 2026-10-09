@@ -179,3 +179,18 @@ One unrelated, pre-existing bug was found and fixed along the way (separate comm
 - [X] T035 Fix `scripts/lib/tui.sh` and runtime cancellation in `scripts/install.sh`.
 - [X] T036 Run focused regressions, syntax and artifact/catalog checks; record
   results and limitations in `verification.md` and session notes.
+
+## Python prerequisites follow-up (2026-10-09)
+
+- [X] T037 Verify missing uv and Python minimums against source/package metadata.
+- [X] T038 Add prerequisite validation and safe recovery from old managed venvs.
+- [X] T039 Add regressions for version rejection, uv selection and retry safety.
+- [X] T040 Document operator remedy, run focused checks and record limitations.
+
+## Full-log follow-up (2026-10-09)
+
+- [X] T041 Classify supplied logs and verify old-pip editable limitation.
+- [X] T042 Repair dedicated venv recovery/pip and canonical launch binding.
+- [X] T043 Repair multivendor, claw-certs and gtrace paths with regressions.
+- [X] T044 Verify affected suites; document unresolved external prerequisites
+  and update the draft PR's final scope and evidence.

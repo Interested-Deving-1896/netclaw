@@ -38,6 +38,59 @@
 : "${NETCLAW_PY:=$(command -v python3)}"
 NETCLAW_SHARED_CONSTRAINTS="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../config" && pwd)/python-shared-constraints.txt"
 
+_netclaw_python_supported() {
+    "$1" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)' >/dev/null 2>&1
+}
+
+_netclaw_require_python() {
+    _netclaw_python_supported "$1" && return 0
+    echo "NetClaw requires Python 3.10+; unsupported interpreter: $1 ($("$1" --version 2>&1 || true))" >&2
+    echo "  Select a compatible NETCLAW_PY and put its python3 on PATH; see docs/PYTHON-RUNTIME-MIGRATION.md." >&2
+    return 1
+}
+
+_netclaw_check_runtime_target() {
+    if [ -L "$1" ] || { [ -e "$1" ] && [ ! -f "$1/.netclaw-managed" ]; }; then
+        echo "Refusing to adopt an unmanaged Python environment: $1" >&2
+        return 1
+    fi
+}
+
+# Select a component's conventional source venv without rebuilding it in place.
+# Existing compatible source venvs retain their path; old Python is preserved.
+netclaw_component_venv() {
+    NETCLAW_COMPONENT_VENV="$1"
+    if [ -x "$1/bin/python" ]; then
+        _netclaw_python_supported "$1/bin/python" && return 0
+        _netclaw_require_python "$NETCLAW_PY" || return 1
+        local version
+        version="$("$NETCLAW_PY" -c 'import sys; print("%s.%s" % sys.version_info[:2])')" || return 1
+        NETCLAW_COMPONENT_VENV="$1-py$version"
+        echo "Keeping unsupported Python environment at $1; using $NETCLAW_COMPONENT_VENV" >&2
+    fi
+    _netclaw_check_runtime_target "$NETCLAW_COMPONENT_VENV" || return 1
+    if [ ! -x "$NETCLAW_COMPONENT_VENV/bin/python" ]; then
+        _netclaw_require_python "$NETCLAW_PY" || return 1
+        mkdir -p "$NETCLAW_COMPONENT_VENV" || return 1
+        printf '%s\n' "${NETCLAW_INSTALL_COMPONENT:-component}" > "$NETCLAW_COMPONENT_VENV/.netclaw-managed" || return 1
+        netclaw_venv_create "$NETCLAW_COMPONENT_VENV" || return 1
+    fi
+    _netclaw_require_python "$NETCLAW_COMPONENT_VENV/bin/python"
+}
+
+_netclaw_modern_component_pip() {
+    local py="$1"
+    # pip 21.2 (Apple ensurepip) cannot build modern editable pyprojects.
+    "$py" -c 'import re,sys; from importlib.metadata import version; v=re.match(r"(\d+)\.(\d+)", version("pip")); sys.exit(0 if v and tuple(map(int,v.groups())) >= (21,3) else 1)' >/dev/null 2>&1 && return 0
+    # Never bootstrap/upgrade system pip, even for an explicitly selected base.
+    if ! "$py" -c 'import sys; sys.exit(0 if sys.prefix != sys.base_prefix else 1)' >/dev/null 2>&1; then
+        echo "Refusing to upgrade system pip; select an isolated component runtime." >&2
+        return 1
+    fi
+    echo "Upgrading obsolete pip inside component runtime: $py" >&2
+    "$py" -m pip install --upgrade 'pip>=23' || return 1
+}
+
 _netclaw_resolve_py() {
     # An explicit venv always wins.
     if [ -n "${NETCLAW_VENV:-}" ]; then
@@ -77,9 +130,15 @@ _netclaw_pip_install() {
             # distributions may share import names with the newer SDK.
             target="$target-component-bounds"
         fi
-        if [ -L "$target" ] || { [ -e "$target" ] && [ ! -f "$target/.netclaw-managed" ]; }; then
-            echo "Refusing to adopt an unmanaged Python environment: $target" >&2
-            return 1
+        _netclaw_check_runtime_target "$target" || return 1
+        if [ -x "$target/bin/python" ] && ! _netclaw_python_supported "$target/bin/python"; then
+            local base version
+            base="$(_netclaw_resolve_py)" || return 1
+            _netclaw_require_python "$base" || return 1
+            version="$("$base" -c 'import sys; print("%s.%s" % sys.version_info[:2])')" || return 1
+            echo "Keeping unsupported Python environment at $target; using $target-py$version" >&2
+            target="$target-py$version"
+            _netclaw_check_runtime_target "$target" || return 1
         fi
         if [ ! -x "$target/bin/python" ] || ! "$target/bin/python" -m pip --version >/dev/null 2>&1; then
             mkdir -p "$target" || return 1
@@ -94,10 +153,14 @@ _netclaw_pip_install() {
         echo "  which on a split-toolchain host installs where nothing can import it." >&2
         return 1
     fi
+    _netclaw_require_python "$py" || return 1
     if ! "$py" -m pip --version >/dev/null 2>&1; then
         echo "netclaw_pip_install: $py has no usable pip module." >&2
         echo "  Remedy: $py -m ensurepip --upgrade   (or install the matching *-venv package)" >&2
         return 1
+    fi
+    if [ -n "${NETCLAW_INSTALL_COMPONENT:-}" ]; then
+        _netclaw_modern_component_pip "$py" || return 1
     fi
     # PEP 668 protects distro packages. Report refusal with a venv remedy;
     # never silently override it or claim the component was installed.
@@ -181,6 +244,7 @@ netclaw_venv_create() {
     if [ -z "$base" ]; then
         echo "netclaw_venv_create: no base interpreter found" >&2; return 1
     fi
+    _netclaw_require_python "$base" || return 1
 
     if command -v virtualenv >/dev/null 2>&1; then
         virtualenv -q -p "$base" "$dest" "$@" && return 0
