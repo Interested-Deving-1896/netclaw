@@ -20,6 +20,7 @@ check_command() { return 0; }
 node() { echo v22.0.0; }
 # The actual PEP668 detector sees a managed interpreter.
 python3() { return 0; }
+NETCLAW_PY=python3
 core_prereqs
 test -z "${PIP_BREAK_SYSTEM_PACKAGES+x}"
 '''

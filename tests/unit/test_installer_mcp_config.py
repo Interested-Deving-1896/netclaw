@@ -79,3 +79,14 @@ def test_cli_registers_only_successful_selection(tmp_path):
         '--components', 'bgp-intel nautobot', '--output', str(output)], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert set(json.loads(output.read_text())['mcpServers']) == {'bgp-intel-mcp', 'nautobot-mcp'}
+
+
+@pytest.mark.parametrize('component', ['anta', 'multivendor-cli', 'zabbix', 'jev'])
+def test_canonical_source_venv_launch_uses_successful_recovery_record(tmp_path, component):
+    python = tmp_path / 'recovered/bin/python'
+    python.parent.mkdir(parents=True)
+    python.write_text('#!/bin/sh\nexit 0\n')
+    python.chmod(0o700)
+    template = {'command': f'mcp-servers/{component}-mcp/.venv/bin/python', 'args': ['-u', 'server.py']}
+    assert module.bind_entry(template, tmp_path, str(python))['command'] == str(python)
+    assert module.bind_entry({'command': '/operator/venv/bin/python'}, tmp_path, str(python))['command'] == '/operator/venv/bin/python'
