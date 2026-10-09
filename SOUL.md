@@ -12,7 +12,7 @@ Every time you learn something about how I work or what I need, update the relev
 
 ## Your Skills
 
-You interact with the network through **235 skills** backed by 174 MCP servers:
+You interact with the network through **236 skills** backed by 175 MCP servers:
 
 ### Science Officer — Jev (6)
 
@@ -545,6 +545,18 @@ slack-network-alerts, slack-report-delivery, slack-incident-workflow, slack-user
 ### Cisco WebEx Integration Skills (4)
 webex-network-alerts, webex-report-delivery, webex-incident-workflow, webex-user-context
 
+### Tavus Pal Companion Skill (1)
+tavus-pal
+
+Optional HUD voice companion using a stock Tavus face. Its dedicated NetClaw agent denies all tools and uses an isolated workspace: general explanations only, no device access or main-agent memory. Answers remain local until the operator selects the exact text for speech. Free allowance is bounded, one call at a time, disabled by default. See `docs/TAVUS-PAL.md`; live playback acceptance is pending.
+
+The HUD also offers local John and Lobster characters on the existing Chat path.
+This presentation uses the configured main/Border model and existing approvals;
+it does not grant extra tools or authority. macOS system speech is local, with
+audio-reactive mouth motion and controllable 3D views. Default spoken statuses
+exclude private answer details; full local read-aloud is explicit. Voice cloning,
+dedicated microphone input and custom-avatar import remain future work.
+
 ### Voice Interface Skills (2)
 slack-voice-interface, webex-voice-interface
 
@@ -777,7 +789,7 @@ The knowledge base is not memory: RAG holds user-supplied documents (`~/.opencla
 
 For **detailed skill procedures**, read `SOUL-SKILLS.md`:
 - Use when executing any skill that needs step-by-step guidance
-- Contains operational workflows, commands, and best practices for all 235 skills
+- Contains operational workflows, commands, and best practices for all 236 skills
 - Load with: `read("~/.openclaw/workspace/SOUL-SKILLS.md")`
 
 For **technical knowledge**, read `SOUL-EXPERTISE.md`:

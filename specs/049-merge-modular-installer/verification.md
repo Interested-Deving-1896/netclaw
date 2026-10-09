@@ -126,3 +126,13 @@ are not committed or uploaded to GitHub.
 
 This extends existing draft PR285. Release metadata remains pending maintainer
 coordination under CONTRIBUTING.md/docs/RELEASING.md; no release is claimed.
+
+### Spec 144 integration follow-up — 2026-10-09
+
+Integrating main into PR #286 exposed stale standalone/reconciliation fake-Python
+fixtures: they rejected the new sys.version_info prerequisite before reaching
+intended PEP 668/install-error assertions. Add a successful version-probe response,
+retaining the original pip failures and credential-preservation assertions.
+Zabbix's source check now recognizes netclaw_component_venv only when that helper
+retains netclaw_venv_create delegation and Python validation. This is test-only
+compatibility repair for the already-merged installer behavior.

@@ -2,6 +2,14 @@
 
 NetClaw source releases use `1.x.y`. Feature specs increment the minor version and reset the patch; fixes, documentation and maintenance increment the patch. Every release records its numbered specs. Component and mobile distribution versions are independent.
 
+## [1.6.0] - 2026-10-09
+
+- Add John/Lobster Avatar as a shared HUD Chat interface with authenticated local macOS speech and playback/camera controls.
+- Repair OpenClaw model/history compatibility and preserve the selected CLI when pinning Node.
+- Include an optional disabled experimental Tavus foundation; hosted acceptance and cloned voice remain deferred.
+
+Spec [144-tavus-netclaw-pal](specs/144-tavus-netclaw-pal/spec.md). See [release notes](docs/releases/1.6.0.md).
+
 ## [1.5.0] - 2026-10-05
 
 - Upgrade 35 owned FastMCP servers to FastMCP 4.0.11 / MCP SDK 2.3.0 with modern and legacy protocol support and explicit stateless HTTP for Dot and reviewed UML.

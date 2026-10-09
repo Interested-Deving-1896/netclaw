@@ -1,7 +1,8 @@
 import { loadChat, saveChat, loadChatArchive, archiveChat } from './chat-storage.js';
 import ChatUsage from './ChatUsage.jsx';
 import { randomId } from '../shared/random-id.js';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
+const LocalPal = lazy(() => import('./LocalPal.jsx'));
 
 const validId = value => typeof value === 'string' && /^[a-zA-Z0-9_.:-]{1,128}$/.test(value);
 const makeThread = () => `chat-${randomId()}`;
@@ -9,7 +10,9 @@ const demoMessages = [
   { role: 'user', content: 'How should I start investigating an intermittent routing issue?' },
   { role: 'assistant', content: 'Synthetic example — no tools were run.\n\nStart by recording the affected path, timestamps and symptoms. Compare current routing and interface observations with the intended design before proposing a change.' },
 ];
-export default function StandardChat({ preview = false, active = true }) {
+export default function StandardChat({ preview = false, active = true, pal = false }) {
+  const [palReply, setPalReply] = useState(null);
+  const palVoice = useRef(null);
   const [restored] = useState(() => {
     if (preview) return { state: null, error: '' };
     try { return loadChat(window.sessionStorage); }
@@ -99,6 +102,7 @@ export default function StandardChat({ preview = false, active = true }) {
         target = { ...target, draft: local?.draft || '', interrupted: target.active === true || local?.interrupted || false };
       }
       thread.current = target.thread; setMessages(target.messages); setDraft(target.draft || '');
+      setPalReply(null);
       setChatModel(target.chatModel || ''); setChatEffort(target.chatEffort || '');
       setUncertain(target.interrupted === true); setRemoteActive(target.active === true); setOpenedChat(value);
       setError(target.active ? 'This chat is still running in OpenClaw. Reload it to receive the latest saved messages before sending again.' : target.interrupted ? 'An earlier request may have run. Review the saved replies before retrying the restored draft; nothing was resent.' : '');
@@ -111,6 +115,7 @@ export default function StandardChat({ preview = false, active = true }) {
     event.preventDefault();
     const prompt = draft.trim();
     if (!prompt || sending.current || preview || loadingChat || remoteActive) return;
+    if (pal) palVoice.current?.prepareForReply();
     sending.current = true; setPending(true); setError('');
     const before = messages, context = [...messages, { role: 'user', content: prompt }];
     inFlight.current = { before, prompt }; setUncertain(true);
@@ -134,6 +139,7 @@ export default function StandardChat({ preview = false, active = true }) {
       const completed = [...context, { role: 'assistant', content: data.response, assessmentRefs }];
       persist({ messages: completed, draft: '', interrupted: false });
       setMessages(completed);
+      setPalReply({ id: randomId(), text: data.response });
     } catch (err) {
       setMessages(before); setDraft(prompt);
       setError(err instanceof TypeError || err instanceof SyntaxError ? 'The reply could not be received. Your draft has been restored. The gateway may still be working; check before retrying.' : err.message || 'Chat unavailable. Your draft has been restored.');
@@ -143,6 +149,7 @@ export default function StandardChat({ preview = false, active = true }) {
     if (sending.current || preview) return;
     if (!persist({ messages, draft, interrupted: uncertain })) return;
     thread.current = makeThread(); setOpenedChat(''); setRemoteActive(false); setUncertain(false);
+    setPalReply(null);
     persist({ messages: [], draft: '', interrupted: false }); setMessages([]); setDraft(''); setError('');
     refreshChats(); composer.current?.focus();
   };
@@ -150,7 +157,9 @@ export default function StandardChat({ preview = false, active = true }) {
   const efforts = selected?.efforts || [];
   const effectiveEffort = chatEffort || selected?.defaultEffort;
   const effortIndex = efforts.indexOf(effectiveEffort);
-  return <section className="standard-chat" aria-label="Standard Chat">
+  const latestReply = messages.findLast(message => message.role === 'assistant')?.content || '';
+  return <div className={pal ? 'pal-conversation-layout' : undefined}>{pal && <Suspense fallback={<p role="status">Loading your local Pal…</p>}><LocalPal ref={palVoice} active={active} preview={preview} thinking={pending} reply={palReply} latestReply={latestReply} conversationId={thread.current}/></Suspense>}
+  <section className="standard-chat" aria-label="Standard Chat">
     <div className="chat-intro"><div><span className="eyebrow">Your network engineering coworker</span><h2>A conversation with NetClaw</h2><p>Ask a question, review the evidence, then follow up.</p></div><button onClick={reset} disabled={pending || loadingChat || preview}>New chat</button></div>
     <div className="chat-history-controls">
       <label htmlFor="previous-chat">Previous chats</label>
@@ -208,5 +217,5 @@ export default function StandardChat({ preview = false, active = true }) {
       {modelError && <p className="chat-model-error" role="status">{modelError}</p>}
       <p className="chat-footnote">Enter to send · Shift+Enter for a new line. Conversation and draft are saved in this browser tab across refresh. Previous chats reopens saved conversations. New chat keeps your history. Gateway records follow runtime retention. The latest 40 messages are sent as context.</p>
     </form>
-  </section>;
+  </section></div>;
 }

@@ -333,6 +333,8 @@ PH="$TMP/piphelper"; mkdir -p "$PH"
 # is present. Exercises the retry without touching the real environment.
 cat >"$PH/fakepy668" <<'EOF'
 #!/usr/bin/env bash
+# The helper now checks Python support before probing/installing pip.
+if [ "$1" = "-c" ] && [[ "$2" == *sys.version_info* ]]; then exit 0; fi
 [ "$1" = "-m" ] && [ "$2" = "pip" ] || exit 9
 case " $* " in
     *" --version "*) echo "pip 99.0"; exit 0 ;;
@@ -354,6 +356,8 @@ assert_mentions "externally managed" "the managed-environment refusal is actiona
 # A failure for any OTHER reason must surface its actual output, not be swallowed.
 cat >"$PH/fakepyfail" <<'EOF'
 #!/usr/bin/env bash
+# The helper now checks Python support before probing/installing pip.
+if [ "$1" = "-c" ] && [[ "$2" == *sys.version_info* ]]; then exit 0; fi
 [ "$1" = "-m" ] && [ "$2" = "pip" ] || exit 9
 case " $* " in *" --version "*) echo "pip 99.0"; exit 0 ;; esac
 echo "ERROR: No matching distribution found for nonexistent-xyz" >&2

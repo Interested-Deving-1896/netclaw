@@ -69,7 +69,7 @@ def test_standalone_interactive_preserves_values_and_policy(tmp_path,filename,pr
 @pytest.mark.parametrize('filename',['twitter_install.sh','twilio_install.sh'])
 def test_standalone_dependency_failure_stops_before_credentials(tmp_path,filename):
     repo,home=fixture_checkout(tmp_path,filename)
-    fake=tmp_path/'pip-python';fake.write_text('#!/bin/sh\ncase "$*" in *--version*) exit 0;; esac\necho externally-managed-environment >&2\nexit 23\n');fake.chmod(0o700)
+    fake=tmp_path/'pip-python';fake.write_text('#!/bin/sh\ncase "$*" in *sys.version_info*|*--version*) exit 0;; esac\necho externally-managed-environment >&2\nexit 23\n');fake.chmod(0o700)
     path=home/'.openclaw/.env';path.write_text('UNRELATED=keep\n')
     env={**os.environ,'HOME':str(home),'NETCLAW_PY':str(fake)};env.pop('NETCLAW_VENV',None)
     proc=subprocess.run(['bash',str(repo/'scripts'/filename)],input='',env=env,capture_output=True,text=True,timeout=15)
