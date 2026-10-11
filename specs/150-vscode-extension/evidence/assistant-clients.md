@@ -52,7 +52,8 @@ Tests cover the seven-tool surface, private-method denial, spoofed roles,
 credential references without values/hashes, cross-grant ownership, expiry and
 revocation, result withholding after revocation during an asynchronous read,
 and refusal to finish preparing a proposal after revocation during audit.
-Delegation remains denied instead of borrowing an operator runtime.
+OpenClaw delegation remains denied. The separate protected Hermes checkpoint
+below does not borrow an operator runtime or its authority.
 
 Extension tests cover opt-in discovery, no discovery side effects, immutable
 installation/host/grant definitions, resolve-time revocation, cancellation,
@@ -64,3 +65,45 @@ Interactive Codex proposal confirmation; actual Copilot tool calls; qualified
 NetClaw delegated requests and cancellation on both harnesses; nested/federated
 grant enforcement; named-client expiry, revocation and lost-response workflows
 on real WSL and Remote SSH. T048–T055 are not collectively complete.
+
+## Mac protected Hermes delegation — 2026-10-11
+
+The actual existing federation broker, pinned Hermes v0.21.6 companion, official
+subnet MCP and detached management worker now execute the local assistant subnet
+profile. The test uses fresh installation homes and a loopback controlled provider.
+It is not a hosted-provider or named-client acceptance result.
+
+`tests/assistant-clients/hermes-process.test.mjs` passed on macOS 26.5.2 arm64,
+Node 24.19.0, isolated federation Python 3.12 and companion Python 3.14.6:
+
+- Official MCP handshake exposes seven tools. A submitted subnet request survives
+  MCP client exit and retains real tool evidence plus its answer.
+- Exactly two provider requests complete the tool round trip. Reconnecting and
+  repeating the admission nonce does not create another request.
+- A forged shell tool returned by the controlled provider fails with no tool effect.
+- Revocation while the provider is blocked prevents the subsequent subnet tool
+  and further inference. Cached MCP reads are denied; the human sees the actual
+  failed/cancelled outcome. The existing companion stays alive and config bytes
+  are preserved.
+
+The Python assistant bridge, execution-scope and actual prior Hermes lifecycle
+suite passed **17 tests**. The transport guard suite passed **6 tests**, including
+a reused HTTP client after revocation, SDK retry enablement and redirect refusal.
+The management/assistant suite passed **125 tests**, with **7 explicit platform/
+process opt-in skips**; extension tests passed **40**. These counts are separate
+from the one real MCP/worker/runtime process check above.
+
+An initial real test produced model text without a subnet tool. The isolated
+checkout lacked the ignored installed subnet source. The reviewed installed
+source (SHA-256 `bfb8bb548aa7096c0b2324a3798c581ce917a26388aa6193ae66eb0708e7dd45`)
+was copied into this test checkout, leaving the owner's installation untouched.
+Readiness was tightened to require the actual companion's qualified tool list;
+missing source/tool now refuses admission before inference. This was a test
+prerequisite correction, not acceptance from a text-only model response.
+
+Additional boundary cases cover first-turn conversation overlap, unknown-outcome
+continuation, result disclosure through inventory/status/replay/cancel, source
+grant mutation and operator cancellation after revocation. Native setup offers
+delegation only for the exact qualified local profile, and answer disclosure is
+reviewed separately. T049/T050/T053 implementation is complete; T054 and the
+remaining broad runtime/federation/platform acceptance remain open.

@@ -12,8 +12,9 @@ try{
   service=new ManagementService({root,home:values.home,kind:values.runtime,expectedInstallationId:values.installation});
   const row=service.journal._row(values.operation);
   // The fixed worker executes only admitted backend operation kinds; never a command from a request.
-  invariant(['apply','conversation-request','rag-index'].includes(row.kind),'UNSUPPORTED');
+  invariant(['apply','conversation-request','assistant-request','rag-index'].includes(row.kind),'UNSUPPORTED');
   if(row.kind==='conversation-request')await service.conversations.run(values.operation);
+  else if(row.kind==='assistant-request')await service.assistants.run(values.operation);
   else if(row.kind==='rag-index')await service.workspace.runIndex(values.operation);
   else lease=service.journal.claim(values.operation,{pid:process.pid,start:new Date().toISOString()});
   if(lease){

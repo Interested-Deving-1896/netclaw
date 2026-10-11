@@ -72,7 +72,9 @@ Documentation is read from the connected backend's indexed repository.
 
 [Copilot, Claude Code and Codex setup](VSCODE-ASSISTANTS.md) uses a separate,
 scoped assistant interface. Its current supported access is inspection and
-proposals. Runtime delegation is not yet qualified. An assistant cannot approve
+proposals. A ready protected Hermes companion also supports the narrow local
+subnet profile described in [assistant access](VSCODE-ASSISTANTS.md); OpenClaw
+and broader federation delegation remain unavailable. An assistant cannot approve
 its own proposal or obtain the private operator interface.
 
 ## Recovery and support

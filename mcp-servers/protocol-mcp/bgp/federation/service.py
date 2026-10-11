@@ -2298,6 +2298,8 @@ class FederationService:
         self.execution_broker=ExecutionBroker(self.manager,self.runtime)
         from .operator import OperatorBridge
         self.execution_broker.operator=OperatorBridge(self,self.execution_broker)
+        from .management_assistant import AssistantBridge
+        self.execution_broker.assistant=AssistantBridge(self,self.execution_broker)
         await self.execution_broker.start()
         try:
             self.hermes_runtime=HermesRuntime(self.runtime,self.execution_broker)

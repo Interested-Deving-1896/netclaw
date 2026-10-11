@@ -15,8 +15,12 @@ MCP authorization boundary; clients cannot independently approve their proposals
 Exactly seven tools are exposed: `netclaw_status`, `netclaw_inventory`,
 `netclaw_evidence`, `netclaw_request`, `netclaw_request_status`, `netclaw_cancel`,
 and `netclaw_propose_change`. Unknown/private methods and caller-supplied
-authority are denied. **Delegation and cancellation remain unqualified** pending
-runtime permission propagation; schema presence is not execution support.
+authority are denied. Protected Hermes supports a **local subnet profile** when
+its already running federation companion reports the reviewed tool. Scope is
+reconstructed from the private management journal and checked at each provider
+request and tool dispatch. Cancellation retains actual runtime outcomes.
+OpenClaw, unrestricted tools and remote federation delegation remain unqualified;
+schema presence is not execution support.
 
 See the [assistant contract](../../specs/150-vscode-extension/contracts/assistant-mcp.md)
 for disclosure, independent human review and named-client acceptance requirements.
@@ -29,7 +33,7 @@ provider credentials must never be copied into editor or assistant configuration
 | `netclaw_status` | No arguments; scoped inspection |
 | `netclaw_inventory` | `kind` overview/integration/skill, bounded paging |
 | `netclaw_evidence` | `kind`, optional ID, paging; explicit disclosure required |
-| `netclaw_request` | **Execution request**, nonce, prompt, optional conversation/context; currently refused pending attenuation |
+| `netclaw_request` | **Execution request**, nonce, prompt, optional owned conversation; local protected Hermes only, external context IDs currently refused |
 | `netclaw_request_status` | Exactly one request ID or nonce; owned status only |
 | `netclaw_cancel` | **Cancellation request**, request ID and nonce; no unrelated service control |
 | `netclaw_propose_change` | **Proposal only**, nonce, fixed action, targets, revision and typed patch; no apply/approval |

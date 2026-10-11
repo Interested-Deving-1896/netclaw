@@ -29,6 +29,7 @@ import { validateOperatorOutput } from '../../../../mcp-servers/netclaw-operator
 import {OwnedServiceController} from './service-ownership.js';
 import {lifecycleAdapters} from './lifecycle.js';
 import {ServiceNowAuthority} from './change-authority.js';
+import {AssistantRequests,ProtectedAssistantRuntime} from './assistant-requests.js';
 
 export class ManagementService {
   constructor({root,home,kind,expectedInstallationId,audit,adapters={},authority}) {
@@ -40,6 +41,8 @@ export class ManagementService {
     this.services=new OwnedServiceController(this.binding,{ready:async id=>id==='federation'?Boolean((await this.readFederation('overview')).value):Boolean((await this.runtime.readiness()).ready)});
     this.adapters={...configurationAdapters(this.binding),...lifecycleAdapters({binding:this.binding,journal:this.journal,controller:this.services}),...adapters};
     this.clients=new ClientGrants({binding:this.binding,journal:this.journal,audit:this.audit});
+    this.assistants=new AssistantRequests({binding:this.binding,journal:this.journal,audit:this.audit,clients:this.clients,runtime:new ProtectedAssistantRuntime(this.binding),
+      start:operationId=>startOwnedWorker({root:this.root,binding:this.binding,operationId}),clean:value=>this.clean(value)});
     this.proposals=new Proposals({binding:this.binding,journal:this.journal,audit:this.audit,adapters:this.adapters,authority:authority||new ServiceNowAuthority(this.binding),validatePrincipal:principal=>this.clients.validate(principal)});
     this.workspace=new Workspace({binding:this.binding,journal:this.journal,audit:this.audit,clean:value=>this.clean(value),rag:new RagClient(this.binding,root),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.conversations=new Conversations({binding:this.binding,journal:this.journal,audit:this.audit,runtime:this.runtime,
@@ -48,6 +51,11 @@ export class ManagementService {
   }
   config(){const data=readOwned(this.binding.configPath,{limit:4*1024*1024}).toString();return this.binding.kind==='hermes'?yaml.load(data):JSON.parse(data);}
   clean(value){return bounded(redactor(configuredSecrets(this.binding))(value));}
+  async delegationCapability(){
+    const status=await this.assistants.runtime.readiness();this.binding.assertCurrent();
+    return {supported:this.binding.kind==='hermes',qualified:status.ready===true&&status.grantEnforced===true,profile:'local-subnet',
+      reason:status.limits||status.reason||'Protected local Hermes IPv4 /24–/30 subnet calculation. Other tools, federation and OpenClaw delegation remain unavailable.'};
+  }
   envelope(data,source,warnings=[]){return this.clean({contractVersion:1,installationId:this.binding.installationId,source,observedAt:new Date().toISOString(),data,freshness:'observed',warnings});}
   identity(){
     const config=this.config(),env=environment(this.binding),role=env.N2N_ROLE||env.N2N_RISK_ROLE||'unknown';
@@ -55,7 +63,7 @@ export class ManagementService {
       hostId:this.binding.hostId,sourceVersion:fs.readFileSync(path.join(this.root,'VERSION'),'utf8').trim(),harness:{type:this.binding.kind,version:null,versionSource:'Not probed'},
       role,configurationRevision:this.proposals.revision(),observedAt:new Date().toISOString(),
       capabilities:{inspection:{supported:true,qualified:true},changes:Object.keys(this.adapters).map(action=>({action,supported:true,qualified:this.adapters[action].qualified===true&&!action.startsWith('service.'),...(action.startsWith('service.')?{qualification:'Requires an explicit service binding and current target preflight; platform release acceptance remains separate.'}:{})})),
-        delegation:{supported:false,qualified:false,reason:'Runtime grant propagation and durable conversation adapters must be qualified before dispatch.'}},
+        delegation:{supported:this.binding.kind==='hermes',qualified:false,reason:'Protected Hermes local subnet delegation requires its existing federation companion. OpenClaw scoped execution and broader delegation remain unqualified.'}},
       runtimeSettings:this.binding.kind==='hermes'?hermesRuntimeSettings(config,'Selected installation'):runtimeSettings(config,0,'Selected installation')});
   }
   paginate(rows,input){
@@ -125,17 +133,23 @@ export class ManagementService {
   async dispatch(name,args,principal){
     invariant(principal?.surface==='operator' && principal.principalId===this.binding.principal.principalId && principal.installationId===this.binding.installationId,'DENIED');
     this.binding.assertCurrent();args=parseOperatorInput(name,args);
-    if(name==='operator_identity')return this.identity();
+    if(name==='operator_identity'){
+      const identity=this.identity();return {...identity,capabilities:{...identity.capabilities,delegation:await this.delegationCapability()}};
+    }
     if(name==='operator_resources')return this.resources(principal,args);
     if(name==='operator_snapshot')return this.snapshot(principal,args);
     if(name==='operator_workspace')return this.workspace.call(principal,args);
     if(name==='operator_operation_get'){
       const value=this.journal.get(principal,args.operationId);
       if(value.state==='unknown'&&value.kind==='conversation-request')return this.clean(await this.conversations.reconcile(principal,args.operationId));
+      if(value.state==='unknown'&&value.kind==='assistant-request')return this.clean(await this.assistants.reconcile(principal,args.operationId));
       return this.clean(value);
     }
     if(name==='operator_request_submit')return this.clean(await this.conversations.submit(principal,args));
-    if(name==='operator_cancel_request')return this.clean(await this.conversations.cancel(principal,args));
+    if(name==='operator_cancel_request'){
+      const value=this.journal.get(principal,args.operationId);
+      return this.clean(value.kind==='assistant-request'?await this.assistants.cancel(principal,{nonce:args.nonce,requestId:args.operationId}):await this.conversations.cancel(principal,args));
+    }
     if(name==='operator_events')return this.envelope({events:this.journal.events(principal,args.operationId,args.after,args.limit)},'Durable management events');
     if(name==='operator_change_prepare')return this.clean(await this.proposals.prepare(principal,args));
     if(name==='operator_client_prepare')return this.clients.prepare(principal,args);

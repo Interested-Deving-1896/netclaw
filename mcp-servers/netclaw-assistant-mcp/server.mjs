@@ -5,6 +5,8 @@ import { safeError,fail,invariant } from '../../ui/netclaw-visual/src/management
 import { authorize } from '../../ui/netclaw-visual/src/management/policy.js';
 import { assistantOutputs,validateAssistantOutput } from '../netclaw-operator-mcp/responses.mjs';
 
+const disclosedOperation=(grant,result)=>({...result,...(!grant.disclosure.includes('conversation')?{result:result.result?{...(grant.disclosure.includes('usage')?{usage:result.result.usage??null}:{}),code:result.result.code,summary:'Owned result available for human review.'}:undefined}:{})});
+
 export async function assistantCall(service,credentialRef,name,raw){
   const input=parseAssistantInput(name,raw),principal=service.clients.resolve(credentialRef);
   const value=await dispatchAssistant(service,credentialRef,name,input);
@@ -15,14 +17,14 @@ async function dispatchAssistant(service,credentialRef,name,raw){
   const input=parseAssistantInput(name,raw),grant=service.clients.resolve(credentialRef);
   if(name==='netclaw_status'){
     const identity=service.identity();return {installationId:identity.installationId,harness:identity.harness,role:identity.role,configurationRevision:identity.configurationRevision,
-      capabilities:identity.capabilities,grant:{id:grant.grantId,generation:grant.generation,actions:grant.actions,targets:grant.targets,disclosure:grant.disclosure,expiresAt:grant.expiresAt},
+      capabilities:{...identity.capabilities,delegation:await service.delegationCapability()},grant:{id:grant.grantId,generation:grant.generation,actions:grant.actions,targets:grant.targets,disclosure:grant.disclosure,expiresAt:grant.expiresAt},
       billing:'NetClaw usage does not include the external assistant’s inference.'};
   }
   if(name==='netclaw_inventory'){
     authorize(grant,'inspect',[]);
     invariant(['overview','integration','skill'].includes(input.kind),'DENIED');
     const result=await service.resources(grant,input);
-    if(input.kind==='overview')return {installationId:service.binding.installationId,harness:service.binding.kind,operations:service.journal.list(grant)};
+    if(input.kind==='overview')return {installationId:service.binding.installationId,harness:service.binding.kind,operations:service.journal.list(grant).map(value=>disclosedOperation(grant,value))};
     // Minimal disclosure does not expose configured file paths, variable names or arbitrary descriptions.
     return {...result,data:{items:(result.data.items||[]).map(row=>({id:row.id,registered:row.registered,installed:row.installed,executionVerified:row.executionVerified})),total:result.data.total,...(result.data.nextCursor?{nextCursor:result.data.nextCursor}:{})}};
   }
@@ -36,11 +38,12 @@ async function dispatchAssistant(service,credentialRef,name,raw){
     return {operationId:value.operationId,proposalId:value.proposalId,state:value.state,approvalRequired:true,review:'A human must review and initiate this change. Production actions additionally require independent approval. This client cannot apply changes.'};
   }
   if(name==='netclaw_request_status'){
-    authorize(grant,'inspect',[]);const result=input.requestId?service.journal.get(grant,input.requestId):service.journal.byNonce(grant,input.nonce);invariant(result,'DENIED');
-    return service.clean({...result,...(!grant.disclosure.includes('conversation')?{result:result.result?{usage:result.result.usage??null,code:result.result.code,summary:'Owned result available for human review.'}:undefined}:{})});
+    authorize(grant,'inspect',[]);let result=input.requestId?service.journal.get(grant,input.requestId):service.journal.byNonce(grant,input.nonce);invariant(result,'DENIED');
+    if(result.kind==='assistant-request'&&result.state==='unknown')result=await service.assistants.reconcile(grant,result.operationId);
+    return service.clean(disclosedOperation(grant,result));
   }
-  if(name==='netclaw_request'){authorize(grant,'delegate',[service.binding.installationId]);fail('UNQUALIFIED');}
-  if(name==='netclaw_cancel'){authorize(grant,'cancel',[]);service.journal.get(grant,input.requestId);fail('UNQUALIFIED');}
+  if(name==='netclaw_request')return disclosedOperation(grant,await service.assistants.submit(grant,input));
+  if(name==='netclaw_cancel')return disclosedOperation(grant,await service.assistants.cancel(grant,input));
   fail('DENIED');
 }
 export function assistantServer(service,credentialRef){

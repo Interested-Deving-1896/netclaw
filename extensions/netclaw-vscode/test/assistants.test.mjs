@@ -56,3 +56,34 @@ test('Restricted Mode and disconnect expose no Copilot definitions',async()=>{
   const provider=new AssistantProvider(state,connection,{list:()=>[profile]});await provider.remember({profile,grant,enabled:true});await provider.refresh();assert.equal(provider.provideMcpServerDefinitions().length,0);
   restricted.workspace.isTrusted=true;connection.ready=false;assert.equal(provider.provideMcpServerDefinitions().length,0);provider.dispose();
 });
+
+test('assistant setup offers only qualified scope and requires explicit answer disclosure before grant creation',async()=>{
+  for(const qualified of [false,true]){
+    const {profile,grant}=await fixture(),calls=[],prompts=[];let permissionOptions=[];
+    const localApi={...api,window:{
+      showQuickPick:async(items,options={})=>{
+        if(options.title==='NetClaw assistant access')return 'Connect an assistant';
+        if(options.title==='Assistant client')return 'copilot';
+        if(options.title==='Assistant permissions'){permissionOptions=items;return items[0];}
+        if(options.title==='What may this assistant receive?')return items.at(-1);
+        if(options.title==='Grant expiry')return items[0];
+        throw Error('Unexpected picker');
+      },showInformationMessage:async(message,options={},...choices)=>{prompts.push(options.detail);return choices[0];},
+    }};
+    const connection={profile,generation:1,call:async(name,args)=>{
+      calls.push({name,args});
+      if(name==='operator_identity')return {capabilities:{delegation:{qualified,profile:'local-subnet',reason:'Local subnet only'}}};
+      if(name==='operator_client_prepare')return {proposalId:'fixture-proposal',expectedRevision:'fixture-revision',disclosureNotice:'External provider disclosure'};
+      if(name==='operator_client_apply')return {state:'succeeded',result:{grantId:grant.grantId}};
+      if(name==='operator_resources')return {data:{items:[grant]}};
+      throw Error(name);
+    }};
+    const provider={remember:async()=>{},refresh:async()=>{}},profiles={list:()=>[profile]};
+    const {manageAssistant}=await sourceModule('assistants/setup.ts',localApi);await manageAssistant(connection,profiles,provider);
+    assert.equal(permissionOptions.some(option=>option.actions.includes('delegate')),qualified);
+    const prepared=calls.find(call=>call.name==='operator_client_prepare').args;
+    assert.equal(prepared.actions.includes('delegate'),qualified);assert.equal(prepared.disclosure.includes('conversation'),qualified);
+    assert.deepEqual(Array.from(prepared.targets),[profile.installationId]);assert.match(prompts[0],/External provider disclosure/);assert.match(prompts[0],/inference costs/);
+    if(qualified)assert.match(prompts[0],/Local subnet only/);
+  }
+});

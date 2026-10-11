@@ -1,4 +1,5 @@
 import contextvars
+import importlib.util
 import json
 from pathlib import Path
 import sys
@@ -61,4 +62,33 @@ class ProtectedTests(unittest.TestCase):
             registered.handler=lambda:None
             with self.assertRaises(HudError):agent._build_api_kwargs()
         self.assertEqual(calls,[])
+
+    @unittest.skipUnless(importlib.util.find_spec('openai'),'installed Hermes OpenAI transport required')
+    def test_assistant_transport_checks_every_wire_attempt_without_sdk_retry_or_redirect(self):
+        import httpx
+        import openai
+        calls=[]
+        def request(req):
+            calls.append(req)
+            return httpx.Response(200,json={'id':'controlled','choices':[],'created':1,'model':'fixture','object':'chat.completion'})
+        transport=httpx.Client(transport=httpx.MockTransport(request))
+        client=openai.OpenAI(api_key='fixture',base_url='http://127.0.0.1:1/v1',http_client=transport,max_retries=0)
+        self.addCleanup(client.close)
+        class ClientBase(Base):
+            def __init__(self,**kwargs):super().__init__(**kwargs);self.api_mode='chat_completions';self.provider='custom';self.client=None
+            def _create_request_openai_client(self):return client
+        scope={'origin':'assistant','profile':'chat'};self.context.set({'request':'r','scope':scope,'permit':'fixture'})
+        self.policy.owner_home=self.tmp.name
+        with patch.dict(sys.modules,{'federation_tools':types.SimpleNamespace(check_receiver=lambda *args:scope)}):
+            agent=protected_class(ClientBase,self.policy,self.ledger,self.context)()
+            guarded=agent._create_request_openai_client()
+            guarded.chat.completions.create(model='fixture',messages=[]);self.assertEqual(len(calls),1)
+            with patch.object(agent,'_hud_check',side_effect=HudError('owner_invalid')):
+                with self.assertRaises(openai.APIConnectionError):guarded.chat.completions.create(model='fixture',messages=[])
+            self.assertEqual(len(calls),1,'revocation must prevent even a reused client from sending')
+            client.max_retries=1
+            with self.assertRaises(HudError):agent._create_request_openai_client()
+            client.max_retries=0;transport.follow_redirects=True
+            with self.assertRaises(openai.APIConnectionError):guarded.chat.completions.create(model='fixture',messages=[])
+            self.assertEqual(len(calls),1)
 if __name__=='__main__':unittest.main()

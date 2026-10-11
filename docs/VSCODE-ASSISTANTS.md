@@ -7,19 +7,26 @@ An assistant never receives an operator credential or an apply/approve tool.
 ## Current implementation
 
 Run **NetClaw: Manage Copilot, Claude Code and Codex Access** after binding a
-trusted connection. Choose the client, inspection or inspection plus proposals,
+trusted connection. Choose the client, permissions, disclosure,
 and an expiry of one, seven or thirty days. Review the installation, host,
 permissions and disclosure notice before creating the grant.
 
 The backend creates a distinct credential in its private `.env`. Client setup
 contains an installation ID and `NETCLAW_CLIENT_<grant-id>_TOKEN` reference,
-never the token value. Summary and owned-usage disclosure is selected by this
-workflow. Results can enter the external client's model provider. Its inference
+never the token value. Summary and owned-usage disclosure is the default; answer
+text requires a separate explicit selection. Results can enter the external client's model provider. Its inference
 costs are separate from NetClaw's reported usage.
 
-Runtime delegation is still refused with `UNQUALIFIED`; current setup does not
-offer that permission. Inspect/propose functionality does not imply completion
-of the required OpenClaw/Hermes tool and federation attenuation work.
+When this installation's existing protected Hermes federation companion reports
+the reviewed subnet tool, setup also offers **Inspect, delegate subnet work and
+propose changes**. This profile allows local IPv4 /24–/30 subnet calculation
+and conversation with that limited toolset. It does not allow shell, configuration
+execution, remote federation orchestration or arbitrary installed tools. Each
+provider request and tool dispatch rechecks the original grant, credential,
+expiry, installation and owned worker lease. Only the guarded OpenAI-compatible
+chat-completions transport is qualified; other transports refuse dispatch.
+OpenClaw assistant execution and broader federation delegation remain unavailable.
+The extension does not launch or configure a companion to make this option appear.
 
 ## Copilot
 
@@ -60,7 +67,11 @@ Use **Review or revoke a grant** to inspect the installation's grant registry,
 reopen setup, hide Copilot discovery, or revoke backend access. Hiding discovery
 does not revoke a cached client's credential. Revocation is checked on every
 call and again after asynchronous reads and proposal preparation; cached clients
-cannot retain authority. Expiry has the same effect on future calls.
+cannot retain authority. Expiry has the same effect on future calls. During
+protected Hermes execution, revocation also requests a runtime stop and prevents
+later provider/tool hops. An already transmitted provider request cannot be
+recalled. Cancellation is confirmed only from observed runtime state. The human
+can inspect retained results and cancel owned work after a client is revoked.
 
 The current noninteractive Codex acceptance run can inspect but cannot create a
 proposal: its approval policy is `never`, so the client refuses that MCP write

@@ -42,7 +42,7 @@ class ExecutionScope:
     presentation_origin: str | None = None
 
     def __post_init__(self):
-        if self.origin not in ('operator','internal','external') or self.profile not in ('operator','chat','subnet'):
+        if self.origin not in ('operator','internal','external','assistant') or self.profile not in ('operator','chat','subnet'):
             raise Refused('invalid execution origin/profile')
         if self.origin != 'operator' and self.profile == 'operator': raise Refused('receiver cannot become operator')
         if self.presentation_origin not in (None,'voice'):raise Refused('invalid presentation origin')
@@ -62,7 +62,7 @@ def conversation_id(installation, requester, session):
 
 class ExecutionBroker:
     def __init__(self, manager, runtime, operator=None):
-        self.manager=manager;self.runtime=runtime;self.operator=operator
+        self.manager=manager;self.runtime=runtime;self.operator=operator;self.assistant=None
         self.key=secrets.token_urlsafe(48);self.permits={};self.effects={};self.server=None;self.port=None
         self.db=manager._conn
         self.db.executescript('''
@@ -156,6 +156,7 @@ class ExecutionBroker:
                       'port':self.port,'key':self.key})
 
     async def close(self):
+        if self.assistant:await self.assistant.close()
         self.permits.clear()
         if self.server:
             self.server.close();await self.server.wait_closed();self.server=None
@@ -182,6 +183,8 @@ class ExecutionBroker:
                 result={'allowed':True,'installationId':scope.installation,'scope':scope.as_dict()}
             elif route=='/operator' and secrets.compare_digest(bearer,self.key) and self.operator:
                 result=await self.operator(body)
+            elif route=='/assistant' and secrets.compare_digest(bearer,self.key) and self.assistant:
+                result=await self.assistant(body)
             elif route=='/operator/scoped' and self.operator:
                 result=await self.operator.scoped(bearer,body)
             elif route=='/effect' and self.operator:

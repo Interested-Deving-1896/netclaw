@@ -25,16 +25,23 @@ export async function manageAssistant(connection:Connection,profiles:Profiles,pr
   }
   const client=await vscode.window.showQuickPick(['copilot','claude-code','codex'] as const,{title:'Assistant client'});if(!client)return;
   if(client==='claude-code'||client==='codex')await probeClientVersion(client);
+  const identity=await call<{capabilities:{delegation?:{qualified:boolean;profile?:string;reason?:string}}}>('operator_identity');
+  const delegation=identity.capabilities.delegation,scoped=delegation?.qualified===true&&delegation.profile==='local-subnet';
   const permission=await vscode.window.showQuickPick([
+    ...(scoped?[{label:'Inspect, delegate subnet work and propose changes',actions:['inspect','delegate','cancel','propose','evidence'],description:'Local Hermes subnet calculation; no remote delegation, shell or configuration execution'}]:[]),
     {label:'Inspect and propose changes',actions:['inspect','propose','evidence'],description:'Human review is required to apply any proposal'},
     {label:'Inspect only',actions:['inspect','evidence'],description:'Inventory, status and scoped evidence'},
-  ],{title:'Assistant permissions',placeHolder:'Runtime delegation remains unavailable until the backend qualifies scoped execution'});if(!permission)return;
+  ],{title:'Assistant permissions',placeHolder:scoped?'Choose the work this client may request':delegation?.reason||'Delegation is unavailable for this installation'});if(!permission)return;
+  const disclosure=await vscode.window.showQuickPick([
+    {label:'Summaries and usage',values:['summary','usage'],description:'Answer text stays in NetClaw for human review'},
+    ...(permission.actions.includes('delegate')?[{label:'Summaries, usage and owned answers',values:['summary','usage','conversation'],description:'This client and its provider can receive its NetClaw answer text'}]:[]),
+  ],{title:'What may this assistant receive?'});if(!disclosure)return;
   const lifetime=await vscode.window.showQuickPick([{label:'1 day',days:1},{label:'7 days',days:7},{label:'30 days',days:30}],{title:'Grant expiry'});if(!lifetime)return;
   const proposal=await call<{proposalId:string;expectedRevision:string;disclosureNotice:string}>('operator_client_prepare',{
-    nonce:nonce(),client,actions:permission.actions,targets:[profile.installationId],disclosure:['summary','usage'],expiresAt:Date.now()+lifetime.days*86400000,
+    nonce:nonce(),client,actions:permission.actions,targets:[profile.installationId],disclosure:disclosure.values,expiresAt:Date.now()+lifetime.days*86400000,
   });
   if(await vscode.window.showInformationMessage(`Allow ${client} to access this NetClaw?`,{modal:true,
-    detail:`Installation: ${profile.installationId}\nHost: ${profile.context}\nPermissions: ${permission.actions.join(', ')}\nDisclosure: summaries and this grant’s NetClaw usage\nExpiry: ${lifetime.days} days\n${proposal.disclosureNotice}\nThis creates a backend credential in its private .env. No credential value enters client configuration. Delegation is not enabled.`},'Create reviewed grant')!=='Create reviewed grant')return;
+    detail:`Installation: ${profile.installationId}\nHost: ${profile.context}\nPermissions: ${permission.actions.join(', ')}\nDisclosure: ${disclosure.label}\nExpiry: ${lifetime.days} days\n${proposal.disclosureNotice}\nNetClaw usage excludes this assistant’s own inference costs.\nThis creates a backend credential in its private .env. No credential value enters client configuration.\n${permission.actions.includes('delegate')?delegation?.reason:'Delegation is not enabled.'}`},'Create reviewed grant')!=='Create reviewed grant')return;
   const result=await call<{state:string;result?:{grantId:string}}>('operator_client_apply',{proposalId:proposal.proposalId,expectedRevision:proposal.expectedRevision,nonce:nonce()});
   if(result.state!=='succeeded'||!result.result?.grantId)throw Error('Grant creation did not complete. Review backend operations before retrying.');
   const {data}=await call<{data:{items:ClientGrant[]}}>('operator_resources',{kind:'client',limit:500});

@@ -26,6 +26,11 @@ def protected_class(base, policy, ledger, request_context):
                 from bgp.federation.gateway import _VOICE_COMPOSITION_INSTRUCTION
                 kwargs['ephemeral_system_prompt']+='\n'+_VOICE_COMPOSITION_INSTRUCTION
             super().__init__(*args,**kwargs)
+            # Spec150 assistant qualification starts with the OpenAI-compatible
+            # request-local transport. Other provider transports remain refused
+            # until the same per-network-attempt boundary is qualified.
+            if self._execution_scope and self._execution_scope.get('origin')=='assistant':
+                if self.api_mode!='chat_completions' or self.provider=='moa':raise HudError('capability_unsupported')
             # Native discovery has no operational authority. Only explicitly qualified
             # MCP schemas are advertised; the protected dispatch below has no fallback.
             if self.tools:raise HudError('policy_unverified','Unexpected native tool schema.')
@@ -57,6 +62,26 @@ def protected_class(base, policy, ledger, request_context):
         def _build_api_kwargs(self,*args,**kwargs):
             self._hud_check()
             return super()._build_api_kwargs(*args,**kwargs)
+        def _create_request_openai_client(self,*args,**kwargs):
+            client=super()._create_request_openai_client(*args,**kwargs)
+            if not self._execution_scope or self._execution_scope.get('origin')!='assistant':return client
+            self._hud_check()
+            import httpx
+            import openai
+            transport=getattr(client,'_client',None)
+            if not isinstance(client,openai.OpenAI) or not isinstance(transport,httpx.Client) or client.max_retries!=0:raise HudError('policy_unverified')
+            if transport is getattr(getattr(self,'client',None),'_client',None):raise HudError('policy_unverified','A private request transport is required.')
+            marker=getattr(transport,'_netclaw_receiver_guard',None)
+            if marker is not None:
+                if marker[0]!=self._hud_request or marker[1] not in transport.event_hooks.get('request',[]):raise HudError('owner_invalid')
+            else:
+                def before_request(_request):
+                    if client.max_retries!=0 or transport.follow_redirects:raise HudError('policy_unverified')
+                    self._hud_check()
+                transport.follow_redirects=False
+                transport.event_hooks.setdefault('request',[]).append(before_request)
+                transport._netclaw_receiver_guard=(self._hud_request,before_request)
+            return client
         def _receiver_check(self,tool=None,arguments=None):
             if digest(self._execution_scope)!=self._scope_digest:raise HudError('owner_invalid')
             from federation_tools import check_receiver
