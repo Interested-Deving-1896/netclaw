@@ -422,15 +422,13 @@ export async function activate(context: vscode.ExtensionContext) {
   const items = (group: string): Navigation[] => {
     if (group === "connections")
       return [
-        ...profiles
-          .list()
-          .map((p) => ({
-            label: p.label,
-            description: connection.profile?.id === p.id ? "Connected" : p.url,
-            command: "netclaw.selectConnection",
-            args: [p.id],
-            icon: "remote",
-          })),
+        ...profiles.list().map((p) => ({
+          label: p.label,
+          description: connection.profile?.id === p.id ? "Connected" : p.url,
+          command: "netclaw.selectConnection",
+          args: [p.id],
+          icon: "remote",
+        })),
         {
           label: "Add existing NetClaw",
           command: "netclaw.addConnection",
