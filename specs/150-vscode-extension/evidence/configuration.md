@@ -63,3 +63,67 @@ Local logs: `/tmp/netclaw150-writers-{before,shared,python,migrations,selection,
 T013 is complete for these shared non-listening managed domains. T038/T039/T041
 remain open for runtime/role controls, their native forms and full transaction/
 platform acceptance. This checkpoint does not mark those broader tasks complete.
+
+## Harness and role implementation checkpoint — 2026-10-11
+
+T038 and T039 are now implemented. Their controls use the existing review/apply
+protocol and detached worker. T041 remains open for the full transaction and
+service/platform qualification beyond the controlled cases below.
+
+`runtime.select` operates on an explicitly registered existing runtime descriptor
+and existing source/target installation identities and journals. It preserves
+running processes, stored work and the current connection. The target must pass
+authenticated readiness. Both installations' configuration and active/unknown
+work enter the baseline; production on either side requires authoritative
+approval. Assistant proposals need both targets in their grant. A shared
+exclusive selector lock also covers the existing CLI selector, and target/source
+configuration locks exclude cooperative writers. Changed identities/configuration,
+work and selector bytes deny stale apply. An interrupted selector lock is retained
+for explicit recovery; newer manual edits prevent rollback overwrites.
+
+`risk.role` saves the startup role and preserves current Risk name, description,
+enabled stacks, Border endpoint and self member ID. Its read baseline must come
+from the installation-verified daemon. Stored/live metadata conflicts are denied.
+Missing existing Border/member prerequisites cannot create a Risk or enrollment.
+Known work and attested service process identity are captured. Saved versus
+observed roles and pending restart are distinct; no live mesh mutation or implicit
+restart occurs. Service impact review now includes mobile and Science operations
+as well as conversations, assistants, RAG and Terminal Intent work.
+
+The first real Risk test failed: `/n2n/risk` omitted `border_endpoint`, which could
+erase that persisted value on startup sync. The read API now includes the existing
+field, and the adapter refuses legacy responses lacking any preservation field.
+The unchanged test passed after the correction; no missing endpoint is interpreted
+as empty authorization/configuration.
+
+Validation on Mac, supported Node 24.19.0:
+
+- Role transaction cases: **9 passed**, covering both harnesses, exact file
+  preservation, no fabricated prerequisites, stale work/service/metadata,
+  production and withdrawal, verified rollback, rollback failure, lost-response
+  recovery, unavailable/foreign/legacy API sources.
+- Selector transaction cases: **8 passed**, covering the real resolver, two-target
+  grant scope, target drift, readiness failure, competing legacy CLI/configuration
+  writer, target production policy, rollback/manual edits, non-initializing
+  registration and replay preservation.
+- Native settings cases: **3 passed**; complete extension suite **55 passed**.
+  TypeScript check and build passed.
+- Operator/assistant regression: **180 passed, 14 opt-in skipped**.
+- Relevant Risk/API/runtime-selection/CLI Python regression: **22 passed,
+  9 subtests passed**. Catalog coverage passed; references regenerated.
+- Actual process selector test: **1 passed**. Installed OpenClaw 2026.7.1-2 and
+  pinned Hermes v0.21.6 ran in separate disposable homes. Both direction changes
+  used installation-specific GAIT and detached workers after facade closure.
+  The actual resolver selected each target while the original bindings and both
+  processes/configurations remained intact. Provider requests: **0**.
+- Actual Risk integration test: **1 passed**, running three roles for each
+  harness. A disposable Python process used the shipped federation API handler,
+  Risk SQLite store and `_sync_risk_from_env`. Read-only loopback transport
+  provided identity-checked observations; Node's real independent worker and
+  GAIT saved the pending role. Explicit fixture invocation of startup sync then
+  verified the observed role and preserved all existing metadata. This is **not**
+  a real mesh listener restart, remote member transition or Windows/WSL evidence.
+
+Local logs: `/tmp/netclaw150-{role-targeted,selection-targeted,selection-process,role-process,runtime-backend,runtime-extension-tests,runtime-extension-check,runtime-extension-build,runtime-ui,runtime-python,runtime-catalog}.log`.
+Runtime registration/operator guidance is in `docs/VSCODE-RUNTIMES.md`. Release,
+federation matrix, named-client and Windows/WSL gates remain separate and open.

@@ -40,6 +40,22 @@ export function writePrivate(file, value) {
   try { fs.writeFileSync(fd, JSON.stringify(value, null, 2) + '\n'); fs.fsyncSync(fd); } finally { fs.closeSync(fd); }
   fs.renameSync(temp, file);
 }
+/** Shared by explicit CLI selection and managed selection. An abandoned lock
+ * is retained for operator recovery; elapsed time never transfers ownership. */
+export function acquireRuntimeSelectionLock(file) {
+  const directory=path.dirname(file),stat=fs.lstatSync(directory);
+  if(!stat.isDirectory()||stat.isSymbolicLink()||fs.realpathSync(directory)!==directory||stat.mode&0o077||stat.uid!==process.getuid())invalid();
+  const lock=file+'.lock';let fd;
+  try{fd=fs.openSync(lock,'wx',0o600);}catch(error){if(error.code==='EEXIST')throw Object.assign(Error('Runtime selection is owned by another writer. Recover an interrupted writer explicitly.'),{code:'BUSY'});throw error;}
+  try{fs.writeFileSync(fd,JSON.stringify({pid:process.pid,startedAt:new Date().toISOString()}));fs.fsyncSync(fd);}catch(error){fs.closeSync(fd);throw error;}
+  const identity=fs.fstatSync(fd);fs.closeSync(fd);let released=false;
+  return ()=>{
+    if(released)return;
+    const current=fs.lstatSync(lock);
+    if(!current.isFile()||current.isSymbolicLink()||current.ino!==identity.ino||current.dev!==identity.dev)invalid();
+    fs.unlinkSync(lock);released=true;
+  };
+}
 export function resolveRuntime({ env = process.env, initialize = false, platform = process.platform } = {}) {
   let descriptor = null;
   try { descriptor = readPrivate(selectionFile(env)); } catch (error) { if (error.code !== 'ENOENT') throw error; }
@@ -72,7 +88,9 @@ export function selectRuntime(kind, home, env = process.env) {
   if(process.platform==='win32' && kind==='hermes')throw Error('capability_unsupported: launch Hermes HUD inside Ubuntu on WSL2.');
   const value = resolveValues({ NETCLAW_RUNTIME: kind, [kind === 'hermes' ? 'HERMES_HOME' : 'OPENCLAW_HOME']: home }, env.HOME || os.homedir());
   if (!fs.statSync(value.home).isDirectory()) invalid();
-  writePrivate(selectionFile(env), { schemaVersion:1,...value });
+  const file=selectionFile(env);privateDirectory(path.dirname(file));
+  const release=acquireRuntimeSelectionLock(file);
+  try{writePrivate(file, { schemaVersion:1,...value });}finally{release();}
   const selectedEnv={...env,NETCLAW_RUNTIME:kind};
   for(const key of ['HERMES_HOME','OPENCLAW_HOME','OPENCLAW_STATE_DIR','OPENCLAW_CONFIG_PATH'])delete selectedEnv[key];
   selectedEnv[kind==='hermes'?'HERMES_HOME':'OPENCLAW_HOME']=value.home;

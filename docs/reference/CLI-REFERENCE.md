@@ -2563,6 +2563,15 @@ Flags mentioned: none
 ```text
 ```
 
+## scripts/netclaw-bind-runtime.mjs
+
+Node entry point; argument/source references only. npm wrapper commands are indexed separately.
+
+Flags mentioned: none
+
+```text
+```
+
 ## scripts/netclaw-bind-service.mjs
 
 Node entry point; argument/source references only. npm wrapper commands are indexed separately.
@@ -2865,8 +2874,8 @@ Node entry point; argument/source references only. npm wrapper commands are inde
 Flags mentioned: `--fixture`
 
 ```text
-L81: if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-L83: if (process.argv[2] === '--fixture') {
+L99: if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+L101: if (process.argv[2] === '--fixture') {
 ```
 
 ## scripts/runtime-selection.py

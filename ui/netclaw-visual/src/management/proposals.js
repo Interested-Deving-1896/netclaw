@@ -14,7 +14,8 @@ export class Proposals {
   constructor({ binding, journal, audit, adapters, authority, validatePrincipal=()=>{} }) {
     Object.assign(this, { binding, journal, audit, adapters, authority,validatePrincipal }); this.artifacts = new ArtifactStore(journal);
   }
-  revision() { return this.journal.revision([...configurationFiles(this.binding),serviceRegistryPath(this.binding),authorityBindingPath(this.binding),...new DefenseClawComponent(this.binding).files()]); }
+  revision() { return this.journal.revision([...configurationFiles(this.binding),serviceRegistryPath(this.binding),authorityBindingPath(this.binding),...new DefenseClawComponent(this.binding).files(),
+    ...[...new Set(Object.values(this.adapters))].flatMap(adapter=>adapter.files?.()||[])]); }
   validateOrigin(proposal) {
     // Older operator proposals retain their original OS owner. Older assistant
     // proposals without an authority snapshot must be prepared again.

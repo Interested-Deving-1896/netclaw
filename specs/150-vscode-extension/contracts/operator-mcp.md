@@ -52,6 +52,24 @@ from another client's recovery sweep.
 
 Supported managed action enum: `settings.patch`, `runtime.select`, `service.start`, `service.stop`, `service.restart`, `risk.role`, `member.enroll`, `member.disable`, `member.enable`, `peer.trust`, `peer.untrust`, `security.patch`, `budget.patch`, `integration.configure`, `terminal-intent.prepare`, `terminal-intent.apply`. Each action must map to a reviewed shared domain adapter; enum presence is not qualification. Enrollment only targets existing installations. Production and external-communication effects require their actual existing gates. Forbidden destructive device operations are never added through generic enum values.
 
+`runtime.select` accepts a registered installation UUID as `runtimeId`, explicit
+`acknowledgeActiveWork:true`, and the exact distinct source/target installation
+IDs in `targets`. It changes only a registered existing default descriptor for
+future launches, preserving overrides, running work and the connection's original
+binding. Registration is an explicit backend operator procedure; the MCP accepts
+no arbitrary home/selector paths. Both configurations, identities, known work,
+target readiness and production policy are checked. CLI and management selection
+share exclusive descriptor ownership.
+
+`risk.role` accepts a role and `acknowledgeActiveWork:true` for the bound
+installation only. It requires current complete Risk metadata from the
+installation-verified daemon and preserves it in the selected `.env`. It saves a
+startup role with `pendingRestart:true`; it does not modify live membership,
+trust, listeners or processes. Settings reports configured and observed roles
+separately. Missing Border/member prerequisites or legacy incomplete API
+metadata deny preparation. The optional subsequent restart is a separate service
+proposal, never inferred from saving the role.
+
 ## Configuration and lifecycle transaction
 
 1. Read current source/effective state; validate supported schema and exact targets. Unknown executable/path/environment injection keys are refused; advanced unsupported fields receive external-editor guidance without claiming managed support.

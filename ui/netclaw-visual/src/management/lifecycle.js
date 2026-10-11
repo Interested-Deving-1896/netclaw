@@ -1,15 +1,13 @@
 import {environment} from './configuration.js';
 import {invariant} from './errors.js';
 import {digest} from './journal.js';
+import {activeManagementWork} from './runtime.js';
 
 /** Service control accepts only an installation-bound controller. It never
  * starts an installer, deletes a unit or kills a process by name/PID. */
 export function lifecycleAdapters({binding,journal,controller,settleTimeoutMs=15000}){
   const pending=new Map();
-  const activeWork=()=>{
-    const rows=journal.db.prepare("SELECT id,state FROM operations WHERE kind IN ('conversation-request','rag-index','assistant-request','terminal-intent') AND state IN ('admitted','running','cancellation-requested','unknown') ORDER BY id LIMIT 1001").all();
-    invariant(rows.length<=1000,'BUSY');return rows;
-  };
+  const activeWork=()=>activeManagementWork(journal);
   const sameInstance=(current,previous)=>current.definitionRevision===previous.definitionRevision&&current.active===previous.active&&current.pid===previous.pid&&current.invocation===previous.invocation;
   const snapshot=async id=>{binding.assertCurrent();const service=await controller.inspect(id);binding.assertCurrent();return service;};
   async function validate(proposal,baseline){

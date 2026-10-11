@@ -64,6 +64,11 @@ application. Legacy credential normalization is explicit and reviewable.
 Production installations use the [read-only change-authority integration](VSCODE-CHANGE-CONTROL.md).
 Revoking an assistant grant also invalidates its pending proposals.
 
+**Configure Settings** also offers reviewed defaults among registered existing
+harness installations and saved standalone/Border/member roles. The
+[harness and Risk workflow](VSCODE-RUNTIMES.md) explains registration, active-work
+review and pending restart. Selecting a connection itself changes neither.
+
 **Manage Service** prepares start, stop or restart for an explicitly bound
 gateway, federation daemon or Hermes companion. Review impact on current work
 before applying. A changed unit, running process, configuration or set of active

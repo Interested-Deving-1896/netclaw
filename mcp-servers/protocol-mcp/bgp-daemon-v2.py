@@ -643,7 +643,8 @@ async def handle_n2n(method, path, body):
             r = fed.risk.get_risk()
             out = {"role": r["role"], "risk_name": r["risk_name"],
                    "description": r["description"], "enabled_stacks": r["enabled_stacks"],
-                   "self_member_id": r.get("self_member_id")}
+                   "self_member_id": r.get("self_member_id"),
+                   "border_endpoint": r.get("border_endpoint")}
             if r["role"] == "border":
                 members = fed.risk.list_members()
                 out["member_count"] = len(members)

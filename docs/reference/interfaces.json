@@ -1463,7 +1463,7 @@
         "--edge"
       ],
       "declarations": [],
-      "sha256": "0dff708c53e9886dcfb80d9c9d1b408440d29a2d3b8b4edabf2db7d31577d7a9",
+      "sha256": "f7f72d6742c86259a38357dbe04823590a019003c82dbbe996e1ca66ed102ad6",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -6122,6 +6122,14 @@
       "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
     },
     {
+      "path": "scripts/netclaw-bind-runtime.mjs",
+      "kind": "Node launcher",
+      "flags": [],
+      "declarations": [],
+      "sha256": "107aed63b1e9b716456f3c6eb0fa37d7baf4affba2f3abed0806414c0d8f80df",
+      "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
+    },
+    {
       "path": "scripts/netclaw-bind-service.mjs",
       "kind": "Node launcher",
       "flags": [],
@@ -6814,15 +6822,15 @@
       ],
       "declarations": [
         {
-          "line": 81,
+          "line": 99,
           "declaration": "if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {"
         },
         {
-          "line": 83,
+          "line": 101,
           "declaration": "if (process.argv[2] === '--fixture') {"
         }
       ],
-      "sha256": "3a0f8dfd3561b305928e4cdf67226bfc25f2e03b6c1b438e86ddb77e3c27bc16",
+      "sha256": "bfc9e51910f7b27ab9f139fdcdd78acddb2f7ffc01bfdc7f074b1f8f64aa36b5",
       "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
     },
     {
@@ -12769,107 +12777,107 @@
         "declaration": "if path == \"/n2n/risk\" and method == \"GET\":"
       },
       {
-        "line": 654,
+        "line": 655,
         "declaration": "if path == \"/n2n/posture\" and method == \"GET\":"
       },
       {
-        "line": 664,
+        "line": 665,
         "declaration": "if path == \"/n2n/certs\" and method == \"GET\":"
       },
       {
-        "line": 713,
+        "line": 714,
         "declaration": "if path == \"/n2n/certs/rotate\" and method == \"POST\":"
       },
       {
-        "line": 727,
+        "line": 728,
         "declaration": "if path == \"/n2n/certs/renew\" and method == \"POST\":"
       },
       {
-        "line": 733,
+        "line": 734,
         "declaration": "if path == \"/n2n/gait\" and method == \"GET\":"
       },
       {
-        "line": 739,
+        "line": 740,
         "declaration": "if path == \"/n2n/faults\" and method == \"GET\":"
       },
       {
-        "line": 742,
+        "line": 743,
         "declaration": "if path == \"/n2n/risk\" and method == \"POST\":"
       },
       {
-        "line": 755,
+        "line": 756,
         "declaration": "if path == \"/n2n/members\" and method == \"GET\":"
       },
       {
-        "line": 782,
+        "line": 783,
         "declaration": "if path == \"/n2n/members/health\" and method == \"GET\":"
       },
       {
-        "line": 796,
+        "line": 797,
         "declaration": "if path == \"/n2n/members/remove\" and method == \"POST\":"
       },
       {
-        "line": 819,
+        "line": 820,
         "declaration": "if path == \"/n2n/members/add\" and method == \"POST\":"
       },
       {
-        "line": 837,
+        "line": 838,
         "declaration": "if path == \"/n2n/enroll/token\" and method == \"POST\":"
       },
       {
-        "line": 845,
+        "line": 846,
         "declaration": "if path == \"/n2n/route\" and method == \"POST\":"
       },
       {
-        "line": 852,
+        "line": 853,
         "declaration": "if path == \"/n2n/edge/push\" and method == \"POST\":"
       },
       {
-        "line": 1280,
+        "line": 1281,
         "declaration": "if method == \"GET\" and path == \"/status\":"
       },
       {
-        "line": 1293,
+        "line": 1294,
         "declaration": "elif method == \"GET\" and path == \"/rib\":"
       },
       {
-        "line": 1331,
+        "line": 1332,
         "declaration": "elif method == \"GET\" and path == \"/peers\":"
       },
       {
-        "line": 1339,
+        "line": 1340,
         "declaration": "elif method == \"POST\" and path == \"/inject\":"
       },
       {
-        "line": 1349,
+        "line": 1350,
         "declaration": "elif method == \"POST\" and path == \"/withdraw\":"
       },
       {
-        "line": 1358,
+        "line": 1359,
         "declaration": "elif method == \"POST\" and path == \"/add_peer\":"
       },
       {
-        "line": 1402,
+        "line": 1403,
         "declaration": "elif method == \"POST\" and path == \"/remove_peer\":"
       },
       {
-        "line": 1418,
+        "line": 1419,
         "declaration": "elif method == \"GET\" and path == \"/mesh_directory\":"
       },
       {
-        "line": 1433,
+        "line": 1434,
         "declaration": "elif method == \"POST\" and path == \"/set_mesh_endpoint\":"
       },
       {
-        "line": 1445,
+        "line": 1446,
         "declaration": "elif method == \"GET\" and path == \"/tunnels\":"
       },
       {
-        "line": 1455,
+        "line": 1456,
         "declaration": "elif method == \"POST\" and path == \"/tunnel/retry\":"
       },
       {
-        "line": 1475,
+        "line": 1476,
         "declaration": "elif path.startswith(\"/n2n\"):"
       }
     ]

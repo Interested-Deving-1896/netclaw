@@ -330,6 +330,12 @@
     "category": "Guides"
   },
   {
+    "id": "9010f025a65bbfa3",
+    "path": "docs/VSCODE-RUNTIMES.md",
+    "title": "Harness defaults and Risk roles",
+    "category": "Guides"
+  },
+  {
     "id": "7764546478762eb4",
     "path": "docs/VSCODE-SCIENCE.md",
     "title": "Science Officer in VS Code",

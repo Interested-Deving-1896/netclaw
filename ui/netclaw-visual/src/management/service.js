@@ -34,6 +34,8 @@ import {DefenseClawComponent} from './defenseclaw.js';
 import {OpenShellComponent} from './openshell.js';
 import {ScienceOfficer} from './science.js';
 import {MobileWorkspace} from './mobile.js';
+import {RiskConfiguration} from './runtime.js';
+import {RuntimeSelection} from './runtime-selection.js';
 
 export class ManagementService {
   constructor({root,home,kind,expectedInstallationId,audit,adapters={},authority}) {
@@ -43,11 +45,13 @@ export class ManagementService {
     this.runtime=createManagementRuntime(this.binding,root);
     this.readFederation=federationReader(this.binding,()=>environment(this.binding));
     this.services=new OwnedServiceController(this.binding,{ready:async id=>id==='federation'?Boolean((await this.readFederation('overview')).value):Boolean((await this.runtime.readiness()).ready)});
+    this.risk=new RiskConfiguration({binding:this.binding,journal:this.journal,readFederation:this.readFederation,services:this.services});
+    this.runtimeSelection=new RuntimeSelection({binding:this.binding,journal:this.journal,root});
     this.defenseclaw=new DefenseClawComponent(this.binding);
     this.openshell=new OpenShellComponent(this.binding);
     this.science=new ScienceOfficer({binding:this.binding,journal:this.journal,root,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.mobile=new MobileWorkspace({binding:this.binding,journal:this.journal,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
-    this.adapters={...configurationAdapters(this.binding),'security.patch':this.defenseclaw.adapter(),...lifecycleAdapters({binding:this.binding,journal:this.journal,controller:this.services}),...adapters};
+    this.adapters={...configurationAdapters(this.binding),'security.patch':this.defenseclaw.adapter(),'risk.role':this.risk.adapter(),'runtime.select':this.runtimeSelection.adapter(),...lifecycleAdapters({binding:this.binding,journal:this.journal,controller:this.services}),...adapters};
     this.clients=new ClientGrants({binding:this.binding,journal:this.journal,audit:this.audit});
     this.assistants=new AssistantRequests({binding:this.binding,journal:this.journal,audit:this.audit,clients:this.clients,runtime:new ProtectedAssistantRuntime(this.binding),
       start:operationId=>startOwnedWorker({root:this.root,binding:this.binding,operationId}),clean:value=>this.clean(value)});
@@ -70,7 +74,7 @@ export class ManagementService {
     return this.clean({contract:{major:1,minor:0},installationId:this.binding.installationId,principalId:this.binding.principal.principalId,
       hostId:this.binding.hostId,sourceVersion:fs.readFileSync(path.join(this.root,'VERSION'),'utf8').trim(),harness:{type:this.binding.kind,version:null,versionSource:'Not probed'},
       role,configurationRevision:this.proposals.revision(),observedAt:new Date().toISOString(),
-      capabilities:{inspection:{supported:true,qualified:true},changes:Object.keys(this.adapters).map(action=>({action,supported:true,qualified:this.adapters[action].qualified===true&&!action.startsWith('service.')&&action!=='security.patch',...(action.startsWith('service.')||action==='security.patch'?{qualification:'Requires an explicit component/service binding and current target preflight; platform release acceptance remains separate.'}:{})})),
+      capabilities:{inspection:{supported:true,qualified:true},changes:Object.keys(this.adapters).map(action=>({action,supported:true,qualified:this.adapters[action].qualified===true&&!action.startsWith('service.')&&!['security.patch','runtime.select','risk.role'].includes(action),...(action.startsWith('service.')||['security.patch','runtime.select','risk.role'].includes(action)?{qualification:'Requires the existing domain prerequisites and current target preflight; platform release acceptance remains separate.'}:{})})),
         delegation:{supported:this.binding.kind==='hermes',qualified:false,reason:'Protected Hermes local subnet delegation requires its existing federation companion. OpenClaw scoped execution and broader delegation remain unqualified.'}},
       runtimeSettings:this.binding.kind==='hermes'?hermesRuntimeSettings(config,'Selected installation'):runtimeSettings(config,0,'Selected installation')});
   }
@@ -113,7 +117,7 @@ export class ManagementService {
   }
   async snapshot(principal,input){
     authorize(principal,'inspect',[]);
-    if(input.domain==='settings')return this.envelope({revision:this.proposals.revision(),runtime:this.identity().runtimeSettings,environment:configurationSnapshot(this.binding),managed:managedSettingsSnapshot(this.binding),conversation:conversationOptions(this.binding),nativeUi:nativeHarnessUi(this.binding),services:await this.services.inventory()},'Selected installation configuration and reviewed service bindings');
+    if(input.domain==='settings')return this.envelope({revision:this.proposals.revision(),runtime:this.identity().runtimeSettings,environment:configurationSnapshot(this.binding),managed:managedSettingsSnapshot(this.binding),conversation:conversationOptions(this.binding),nativeUi:nativeHarnessUi(this.binding),services:await this.services.inventory(),risk:await this.risk.snapshot(),runtimeSelection:this.runtimeSelection.snapshot()},'Selected installation configuration and reviewed service bindings');
     if(input.domain==='usage'){
       const data=this.binding.kind==='hermes'?ownedUsage(this.journal,principal,input.window):readUsage(path.join(this.binding.home,'agents',gatewayAgentId(this.config()),'sessions'),{window:input.window});
       return this.envelope({...data,externalAssistantUsage:null,billingNote:'NetClaw usage excludes Copilot, Claude Code and Codex inference.'},'Selected runtime retained usage');
