@@ -2,6 +2,22 @@
 
 Skills define *how* tools work. This file is for *your* specifics — the environment details that are unique to your deployment.
 
+## Private VS Code management (Spec150 development)
+
+- Operator launcher: `scripts/netclaw-operator.mjs`; explicit existing `--home`,
+  `--runtime` and expected `--installation`; Node 24.19–24.x or 26.1+.
+- Assistant launcher: `scripts/netclaw-assistant.mjs`; separate reviewed grant
+  via `--grant-ref NETCLAW_CLIENT_<32-hex-grant-id>_TOKEN`. Values stay in the
+  selected backend `.env`; do not register the private operator with an agent.
+- State: selected installation's private `netclaw-hud/management` journal;
+  owned audit and stable installation identity are prerequisites. Inspect the
+  selected installation binding for its actual state path; never infer it from a label.
+- Credentials and existing services are not changed by connecting or uninstalling.
+  Hermes management requires its reviewed `.env` companion credential; legacy
+  JSON credential normalization is explicit.
+- Setup/recovery: `docs/VSCODE.md`; verified versions and open gates:
+  `docs/VSCODE-COMPATIBILITY.md`. This is not yet a published release.
+
 ## Network Devices
 
 Devices are defined in `testbed/testbed.yaml`. Update that file with your SSH-accessible Cisco devices.

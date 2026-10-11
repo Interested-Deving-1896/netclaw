@@ -14,6 +14,10 @@ qualification is in progress; it is not a published or production-qualified rele
 - **Avatar** uses the existing local John and lobster assets alongside the same text conversation.
 - **RAG knowledge base** browses backend collections, uploads reviewed documents up to 10 MiB, tracks indexing and retrieves cited passages. Selected results become optional Chat or Canvas context. Snapshot age and low-confidence results remain visible.
 - **Operations and configuration** expose retained request outcomes, GAIT records and reviewed environment changes.
+- **Settings** review configured provider/model, OpenClaw session-budget and legacy credential normalization changes. Saved settings show that runtime verification or restart is still needed.
+- **Assistant access** reviews separate expiring grants for Copilot, Claude Code and Codex. Copilot discovers its opt-in MCP definition; terminal clients receive secret-free setup previews. Inspection and proposals are available; runtime delegation remains under development.
+- **Evidence** includes selected-installation log previews, usage windows, configured device summaries and historical memory search with validity windows.
+- **Documentation** searches bundled guides by title, category and path and shows the selected backend version.
 
 ![RAG search in VS Code](resources/screenshots/rag.png)
 

@@ -8,6 +8,15 @@ import { openChat } from './views/chat';
 import { openCanvas } from './views/canvas';
 import { openRag } from './views/rag';
 import { stageSelectedContext } from './commands/context';
+import {configureSettings} from './views/settings';
+import {AssistantProvider} from './assistants/provider';
+import {manageAssistant} from './assistants/setup';
+import {LocalState} from './state/local';
+import path from 'node:path';
+import {openDocumentation} from './views/documentation';
+import {openLogs} from './views/logs';
+import {openTokenomics} from './views/tokenomics';
+import {searchMemory} from './views/knowledge';
 
 const nonce=():string=>`${Date.now()}:${randomUUID()}`;
 type Domain={title:string;method:string;args:Record<string,unknown>;group:string;icon:string};
@@ -35,6 +44,8 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   const output=vscode.window.createOutputChannel('NetClaw'),profiles=new Profiles(context.globalState,context.globalStorageUri.fsPath),connection=new Connection(output);
   const status=vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left,40);status.command='netclaw.selectConnection';status.name='NetClaw installation';
   context.subscriptions.push(output,connection,status);const trees:NavigationTree[]=[];
+  const assistants=new AssistantProvider(new LocalState(path.join(context.globalStorageUri.fsPath,'assistants')),connection,profiles);
+  context.subscriptions.push(assistants,vscode.lm.registerMcpServerDefinitionProvider('netclaw.assistant',assistants));
   const refresh=()=>{for(const tree of trees)tree.refresh();status.text=connection.identity?`$(remote) ${connection.profile?.label} · ${connection.identity.harness.type}`:'$(remote) NetClaw: disconnected';status.tooltip=connection.identity?`${hostContext()}\n${connection.identity.installationId}\nManagement contract ${connection.identity.contract.major}`:'Select an existing installation';status.show();};
   context.subscriptions.push(connection.changed.event(refresh));
   function register(name:string,handler:(...args:unknown[])=>unknown):void {
@@ -47,7 +58,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
       if(answer!=='Bind installation'){await connection.disconnect();return;}
       await profiles.save({...profile,installationId:identity.installationId,hostId:identity.hostId,principalId:identity.principalId});
     }
-    refresh();
+    refresh();await assistants.refresh();
   }
   register('addConnection',async()=>{
     if(!vscode.workspace.isTrusted)throw Error('Trust this workspace before adding an operational connection.');
@@ -68,7 +79,11 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('disconnect',()=>connection.disconnect());
   register('removeConnection',async()=>{const item=await vscode.window.showQuickPick(profiles.list().map(p=>({label:p.label,profile:p})));if(!item)return;if(connection.profile?.id===item.profile.id)await connection.disconnect();await profiles.remove(item.profile.id);refresh();});
   register('openDomain',async key=>{if(typeof key!=='string'||!Object.hasOwn(domains,key))throw Error('Unknown NetClaw view.');const view=domains[key]!;openDataView(context,connection,{title:view.title,kind:key,load:()=>connection.call(view.method,view.args)});});
-  for(const [command,key] of Object.entries({openOverview:'overview',openSettings:'settings',openGait:'gait',openTokenomics:'tokenomics',openDocumentation:'documentation'}))register(command,()=>vscode.commands.executeCommand('netclaw.openDomain',key));
+  for(const [command,key] of Object.entries({openOverview:'overview',openSettings:'settings',openGait:'gait'}))register(command,()=>vscode.commands.executeCommand('netclaw.openDomain',key));
+  register('openDocumentation',()=>openDocumentation(context,connection));
+  register('openTokenomics',()=>openTokenomics(context,connection));
+  register('openLogs',()=>openLogs(connection));
+  register('searchMemory',()=>searchMemory(context,connection));
   register('help',async()=>{const document=await vscode.workspace.openTextDocument(vscode.Uri.joinPath(context.extensionUri,'README.md'));await vscode.window.showTextDocument(document);});
   register('refresh',refresh);
   register('openChat',()=>openChat(context,connection));
@@ -76,6 +91,8 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('openCanvas',()=>openCanvas(context,connection));
   register('openRag',()=>openRag(context,connection));
   register('addSelectedContext',()=>stageSelectedContext(connection));
+  register('configureSettings',()=>configureSettings(connection));
+  register('manageAssistants',()=>manageAssistant(connection,profiles,assistants));
   register('prepareChange',async()=>{
     const call=boundCaller(connection);
     const snapshot=await call<{data:{revision:string;environment:{managedFields:{key:string;secret:boolean}[]}}}>('operator_snapshot',{domain:'settings'});
@@ -112,10 +129,14 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   const connections=connectionTree(connection,profiles);trees.push(connections);context.subscriptions.push(vscode.window.registerTreeDataProvider('netclaw.connections',connections));
   for(const group of ['estate','operations','integrations','knowledge','security','help']){
     const tree=new NavigationTree(()=>{
-      const items:Navigation[]=Object.entries(domains).filter(([,d])=>d.group===group).map(([key,d])=>({label:d.title,command:'netclaw.openDomain',args:[key],icon:d.icon}));
+      const items:Navigation[]=Object.entries(domains).filter(([,d])=>d.group===group).map(([key,d])=>({label:d.title,command:key==='documentation'?'netclaw.openDocumentation':key==='tokenomics'?'netclaw.openTokenomics':'netclaw.openDomain',args:[key],icon:d.icon}));
       if(group==='help')items.push({label:'Getting started',command:'netclaw.help',icon:'info'});
       if(group==='knowledge')items.unshift({label:'RAG knowledge base',command:'netclaw.openRag',icon:'search'});
+      if(group==='knowledge')items.push({label:'Search recorded memory',command:'netclaw.searchMemory',icon:'history'});
+      if(group==='integrations')items.unshift({label:'Configure provider, model and budget',command:'netclaw.configureSettings',icon:'settings-gear'});
+      if(group==='integrations')items.push({label:'Copilot, Claude Code & Codex',command:'netclaw.manageAssistants',icon:'hubot'});
       if(group==='operations')items.unshift({label:'Chat',command:'netclaw.openChat',icon:'comment-discussion'});
+      if(group==='operations')items.push({label:'Installation logs',command:'netclaw.openLogs',icon:'output'});
       if(group==='operations')items.push({label:'Avatar',command:'netclaw.openAvatar',icon:'person'});
       if(group==='operations')items.push({label:'Canvas',command:'netclaw.openCanvas',icon:'preview'});
       if(group==='operations')items.push({label:'Prepare a managed change',command:'netclaw.prepareChange',icon:'git-pull-request'},{label:'Review a proposal',command:'netclaw.reviewProposal',icon:'checklist'});

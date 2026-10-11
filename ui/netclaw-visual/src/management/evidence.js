@@ -15,18 +15,31 @@ export function redactor(secrets = []) {
     return result.replace(/\bBearer\s+[A-Za-z0-9._~+/-]+=*/gi, 'Bearer [redacted]')
       .replace(/\b(?:sk-|ghp_|github_pat_)[A-Za-z0-9_-]{8,}/g, '[redacted]');
   };
-  const visit = (value, depth = 0) => {
-    if (depth > 16) return '[depth limit]';
-    if (typeof value === 'string') return text(value).slice(0, 65536);
-    if (Array.isArray(value)) return value.slice(0,500).map(item => visit(item, depth+1));
-    if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).slice(0,500).map(([key,item]) => [key, secretKey.test(key) ? '[redacted]' : visit(item, depth+1)]));
-    return value;
+  return value => {
+    const truncation={strings:0,arrays:0,objects:0,depth:0};
+    const visit = (item, depth = 0) => {
+      if (depth > 16) {truncation.depth++;return '[depth limit]';}
+      if (typeof item === 'string') {const safe=text(item);if(safe.length>65536)truncation.strings++;return safe.slice(0,65536);}
+      if (Array.isArray(item)) {if(item.length>500)truncation.arrays++;return item.slice(0,500).map(next=>next===undefined?null:visit(next,depth+1));}
+      if (item && typeof item === 'object') {
+        const entries=Object.entries(item).filter(([,v])=>v!==undefined);if(entries.length>500)truncation.objects++;
+        return Object.fromEntries(entries.slice(0,500).map(([key,next])=>[key,
+          key==='credentialRef'&&typeof next==='string'&&/^NETCLAW_CLIENT_[A-F\d]{32}_TOKEN$/.test(next)?next:
+            ['legacyCredentials','normalizeCredentials'].includes(key)&&typeof next==='boolean'?next:
+            secretKey.test(key)?'[redacted]':visit(next,depth+1)]));
+      }
+      return item;
+    };
+    const result=visit(value);
+    return Object.values(truncation).some(Boolean)&&result&&typeof result==='object'&&!Array.isArray(result)?{...result,truncation}:result;
   };
-  return visit;
 }
 export function bounded(value) {
   if (Buffer.byteLength(JSON.stringify(value)) <= 1024*1024) return value;
-  return { available: false, truncated: true, reason: 'Response exceeded 1 MiB. Narrow the query or use pagination.' };
+  const truncated={available:false,truncated:true,reason:'Response exceeded 1 MiB. Narrow the query or use pagination.'};
+  if(value?.contractVersion===1){const {nextCursor,...envelope}=value;return {...envelope,data:truncated,freshness:'partial',warnings:[truncated.reason]};}
+  if(value?.operationId)return Object.fromEntries(Object.entries({...value,result:truncated,proposal:undefined}).filter(([,v])=>v!==undefined));
+  return truncated;
 }
 export class ArtifactStore {
   constructor(journal) { this.journal = journal; this.directory = path.join(journal.directory, 'artifacts'); ownedDirectory(this.directory, { create: true }); }

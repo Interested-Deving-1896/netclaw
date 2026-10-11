@@ -1,0 +1,24 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {DatabaseSync} from 'node:sqlite';
+import {createHash} from 'node:crypto';
+import {fileURLToPath} from 'node:url';
+import {installationFixture,auditFixture} from './fixtures.mjs';
+import {ManagementService} from '../../ui/netclaw-visual/src/management/service.js';
+test('memory search retains validity and references, escapes wildcard text and leaves source bytes unchanged',async t=>{
+  const f=installationFixture(t),directory=path.join(f.home,'memory');fs.mkdirSync(directory);
+  const file=path.join(directory,'memory.db'),db=new DatabaseSync(file);
+  const schema=fs.readFileSync(new URL('../../mcp-servers/memory-mcp/storage/schema.sql',import.meta.url),'utf8');db.exec(schema);
+  db.prepare('INSERT INTO facts(id,entity,key,value,valid_from,valid_to) VALUES(?,?,?,?,?,?)').run('fact-1','r1','version','17.9','2025-01-01','2025-02-01');
+  db.prepare('INSERT INTO decisions(id,context,decision,rationale,entities,cr_number,gait_ref) VALUES(?,?,?,?,?,?,?)').run('decision-1','r1 upgrade','defer','maintenance window','["r1"]','CHG0001','gait-fixture');db.close();
+  const hash=()=>createHash('sha256').update(fs.readFileSync(file)).digest('hex'),before=hash();
+  const service=new ManagementService({root:fileURLToPath(new URL('../../',import.meta.url)),home:f.home,kind:f.kind,audit:auditFixture()});t.after(()=>service.close());
+  const {data}=await service.call('operator_workspace',{action:'memory-search',args:{query:'r1'}});
+  assert.equal(data.sourceKind,'historical');assert.equal(data.facts[0].valid_to,'2025-02-01');assert.equal(data.decisions[0].gait_ref,'gait-fixture');assert.equal(hash(),before);
+  const wildcard=await service.call('operator_workspace',{action:'memory-search',args:{query:'%'}});assert.equal(wildcard.data.facts.length,0);
+  fs.renameSync(file,path.join(directory,'retained.db'));
+  const missing=await service.call('operator_workspace',{action:'memory-search',args:{query:'r1'}});assert.equal(missing.data.available,false);assert.equal(fs.existsSync(file),false);
+  fs.symlinkSync(path.join(directory,'retained.db'),file);await assert.rejects(service.call('operator_workspace',{action:'memory-search',args:{query:'r1'}}),{code:'DENIED'});
+});

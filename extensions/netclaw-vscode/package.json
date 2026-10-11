@@ -209,6 +209,26 @@
         "command": "netclaw.openRag",
         "title": "Open RAG Knowledge Base",
         "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.configureSettings",
+        "title": "Configure Provider, Model and Budget",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.manageAssistants",
+        "title": "Manage Copilot, Claude Code and Codex Access",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.openLogs",
+        "title": "Review Installation Logs",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.searchMemory",
+        "title": "Search Recorded Memory",
+        "category": "NetClaw"
       }
     ],
     "mcpServerDefinitionProviders": [

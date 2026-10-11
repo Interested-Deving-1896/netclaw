@@ -3,13 +3,16 @@ import { fail } from '../../ui/netclaw-visual/src/management/errors.js';
 export const id = z.string().min(1).max(200).regex(/^[A-Za-z0-9][A-Za-z0-9_.:/-]*$/).refine(v => !v.includes('..'));
 export const nonce = z.string().regex(/^\d{13}:[a-f\d-]{36}$/);
 export const action = z.enum(['settings.patch','runtime.select','service.start','service.stop','service.restart','risk.role','member.enroll','member.disable','member.enable','peer.trust','peer.untrust','security.patch','budget.patch','integration.configure','terminal-intent.prepare','terminal-intent.apply']);
-export const kinds = z.enum(['overview','member','peer','edge','advisor','integration','skill','network']);
+export const kinds = z.enum(['overview','member','peer','edge','advisor','integration','skill','network','client']);
 export const page = { cursor: z.string().max(512).optional(), limit: z.number().int().min(1).max(500).default(100) };
 export const envKey = z.string().regex(/^[A-Z][A-Z0-9_]{0,100}$/);
 export const patch = z.strictObject({
   provider: z.string().min(1).max(100).optional(), model: z.string().min(1).max(200).optional(), effort: z.enum(['low','medium','high','max']).optional(),
   role: z.enum(['standalone','border','member']).optional(), runtimeId: id.optional(), serviceId: z.enum(['hud','gateway','federation','hermes-companion','openshell']).optional(),
   monthlyLimit: z.number().min(0).max(1000000).optional(), dailyLimit: z.number().min(0).max(1000000).optional(),
+  sessionBudgetUsd:z.number().min(0).max(1000000).optional(),maxToolCallsPerTurn:z.number().int().min(0).max(10000).optional(),
+  contextWarningTokens:z.number().int().min(0).max(10000000).optional(),allowOverride:z.boolean().optional(),overrideIncrementUsd:z.number().min(0).max(1000000).optional(),
+  normalizeCredentials:z.literal(true).optional(),
   fields: z.array(z.strictObject({ key: envKey, intent: z.enum(['keep','replace','clear']), value: z.string().max(4096).optional() })).max(100).optional(),
   mode: z.enum(['observe','enforce','disabled']).optional(), enabled: z.boolean().optional(), intent: z.string().max(65536).optional(),
   acknowledgeActiveWork: z.boolean().optional(),
@@ -22,14 +25,14 @@ const fields = patch.shape;
 const nonempty = schema => schema.refine(value => Object.keys(value).length > 0);
 const servicePatch = z.strictObject({serviceId: fields.serviceId.unwrap(), acknowledgeActiveWork: fields.acknowledgeActiveWork});
 const patches = {
-  'settings.patch': nonempty(z.strictObject({provider:fields.provider,model:fields.model,effort:fields.effort})),
+  'settings.patch': nonempty(z.strictObject({provider:fields.provider,model:fields.model,effort:fields.effort,normalizeCredentials:fields.normalizeCredentials})),
   'runtime.select': z.strictObject({runtimeId:fields.runtimeId.unwrap(),acknowledgeActiveWork:fields.acknowledgeActiveWork}),
   'service.start': servicePatch, 'service.stop': servicePatch, 'service.restart': servicePatch,
   'risk.role': z.strictObject({role:fields.role.unwrap(),acknowledgeActiveWork:fields.acknowledgeActiveWork}),
   'member.enroll': z.strictObject({}), 'member.disable': z.strictObject({}), 'member.enable': z.strictObject({}),
   'peer.trust': z.strictObject({}), 'peer.untrust': z.strictObject({}),
   'security.patch': z.strictObject({mode:fields.mode.unwrap()}),
-  'budget.patch': nonempty(z.strictObject({monthlyLimit:fields.monthlyLimit,dailyLimit:fields.dailyLimit})),
+  'budget.patch': nonempty(z.strictObject({monthlyLimit:fields.monthlyLimit,dailyLimit:fields.dailyLimit,sessionBudgetUsd:fields.sessionBudgetUsd,maxToolCallsPerTurn:fields.maxToolCallsPerTurn,contextWarningTokens:fields.contextWarningTokens,allowOverride:fields.allowOverride,overrideIncrementUsd:fields.overrideIncrementUsd})),
   'integration.configure': z.strictObject({fields:fields.fields.unwrap().min(1).refine(rows=>new Set(rows.map(row=>row.key)).size===rows.length)}),
   'terminal-intent.prepare': z.strictObject({intent:fields.intent.unwrap().min(1)}),
   'terminal-intent.apply': z.strictObject({intent:fields.intent.unwrap().min(1)}),

@@ -5,14 +5,19 @@ import { readOwned, atomicPrivate } from './files.js';
 import { canonical, digest } from './journal.js';
 import { authorize, verifyChangeApproval } from './policy.js';
 import { invariant, fail, safeError } from './errors.js';
+import {configurationFiles} from './configuration.js';
 
 export class Proposals {
-  constructor({ binding, journal, audit, adapters, authority }) {
-    Object.assign(this, { binding, journal, audit, adapters, authority }); this.artifacts = new ArtifactStore(journal);
+  constructor({ binding, journal, audit, adapters, authority, validatePrincipal=()=>{} }) {
+    Object.assign(this, { binding, journal, audit, adapters, authority,validatePrincipal }); this.artifacts = new ArtifactStore(journal);
   }
-  revision() { return this.journal.revision([this.binding.configPath, this.binding.envPath]); }
+  revision() { return this.journal.revision(configurationFiles(this.binding)); }
   async prepare(principal, input) {
-    this.binding.assertCurrent(); authorize(principal, 'propose', input.targets);
+    this.binding.assertCurrent();this.validatePrincipal(principal);authorize(principal, 'propose', input.targets);
+    if(this.journal.byNonce(principal,input.nonce)){
+      const existing=this.journal.admit(principal,input.nonce,'proposal',input);
+      return {...existing,...(existing.result?.proposalId?{proposalId:existing.result.proposalId,approvalRequired:true}:{})};
+    }
     invariant(input.expectedRevision === this.revision(), 'STALE_REVISION');
     const adapter = this.adapters[input.action]; invariant(adapter, 'UNSUPPORTED');
     invariant(adapter.qualified === true, 'UNQUALIFIED');
@@ -24,8 +29,10 @@ export class Proposals {
     try {
       this.journal.transition(operation.operationId, 'preparing');
       await this.audit.record({ operationId: operation.operationId, action: input.action, state: 'preparing' });
+      this.validatePrincipal(principal);
       this.binding.assertCurrent(); invariant(input.expectedRevision === this.revision(), 'STALE_REVISION');
       const prepared = await adapter.prepare(input, principal);
+      this.validatePrincipal(principal);
       invariant(prepared?.baseline !== undefined && prepared?.rollback !== undefined, 'DENIED');
       const proposalId = randomUUID();
       const baseline = this.artifacts.write(principal, prepared.baseline, 'baseline');
@@ -99,6 +106,6 @@ export class Proposals {
         else if (state === 'admitted') this.journal.transition(operation.operationId,'denied',safeError(error));
       }
       throw error;
-    } finally { this.journal.unlock(adapter.resource || 'configuration',lock); }
+    } finally { adapter.release?.(proposal);this.journal.unlock(adapter.resource || 'configuration',lock); }
   }
 }

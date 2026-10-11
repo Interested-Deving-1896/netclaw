@@ -4,7 +4,7 @@
 
 # NetClaw
 
-A CCIE-level AI network engineering coworker that runs on [OpenClaw](https://github.com/openclaw/openclaw) or [Hermes](https://github.com/NousResearch/hermes-agent), with **237 skills and 176 MCP integrations** in its catalog. Investigate live networks, learn from your own documentation, coordinate specialist agents, and carry out approved changes with baselines, verification and an immutable audit trail. Available tools and HUD controls depend on the selected runtime and installed components.
+A CCIE-level AI network engineering coworker that runs on [OpenClaw](https://github.com/openclaw/openclaw) or [Hermes](https://github.com/NousResearch/hermes-agent), with **238 skills and 176 MCP integrations** in its catalog. Investigate live networks, learn from your own documentation, coordinate specialist agents, and carry out approved changes with baselines, verification and an immutable audit trail. Available tools and HUD controls depend on the selected runtime and installed components.
 
 Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one NetClaw, or build [a risk of specialist NetClaws](#a-risk-of-netclaws-in2n) behind a single Border.
 
@@ -12,7 +12,19 @@ Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one Ne
 
 **Project:** [Source version 1.8.0](VERSION) · [Release notes](docs/releases/1.8.0.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 
-**Reference:** [Architecture](#architecture) · [MCP servers](#mcp-servers-176) · [Skills](#skills-237) · [Workflows](#standard-workflows) · [Safety](#safety)
+**Reference:** [Architecture](#architecture) · [MCP servers](#mcp-servers-176) · [Skills](#skills-238) · [Workflows](#standard-workflows) · [Safety](#safety)
+
+## Visual Studio Code extension — in development
+
+The editor extension manages an existing NetClaw or Risk through private stdio
+MCP interfaces. It uses the mobile logo and brings owned Chat, Canvas, Avatar,
+RAG, reviewed settings, usage, logs, Memory and documentation into VS Code.
+Copilot and terminal assistants use separately reviewed scoped access.
+It is not yet published: delegation, lifecycle and full platform qualification
+remain open. See [setup and recovery](docs/VSCODE.md),
+[compatibility](docs/VSCODE-COMPATIBILITY.md) and [assistant access](docs/VSCODE-ASSISTANTS.md).
+The two private management components are excluded from the general agent MCP
+registry and the 176-integration count. Never add the operator server to an agent.
 
 ## Hermes or OpenClaw?
 
@@ -392,7 +404,7 @@ claw
   <img src="ui/netclaw-visual/logos/netclawvisualhud.png" alt="NetClaw Visual HUD — operations workspace" width="800">
 </p>
 
-The capability catalogue covers currently 176 MCP integrations and 237 skills; configured entries are not proof of live connectivity.
+The capability catalogue covers currently 176 MCP integrations and 238 skills; configured entries are not proof of live connectivity.
 
 The function-first HUD opens on standard Chat, with an operations dashboard and a preserved, branching
 **Canvas** workspace. Inspect internal Claws, mobile edges and external neighbours;
@@ -438,7 +450,7 @@ security modes and Canvas storage; it does not pull Git or restart services.
 <details>
 <summary>Full platform capability overview</summary>
 
-A CCIE-level AI network engineering coworker. Built on [OpenClaw](https://github.com/openclaw/openclaw) with Anthropic Claude, 237 skills, and 176 MCP integrations for complete network automation with ITSM gating, source-of-truth reconciliation, immutable audit trails, gNMI streaming telemetry, NetFlow/IPFIX flow telemetry, Canvas/A2UI inline network visualizations, packet capture analysis, GitHub config-as-code, GitLab DevOps (issues, merge requests, pipelines, repositories, wikis), Jenkins CI/CD (job monitoring, build triggering, log analysis, SCM tracking), Chrome DevTools browser automation (visualization render QA, controller GUI gap-filling, undocumented API discovery, headless or watchable-headed), Computer Use full-desktop automation (legacy desktop-only tools with no browser or API path, virtual XFCE desktop with VNC/noVNC Watch Mode), Cisco CML lab simulation, ContainerLab containerized network labs, Cisco NSO orchestration, Cisco SD-WAN vManage monitoring, Grafana observability (dashboards, Prometheus, Loki, alerting, incidents), Prometheus direct PromQL monitoring, Kubeshark Kubernetes traffic analysis, Cisco Meraki Dashboard management, Cisco ThousandEyes network intelligence, AWS and Azure cloud networking, Cisco Secure Firewall policy auditing, Check Point Security (15 MCPs: policy, threat intel, gateway, SASE, malware), Itential network orchestration, Juniper JunOS device automation, Arista CloudVision Portal monitoring, F5 BIG-IP pyATS iControl REST coverage, Infoblox DDI, Palo Alto Panorama, FortiManager, Batfish offline configuration analysis, UML diagram generation, EVPN/VXLAN fabric workflows, live BGP/OSPF control-plane participation, OSPF/IS-IS link-state and BGP topology analysis over stored Topolograph snapshots, nmap network scanning, gtrace path analysis and IP enrichment, Slack-native operations, Cisco WebEx-native operations, Microsoft 365 integration, Twilio voice/SMS, Twitter/X integration, Claroty OT/IoT asset management, Forward Networks digital twin, Ollama local LLM routing, an offline agentic RAG document knowledge base (cited answers from user-uploaded vendor guides and standards), layered Memory MCP, MemPalace persistent AI memory, and Lantronix Percepxion/SLC out-of-band console-server management (fleet-wide and direct single-device).
+A CCIE-level AI network engineering coworker. Built on [OpenClaw](https://github.com/openclaw/openclaw) with Anthropic Claude, 238 skills, and 176 MCP integrations for complete network automation with ITSM gating, source-of-truth reconciliation, immutable audit trails, gNMI streaming telemetry, NetFlow/IPFIX flow telemetry, Canvas/A2UI inline network visualizations, packet capture analysis, GitHub config-as-code, GitLab DevOps (issues, merge requests, pipelines, repositories, wikis), Jenkins CI/CD (job monitoring, build triggering, log analysis, SCM tracking), Chrome DevTools browser automation (visualization render QA, controller GUI gap-filling, undocumented API discovery, headless or watchable-headed), Computer Use full-desktop automation (legacy desktop-only tools with no browser or API path, virtual XFCE desktop with VNC/noVNC Watch Mode), Cisco CML lab simulation, ContainerLab containerized network labs, Cisco NSO orchestration, Cisco SD-WAN vManage monitoring, Grafana observability (dashboards, Prometheus, Loki, alerting, incidents), Prometheus direct PromQL monitoring, Kubeshark Kubernetes traffic analysis, Cisco Meraki Dashboard management, Cisco ThousandEyes network intelligence, AWS and Azure cloud networking, Cisco Secure Firewall policy auditing, Check Point Security (15 MCPs: policy, threat intel, gateway, SASE, malware), Itential network orchestration, Juniper JunOS device automation, Arista CloudVision Portal monitoring, F5 BIG-IP pyATS iControl REST coverage, Infoblox DDI, Palo Alto Panorama, FortiManager, Batfish offline configuration analysis, UML diagram generation, EVPN/VXLAN fabric workflows, live BGP/OSPF control-plane participation, OSPF/IS-IS link-state and BGP topology analysis over stored Topolograph snapshots, nmap network scanning, gtrace path analysis and IP enrichment, Slack-native operations, Cisco WebEx-native operations, Microsoft 365 integration, Twilio voice/SMS, Twitter/X integration, Claroty OT/IoT asset management, Forward Networks digital twin, Ollama local LLM routing, an offline agentic RAG document knowledge base (cited answers from user-uploaded vendor guides and standards), layered Memory MCP, MemPalace persistent AI memory, and Lantronix Percepxion/SLC out-of-band console-server management (fleet-wide and direct single-device).
 
 </details>
 
@@ -906,7 +918,14 @@ All MCP servers communicate via stdio (JSON-RPC 2.0) through `scripts/mcp-call.p
 
 ---
 
-## Skills (237)
+## Skills (238)
+
+### Editor Management (1)
+
+| Skill | Purpose |
+|---|---|
+| **netclaw-operator** | Existing-installation VS Code management guidance, scoped assistant access, proposal boundaries and recovery; development candidate |
+
 
 ### Jev Science Officer (6)
 
@@ -2616,7 +2635,7 @@ netclaw/
 ├── MISSION01.md                          # Completed — core pyATS + 11 skills
 ├── MISSION02.md                          # Completed — full platform, 78 skills, 32 MCP
 ├── workspace/
-│   └── skills/                           # 237 skill definitions (source of truth)
+│   └── skills/                           # 238 skill definitions (source of truth)
 │       ├── pyats-network/                # Core device automation (8 MCP tools)
 │       ├── pyats-health-check/           # Health + NetBox cross-ref + pCall
 │       ├── pyats-routing/                # OSPF, BGP, EIGRP, IS-IS analysis

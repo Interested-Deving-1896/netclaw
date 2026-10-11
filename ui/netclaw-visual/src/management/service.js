@@ -6,7 +6,7 @@ import { bindInstallation } from './identity.js';
 import { Journal } from './journal.js';
 import { InstallationAudit,redactor,bounded } from './evidence.js';
 import { Proposals } from './proposals.js';
-import { configurationAdapters,configurationSnapshot,environment,secretField } from './configuration.js';
+import { configurationAdapters,configurationSnapshot,managedSettingsSnapshot,environment,configuredSecrets } from './configuration.js';
 import { readOwned } from './files.js';
 import { fail,invariant } from './errors.js';
 import { authorize } from './policy.js';
@@ -23,7 +23,9 @@ import { Conversations } from './conversations.js';
 import { createManagementRuntime } from './chat-runtime.js';
 import { Workspace } from './workspace.js';
 import { RagClient } from './rag.js';
+import {installationLogs,ownedUsage,configuredNetwork} from './observability.js';
 import { parseOperatorInput } from '../../../../mcp-servers/netclaw-operator-mcp/schemas.mjs';
+import { validateOperatorOutput } from '../../../../mcp-servers/netclaw-operator-mcp/responses.mjs';
 
 export class ManagementService {
   constructor({root,home,kind,expectedInstallationId,audit,adapters={},authority}) {
@@ -31,8 +33,8 @@ export class ManagementService {
     this.journal=new Journal(path.join(this.binding.statePath,'management'),this.binding.installationId);
     this.audit=audit||new InstallationAudit(this.binding,root,this.journal);
     this.adapters={...configurationAdapters(this.binding),...adapters};
-    this.proposals=new Proposals({binding:this.binding,journal:this.journal,audit:this.audit,adapters:this.adapters,authority});
     this.clients=new ClientGrants({binding:this.binding,journal:this.journal,audit:this.audit});
+    this.proposals=new Proposals({binding:this.binding,journal:this.journal,audit:this.audit,adapters:this.adapters,authority,validatePrincipal:principal=>this.clients.validate(principal)});
     this.runtime=createManagementRuntime(this.binding,root);
     this.workspace=new Workspace({binding:this.binding,journal:this.journal,audit:this.audit,clean:value=>this.clean(value),rag:new RagClient(this.binding,root),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.conversations=new Conversations({binding:this.binding,journal:this.journal,audit:this.audit,runtime:this.runtime,
@@ -41,7 +43,7 @@ export class ManagementService {
     this.journal.reconcileExpired();
   }
   config(){const data=readOwned(this.binding.configPath,{limit:4*1024*1024}).toString();return this.binding.kind==='hermes'?yaml.load(data):JSON.parse(data);}
-  clean(value){const values=environment(this.binding);return bounded(redactor(Object.entries(values).filter(([key])=>secretField(key)).map(([,value])=>value))(value));}
+  clean(value){return bounded(redactor(configuredSecrets(this.binding))(value));}
   envelope(data,source,warnings=[]){return this.clean({contractVersion:1,installationId:this.binding.installationId,source,observedAt:new Date().toISOString(),data,freshness:'observed',warnings});}
   identity(){
     const config=this.config(),env=environment(this.binding),role=env.N2N_ROLE||env.N2N_RISK_ROLE||'unknown';
@@ -59,6 +61,7 @@ export class ManagementService {
   }
   async resources(principal,input){
     authorize(principal,'inspect',[]);
+    if(input.kind==='client')return this.envelope(this.paginate(this.clients.list(principal),input),'Private operator client grant registry');
     if(input.kind==='overview'){
       if(input.filters?.query&&/^\d{13}:[a-f\d-]{36}$/.test(input.filters.query))return this.envelope({operation:this.journal.byNonce(principal,input.filters.query)},'Durable admission lookup; no dispatch');
       return this.envelope({identity:this.identity(),operations:this.journal.list(principal)},'Selected installation and durable management journal');
@@ -81,14 +84,17 @@ export class ManagementService {
       return this.envelope(this.paginate(rows,input),'Selected installation skill files');
     }
     if(input.kind==='advisor')return this.envelope({enabled:environment(this.binding).JEV_ENABLED==='true',role:'advice-only',taskOwnedAssessments:this.journal.records('assessment',principal)},'Selected installation settings and owned assessments');
-    if(input.kind==='network')return this.envelope({available:false,reason:'No current network observations collected by this management session.',sources:['configured','observed','historical','simulated','federation']},'Management observation boundary');
+    if(input.kind==='network'){
+      const result=configuredNetwork(this.binding);
+      return this.envelope({...result,...(result.devices?{...this.paginate(result.devices,input),devices:undefined}:{})},'Selected installation configured inventory');
+    }
     fail('UNSUPPORTED');
   }
   snapshot(principal,input){
     authorize(principal,'inspect',[]);
-    if(input.domain==='settings')return this.envelope({revision:this.proposals.revision(),runtime:this.identity().runtimeSettings,environment:configurationSnapshot(this.binding)},'Selected installation configuration');
+    if(input.domain==='settings')return this.envelope({revision:this.proposals.revision(),runtime:this.identity().runtimeSettings,environment:configurationSnapshot(this.binding),managed:managedSettingsSnapshot(this.binding)},'Selected installation configuration');
     if(input.domain==='usage'){
-      const data=this.binding.kind==='hermes'?{available:false,reason:'Hermes usage is scoped to owned completed requests; no aggregate is available.'}:readUsage(path.join(this.binding.home,'agents',gatewayAgentId(this.config()),'sessions'));
+      const data=this.binding.kind==='hermes'?ownedUsage(this.journal,principal,input.window):readUsage(path.join(this.binding.home,'agents',gatewayAgentId(this.config()),'sessions'),{window:input.window});
       return this.envelope({...data,externalAssistantUsage:null,billingNote:'NetClaw usage excludes Copilot, Claude Code and Codex inference.'},'Selected runtime retained usage');
     }
     if(input.domain==='security')return this.envelope({...securitySettings(environment(this.binding),null,null),effective:'unverified',hostConfinement:'unverified',openshell:'unverified',reason:'Stored mode is not evidence of runtime enforcement.'},'Selected installation environment');
@@ -107,6 +113,11 @@ export class ManagementService {
     // authorization boundary for callers that invoke methods directly.
     invariant(principal?.surface==='operator' && principal.principalId===this.binding.principal.principalId && principal.installationId===this.binding.installationId,'DENIED');
     args=parseOperatorInput(name,args);
+    return validateOperatorOutput(name,args,this.clean(await this.dispatch(name,args,principal)));
+  }
+  async dispatch(name,args,principal){
+    invariant(principal?.surface==='operator' && principal.principalId===this.binding.principal.principalId && principal.installationId===this.binding.installationId,'DENIED');
+    this.binding.assertCurrent();args=parseOperatorInput(name,args);
     if(name==='operator_identity')return this.identity();
     if(name==='operator_resources')return this.resources(principal,args);
     if(name==='operator_snapshot')return this.snapshot(principal,args);
@@ -135,6 +146,7 @@ export class ManagementService {
     if(name==='operator_evidence'){
       authorize(principal,'evidence',[]);
       if(args.kind==='gait')return this.envelope(await this.audit.log(args.limit),'Installation-specific GAIT');
+      if(args.kind==='log')return this.envelope(installationLogs(this.binding,args),'Selected installation bounded log tail');
       if(args.kind==='approval'&&args.id)return this.envelope(this.journal.record('proposal',args.id,principal),'Managed proposal');
       fail('UNSUPPORTED');
     }

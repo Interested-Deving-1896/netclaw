@@ -7,6 +7,7 @@ import { invariant,fail,safeError } from './errors.js';
 import { unbindImportedSession } from '../canvas-chat/assessment-link.js';
 import {ownedDirectory,atomicPrivate} from './files.js';
 import {RagToolError} from './rag.js';
+import {searchMemory} from './knowledge.js';
 
 const formats=new Set(['.pdf','.md','.markdown','.html','.htm','.txt','.docx','.xlsx','.pptx','.vsdx','.doc','.xls','.ppt','.vsd']);
 const digest=value=>createHash('sha256').update(value).digest('hex');
@@ -37,6 +38,7 @@ export class Workspace {
   async call(principal,input){
     this.binding.assertCurrent();authorize(principal,'inspect',[this.binding.installationId]);
     invariant(principal.surface==='operator','DENIED');
+    if(input.action==='memory-search')return this.clean({contractVersion:1,installationId:this.binding.installationId,source:'Selected installation memory database',observedAt:new Date().toISOString(),freshness:'observed',warnings:[],data:searchMemory(this.binding,input.args.query)});
     if(['rag-list','rag-search','rag-upload','rag-index','rag-context'].includes(input.action))return this.ragCall(principal,input);
     if(input.action==='canvas-export'){
       const record=this.journal.record('canvas',input.args.id,principal);

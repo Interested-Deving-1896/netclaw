@@ -21,7 +21,7 @@ export function aggregateUsage(lines) {
   }
   return { groups: [...groups.values()].map(g => ({ ...g, costUsd: g.costRecords ? g.costUsd : null })), records, missingUsage, malformed };
 }
-export function readUsage(directory) {
+export function readUsage(directory,{window,now=Date.now()}={}) {
   let skippedFiles = 0, bytes = 0; const lines = [];
   try {
     const candidates = fs.readdirSync(directory).filter(n => /^[a-zA-Z0-9_.-]+\.jsonl$/.test(n)).map(name => {
@@ -31,7 +31,16 @@ export function readUsage(directory) {
       if (stat.size > 2 * 1024 * 1024 || bytes + stat.size > 32 * 1024 * 1024) { skippedFiles++; continue; }
       try { const content = readBounded(path.join(directory,name),2*1024*1024); bytes += stat.size; for (const line of content.split('\n').filter(Boolean)) lines.push({ line, source: name }); } catch { skippedFiles++; }
     }
-    return { available: true, ...aggregateUsage(lines), skippedFiles: skippedFiles + Math.max(0,candidates.length-200),
+    let missingTimestamp=0;
+    const since=window?now-({day:1,week:7,month:30}[window])*86400000:null;
+    if(window&&!Number.isFinite(since))throw Error('Invalid usage window');
+    const selected=since===null?lines:lines.filter(({line})=>{
+      let value;try{value=JSON.parse(line);}catch{return true;}
+      if(value.type!=='message'||value.message?.role!=='assistant')return false;
+      const time=Date.parse(value.timestamp||value.message.timestamp||'');
+      if(!Number.isFinite(time)){missingTimestamp++;return false;}return time>=since&&time<=now;
+    });
+    return { available: true, ...aggregateUsage(selected),...(window?{window,missingTimestamp,windowBasis:'Recorded message timestamp'}:{}), skippedFiles: skippedFiles + Math.max(0,candidates.length-200),
       scope: 'Recorded usage in up to 200 most recently modified local main-agent transcript files, across retained dates. Maximum 2 MiB/file and 32 MiB total. No remote member usage implied.', generatedAt: new Date().toISOString() };
   } catch { return { available:false, groups:[], error:'Local usage records unavailable', generatedAt:new Date().toISOString() }; }
 }

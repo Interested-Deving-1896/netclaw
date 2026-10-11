@@ -3,8 +3,15 @@ import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import { schemas,parseAssistantInput } from './schemas.mjs';
 import { safeError,fail,invariant } from '../../ui/netclaw-visual/src/management/errors.js';
 import { authorize } from '../../ui/netclaw-visual/src/management/policy.js';
+import { assistantOutputs,validateAssistantOutput } from '../netclaw-operator-mcp/responses.mjs';
 
 export async function assistantCall(service,credentialRef,name,raw){
+  const input=parseAssistantInput(name,raw),principal=service.clients.resolve(credentialRef);
+  const value=await dispatchAssistant(service,credentialRef,name,input);
+  service.clients.validate(principal);
+  return validateAssistantOutput(name,input,service.clean(value));
+}
+async function dispatchAssistant(service,credentialRef,name,raw){
   const input=parseAssistantInput(name,raw),grant=service.clients.resolve(credentialRef);
   if(name==='netclaw_status'){
     const identity=service.identity();return {installationId:identity.installationId,harness:identity.harness,role:identity.role,configurationRevision:identity.configurationRevision,
@@ -26,7 +33,7 @@ export async function assistantCall(service,credentialRef,name,raw){
   }
   if(name==='netclaw_propose_change'){
     authorize(grant,'propose',input.targets);const value=await service.proposals.prepare(grant,input);
-    return {operationId:value.operationId,proposalId:value.proposalId,state:value.state,approvalRequired:true,review:'Human review and independent approval are required. This client cannot apply changes.'};
+    return {operationId:value.operationId,proposalId:value.proposalId,state:value.state,approvalRequired:true,review:'A human must review and initiate this change. Production actions additionally require independent approval. This client cannot apply changes.'};
   }
   if(name==='netclaw_request_status'){
     authorize(grant,'inspect',[]);const result=input.requestId?service.journal.get(grant,input.requestId):service.journal.byNonce(grant,input.nonce);invariant(result,'DENIED');
@@ -38,11 +45,11 @@ export async function assistantCall(service,credentialRef,name,raw){
 }
 export function assistantServer(service,credentialRef){
   const server=new McpServer({name:'netclaw-assistant',version:'0.1.0'});
-  for(const [name,inputSchema] of Object.entries(schemas))server.registerTool(name,{inputSchema,
+  for(const [name,inputSchema] of Object.entries(schemas))server.registerTool(name,{inputSchema,outputSchema:assistantOutputs[name],
     description:`Scoped NetClaw ${name.replace('netclaw_','').replaceAll('_',' ')}. No self-approval or private operator access.`,
     annotations:{readOnlyHint:['netclaw_status','netclaw_inventory','netclaw_evidence','netclaw_request_status'].includes(name),openWorldHint:false},
   },async args=>{
-    try{const value=service.clean(await assistantCall(service,credentialRef,name,args));return{content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};}
+    try{const value=validateAssistantOutput(name,args,service.clean(await assistantCall(service,credentialRef,name,args)));return{content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};}
     catch(error){const value={error:safeError(error)};return{isError:true,content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};}
   });return server;
 }

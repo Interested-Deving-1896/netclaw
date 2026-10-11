@@ -51,7 +51,7 @@ Planned component layout; implementation and qualification status are tracked in
 
 ```text
 extensions/netclaw-vscode/
-  src/connection/  src/state/  src/views/  src/commands/  src/webview/  src/clients/
+  src/connection/  src/state/  src/views/  src/commands/  src/webview/  src/assistants/
   webview/  resources/  test/  package.json
 mcp-servers/netclaw-operator-mcp/
   server.mjs  schemas.mjs  README.md
@@ -93,6 +93,17 @@ Management contract major 1 is required; older backends return upgrade guidance 
 No waiver is requested. Contracts require immutable audit, bounded tool methods, inherited denial, real baseline/rollback, independent approval, credential redaction and qualified enforcement. Tasks cover official SDKs, private component catalog/installer documentation, HUD visibility, skill and identity docs, environment examples, regression, a local blog draft and explicitly authorized release. Existing configuration with literal legacy credentials has a reviewed backward-compatible normalization path before the new management path uses it. OS-level confinement against unrestricted same-user shell access is not claimed.
 
 Release remains blocked until the real Windows/WSL gate, Linux/macOS gates, named-client tests and actual Marketplace installation pass. Source149's unfinished Linux/WSL control qualification must be completed on the applicable deployed baseline; it is not inherited from Mac results.
+
+### Mac implementation refinements
+
+The assistant provider, terminal previews and native review live together under
+`src/assistants/`; task paths reflect that implementation layout. Tool discovery
+uses root object properties for Claude Code compatibility while dispatch retains
+action-specific validation. Shared environment text editing and configuration
+locking are reused by the existing HUD and Python CLI. Management Hermes bridges
+require a selected `.env` credential; reviewed normalization preserves the
+existing companion port. Implementation evidence and limits are recorded in
+`evidence/mac-release-development.md` and `evidence/assistant-clients.md`.
 
 ## Complexity Tracking
 

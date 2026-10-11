@@ -60,15 +60,24 @@ export class ManagementGateway {
 
 export function createManagementRuntime(binding,root){
   if(binding.kind==='hermes'){
-    const runtime=createHermesRuntime(binding,root,{env:{...process.env,...environment(binding)}});
+    let runtime;
+    const call=(operation,args)=>{
+      // New management use requires the reviewed .env normalization path. The
+      // shared HUD retains its legacy migration behavior; we never borrow an
+      // ambient credential or silently read a literal key from auth JSON.
+      const selected=environment(binding);invariant(selected.NETCLAW_HERMES_HUD_API_KEY,'UNAUTHENTICATED');
+      const processContext=Object.fromEntries(['PATH','HOME','USER','LOGNAME','SHELL','TMPDIR','LANG','NETCLAW_HUD_BRIDGE_PYTHON'].flatMap(key=>process.env[key]===undefined?[]:[[key,process.env[key]]]));
+      runtime||=createHermesRuntime(binding,root,{env:{...processContext,...selected}});
+      return runtime.call(operation,args);
+    };
     const conversationId=id=>`management-${id}`;
     return {kind:'hermes',
-      async readiness(){const value=await runtime.call('status');invariant(value.installationId===binding.installationId&&value.protected===true,'IDENTITY_CHANGED');return {ready:value.ready===true,grantEnforced:false,source:'Protected Hermes companion',version:value.release};},
-      open:input=>runtime.call('conversation_open',{conversationId:conversationId(input.conversationId)}),
-      async submit(input){const value=await runtime.call('submit',{conversationId:conversationId(input.conversationId),requestId:input.requestId,clientNonce:input.nonce,text:input.text,deadlineMs:900000});invariant(value.state!=='unknown','UNKNOWN_OUTCOME');return {reference:input.requestId};},
-      async observe(input){const value=await runtime.call('request_status',{conversationId:conversationId(input.conversationId),requestId:input.requestId});return {...value,state:({completed:'succeeded',interrupted:'unknown',waiting_approval:'running',queued:'running',stopping:'cancellation-requested'})[value.state]||value.state,source:'Protected Hermes request ledger'};},
-      cancel:input=>runtime.call('stop',{conversationId:conversationId(input.conversationId),requestId:input.requestId}),
-      close:()=>runtime.close(),
+      async readiness(){const value=await call('status');invariant(value.installationId===binding.installationId&&value.protected===true,'IDENTITY_CHANGED');return {ready:value.ready===true,grantEnforced:false,source:'Protected Hermes companion',version:value.release};},
+      open:input=>call('conversation_open',{conversationId:conversationId(input.conversationId)}),
+      async submit(input){const value=await call('submit',{conversationId:conversationId(input.conversationId),requestId:input.requestId,clientNonce:input.nonce,text:input.text,deadlineMs:900000});invariant(value.state!=='unknown','UNKNOWN_OUTCOME');return {reference:input.requestId};},
+      async observe(input){const value=await call('request_status',{conversationId:conversationId(input.conversationId),requestId:input.requestId});return {...value,state:({completed:'succeeded',interrupted:'unknown',waiting_approval:'running',queued:'running',stopping:'cancellation-requested'})[value.state]||value.state,source:'Protected Hermes request ledger'};},
+      cancel:input=>call('stop',{conversationId:conversationId(input.conversationId),requestId:input.requestId}),
+      close:async()=>{await runtime?.close();runtime=undefined;},
     };
   }
   const gateway=new ManagementGateway(binding),completed=new Map();

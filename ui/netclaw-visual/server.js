@@ -1,4 +1,5 @@
 import { ENV_MAP } from './src/hud-server/integration-environment.js';
+import { updateBudgetConfiguration } from './src/hud-server/configuration-mutations.js';
 import { federationEndpoint, federationReadiness } from './src/hud-server/runtime/federation.js';
 import { mountHermesIntent } from './src/hud-server/runtime/intent.js';
 import { resolveRuntime } from './src/hud-server/runtime/selection.js';
@@ -331,16 +332,7 @@ function writeEnvFile(updates) {
 }
 
 function writeOpenClawEnvValue(key, value) {
-  fs.mkdirSync(path.dirname(OPENCLAW_ENV), { recursive: true });
-  let text = readText(OPENCLAW_ENV);
-  const regex = new RegExp(`^${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*=.*$`, 'm');
-  const newLine = `${key}=${value}`;
-  if (regex.test(text)) {
-    text = text.replace(regex, newLine);
-  } else {
-    text = text.trimEnd() + `\n${newLine}\n`;
-  }
-  fs.writeFileSync(OPENCLAW_ENV, text, { encoding: 'utf8', mode: 0o600 });
+  updateEnvironment(OPENCLAW_ENV, {[key]: value});
 }
 
 function maskValue(value) {
@@ -1260,36 +1252,7 @@ app.put('/api/budget/config', (req, res) => {
   }
 
   try {
-    const configPath = path.join(installation.home, 'openclaw.json');
-    const config = JSON.parse(readText(configPath) || '{}');
-
-    // Ensure path exists
-    if (!config.agents) config.agents = {};
-    if (!config.agents.defaults) config.agents.defaults = {};
-
-    // Merge budget values (only provided fields, don't clobber unset ones)
-    if (budget) {
-      if (!config.agents.defaults.budget) config.agents.defaults.budget = {};
-      const validKeys = ['sessionBudgetUsd', 'maxToolCallsPerTurn', 'contextWarningTokens', 'allowOverride', 'overrideIncrementUsd'];
-      for (const key of validKeys) {
-        if (budget[key] !== undefined) {
-          config.agents.defaults.budget[key] = budget[key];
-        }
-      }
-    }
-
-    // Merge interface defaults
-    if (interfaceDefaults) {
-      if (!config.agents.defaults.interfaceDefaults) config.agents.defaults.interfaceDefaults = {};
-      for (const [iface, settings] of Object.entries(interfaceDefaults)) {
-        config.agents.defaults.interfaceDefaults[iface] = {
-          ...(config.agents.defaults.interfaceDefaults[iface] || {}),
-          ...settings,
-        };
-      }
-    }
-
-    writePrivateAtomic(configPath, JSON.stringify(config, null, 2) + '\n');
+    const config = updateBudgetConfiguration(installation.home, {budget,interfaceDefaults});
     broadcastWS('config:updated', { keys: ['budget'], generatedAt: new Date().toISOString() });
     res.json({ ok: true, budget: config.agents.defaults.budget, interfaceDefaults: config.agents.defaults.interfaceDefaults });
   } catch (err) {

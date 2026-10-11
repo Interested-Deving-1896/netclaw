@@ -11,6 +11,11 @@ import shlex
 import stat
 import sys
 import tempfile
+import importlib.util
+
+_lock_spec = importlib.util.spec_from_file_location('netclaw_management_lock', Path(__file__).with_name('management_lock.py'))
+_lock_module = importlib.util.module_from_spec(_lock_spec)
+_lock_spec.loader.exec_module(_lock_module)
 
 ASSIGNMENT = re.compile(r'^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$')
 
@@ -59,6 +64,11 @@ def systemd_quote(value):
 
 def update(path, key, value, systemd=False):
     path = Path(path).absolute()
+    with _lock_module.configuration_lock(path.parent):
+        return _update_locked(path, key, value, systemd)
+
+
+def _update_locked(path, key, value, systemd=False):
     if not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', key):
         raise ValueError('Invalid environment variable name')
     if any(c in value for c in ('\r', '\n', '\0')):
@@ -66,11 +76,42 @@ def update(path, key, value, systemd=False):
     if path.is_symlink() or (path.exists() and not stat.S_ISREG(path.stat().st_mode)):
         raise ValueError('Environment path must be a regular file, not a symlink')
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    original = path.read_text() if path.exists() else ''
-    assignment = re.compile(r'^\s*(?:export\s+)?' + re.escape(key) + r'\s*=')
-    lines = [line for line in original.splitlines() if not assignment.match(line)]
-    lines.append(key + '=' + (systemd_quote(value) if systemd else quote(value)))
-    data = '\n'.join(lines) + '\n'
+    original = path.read_bytes().decode() if path.exists() else ''
+    lines = original.splitlines(keepends=True)
+    retained = []
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        match = ASSIGNMENT.match(line.strip())
+        span = [line]
+        if match and match[2].startswith(('"', "'", '`')):
+            quoted = match[2][0]
+            text = match[2]
+            def closed():
+                for offset in range(1, len(text)):
+                    if text[offset] != quoted:
+                        continue
+                    escapes = 0
+                    previous = offset - 1
+                    while previous >= 0 and text[previous] == '\\':
+                        escapes += 1
+                        previous -= 1
+                    if escapes % 2 == 0:
+                        return True
+                return False
+            while not closed() and index + 1 < len(lines):
+                index += 1
+                span.append(lines[index])
+                text += lines[index]
+            if not closed():
+                raise ValueError('Unterminated environment value')
+        if not match or match[1] != key:
+            retained.extend(span)
+        index += 1
+    data = ''.join(retained)
+    if data and not data.endswith('\n'):
+        data += '\n'
+    data += key + '=' + (systemd_quote(value) if systemd else quote(value)) + '\n'
     write_private(path, data)
 
 

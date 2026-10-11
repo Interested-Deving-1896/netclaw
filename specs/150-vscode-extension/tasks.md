@@ -27,14 +27,14 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 
 **Independent test**: Negative permission/direct-call and lost-receipt tests fail closed; real shared adapters preserve prior clients.
 
-- [ ] T005 Define versioned strict envelopes, fixed tool/action unions, response bounds and stable errors in `mcp-servers/netclaw-operator-mcp/schemas.mjs` and `mcp-servers/netclaw-assistant-mcp/schemas.mjs` from both contracts. (FR-005, FR-036, FR-039, FR-043)
+- [X] T005 Define versioned strict envelopes, fixed tool/action unions, response bounds and stable errors in `mcp-servers/netclaw-operator-mcp/schemas.mjs` and `mcp-servers/netclaw-assistant-mcp/schemas.mjs` from both contracts. (FR-005, FR-036, FR-039, FR-043)
 - [X] T006 Implement authenticated installation/principal binding and opaque revisions in `ui/netclaw-visual/src/management/identity.js`; derive identity from launch context, never supplied client labels. (FR-005, FR-006, FR-044, SC-005)
 - [ ] T007 Implement immutable grant propagation, per-hop target/action checks, authoritative CR validation and strict Local/Lab distinction in `ui/netclaw-visual/src/management/policy.js`; disable delegation where a runtime lacks enforceable attenuation. (FR-017, FR-022, FR-023, FR-035, FR-043, FR-044, SC-006, SC-013)
-- [ ] T008 Implement SQLite admission, nonce digest uniqueness, leases, revision locks, ownership, event sequence and retained tombstones in `ui/netclaw-visual/src/management/journal.js`; test migrations and stale/expired nonces. (FR-006, FR-013, FR-020, SC-005, SC-007)
+- [X] T008 Implement SQLite admission, nonce digest uniqueness, leases, revision locks, ownership, event sequence and retained tombstones in `ui/netclaw-visual/src/management/journal.js`; test migrations and stale/expired nonces. (FR-006, FR-013, FR-020, SC-005, SC-007)
 - [ ] T009 Implement independently owned workers and authoritative reconciliation in `ui/netclaw-visual/src/management/worker.js`; façade exit cannot kill services and uncertain dispatch never requeues. (FR-013, FR-021, SC-007, SC-011)
-- [ ] T010 Implement shared proposal preparation/approval/verification/recovery state machine in `ui/netclaw-visual/src/management/proposals.js`; store real private baseline artifacts and redacted intent only. (FR-020, FR-022, FR-023, FR-024, FR-043, SC-006, SC-008)
-- [ ] T011 Add installation-specific GAIT sessions, bounded redaction/evidence access and fail-closed audit in `ui/netclaw-visual/src/management/evidence.js`; isolate root/sticky file and never rewrite history. (FR-024, FR-029, FR-036, FR-038, SC-008)
-- [ ] T012 Implement fixed private MCP façade and safe launchers in `mcp-servers/netclaw-operator-mcp/server.mjs` and `scripts/netclaw-operator.mjs`; stdio-only output, verified SSH path quoting, no shell/URL dispatcher. (FR-005, FR-007, FR-039, SC-005)
+- [X] T010 Implement shared proposal preparation/approval/verification/recovery state machine in `ui/netclaw-visual/src/management/proposals.js`; store real private baseline artifacts and redacted intent only. (FR-020, FR-022, FR-023, FR-024, FR-043, SC-006, SC-008)
+- [X] T011 Add installation-specific GAIT sessions, bounded redaction/evidence access and fail-closed audit in `ui/netclaw-visual/src/management/evidence.js`; isolate root/sticky file and never rewrite history. (FR-024, FR-029, FR-036, FR-038, SC-008)
+- [X] T012 Implement fixed private MCP façade and safe launchers in `mcp-servers/netclaw-operator-mcp/server.mjs` and `scripts/netclaw-operator.mjs`; stdio-only output, verified SSH path quoting, no shell/URL dispatcher. (FR-005, FR-007, FR-039, SC-005)
 - [ ] T013 Extract shared non-listening domain entry points from `ui/netclaw-visual/server.js` and runtime adapters; route existing managed-resource writes through shared revision/ownership locks without changing unrelated routes. (FR-020, FR-039, SC-011)
 - [ ] T014 Run foundation denial, CR withdrawal, grant spoofing/nested delegation, audit loss, database/crash/replay and cross-client fixtures in `tests/operator/foundations.test.mjs`; fix failures before story dispatch is enabled. (FR-022, FR-023, FR-024, FR-036, FR-043, FR-044, SC-005, SC-006, SC-007, SC-008, SC-013)
 
@@ -49,7 +49,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 - [ ] T015 [P] [US1] Add connection/identity/SSH/WSL mismatch, no-folder/multi-root and Restricted Mode contract tests in `tests/vscode/connections.test.mjs`. (FR-004, FR-005, FR-006, FR-007, FR-008, FR-035, SC-005)
 - [X] T016 [P] [US1] Add multiwindow/profile storage, stale-response and mobile-logo manifest tests in `extensions/netclaw-vscode/test/profiles.test.mjs`. (FR-002, FR-003, FR-006, SC-005)
 - [ ] T017 [US1] Implement verified local/SSH transport and explicit WSL reopen flow in `extensions/netclaw-vscode/src/connection/connect.ts`; show backend compatibility/prerequisite guidance without installation. (FR-004, FR-005, FR-007, FR-008)
-- [ ] T018 [US1] Implement nonsecret host/principal/profile storage and immutable connection generations in `extensions/netclaw-vscode/src/state/profiles.ts`; never sync credentials or retarget running requests. (FR-004, FR-006, SC-005)
+- [X] T018 [US1] Implement nonsecret host/principal/profile storage and immutable connection generations in `extensions/netclaw-vscode/src/state/profiles.ts`; never sync credentials or retarget running requests. (FR-004, FR-006, SC-005)
 - [ ] T019 [US1] Implement native explorer/status/output/commands and trust handlers in `extensions/netclaw-vscode/src/extension.ts` and `src/views/overview.ts`; typed resource identity and bounded partial failure. (FR-003, FR-014, FR-035, FR-037)
 - [X] T020 [US1] Copy the actual mobile PNG and derive a theme-safe Activity Bar mark in `extensions/netclaw-vscode/resources/`; wire icon and walkthrough contributions in `package.json`. (FR-002, FR-003, FR-040, SC-010)
 - [ ] T021 [US1] Execute US1 minimum-editor/local/remote connection scenarios and capture measured onboarding/isolation in `specs/150-vscode-extension/evidence/connections.md`; do not count future WSL acceptance early. (FR-005, FR-008, FR-035, SC-001, SC-005)
@@ -93,7 +93,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 
 **Independent test**: Synthetic secret updates preserve unrelated data, conflict correctly, and show saved/effective/restart/rollback outcomes.
 
-- [ ] T035 [P] [US4] Add env keep/replace/clear, concurrent revision, file ownership/symlink and legacy credential migration tests in `tests/operator/configuration.test.mjs`. (FR-018, FR-019, FR-020, FR-036, SC-008)
+- [X] T035 [P] [US4] Add env keep/replace/clear, concurrent revision, file ownership/symlink and legacy credential migration tests in `tests/operator/configuration.test.mjs`. (FR-018, FR-019, FR-020, FR-036, SC-008)
 - [ ] T036 [P] [US4] Add service ownership, active-work impact, stop/restart failure and extension-disconnect preservation tests in `tests/operator/lifecycle.test.mjs`. (FR-007, FR-021, SC-007, SC-011)
 - [ ] T037 [US4] Implement typed configuration/budget/integration transactions in `ui/netclaw-visual/src/management/configuration.js`; preserve unmanaged bytes and normalize legacy credential references through reviewed shared launchers with recovery. (FR-018, FR-019, FR-020, FR-028, SC-008)
 - [ ] T038 [US4] Implement narrow installation-owned service controls and runtime/role changes in `ui/netclaw-visual/src/management/lifecycle.js` and `runtime.js`; no installer scripts, unit deletion or process-name killing. (FR-007, FR-018, FR-020, FR-021, SC-011)
@@ -127,9 +127,9 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 - [ ] T048 [P] [US9] Add assistant direct-method denial, cross-client ownership, nested grant escape and disclosure redaction tests in `tests/assistant-clients/contract.test.mjs`. (FR-041, FR-042, FR-043, FR-044, SC-005, SC-008, SC-013)
 - [ ] T049 [US9] Implement assistant-only façade and fixed launcher in `mcp-servers/netclaw-assistant-mcp/server.mjs` and `scripts/netclaw-assistant.mjs`; expose only the seven tools and enforce grant on every call. (FR-042, FR-043, FR-044, SC-013)
 - [ ] T050 [US9] Implement reviewed client grants, backend .env credential references, bounded disclosure/expiry/revocation and in-flight handling in `ui/netclaw-visual/src/management/clients.js`; no plaintext credential journal/config. (FR-038, FR-041, FR-042, FR-043, FR-044, SC-005, SC-008)
-- [ ] T051 [US9] Implement opt-in stable Copilot MCP provider in `extensions/netclaw-vscode/src/clients/copilot.ts`; immutable installation+grant definitions, side-effect-free discovery, resolve-time checks and client policy errors. (FR-035, FR-041, FR-044, SC-013)
-- [ ] T052 [US9] Implement reviewed version-aware Claude Code/Codex stdio setup/export in `extensions/netclaw-vscode/src/clients/terminal.ts`; preserve unrelated config, explicit host paths and editor-independent operation. (FR-042, FR-044, SC-013)
-- [ ] T053 [US9] Implement client grant/disclosure review and proposal status in `extensions/netclaw-vscode/src/views/clients.ts`; distinguish external assistant and NetClaw inference/costs, deny self-approval. (FR-041, FR-042, FR-043, FR-044)
+- [X] T051 [US9] Implement opt-in stable Copilot MCP provider in `extensions/netclaw-vscode/src/assistants/provider.ts`; immutable installation+grant definitions, side-effect-free discovery, resolve-time checks and client policy errors. (FR-035, FR-041, FR-044, SC-013)
+- [ ] T052 [US9] Implement reviewed version-aware Claude Code/Codex stdio setup/export in `extensions/netclaw-vscode/src/assistants/registration.ts`; preserve unrelated config, explicit host paths and editor-independent operation. (FR-042, FR-044, SC-013)
+- [ ] T053 [US9] Implement client grant/disclosure review and proposal status in `extensions/netclaw-vscode/src/assistants/setup.ts`; distinguish external assistant and NetClaw inference/costs, deny self-approval. (FR-041, FR-042, FR-043, FR-044)
 - [ ] T054 [US9] Run actual Copilot, Claude Code and Codex inventory/delegation/proposal/denial/revocation/lost-response tests in `tests/assistant-clients/acceptance.mjs` on both harnesses, including real WSL and Remote SSH. (FR-008, FR-041, FR-042, FR-043, FR-044, SC-013)
 - [ ] T055 [US9] Document exact verified client commands, versions, grants, disclosure and same-UID limitations in `docs/VSCODE-ASSISTANTS.md` and evidence in `specs/150-vscode-extension/evidence/assistant-clients.md`. (FR-034, FR-038, FR-041, FR-042, FR-043, FR-044, SC-013)
 
@@ -159,7 +159,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 - [ ] T062 [US7] Implement bounded RAG/memory/GCF/meeting/assessment/mobile adapters in `ui/netclaw-visual/src/management/workspace.js`; use existing qualified tools, no workspace ingest or new device/vendor execution. (FR-012, FR-031, FR-032, FR-033, FR-039)
 - [ ] T063 [US7] Implement RAG/knowledge collection/context views in `extensions/netclaw-vscode/src/views/rag.ts` and `knowledge.ts` with citations, progress/errors and recorded validity. (FR-012, FR-031)
 - [ ] T064 [US7] Implement Science Officer and mobile/edge views in `extensions/netclaw-vscode/src/views/science.ts` and `mobile.ts`; advice-only ownership, budgets, enrollment versus connectivity and explicit consent. (FR-014, FR-032, FR-033)
-- [ ] T065 [US7] Implement searchable local documentation and version/context help in `extensions/netclaw-vscode/src/views/documentation.ts`, including existing guides and validated external navigation. (FR-034, FR-036)
+- [X] T065 [US7] Implement searchable local documentation and version/context help in `extensions/netclaw-vscode/src/views/documentation.ts`, including existing guides and validated external navigation. (FR-034, FR-036)
 - [ ] T066 [US7] Execute all supporting-domain positive/denial cases and record `specs/150-vscode-extension/evidence/workspace.md`; do not claim Hermes media or physical-device qualification from rendering a control. (FR-031, FR-032, FR-033, FR-034, SC-002)
 
 **Parallel example**: Keep this phase sequential because its tasks share adapters, manifests or acceptance dependencies; fixture drafting may be prepared independently but does not close a task.
@@ -212,7 +212,7 @@ Deliver small story checkpoints with real behavioral evidence, preserve the exis
 
 ## Counts and traceability
 
-79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Eight tasks are complete; 71 remain unchecked. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
+79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Seventeen tasks are complete; 62 remain unchecked. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
 
 | Group | Tasks |
 |---|---|
@@ -245,3 +245,13 @@ See [WSL acceptance evidence](evidence/wsl-acceptance.md) for reproduced permiss
 audit-contention and distribution-isolation fixes plus separate actual process
 results. T006 binding/revision behavior is verified and checked. Remaining partial results
 do not close their full task gates. Work continues on `150-vscode-extension-wsl`.
+
+## Mac release implementation checkpoint
+
+The returned WSL branch is the base of `150-vscode-extension-release`. Nine additional
+implementation tasks (T005, T008, T010, T011, T012, T018, T035, T051 and T065) are
+complete with the contract, journal/proposal/audit, profile, configuration, provider
+and documentation evidence in [Mac release development](evidence/mac-release-development.md).
+This does not close whole stories, runtime grant propagation, actual Copilot inference,
+platform acceptance or publication. The current code is not ready for the final
+validation-only WSL handoff.

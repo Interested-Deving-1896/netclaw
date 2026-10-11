@@ -68,3 +68,16 @@ Terminal Intent is a separate scoped path, not an estate-wide lab mode. Only des
 Persist canonical admission/ownership before effects, then dispatch to an existing durable runtime or installation-owned worker. Worker startup uses only the admitted operation ID, not user command text, and rechecks authority. Lost receipts resolve through nonce lookup. Do not retry uncertain writes; reattach/read authoritative state instead. WSL shutdown can interrupt services; restart reads journal and preserves unknown outcomes.
 
 Use explicit per-installation GAIT root and sticky-file location; verify root before branch/record/log. Missing required GAIT denies dispatch except the already defined scoped Local/Lab record. Existing CLI/HUD operations must share concurrency controls for resources managed by this interface.
+
+## Implemented configuration and evidence refinements
+
+The private resource kind `client` lists redacted grant setup references for human
+onboarding/revocation; it is not an assistant inventory capability. Settings
+proposals support reviewed legacy credential normalization. OpenClaw budget saves
+use existing session controls (`sessionBudgetUsd`, `maxToolCallsPerTurn`,
+`contextWarningTokens`, `allowOverride`, `overrideIncrementUsd`); hypothetical
+daily/monthly caps remain unsupported. Saved state is distinct from effective
+runtime verification. All responses carry validated output shapes and bounded
+JSON; any content truncation is visible. Usage windows are recorded-time filters,
+not account quota resets. Memory search is a bounded lexical read of the selected
+installation database and retains recorded temporal validity.

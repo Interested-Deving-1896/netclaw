@@ -329,6 +329,24 @@ Flags mentioned: none
 ```text
 ```
 
+## extensions/netclaw-vscode/package.json
+
+All package.json script commands. Arguments after -- are delegated to the underlying command.
+
+Flags mentioned: `--noEmit`, `--test`
+
+```text
+L1: npm run check → tsc --noEmit
+L1: npm run build → node build.mjs
+L1: npm run test → node --test test/*.test.mjs
+L1: npm run test:editor → node ../../tests/vscode/runner.mjs
+L1: npm run vscode:prepublish → npm run check && npm run build
+L1: npm run package → node scripts/package.mjs
+L1: npm run test:package → node --test ../../tests/vscode/package.test.mjs
+L1: npm run publisher:login → vsce login NetClaw
+L1: npm run publisher:verify → vsce verify-pat NetClaw
+```
+
 ## lab/frr-testbed/scripts/setup-gre.sh
 
 Static source declarations; lexical flags may include delegated commands. No execution performed.
@@ -556,18 +574,28 @@ Flags mentioned: none
 ```text
 ```
 
+## mcp-servers/hermes-hud-mcp/federation_server.py
+
+Static source declarations; lexical flags may include delegated commands. No execution performed.
+
+Flags mentioned: none
+
+```text
+```
+
 ## mcp-servers/hermes-hud-mcp/hermes_api.py
 
 Static source declarations; lexical flags may include delegated commands. No execution performed.
 
-Flags mentioned: `--home`, `--installation`, `--port`, `--source`
+Flags mentioned: `--home`, `--installation`, `--namespace`, `--port`, `--source`
 
 ```text
-L140: argparse.ArgumentParser()
-L140: parser.add_argument('--home',required=True)
-L140: parser.add_argument('--source',required=True)
-L140: parser.add_argument('--installation',required=True)
-L140: parser.add_argument('--port',type=int,default=8643)
+L158: argparse.ArgumentParser()
+L158: parser.add_argument('--home',required=True)
+L158: parser.add_argument('--source',required=True)
+L158: parser.add_argument('--installation',required=True)
+L158: parser.add_argument('--port',type=int,default=8643)
+L159: parser.add_argument('--namespace',choices=('hud','federation'),default='hud')
 ```
 
 ## mcp-servers/hermes-hud-mcp/server.py
@@ -673,6 +701,16 @@ Flags mentioned: none
 ```text
 ```
 
+## mcp-servers/netclaw-assistant-mcp/package.json
+
+All package.json script commands. Arguments after -- are delegated to the underlying command.
+
+Flags mentioned: `--test`
+
+```text
+L1: npm run test → node --test ../../tests/assistant-clients/*.test.mjs
+```
+
 ## mcp-servers/netclaw-dot-mcp/server.py
 
 Static source declarations; lexical flags may include delegated commands. No execution performed.
@@ -680,6 +718,16 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: none
 
 ```text
+```
+
+## mcp-servers/netclaw-operator-mcp/package.json
+
+All package.json script commands. Arguments after -- are delegated to the underlying command.
+
+Flags mentioned: `--test`
+
+```text
+L1: npm run test → node --test ../../tests/operator/*.test.mjs
 ```
 
 ## mcp-servers/nsm-mcp/server.py
@@ -1265,6 +1313,16 @@ Flags mentioned: `--transport`
 ```text
 ```
 
+## scripts/federation-control.py
+
+Static source declarations; lexical flags may include delegated commands. No execution performed.
+
+Flags mentioned: none
+
+```text
+L83: action=sys.argv[1] if len(sys.argv)>1 else 'status'
+```
+
 ## scripts/forward-enable.sh
 
 Static source declarations; lexical flags may include delegated commands. No execution performed.
@@ -1367,15 +1425,17 @@ L16: Usage:
 
 Static source declarations; lexical flags may include delegated commands. No execution performed.
 
-Flags mentioned: `--anthropic-key-from`, `--border-config`, `--local`, `--member`, `--model`, `--risk`
+Flags mentioned: `--anthropic-key-from`, `--border-config`, `--home`, `--local`, `--member`, `--model`, `--risk`, `--runtime`
 
 ```text
-L44: argparse.ArgumentParser()
-L45: ap.add_argument("--risk", required=True)
-L46: ap.add_argument("--member", required=True, help="profile/member name, e.g. ipfabric")
-L47: ap.add_argument("--model", default=None, help="override model (default: profile tier)")
-L48: ap.add_argument("--anthropic-key-from", default="~/.openclaw/.env")
-L49: ap.add_argument("--border-config", default=f"{HOME}/.openclaw/openclaw.json")
+L88: argparse.ArgumentParser()
+L89: ap.add_argument("--risk", required=True)
+L90: ap.add_argument("--member", required=True, help="profile/member name, e.g. ipfabric")
+L91: ap.add_argument("--runtime", choices=["hermes","openclaw"], default=None)
+L92: ap.add_argument("--home", default=None)
+L93: ap.add_argument("--model", default=None, help="override model (default: profile tier)")
+L94: ap.add_argument("--anthropic-key-from", default=None)
+L95: ap.add_argument("--border-config", default=None)
 L16: Usage: python3 scripts/in2n-member-home.py --risk johns-risk --member ipfabric \
 ```
 
@@ -1386,8 +1446,8 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--idle-exit`, `--local`, `--model`
 
 ```text
-L148: argparse.ArgumentParser(description="iN2N lightweight member launcher")
-L149: ap.add_argument("--idle-exit", type=int, default=int(os.environ.get("N2N_IDLE_EXIT_S", "0")),
+L160: argparse.ArgumentParser(description="iN2N lightweight member launcher")
+L161: ap.add_argument("--idle-exit", type=int, default=int(os.environ.get("N2N_IDLE_EXIT_S", "0")),
                     help="exit after N idle seconds (cold/on-demand); 0 = always-on")
 ```
 
@@ -1398,15 +1458,15 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--border-endpoint`, `--hot`, `--idle-exit`, `--live-env`, `--local`, `--profile`, `--risk`, `--staging`
 
 ```text
-L58: argparse.ArgumentParser(description="iN2N migration scaffold (generate-only)")
-L59: ap.add_argument("--risk", default="johns-risk")
-L60: ap.add_argument("--border-endpoint", default="127.0.0.1:11790")
-L61: ap.add_argument("--staging", default=os.path.join(REPO, "migration-staging"))
-L62: ap.add_argument("--hot", default="cml,pyats,ipfabric,viz",
+L78: argparse.ArgumentParser(description="iN2N migration scaffold (generate-only)")
+L79: ap.add_argument("--risk", default="johns-risk")
+L80: ap.add_argument("--border-endpoint", default="127.0.0.1:11790")
+L81: ap.add_argument("--staging", default=os.path.join(REPO, "migration-staging"))
+L82: ap.add_argument("--hot", default="cml,pyats,ipfabric,viz",
                     help="comma-separated always-on members; the rest are cold/on-demand")
-L64: ap.add_argument("--idle-exit", type=int, default=900,
+L84: ap.add_argument("--idle-exit", type=int, default=900,
                     help="idle seconds before a cold/on-demand member exits")
-L66: ap.add_argument("--live-env", default="~/.openclaw/.env")
+L86: ap.add_argument("--live-env", default=None)
 L22: Usage:
 ```
 
@@ -1418,10 +1478,10 @@ Flags mentioned: `--all`
 
 ```text
 L10: Usage:
-L311: if cmd == "list":
-L316: elif cmd == "show" and len(argv) > 1:
-L322: elif cmd == "scope" and len(argv) > 1:
-L333: sys.exit(_main(sys.argv[1:]))
+L315: if cmd == "list":
+L320: elif cmd == "show" and len(argv) > 1:
+L326: elif cmd == "scope" and len(argv) > 1:
+L337: sys.exit(_main(sys.argv[1:]))
 ```
 
 ## scripts/in2n-services.py
@@ -1431,15 +1491,15 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--collect`, `--now`, `--quiet`, `--user`, `--wait`
 
 ```text
-L332: argparse.ArgumentParser(description="iN2N durable-runtime service generator")
-L333: ap.add_subparsers(dest="cmd", required=True)
-L334: sub.add_parser("generate")
-L335: sub.add_parser("enable")
-L336: sub.add_parser("status")
-L337: sub.add_parser("disable")
-L338: d.add_argument("member", help="member id (<risk>/<name>) or bare name")
+L364: argparse.ArgumentParser(description="iN2N durable-runtime service generator")
+L365: ap.add_subparsers(dest="cmd", required=True)
+L366: sub.add_parser("generate")
+L367: sub.add_parser("enable")
+L368: sub.add_parser("status")
+L369: sub.add_parser("disable")
+L370: d.add_argument("member", help="member id (<risk>/<name>) or bare name")
 L22: Usage:
-L249: for member_id, launch_cmd in _always_on_members(risk):
+L274: for member_id, launch_cmd in _always_on_members(risk):
 ```
 
 ## scripts/install-hermes-hud-agent.py
@@ -1790,17 +1850,17 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: none
 
 ```text
-L179: case "$1" in
-L180: minimal)        echo "$PROFILE_MINIMAL" ;;
-L181: recommended)    echo "$PROFILE_RECOMMENDED" ;;
-L182: cisco)          echo "$PROFILE_CISCO" ;;
-L183: multivendor)    echo "$PROFILE_MULTIVENDOR" ;;
-L184: cloud)          echo "$PROFILE_CLOUD" ;;
-L185: security)       echo "$PROFILE_SECURITY" ;;
-L186: labs)           echo "$PROFILE_LABS" ;;
-L187: observability)  echo "$PROFILE_OBSERVABILITY" ;;
-L188: full)           catalog_ids | tr '\n' ' ' ;;
-L189: *)              return 1 ;;
+L181: case "$1" in
+L182: minimal)        echo "$PROFILE_MINIMAL" ;;
+L183: recommended)    echo "$PROFILE_RECOMMENDED" ;;
+L184: cisco)          echo "$PROFILE_CISCO" ;;
+L185: multivendor)    echo "$PROFILE_MULTIVENDOR" ;;
+L186: cloud)          echo "$PROFILE_CLOUD" ;;
+L187: security)       echo "$PROFILE_SECURITY" ;;
+L188: labs)           echo "$PROFILE_LABS" ;;
+L189: observability)  echo "$PROFILE_OBSERVABILITY" ;;
+L190: full)           catalog_ids | tr '\n' ' ' ;;
+L191: *)              return 1 ;;
 ```
 
 ## scripts/lib/common.sh
@@ -1871,7 +1931,7 @@ L45: *) echo "unknown action $ACTION" >&2; exit 1 ;;
 
 Static source declarations; lexical flags may include delegated commands. No execution performed.
 
-Flags mentioned: `--add`, `--apply`, `--args`, `--backups`, `--break-system-packages`, `--check`, `--command`, `--components`, `--config`, `--destination`, `--dns-provider`, `--domain`, `--dry-run`, `--edge`, `--enable-guardrail`, `--env`, `--env-file`, `--executablePath`, `--from`, `--global`, `--headless`, `--help`, `--home`, `--install-daemon`, `--listen`, `--mode`, `--no-pager`, `--no-test`, `--noconfirm`, `--node`, `--output`, `--path`, `--quiet`, `--repo`, `--restore`, `--reverse`, `--rm`, `--runtime`, `--runtime-root`, `--set`, `--sidecar`, `--source`, `--state-base`, `--tags`, `--target`, `--upgrade`, `--upstream`, `--user`, `--venv`, `--verify`, `--version`, `--vnc`, `--web`
+Flags mentioned: `--add`, `--apply`, `--args`, `--backups`, `--break-system-packages`, `--check`, `--command`, `--components`, `--config`, `--destination`, `--dns-provider`, `--domain`, `--dry-run`, `--edge`, `--enable-guardrail`, `--env`, `--env-file`, `--executablePath`, `--from`, `--global`, `--headless`, `--help`, `--home`, `--ignore-scripts`, `--install-daemon`, `--listen`, `--mode`, `--no-pager`, `--no-test`, `--noconfirm`, `--node`, `--output`, `--path`, `--quiet`, `--repo`, `--restore`, `--reverse`, `--rm`, `--runtime`, `--runtime-root`, `--set`, `--sidecar`, `--source`, `--state-base`, `--tags`, `--target`, `--upgrade`, `--upstream`, `--user`, `--venv`, `--verify`, `--version`, `--vnc`, `--web`
 
 ```text
 L37: case "$PKG_MGR:$id" in
@@ -1943,78 +2003,82 @@ L1569: log_info "  Install: helm install kubeshark kubeshark/kubeshark --set mcp
 L1594: log_info "nmap already installed: $(nmap --version 2>&1 | head -1)"
 L1709: log_info "gtrace MCP ready: $(gtrace --version 2>&1 | head -1) (6 tools: traceroute, mtr, globalping, asn_lookup, geo_lookup, reverse_dns)"
 L1842: # `risk token --edge` answering "only a Border can issue enrollment tokens",
-L1880: case "$TUI_CHOICE" in
-L1881: 0)
-L1885: 1)
-L1892: case "$TUI_CHOICE" in
-L1893: 0) _stacks=both ;; 1) _stacks=in2n ;; *) _stacks=en2n ;;
-L1904: 2)
-L1927: echo "  mesh daemon + always-on members durable systemd --user services."
-L1946: if declare -f tui_confirm >/dev/null 2>&1 && tui_confirm "Generate + enable durable systemd --user services now?"; then
-L1950: log_warn "service enable failed (systemctl --user may be unavailable on this host)"
-L1994: if netclaw_pip_install -q --upgrade iflow-mcp-cdot65-palo-alto-mcp 2>/dev/null; then
-L2329: # ── Step 50c: Install Token Optimization Library (netclaw_tokens)
-L2559: git -C "$dir" fetch origin --tags
-L2565: if git -C "$dir" rev-parse --verify --quiet "origin/$ref" >/dev/null; then
-L2690: --repo "$NETCLAW_DIR" --runtime-root "$NETCLAW_RUNTIME_ROOT" \
-L2691: --components "${SUCCESSFUL_COMPONENTS:-}" --output "$generated_config" || return 1
-L2699: --source "$generated_config" \
-L2700: --repo   "$NETCLAW_DIR" \
-L2701: --env    "$RUNTIME_ENV" \
-L2702: --config "$RUNTIME_CONFIG" \
-L2703: --sidecar "$RUNTIME_HOME/netclaw-mcp-servers.yaml"; then
-L2714: --repo "$NETCLAW_DIR" --runtime-root "$NETCLAW_RUNTIME_ROOT" \
-L2715: --components "${SUCCESSFUL_COMPONENTS:-}" --output "$generated_config" \
-L2716: --config "$RUNTIME_CONFIG" || return 1
-L2725: --source "$NETCLAW_DIR/workspace/skills" \
-L2726: --destination "$RUNTIME_SKILLS" \
-L2727: --backups "$RUNTIME_HOME/skill-deployment-backups" \
-L2728: --state-base "$(basename "$RUNTIME_HOME")" || return 1
-L3039: NODE_VER=$(node --version | sed 's/v//' | cut -d. -f1)
-L3061: defenseclaw init --enable-guardrail 2>/dev/null || log_warn "Guardrail init failed - run manually: defenseclaw init --enable-guardrail"
-L3063: log_warn "defenseclaw CLI not in PATH. Add ~/.local/bin to PATH and run: defenseclaw init --enable-guardrail"
-L3099: OPENSHELL_VERSION=$(openshell --version 2>/dev/null || echo "unknown")
-L3124: echo "    openshell --version                    # Check OpenShell"
-L3127: echo "    defenseclaw --version                  # Check DefenseClaw"
-L3129: echo "    defenseclaw setup guardrail --mode action  # Enable blocking"
-L3258: log_info "  hermes mcp add memory-mcp --command uvx --args '--from,netclaw-memory-mcp,memory-mcp-server' --env MEMORY_DATA_DIR=$MEMORY_DATA_DIR"
-L3260: log_info "  openclaw mcp set memory-mcp '{\"command\":\"uvx\",\"args\":[\"--from\",\"netclaw-memory-mcp\",\"memory-mcp-server\"],\"env\":{\"MEMORY_DATA_DIR\":\"$MEMORY_DATA_DIR\"}}'"
-L3320: log_info "Ollama found: $(ollama --version 2>/dev/null || echo 'version unknown')"
-L3414: if ! git -C "$SKETCHFAB_MCP_DIR" apply --reverse --check "$SKETCHFAB_PATCH" 2>/dev/null; then
-L3481: echo "  for the WSL2 mirrored-networking check and the --listen fallback."
-L3563: install_output="$(npx -y @puppeteer/browsers install chrome@stable --path "$CHROME_DEVTOOLS_CACHE_DIR" 2>&1 | tail -1)"
-L3576: HEADLESS_ARGS="[\"-y\",\"chrome-devtools-mcp@latest\",\"--headless=true\",\"--executablePath=$CHROME_DEVTOOLS_EXECUTABLE\"]"
-L3577: VISIBLE_ARGS="[\"-y\",\"chrome-devtools-mcp@latest\",\"--headless=false\",\"--executablePath=$CHROME_DEVTOOLS_EXECUTABLE\"]"
-L3579: HEADLESS_ARGS="[\"-y\",\"chrome-devtools-mcp@latest\",\"--headless=true\"]"
-L3580: VISIBLE_ARGS="[\"-y\",\"chrome-devtools-mcp@latest\",\"--headless=false\"]"
-L3585: hermes mcp add chrome-devtools-mcp --command npx >/dev/null 2>&1 \
-L3587: || log_warn "Could not add chrome-devtools-mcp — add it manually: hermes mcp add chrome-devtools-mcp --command npx"
-L3589: log_info "  args: [\"-y\", \"chrome-devtools-mcp@latest\", \"--headless=true\"]"
-L3591: log_info "hermes CLI not found — add chrome-devtools-mcp later: hermes mcp add chrome-devtools-mcp --command npx"
-L3605: log_info "Sign in once per target site: npx chrome-devtools-mcp@latest --headless=false${CHROME_DEVTOOLS_EXECUTABLE:+ --executablePath=\"$CHROME_DEVTOOLS_EXECUTABLE\"}"
-L3623: case "$PKG_MGR" in
-L3624: apt)
-L3630: dnf|yum)
-L3635: pacman)
-L3637: sudo pacman -S --noconfirm $COMPUTER_USE_PACKAGES 2>/dev/null || \
-L3640: *)
-L3661: if openclaw skills install --global computer-use 2>&1 | tail -5; then
-L3667: # (0644) -- confirmed live: every action script fails with "Permission
-L3674: log_warn "Could not install the computer-use skill automatically — try manually: openclaw skills install --global computer-use"
-L3677: log_warn "openclaw CLI not found — install the skill manually once OpenClaw is set up: openclaw skills install --global computer-use"
-L3680: # The skill only ships its action scripts (click.sh, screenshot.sh, ...) --
-L3692: # and the novnc unit's --listen has no bind address) -- a real exposure
-L3696: # pattern, which this doesn't change -- it just makes it mandatory.
-L3704: # wrapper the skill's script assumes -- confirmed missing live on
-L3707: -e 's|ExecStart=.*novnc_proxy.*|ExecStart=/usr/share/novnc/utils/launch.sh --vnc localhost:5900 --listen 127.0.0.1:6080 --web /usr/share/novnc|' \
-L3708: -e 's/--listen 6080\b/--listen 127.0.0.1:6080/' \
-L3751: # but install it now so `--domain` works later without a second step).
-L3781: log_info "Domain-verified identity (optional): scripts/patch-claw-certs.sh --domain <name> --dns-provider <id>"
-L3840: # isolation from nothing. netclaw_pip_install, never bare pip — on a split
-L4121: python3 "$NETCLAW_DIR/scripts/jev-settings.py" --env-file "$RUNTIME_ENV" setup || return 1
-L4123: log_info "Enable and configure Jev: python3 scripts/jev-settings.py --env-file '$RUNTIME_ENV' setup"
-L4143: [ "$RUNTIME" = "hermes" ] || { log_error "hermes-hud requires --runtime hermes"; return 1; }
-L4146: python3 "$NETCLAW_DIR/scripts/install-hermes-hud-agent.py" --home "$RUNTIME_HOME" || return 1
+L1861: python3 "$NETCLAW_DIR/scripts/install-hermes-hud-agent.py" --home "$RUNTIME_HOME" || return 1
+L1888: case "$TUI_CHOICE" in
+L1889: 0)
+L1893: 1)
+L1900: case "$TUI_CHOICE" in
+L1901: 0) _stacks=both ;; 1) _stacks=in2n ;; *) _stacks=en2n ;;
+L1912: 2)
+L1935: echo "  mesh daemon + always-on members durable systemd --user services."
+L1954: if declare -f tui_confirm >/dev/null 2>&1 && tui_confirm "Generate + enable durable systemd --user services now?"; then
+L1958: log_warn "service enable failed (systemctl --user may be unavailable on this host)"
+L2002: if netclaw_pip_install -q --upgrade iflow-mcp-cdot65-palo-alto-mcp 2>/dev/null; then
+L2337: # ── Step 50c: Install Token Optimization Library (netclaw_tokens)
+L2567: git -C "$dir" fetch origin --tags
+L2573: if git -C "$dir" rev-parse --verify --quiet "origin/$ref" >/dev/null; then
+L2698: --repo "$NETCLAW_DIR" --runtime-root "$NETCLAW_RUNTIME_ROOT" \
+L2699: --components "${SUCCESSFUL_COMPONENTS:-}" --output "$generated_config" || return 1
+L2707: --source "$generated_config" \
+L2708: --repo   "$NETCLAW_DIR" \
+L2709: --env    "$RUNTIME_ENV" \
+L2710: --config "$RUNTIME_CONFIG" \
+L2711: --sidecar "$RUNTIME_HOME/netclaw-mcp-servers.yaml"; then
+L2722: --repo "$NETCLAW_DIR" --runtime-root "$NETCLAW_RUNTIME_ROOT" \
+L2723: --components "${SUCCESSFUL_COMPONENTS:-}" --output "$generated_config" \
+L2724: --config "$RUNTIME_CONFIG" || return 1
+L2733: --source "$NETCLAW_DIR/workspace/skills" \
+L2734: --destination "$RUNTIME_SKILLS" \
+L2735: --backups "$RUNTIME_HOME/skill-deployment-backups" \
+L2736: --state-base "$(basename "$RUNTIME_HOME")" || return 1
+L3047: NODE_VER=$(node --version | sed 's/v//' | cut -d. -f1)
+L3069: defenseclaw init --enable-guardrail 2>/dev/null || log_warn "Guardrail init failed - run manually: defenseclaw init --enable-guardrail"
+L3071: log_warn "defenseclaw CLI not in PATH. Add ~/.local/bin to PATH and run: defenseclaw init --enable-guardrail"
+L3107: OPENSHELL_VERSION=$(openshell --version 2>/dev/null || echo "unknown")
+L3132: echo "    openshell --version                    # Check OpenShell"
+L3135: echo "    defenseclaw --version                  # Check DefenseClaw"
+L3137: echo "    defenseclaw setup guardrail --mode action  # Enable blocking"
+L3266: log_info "  hermes mcp add memory-mcp --command uvx --args '--from,netclaw-memory-mcp,memory-mcp-server' --env MEMORY_DATA_DIR=$MEMORY_DATA_DIR"
+L3268: log_info "  openclaw mcp set memory-mcp '{\"command\":\"uvx\",\"args\":[\"--from\",\"netclaw-memory-mcp\",\"memory-mcp-server\"],\"env\":{\"MEMORY_DATA_DIR\":\"$MEMORY_DATA_DIR\"}}'"
+L3328: log_info "Ollama found: $(ollama --version 2>/dev/null || echo 'version unknown')"
+L3422: if ! git -C "$SKETCHFAB_MCP_DIR" apply --reverse --check "$SKETCHFAB_PATCH" 2>/dev/null; then
+L3489: echo "  for the WSL2 mirrored-networking check and the --listen fallback."
+L3571: install_output="$(npx -y @puppeteer/browsers install chrome@stable --path "$CHROME_DEVTOOLS_CACHE_DIR" 2>&1 | tail -1)"
+L3584: HEADLESS_ARGS="[\"-y\",\"chrome-devtools-mcp@latest\",\"--headless=true\",\"--executablePath=$CHROME_DEVTOOLS_EXECUTABLE\"]"
+L3585: VISIBLE_ARGS="[\"-y\",\"chrome-devtools-mcp@latest\",\"--headless=false\",\"--executablePath=$CHROME_DEVTOOLS_EXECUTABLE\"]"
+L3587: HEADLESS_ARGS="[\"-y\",\"chrome-devtools-mcp@latest\",\"--headless=true\"]"
+L3588: VISIBLE_ARGS="[\"-y\",\"chrome-devtools-mcp@latest\",\"--headless=false\"]"
+L3593: hermes mcp add chrome-devtools-mcp --command npx >/dev/null 2>&1 \
+L3595: || log_warn "Could not add chrome-devtools-mcp — add it manually: hermes mcp add chrome-devtools-mcp --command npx"
+L3597: log_info "  args: [\"-y\", \"chrome-devtools-mcp@latest\", \"--headless=true\"]"
+L3599: log_info "hermes CLI not found — add chrome-devtools-mcp later: hermes mcp add chrome-devtools-mcp --command npx"
+L3613: log_info "Sign in once per target site: npx chrome-devtools-mcp@latest --headless=false${CHROME_DEVTOOLS_EXECUTABLE:+ --executablePath=\"$CHROME_DEVTOOLS_EXECUTABLE\"}"
+L3631: case "$PKG_MGR" in
+L3632: apt)
+L3638: dnf|yum)
+L3643: pacman)
+L3645: sudo pacman -S --noconfirm $COMPUTER_USE_PACKAGES 2>/dev/null || \
+L3648: *)
+L3669: if openclaw skills install --global computer-use 2>&1 | tail -5; then
+L3675: # (0644) -- confirmed live: every action script fails with "Permission
+L3682: log_warn "Could not install the computer-use skill automatically — try manually: openclaw skills install --global computer-use"
+L3685: log_warn "openclaw CLI not found — install the skill manually once OpenClaw is set up: openclaw skills install --global computer-use"
+L3688: # The skill only ships its action scripts (click.sh, screenshot.sh, ...) --
+L3700: # and the novnc unit's --listen has no bind address) -- a real exposure
+L3704: # pattern, which this doesn't change -- it just makes it mandatory.
+L3712: # wrapper the skill's script assumes -- confirmed missing live on
+L3715: -e 's|ExecStart=.*novnc_proxy.*|ExecStart=/usr/share/novnc/utils/launch.sh --vnc localhost:5900 --listen 127.0.0.1:6080 --web /usr/share/novnc|' \
+L3716: -e 's/--listen 6080\b/--listen 127.0.0.1:6080/' \
+L3759: # but install it now so `--domain` works later without a second step).
+L3789: log_info "Domain-verified identity (optional): scripts/patch-claw-certs.sh --domain <name> --dns-provider <id>"
+L3848: # isolation from nothing. netclaw_pip_install, never bare pip — on a split
+L4129: python3 "$NETCLAW_DIR/scripts/jev-settings.py" --env-file "$RUNTIME_ENV" setup || return 1
+L4131: log_info "Enable and configure Jev: python3 scripts/jev-settings.py --env-file '$RUNTIME_ENV' setup"
+L4151: [ "$RUNTIME" = "hermes" ] || { log_error "hermes-hud requires --runtime hermes"; return 1; }
+L4154: python3 "$NETCLAW_DIR/scripts/install-hermes-hud-agent.py" --home "$RUNTIME_HOME" || return 1
+L4167: (cd "$NETCLAW_DIR/ui/netclaw-visual" && npm ci --ignore-scripts) || return 1
+L4168: (cd "$NETCLAW_DIR/mcp-servers/netclaw-operator-mcp" && npm ci --ignore-scripts) || return 1
+L4176: (cd "$NETCLAW_DIR/mcp-servers/netclaw-assistant-mcp" && npm ci --ignore-scripts) || return 1
 ```
 
 ## scripts/lib/make-logo-art.py
@@ -2115,6 +2179,15 @@ L211: all)
 L213: none)
 L215: enter)
 L222: quit|esc)
+```
+
+## scripts/management_lock.py
+
+Static source declarations; lexical flags may include delegated commands. No execution performed.
+
+Flags mentioned: none
+
+```text
 ```
 
 ## scripts/mcp-call.py
@@ -2366,101 +2439,127 @@ L17: #   netclaw risk role border <risk-name> [in2n]   promote standalone → Bo
 L18: #   netclaw risk edge-check                       preflight every precondition
 L19: #   netclaw risk token --edge <device-label>       mint the single-use QR
 L20: #   See mobile/netclaw-mobile/MOBILE-ONBOARDING.md for the full procedure.
-L44: # here so `netclaw tui` and .env reads follow the chosen runtime.
-L47: RUNTIME_CMD="hermes"; RUNTIME_HOME="${HERMES_HOME:-$HOME/.hermes}"; RUNTIME_TUI=(hermes --tui)
-L62: api_get() { curl -s --max-time 3 "$BGP_API$1" 2>/dev/null || true; }
-L71: curl -s --max-time 30 -H 'Content-Type: application/json' -d "$body" "$BGP_API$1" 2>/dev/null || true
-L74: ngrok_get() { curl -s --max-time 3 "$NGROK_API$1" 2>/dev/null || true; }
-L81: # and looking at only the first file made `netclaw risk token --edge` fail with
-L87: v="$(python3 "$NETCLAW_ROOT/scripts/write-env.py" --get "$f" "$1")" || return 1
-L98: # 2026-08-19: `netclaw risk role border` succeeds (POST 200, `risk status`
-L107: printf '%s' "$val" | python3 "$NETCLAW_ROOT/scripts/write-env.py" --systemd "$f" "$key"
-L127: setsid nohup ngrok tcp "$port" --log /tmp/ngrok-mesh.log --log-format json \
-L459: echo -e "  ${T_DIM}--- $(basename "$f" .txt) ---${T_NC}"
-L484: case " ${days[*]-} " in *" $d "*) ;; *) days+=("$d") ;; esac
-L497: case "$TUI_CHOICE" in
-L498: 0) chats_watch; continue ;;
-L499: 1) chat_tail "${CHAT_FILES[0]}"; continue ;;
-L625: case "$role" in
-L626: standalone|border|member) ;;
-L627: *) echo "usage: netclaw risk role <standalone|border|member> [risk-name] [stacks]"
-L651: case "$stacks" in
-L652: in2n|both) ;;
-L653: *) echo "  note: enabled_stacks='$stacks' does not include in2n —"
-L670: print("    check:  systemctl --user status netclaw-mesh.service")
-L686: echo "      systemctl --user restart netclaw-mesh.service"
-L706: echo "                systemctl --user status netclaw-mesh.service"
-L721: case "$stacks" in
-L722: in2n|both) echo "  ✓ stack     : $stacks (in2n enabled)" ;;
-L723: *) echo "  ✗ stack     : ${stacks:--} — the edge listener needs in2n"
-L756: echo "                $mesh_py -m pip install --break-system-packages$missing"
-L773: case "$lstate" in
-L774: listening) echo "  ✓ listener  : bound" ;;
-L776: *)         echo "  ✗ listener  : $lstate${lerr:+ — $lerr}"
-L797: echo "                journalctl --user -u netclaw-mesh.service --since '2 min ago' | grep -i Edge"
-L818: wan="$(curl -s --max-time 5 https://api.ipify.org 2>/dev/null || true)"
-L833: echo "      $(basename "$0") risk token --edge <device-label>"
-L836: echo "      systemctl --user restart netclaw-mesh.service"
-L898: # (edge-check -> role border -> restart -> edge-check -> token --edge),
-L910: # abort the WHOLE netclaw invocation right here, silently swallowed
-L937: if systemctl --user restart netclaw-mesh.service 2>/dev/null; then
-L941: echo "      systemctl --user restart netclaw-mesh.service"
-L981: case "$TUI_CHOICE" in
-L982: 0) risk_overview; pause ;;
-L983: 1) risk_members; pause ;;
-L984: 2) risk_health; pause ;;
-L985: 3) risk_token; pause ;;
-L986: 4) risk_edge_token; pause ;;
-L987: 5) risk_edge_check; pause ;;
-L988: 6) return 0 ;;
-L1007: case "$TUI_CHOICE" in
-L1008: 0) peering_overview; pause ;;
-L1009: 1) peering_bgp; pause ;;
-L1010: 2) peering_n2n; pause ;;
-L1011: 3) peering_ngrok; pause ;;
-L1012: 4) chats_menu ;;
-L1013: 5) peering_start_all; pause ;;
-L1014: 6) peering_stop_all; pause ;;
-L1015: 7) peer_announce; pause ;;
-L1016: 8) return 0 ;;
-L1035: case "$TUI_CHOICE" in
-L1036: 0) exec "${RUNTIME_TUI[@]}" ;;
-L1037: 1) exec "$NETCLAW_ROOT/scripts/install.sh" ;;
-L1038: 2) peering_menu ;;
-L1039: 3) risk_menu ;;
-L1040: 4) exit 0 ;;
-L1053: case "${1:-}" in
-L1055: tui)       exec "${RUNTIME_TUI[@]}" ;;
-L1056: install)   shift; exec "$NETCLAW_ROOT/scripts/install.sh" "$@" ;;
-L1057: peering)
-L1058: case "${2:-status}" in
-L1059: status)   peering_overview ;;
-L1060: bgp)      peering_bgp ;;
-L1061: n2n)      peering_n2n ;;
-L1062: ngrok)    peering_ngrok ;;
-L1063: up)       peering_start_all ;;
-L1064: down)     peering_stop_all ;;
-L1065: announce) peer_announce ;;
-L1066: *)        echo "Usage: netclaw peering [status|bgp|n2n|ngrok|up|down|announce]"; exit 1 ;;
-L1068: risk)
-L1069: case "${2:-status}" in
-L1070: status)   risk_overview ;;
-L1071: members)  risk_members ;;
-L1072: health)   risk_health ;;
-L1073: add)      risk_add "${3:-}" "${4:-}" "${5:-}" ;;
-L1074: remove)   risk_remove "${3:-}" ;;
-L1075: role)     risk_role "${3:-}" "${4:-}" "${5:-}" ;;
-L1076: edge-check|edge_check|preflight) risk_edge_check ;;
-L1077: token)
-L1078: if [ "${3:-}" = "--edge" ]; then
-L1083: enroll-mobile|enroll_mobile) risk_enroll_mobile "${3:-}" ;;
-L1084: route)    risk_route "${3:-}" "${4:-}" ;;
-L1085: *)        echo "Usage: netclaw risk [status|members|health|role|edge-check|add|remove|token [--edge]|enroll-mobile [label]|route]"; exit 1 ;;
-L1087: chats)
-L1088: if [ "${2:-}" = "--watch" ] || [ "${2:-}" = "watch" ]; then
-L1100: link)      do_link ;;
-L1101: help|-h|--help)
-L1103: *) echo "Unknown command: $1 (try: netclaw help)"; exit 1 ;;
+L45: RUNTIME_CMD="hermes"; RUNTIME_TUI=(hermes --tui)
+L59: api_get() { curl -s --max-time 3 "$BGP_API$1" 2>/dev/null || true; }
+L68: curl -s --max-time 30 -H 'Content-Type: application/json' -d "$body" "$BGP_API$1" 2>/dev/null || true
+L71: ngrok_get() { curl -s --max-time 3 "$NGROK_API$1" 2>/dev/null || true; }
+L78: # and looking at only the first file made `netclaw risk token --edge` fail with
+L84: v="$(python3 "$NETCLAW_ROOT/scripts/write-env.py" --get "$f" "$1")" || return 1
+L95: # 2026-08-19: `netclaw risk role border` succeeds (POST 200, `risk status`
+L104: printf '%s' "$val" | python3 "$NETCLAW_ROOT/scripts/write-env.py" --systemd "$f" "$key"
+L124: setsid nohup ngrok tcp "$port" --log /tmp/ngrok-mesh.log --log-format json \
+L456: echo -e "  ${T_DIM}--- $(basename "$f" .txt) ---${T_NC}"
+L481: case " ${days[*]-} " in *" $d "*) ;; *) days+=("$d") ;; esac
+L494: case "$TUI_CHOICE" in
+L495: 0) chats_watch; continue ;;
+L496: 1) chat_tail "${CHAT_FILES[0]}"; continue ;;
+L622: case "$role" in
+L623: standalone|border|member) ;;
+L624: *) echo "usage: netclaw risk role <standalone|border|member> [risk-name] [stacks]"
+L648: case "$stacks" in
+L649: in2n|both) ;;
+L650: *) echo "  note: enabled_stacks='$stacks' does not include in2n —"
+L667: print("    check:  systemctl --user status netclaw-mesh.service")
+L683: echo "      systemctl --user restart netclaw-mesh.service"
+L703: echo "                systemctl --user status netclaw-mesh.service"
+L718: case "$stacks" in
+L719: in2n|both) echo "  ✓ stack     : $stacks (in2n enabled)" ;;
+L720: *) echo "  ✗ stack     : ${stacks:--} — the edge listener needs in2n"
+L753: echo "                $mesh_py -m pip install --break-system-packages$missing"
+L770: case "$lstate" in
+L771: listening) echo "  ✓ listener  : bound" ;;
+L773: *)         echo "  ✗ listener  : $lstate${lerr:+ — $lerr}"
+L794: echo "                journalctl --user -u netclaw-mesh.service --since '2 min ago' | grep -i Edge"
+L815: wan="$(curl -s --max-time 5 https://api.ipify.org 2>/dev/null || true)"
+L830: echo "      $(basename "$0") risk token --edge <device-label>"
+L833: echo "      systemctl --user restart netclaw-mesh.service"
+L895: # (edge-check -> role border -> restart -> edge-check -> token --edge),
+L907: # abort the WHOLE netclaw invocation right here, silently swallowed
+L934: if systemctl --user restart netclaw-mesh.service 2>/dev/null; then
+L938: echo "      systemctl --user restart netclaw-mesh.service"
+L978: case "$TUI_CHOICE" in
+L979: 0) risk_overview; pause ;;
+L980: 1) risk_members; pause ;;
+L981: 2) risk_health; pause ;;
+L982: 3) risk_token; pause ;;
+L983: 4) risk_edge_token; pause ;;
+L984: 5) risk_edge_check; pause ;;
+L985: 6) return 0 ;;
+L1004: case "$TUI_CHOICE" in
+L1005: 0) peering_overview; pause ;;
+L1006: 1) peering_bgp; pause ;;
+L1007: 2) peering_n2n; pause ;;
+L1008: 3) peering_ngrok; pause ;;
+L1009: 4) chats_menu ;;
+L1010: 5) peering_start_all; pause ;;
+L1011: 6) peering_stop_all; pause ;;
+L1012: 7) peer_announce; pause ;;
+L1013: 8) return 0 ;;
+L1032: case "$TUI_CHOICE" in
+L1033: 0) exec "${RUNTIME_TUI[@]}" ;;
+L1034: 1) exec "$NETCLAW_ROOT/scripts/install.sh" ;;
+L1035: 2) peering_menu ;;
+L1036: 3) risk_menu ;;
+L1037: 4) exit 0 ;;
+L1050: case "${1:-}" in
+L1052: tui)       exec "${RUNTIME_TUI[@]}" ;;
+L1053: install)   shift; exec "$NETCLAW_ROOT/scripts/install.sh" "$@" ;;
+L1054: peering)
+L1055: case "${2:-status}" in
+L1056: status)   peering_overview ;;
+L1057: bgp)      peering_bgp ;;
+L1058: n2n)      peering_n2n ;;
+L1059: ngrok)    peering_ngrok ;;
+L1060: up)       peering_start_all ;;
+L1061: down)     peering_stop_all ;;
+L1062: announce) peer_announce ;;
+L1063: *)        echo "Usage: netclaw peering [status|bgp|n2n|ngrok|up|down|announce]"; exit 1 ;;
+L1065: risk)
+L1066: case "${2:-status}" in
+L1067: status)   risk_overview ;;
+L1068: members)  risk_members ;;
+L1069: health)   risk_health ;;
+L1070: add)      risk_add "${3:-}" "${4:-}" "${5:-}" ;;
+L1071: remove)   risk_remove "${3:-}" ;;
+L1072: role)     risk_role "${3:-}" "${4:-}" "${5:-}" ;;
+L1073: edge-check|edge_check|preflight) risk_edge_check ;;
+L1074: token)
+L1075: if [ "${3:-}" = "--edge" ]; then
+L1080: enroll-mobile|enroll_mobile) risk_enroll_mobile "${3:-}" ;;
+L1081: route)    risk_route "${3:-}" "${4:-}" ;;
+L1082: *)        echo "Usage: netclaw risk [status|members|health|role|edge-check|add|remove|token [--edge]|enroll-mobile [label]|route]"; exit 1 ;;
+L1084: chats)
+L1085: if [ "${2:-}" = "--watch" ] || [ "${2:-}" = "watch" ]; then
+L1097: link)      do_link ;;
+L1098: help|-h|--help)
+L1100: *) echo "Unknown command: $1 (try: netclaw help)"; exit 1 ;;
+```
+
+## scripts/netclaw-assistant.mjs
+
+Node entry point; argument/source references only. npm wrapper commands are indexed separately.
+
+Flags mentioned: none
+
+```text
+```
+
+## scripts/netclaw-management-worker.mjs
+
+Node entry point; argument/source references only. npm wrapper commands are indexed separately.
+
+Flags mentioned: none
+
+```text
+```
+
+## scripts/netclaw-operator.mjs
+
+Node entry point; argument/source references only. npm wrapper commands are indexed separately.
+
+Flags mentioned: none
+
+```text
 ```
 
 ## scripts/netclaw-secure-start.sh
@@ -2584,8 +2683,8 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: none
 
 ```text
-L20: env = environment(sys.argv[1])
-L23: os.execve(sys.executable, [sys.executable, sys.argv[2]], env)
+L22: env = environment(sys.argv[1])
+L25: os.execve(sys.executable, [sys.executable, sys.argv[2]], env)
 ```
 
 ## scripts/peering-setup.sh
@@ -2599,14 +2698,14 @@ L19: # TTY-aware yes/no (spec 119) -- this file's own ask()/ask_yn() below alway
 L34: python3 "$SCRIPT_DIR/write-env.py" --get "$OPENCLAW_ENV" "$1"
 L56: case "$input" in
 L59: *) echo -e "  ${YELLOW}Please answer y or n.${NC}" ;;
-L139: case "${1:-}" in
-L140: start)  daemon_start;  exit 0 ;;
-L141: stop)   daemon_stop;   exit 0 ;;
-L142: status) daemon_status; exit 0 ;;
-L144: *) echo "Usage: $0 [start|stop|status]"; exit 1 ;;
-L246: # Only worth asking once the mesh daemon is actually up -- an enrollment
-L248: # running. Delegates entirely to `netclaw risk enroll-mobile` rather than
-L255: # finished -- only this bonus step should stop, not the whole wizard.
+L102: case "${1:-}" in
+L103: start)  daemon_start;  exit 0 ;;
+L104: stop)   daemon_stop;   exit 0 ;;
+L105: status) daemon_status; exit 0 ;;
+L107: *) echo "Usage: $0 [start|stop|status]"; exit 1 ;;
+L209: # Only worth asking once the mesh daemon is actually up -- an enrollment
+L211: # running. Delegates entirely to `netclaw risk enroll-mobile` rather than
+L218: # finished -- only this bonus step should stop, not the whole wizard.
 ```
 
 ## scripts/prepare-release.py
@@ -3000,11 +3099,11 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--get`, `--systemd`
 
 ```text
-L92: systemd = '--systemd' in sys.argv
-L94: sys.argv.remove('--systemd')
-L95: if sys.argv[1] == '--get':
-L96: print(values(Path(sys.argv[2]).read_text()).get(sys.argv[3], ''), end='')
-L98: update(sys.argv[1], sys.argv[2], sys.stdin.read(), systemd=systemd)
+L139: systemd = '--systemd' in sys.argv
+L141: sys.argv.remove('--systemd')
+L142: if sys.argv[1] == '--get':
+L143: print(values(Path(sys.argv[2]).read_text()).get(sys.argv[3], ''), end='')
+L145: update(sys.argv[1], sys.argv[2], sys.stdin.read(), systemd=systemd)
 ```
 
 ## scripts/zabbix-stdio.py
@@ -3065,7 +3164,7 @@ L1: npm run test:observability → node test/observability.mjs
 
 Node entry point; argument/source references only. npm wrapper commands are indexed separately.
 
-Flags mentioned: `--global`
+Flags mentioned: none
 
 ```text
 ```

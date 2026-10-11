@@ -120,6 +120,12 @@
     "category": "Guides"
   },
   {
+    "id": "dd901fc4036f2e47",
+    "path": "docs/HERMES-FEDERATION.md",
+    "title": "Hermes federation and NetClaw Mobile \u2014 1.8.0",
+    "category": "Guides"
+  },
+  {
     "id": "bd78fc952591e6d3",
     "path": "docs/HERMES-HUD.md",
     "title": "Hermes in the NetClaw HUD",
@@ -285,6 +291,30 @@
     "id": "ec7c3160adadd84d",
     "path": "docs/VOICE-SECURITY.md",
     "title": "Upgrade the voice webhook service",
+    "category": "Guides"
+  },
+  {
+    "id": "6eb5ad53e5d8e7a7",
+    "path": "docs/VSCODE-ASSISTANTS.md",
+    "title": "NetClaw assistant access in VS Code",
+    "category": "Guides"
+  },
+  {
+    "id": "f1839393802c728b",
+    "path": "docs/VSCODE-COMPATIBILITY.md",
+    "title": "VS Code compatibility and qualification",
+    "category": "Guides"
+  },
+  {
+    "id": "712fc06d8cd311e4",
+    "path": "docs/VSCODE-PUBLISHING.md",
+    "title": "Publishing NetClaw for VS Code",
+    "category": "Guides"
+  },
+  {
+    "id": "0fbbb348ed092aaf",
+    "path": "docs/VSCODE.md",
+    "title": "NetClaw for Visual Studio Code",
     "category": "Guides"
   },
   {
@@ -591,6 +621,18 @@
     "id": "fa1356e6b564b90c",
     "path": "docs/releases/1.7.0.md",
     "title": "NetClaw 1.7.0 \u2014 Hermes joins the shared HUD",
+    "category": "Guides"
+  },
+  {
+    "id": "a6640f0f21c4d26b",
+    "path": "docs/releases/1.8.0.md",
+    "title": "NetClaw 1.8.0 \u2014 Hermes NCFED and mobile",
+    "category": "Guides"
+  },
+  {
+    "id": "71f798ae61be59d8",
+    "path": "docs/releases/netclaw-vscode-announcement.md",
+    "title": "Draft: Bringing NetClaw into Visual Studio Code",
     "category": "Guides"
   },
   {
@@ -1437,6 +1479,12 @@
     "id": "56c033febe22809c",
     "path": "workspace/skills/netbox-reconcile/SKILL.md",
     "title": "NetBox Reconciliation",
+    "category": "Skills"
+  },
+  {
+    "id": "27944d4be114e1de",
+    "path": "workspace/skills/netclaw-operator/SKILL.md",
+    "title": "NetClaw editor management",
     "category": "Skills"
   },
   {

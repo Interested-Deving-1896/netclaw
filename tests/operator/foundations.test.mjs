@@ -5,7 +5,7 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { installationFixture, nonce, authoritativeApproval } from './fixtures.mjs';
-import { bindInstallation } from '../../ui/netclaw-visual/src/management/identity.js';
+import { bindInstallation, installationHostId } from '../../ui/netclaw-visual/src/management/identity.js';
 import { Journal } from '../../ui/netclaw-visual/src/management/journal.js';
 import { authorize, verifyChangeApproval, attenuate } from '../../ui/netclaw-visual/src/management/policy.js';
 import { parseOperatorInput } from '../../mcp-servers/netclaw-operator-mcp/schemas.mjs';
@@ -24,7 +24,15 @@ test('binding uses actual OS principal and detects replacement installation', t 
   fs.writeFileSync(path.join(f.statePath, 'installation.json'), JSON.stringify({ schemaVersion: 1, installationId: randomUUID() }));
   assert.throws(() => b.assertCurrent(), { code: 'IDENTITY_CHANGED' });
 });
-test('WSL backend host binding distinguishes cloned installation labels across distributions', t => {
+test('Linux host fingerprint separates distro and machine identity while Mac ignores a stray WSL variable', () => {
+  const base={platform:'linux',hostname:'shared-host',machine:'a'.repeat(32),home:'/home/test/netclaw',installationId:randomUUID()};
+  const first=installationHostId({...base,distro:'a'});
+  assert.notEqual(first,installationHostId({...base,distro:'b'}));
+  assert.notEqual(first,installationHostId({...base,distro:'a',machine:'b'.repeat(32)}));
+  assert.equal(installationHostId({...base,platform:'darwin',distro:'a'}),installationHostId({...base,platform:'darwin',distro:'b'}));
+  assert.throws(()=>installationHostId({...base,machine:''}),{code:'INCOMPATIBLE'});
+});
+test('actual Linux backend binding includes the selected WSL distribution', {skip:process.platform!=='linux'}, t => {
   const f=installationFixture(t),previous=process.env.WSL_DISTRO_NAME;
   try {
     process.env.WSL_DISTRO_NAME='synthetic-wsl-a';const first=bindInstallation(f);

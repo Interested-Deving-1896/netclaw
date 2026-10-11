@@ -3,6 +3,7 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import dotenv from 'dotenv';
 import { withManagementConfigurationLock } from '../management/shared-lock.js';
+import {patchEnvironmentText} from './environment-text.js';
 
 export function regularTarget(file) {
   try {
@@ -60,14 +61,5 @@ function updateEnvironmentLocked(file, updates) {
   }
   regularTarget(file);
   const original = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
-  const lines = original.split(/\r?\n/).filter((line) => {
-    const match = line.trim().match(/^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=/);
-    return !match || !Object.hasOwn(updates, match[1]);
-  });
-  while (lines.at(-1) === '') lines.pop();
-  for (const [key, value] of Object.entries(updates)) {
-    const literal = /^[A-Za-z0-9_@%+=:,./-]+$/.test(value) ? value : JSON.stringify(value);
-    lines.push(`${key}=${literal}`);
-  }
-  writePrivateAtomic(file, lines.join('\n') + '\n');
+  writePrivateAtomic(file, patchEnvironmentText(original,updates));
 }

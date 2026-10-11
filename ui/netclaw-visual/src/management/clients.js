@@ -1,5 +1,5 @@
 import { randomUUID,randomBytes,createHash,timingSafeEqual } from 'node:crypto';
-import { environment,patchEnvironment } from './configuration.js';
+import { environment,patchEnvironment,configurationFiles } from './configuration.js';
 import { readOwned,atomicPrivate } from './files.js';
 import { ownerKey } from './journal.js';
 import { freezeAuthority,authorize } from './policy.js';
@@ -12,7 +12,7 @@ export class ClientGrants {
     invariant(input.expiresAt>Date.now()&&input.expiresAt<=Date.now()+30*86400000,'EXPIRED');
     invariant(input.targets.every(t=>t===this.binding.installationId),'UNQUALIFIED');
     const op=this.journal.admit(principal,input.nonce,'client-prepare',input);if(op.result)return op.result;
-    const proposalId=randomUUID();const revision=this.journal.revision([this.binding.configPath,this.binding.envPath]);
+    const proposalId=randomUUID();const revision=this.journal.revision(configurationFiles(this.binding));
     const proposal={...input,nonce:undefined,proposalId,state:'pending-review',expectedRevision:revision,
       disclosureNotice:'Permitted tool results can enter this external assistant’s model provider. NetClaw credentials and unrestricted logs remain excluded.'};
     this.journal.put('client-proposal',proposalId,principal,proposal);
@@ -25,9 +25,9 @@ export class ClientGrants {
     try{
       const proposal=this.journal.record('client-proposal',input.proposalId,principal);
       invariant(proposal.state==='pending-review','DENIED');invariant(proposal.expiresAt>Date.now(),'EXPIRED');
-      invariant(input.expectedRevision===proposal.expectedRevision&&input.expectedRevision===this.journal.revision([this.binding.configPath,this.binding.envPath]),'STALE_REVISION');
+      invariant(input.expectedRevision===proposal.expectedRevision&&input.expectedRevision===this.journal.revision(configurationFiles(this.binding)),'STALE_REVISION');
       await this.audit.record({operationId:op.operationId,proposalId:proposal.proposalId,action:'client-grant',state:'before-apply'});
-      invariant(input.expectedRevision===this.journal.revision([this.binding.configPath,this.binding.envPath]),'STALE_REVISION');
+      invariant(input.expectedRevision===this.journal.revision(configurationFiles(this.binding)),'STALE_REVISION');
       const grantId=randomUUID(),credentialRef=`NETCLAW_CLIENT_${grantId.replaceAll('-','').toUpperCase()}_TOKEN`,token=randomBytes(32).toString('base64url');
       const grant={installationId:this.binding.installationId,principalId:`client:${grantId}`,grantId,generation:1,surface:'assistant',client:proposal.client,
         actions:proposal.actions,targets:proposal.targets,disclosure:proposal.disclosure,expiresAt:proposal.expiresAt,revokedAt:null,credentialRef,credentialHash:createHash('sha256').update(token).digest('hex')};
@@ -50,6 +50,22 @@ export class ClientGrants {
     invariant(!grant.revokedAt&&grant.surface==='assistant','DENIED');invariant(grant.expiresAt>Date.now(),'EXPIRED');
     const {credentialHash,credentialRef:reference,id,...publicGrant}=grant;
     return freezeAuthority(publicGrant);
+  }
+  list(principal){
+    invariant(principal.surface==='operator'&&principal.principalId===this.binding.principal.principalId,'DENIED');this.binding.assertCurrent();
+    return this.journal.records('grant',principal).map(grant=>({grantId:grant.grantId,installationId:grant.installationId,
+      client:grant.client,generation:grant.generation,credentialRef:grant.credentialRef,actions:grant.actions,targets:grant.targets,
+      disclosure:grant.disclosure,expiresAt:grant.expiresAt,revokedAt:grant.revokedAt,
+      status:grant.revokedAt?'revoked':grant.expiresAt<=Date.now()?'expired':'active'}));
+  }
+  validate(principal){
+    if(principal.surface==='operator'){
+      invariant(principal.principalId===this.binding.principal.principalId&&principal.installationId===this.binding.installationId,'DENIED');this.binding.assertCurrent();return;
+    }
+    const saved=this.journal.record('grant',principal.grantId,this.binding.principal),current=this.resolve(saved.credentialRef);
+    invariant(current.grantId===principal.grantId&&current.generation===principal.generation&&current.principalId===principal.principalId&&current.installationId===principal.installationId,'DENIED');
+    for(const key of ['actions','targets','disclosure'])invariant(principal[key].every(value=>current[key].includes(value)),'DENIED');
+    invariant(principal.expiresAt<=current.expiresAt,'DENIED');
   }
   async revoke(principal,{grantId,nonce}){
     invariant(principal.surface==='operator','DENIED');

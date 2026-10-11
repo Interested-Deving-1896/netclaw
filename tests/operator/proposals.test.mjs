@@ -35,6 +35,14 @@ test('external edits invalidate prepared proposals and preserve new content',asy
   const f=setup(t),p=await prepare(f);fs.writeFileSync(f.configPath,'{"external":true}');
   await assert.rejects(f.proposals.apply(f.binding.principal,{proposalId:p.proposalId,expectedRevision:p.proposal.expectedRevision,nonce:nonce()}),{code:'STALE_REVISION'});assert.equal(f.applied,0);
 });
+test('a lost proposal receipt is recovered by nonce after another writer changes the revision',async t=>{
+  const f=setup(t),input={nonce:nonce(),action:'settings.patch',targets:[f.installationId],expectedRevision:f.proposals.revision(),patch:{model:'synthetic'}};
+  const first=await f.proposals.prepare(f.binding.principal,input),audits=f.audit.records.length;
+  fs.writeFileSync(f.configPath,'{"external":"preserved"}');
+  const recovered=await f.proposals.prepare(f.binding.principal,input);
+  assert.equal(recovered.operationId,first.operationId);assert.equal(recovered.proposalId,first.proposalId);assert.equal(f.audit.records.length,audits);assert.equal(f.applied,0);
+  await assert.rejects(f.proposals.prepare(f.binding.principal,{...input,patch:{model:'changed'}}),{code:'NONCE_CONFLICT'});
+});
 test('verification failure runs real recovery; failure remains visible',async t=>{
   for(const failure of [false,true]) {
     const f=setup(t),original=fs.readFileSync(f.configPath),p=await prepare(f);f.failVerify();if(failure)f.failRecovery();

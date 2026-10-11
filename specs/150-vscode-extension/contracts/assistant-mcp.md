@@ -41,3 +41,12 @@ Extension manifest contributes a stable MCP server-definition provider and regis
 Provide client-version-verified commands/config previews for standard stdio MCP registration, using explicit host paths and credential references. Preserve unrelated registrations and show exact add/update/remove diff. Do not automatically modify workspace `.vscode/mcp.json`, user-wide client config or authentication. Terminal launch works while VS Code is closed. WSL setup runs the client and launcher in the selected Linux distribution; Remote SSH setup identifies whether the client runs there or uses the reviewed SSH launcher. Native Windows terminal clients can target supported hosts through that SSH path; no native Windows NetClaw process is implied.
 
 Examples to verify in each actual client: “Which Claws and harnesses are in this Risk?”, “Ask NetClaw to calculate the usable range for 192.0.2.0/24,” “Explain this permitted GAIT event,” and “Propose changing this supported budget, then show what approval is needed.” Use synthetic/private local fixtures and only qualified tools. External-client provider/model/cost comes from that client if available; do not label NetClaw usage as the full assistant bill.
+
+## Named-client schema compatibility
+
+Tool discovery uses a strict root object with explicit properties for change
+proposals. Dispatch validates the narrower action-specific union, including all
+cross-field restrictions. Claude Code 2.1.286 omitted the earlier root-oneOf
+proposal tool; the compatible discovery shape passed an actual client rerun.
+Current onboarding offers inspect/propose grants only while runtime delegation
+remains unqualified. This limitation is an incomplete FR-043 workflow, not a waiver.

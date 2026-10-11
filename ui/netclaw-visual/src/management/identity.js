@@ -6,6 +6,14 @@ import { ownedDirectory, readOwned } from './files.js';
 import { fail, invariant } from './errors.js';
 import { supportsHudNode } from '../../../../scripts/hud-node-version.mjs';
 
+// Pure projection for cross-platform contract tests. Production callers below
+// always supply values observed on the authenticated launch host.
+export function installationHostId({ platform, hostname, machine = '', distro = '', home, installationId }) {
+  if (platform === 'linux') invariant(/^[a-f\d]{32}$/.test(machine), 'INCOMPATIBLE');
+  const identity = platform === 'linux' ? `${hostname}\0${machine}\0${distro}` : hostname;
+  return createHash('sha256').update(`${identity}\0${home}\0${installationId}`).digest('hex');
+}
+
 export function bindInstallation({ home, kind, expectedInstallationId }, { nodeVersion = process.versions.node } = {}) {
   invariant(process.platform !== 'win32', 'UNSUPPORTED');
   invariant(supportsHudNode(nodeVersion), 'INCOMPATIBLE');
@@ -35,8 +43,8 @@ export function bindInstallation({ home, kind, expectedInstallationId }, { nodeV
     catch { fail('INCOMPATIBLE'); }
     invariant(/^[a-f\d]{32}$/.test(machine), 'INCOMPATIBLE');
   }
-  const hostIdentity = process.platform === 'linux' ? `${os.hostname()}\0${machine}\0${process.env.WSL_DISTRO_NAME||''}` : os.hostname();
-  const hostId = createHash('sha256').update(`${hostIdentity}\0${fs.realpathSync(home)}\0${installationId}`).digest('hex');
+  const hostId = installationHostId({platform:process.platform,hostname:os.hostname(),machine,
+    distro:process.env.WSL_DISTRO_NAME||'',home:fs.realpathSync(home),installationId});
   const principal = Object.freeze({ surface: 'operator', principalId: `os:${user.uid}`, grantId: null, generation: 0, installationId });
   return Object.freeze({ installationId, home, kind, statePath, configPath, envPath: path.join(home, '.env'), hostId, principal,
     assertCurrent() { ownedDirectory(home, { privateMode: false }); invariant(readIdentity() === installationId, 'IDENTITY_CHANGED'); readOwned(configPath, { limit: 4 * 1024 * 1024 }); },
