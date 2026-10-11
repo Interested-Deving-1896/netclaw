@@ -1,6 +1,13 @@
 {
   "observedOn": "2026-10-11",
-  "status": "partial-replacement-live-qualification-in-progress",
+  "status": "windows-wsl-qualified-openclaw-with-recorded-limitations-mac-requalification-required",
+  "currentArtifact": {
+    "file": "netclaw-0.1.0-wsl-fixes.vsix",
+    "source": "7b4ebee3cf819aeab86622606eb9afc729a7748b",
+    "sha256": "f75b73bdeaf524bf647ad4920ea5b5c85979ee1c20cba62d9cd6a20f6f79af45",
+    "bytes": 2349236
+  },
+  "historicalCheckpointNote": "Original top-level artifact and prerequisite/checkpoint fields describe the earlier return; postUpdate contains the completed continuation and final disposition.",
   "incomingCommit": "4e3cd2627ac80b7d160af7b135d30dec6580f202",
   "validationBranch": "150-vscode-extension-wsl-followup-20261011",
   "ownerSourceCommit": "aa2795313b487e00ccbe85d53f6a78db07b10a94",
@@ -455,7 +462,7 @@
     "privateRemoteStorageVerified": true,
     "runningExtensionsViewObserved": true,
     "savedIdentityBoundProfile": true,
-    "bindingDialogVisualEvidence": false,
+    "bindingDialogVisualEvidence": true,
     "profileReloadReconnect": true,
     "chat": {
       "realProviderAnswer": "SPEC150_WSL_CHAT_OK",
@@ -463,7 +470,11 @@
       "modelChoices": 10,
       "newDefaultConversation": true,
       "staleSendDisabled": true,
-      "selectedRagAndEditorContextAnswer": "APRICOT_B7A3D92E SELECTED_WSL_C8F2"
+      "selectedRagAndEditorContextAnswer": "APRICOT_B7A3D92E SELECTED_WSL_C8F2",
+      "finalCandidateSelectedContextAnswer": "SPEC150_FINAL_CHAT_OK APRICOT_B7A3D92E SELECTED_WSL_C8F2",
+      "finalCandidateActualProvider": true,
+      "finalCandidateHideRevealRefreshPassed": true,
+      "finalLiveDisconnectDisabledSend": true
     },
     "panels": {
       "initialDomSuccesses": 21,
@@ -471,7 +482,8 @@
       "initialOnboardingOverlayObstructedVisualReview": true,
       "visibleRecheckPending": false,
       "replacementVisibleRenderedAndRefreshClickable": 22,
-      "healthyStateNotInferredFromRendering": true
+      "healthyStateNotInferredFromRendering": true,
+      "finalCandidateVisibleRenderedAndRefreshClickable": 22
     },
     "ragRepair": {
       "explicitOwnerAuthorization": true,
@@ -510,7 +522,12 @@
       "copilotDefaultPermissionsRestored": true,
       "copilotFollowupResultConsent": "human-Allow-Once",
       "registrationsDisabled": 3,
-      "terminalClientsExitedNormally": true
+      "terminalClientsExitedNormally": true,
+      "copilotOriginalBuiltinToolSelectionRestored": true,
+      "allRegistrationsDisabledAtEnd": true,
+      "normalTerminalClientsExited": true,
+      "originalAdapterAndFinalAdapterByteIdentical": true,
+      "interactiveResultsWereFromOriginalLoadedAdapter": true
     },
     "extensionRagUpload": {
       "nativeFileReview": true,
@@ -530,26 +547,54 @@
       "nativeExportImport": true,
       "importedLanesReady": 2,
       "importAutomaticExecution": false,
-      "package": "intermediate-webview-fix"
+      "package": "final-wsl-fixes",
+      "finalActualProviderAnswer": true,
+      "finalSaveReopenRevealExportImport": true,
+      "finalImportedLanesReady": 2,
+      "finalAvatarBothCharactersRendered": true
     },
     "settingsCancellation": {
       "nativeEnvironmentCancelled": true,
       "nativeBudgetCancelled": true,
       "budgetConfigurationUnchanged": true
     },
-    "installedLifecycle": "pending",
-    "temporaryEditorIsolationHookRestored": false,
+    "installedLifecycle": {
+      "syntheticOlderLoaded": "0.0.0",
+      "finalUpgradeLoaded": "0.1.0",
+      "savedProfileReconnected": true,
+      "nativeDisable": true,
+      "disabledExtensionAbsentFromHost": true,
+      "nativeReenableAndReconnect": true,
+      "nativeUninstallAndAbsentFromHostAndCli": true,
+      "extensionStateFilesPreservedByteForByte": 20,
+      "exactFinalReinstallAndSavedProfile": true,
+      "ownerOriginalVsixPayloadPreserved": true
+    },
+    "temporaryEditorIsolationHookRestored": true,
     "gait": {
       "branch": "spec150-qualification-unblock-plan-20261011",
       "records": [
+        "a55e3a31",
+        "8ea7cb80",
+        "c909efc7",
+        "82d8b900",
+        "df888ccd",
         "2fac6b7e",
+        "a2df172b",
         "c775f650",
         "f2969ada",
+        "e975de0e",
         "2f646369",
-        "b0726e0c"
-      ]
+        "b0726e0c",
+        "9fe859f9",
+        "14507b33"
+      ],
+      "checkpointLog": "wsl-gait-checkpoint.json",
+      "qualificationRecord": "14507b33",
+      "fullFirstParentLogDisplayed": true,
+      "serverDefaultProviderMetadata": "vscode-copilot (hardcoded by installed GAIT server; not actual turn authorship)"
     },
-    "T022": "open",
+    "T022": "complete-for-recorded-Windows-WSL-OpenClaw-scope",
     "T023": "open",
     "merged": false,
     "published": false,
@@ -569,7 +614,22 @@
       "replacementPackagedRegression": "actual-Windows-WSL-Chat-hide-reveal-refresh-passed",
       "originalVsixPreserved": true
     },
-    "replacement": {
+    "serviceStaging": {
+      "nativeReview": true,
+      "hudStatusStagedWithoutEnter": true,
+      "clearedWithCtrlC": true,
+      "ownerLifecycleExecuted": false,
+      "nativeMismatchedIdentityRejected": true,
+      "mismatchedIdentityWasPrivateFixture": true
+    },
+    "windowsGuidanceDefect": {
+      "actualPrivateWindowsHost": true,
+      "observedCommandPaletteInput": ">",
+      "connectionCreated": false,
+      "fix": "explicit WSL guidance plus quickOpen >WSL:",
+      "packagedRetest": "passed on actual private Windows-local host: >WSL: and guidance notification"
+    },
+    "intermediateReplacement": {
       "source": "153e4f7238b4bdc737e06556217f361a03b6877e",
       "artifactCommit": "5bd84624",
       "artifact": "artifacts/netclaw-0.1.0-wsl-webview-fix.vsix",
@@ -581,18 +641,76 @@
       "assistantPayloadIdenticalToOriginal": true,
       "macRequalificationPending": true
     },
-    "serviceStaging": {
-      "nativeReview": true,
-      "hudStatusStagedWithoutEnter": true,
-      "clearedWithCtrlC": true,
-      "ownerLifecycleExecuted": false
+    "finalCandidate": {
+      "publisher": "NetClaw",
+      "name": "netclaw",
+      "version": "0.1.0",
+      "source": "7b4ebee3cf819aeab86622606eb9afc729a7748b",
+      "sha256": "f75b73bdeaf524bf647ad4920ea5b5c85979ee1c20cba62d9cd6a20f6f79af45",
+      "bytes": 2349236,
+      "artifact": "netclaw-0.1.0-wsl-fixes.vsix",
+      "qualification": "Windows/WSL existing OpenClaw scope qualified with documented limitations; exact replacement Mac review/requalification and publication remain.",
+      "changesSinceFirstReplacement": [
+        "extension/changelog.md",
+        "extension/readme.md",
+        "extension/dist/extension.cjs"
+      ],
+      "assistantPayloadIdenticalToOriginal": true,
+      "artifactCommit": "79b94f80c041a4b92817b6cb29a00ce53dc0f094",
+      "macRequalificationPending": true
     },
-    "windowsGuidanceDefect": {
-      "actualPrivateWindowsHost": true,
-      "observedCommandPaletteInput": ">",
-      "connectionCreated": false,
-      "fix": "explicit WSL guidance plus quickOpen >WSL:",
-      "packagedRetest": "pending"
-    }
+    "untrustedWorkspace": {
+      "normalWindowsWindowWithWslHost": true,
+      "restrictedModeObserved": true,
+      "nativeAddConnectionRefused": true,
+      "ownerTrustSettingsUnchanged": true
+    },
+    "settingsWrites": {
+      "isolatedUnchangedHudFixture": true,
+      "nativeEnvironmentApplyAndPresenceVerification": true,
+      "nativeBudgetApplyAndReadback": true,
+      "unrelatedEnvAndRuntimeFieldsPreserved": true,
+      "ownerSettingsWritten": false
+    },
+    "nativeIdentityMismatch": {
+      "isolatedHudRestartedWithAlternateIdentity": true,
+      "pinnedConnectionRefused": true,
+      "ownerIdentityChanged": false
+    },
+    "pendingObservationDisconnect": {
+      "pausedOnlyIsolatedFixture": true,
+      "staleViewDisabled": true,
+      "ownerPaused": false
+    },
+    "privateValidationWindowsClosed": true,
+    "finalPreservation": {
+      "ownerHead": "aa2795313b487e00ccbe85d53f6a78db07b10a94",
+      "ownerSourceAndTestbedEditsPreserved": true,
+      "unchangedProtectedObservationsSinceBeforeRag": 11,
+      "changedClientStateFile": ".claude.json",
+      "exactClaudeBeforeAfterFieldDiffUnavailable": true,
+      "all12UnchangedAcrossManagementAndLifecycle": true,
+      "codexGlobalConfigHashUnchanged": true,
+      "ownerOriginalExtensionPayloadMatches": true,
+      "finalPrivatePayloadMatches": true,
+      "coreHudGatewayFederationIdentitiesStableDuringFinalTests": true,
+      "naturalTimerOrRestartingServicesVaried": true
+    },
+    "fixtureCleanup": {
+      "ownedFixturesStopped": true,
+      "originalFixtureLauncherRequiredForcedExitAfterGracefulCleanupWaitedForAlreadyExitedChild": true,
+      "ownerProcessesTerminated": false,
+      "evidenceRetained": true
+    },
+    "limitations": [
+      "Copilot Allow all was observed after first delegation; restored before further calls; fresh Default permissions run completed with human Allow Once result review. Cause not established.",
+      "No existing live Hermes host was qualified in this WSL run.",
+      "WSL restart, second distribution and Remote SSH were not exercised while preserving active owner work.",
+      "Device configuration, external peer work, physical mobile capture and approval/apply flows were not exercised.",
+      "Science projection was stale; mobile projection unreachable; OpenShell gateway-status command unavailable, although sandbox listing returned.",
+      "Exact final replacement still requires Mac review/requalification and Marketplace publication/installation verification.",
+      "New source editor regression was exercised via actual Windows/WSL UI; the standalone test:editor runner was not executed here."
+    ],
+    "T019": "reopened-for-exact-replacement-Mac-qualification"
   }
 }

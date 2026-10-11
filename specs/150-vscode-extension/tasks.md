@@ -32,10 +32,10 @@ Paths below are relative to the repository. All stories remain in scope.
 - [x] T018 [US4] Record named-client Mac checks in specs/150-vscode-extension/evidence/assistants.md.
 
 ## US5: qualification and release
-- [x] T019 [US5] Complete real Mac editor/VSIX lifecycle tests and evidence in specs/150-vscode-extension/evidence/mac.md.
+- [ ] T019 [US5] Requalify the exact WSL replacement VSIX on Mac and append editor/lifecycle evidence in specs/150-vscode-extension/evidence/mac.md; original Mac results remain preserved.
 - [x] T020 [US5] Finalize extension README/privacy/package documentation in extensions/netclaw-vscode/.
 - [x] T021 [US5] Package committed source, push and provide final specs/150-vscode-extension/windows-wsl-handoff.md.
-- [ ] T022 [US5] Receive real Windows/WSL results and resolve defects in specs/150-vscode-extension/evidence/wsl.md.
+- [x] T022 [US5] Receive real Windows/WSL results and resolve confirmed extension defects; preserve evidence/wsl.md and record final scope/limitations in evidence/wsl-followup.md.
 - [ ] T023 [US5] Publish qualified VSIX and verify Marketplace installation in specs/150-vscode-extension/evidence/publication.md.
 
 Dependencies: foundation -> US1 -> US2/US3 -> US4 -> US5. Domain mapping and
@@ -43,26 +43,25 @@ read-only research can run independently; implementation changes are sequential.
 Each story has the independent acceptance test specified in spec.md. Stop backend
 scope expansion at a demonstrated gap and report it; do not silently add a service.
 
-T018 records actual results and limitations; it does not assert full named-client acceptance.
-Interactive Copilot/Codex consent remains a T022 validation gate. See evidence/assistants.md.
+T018 records actual results and limitations; it does not assert full named-client
+acceptance across all platforms. Actual signed-in interactive Copilot, Claude Code
+and Codex Windows/WSL checks, including the Copilot permission deviation and fresh
+default-mode follow-up, are recorded in evidence/wsl-followup.md.
 
-Mac review of returned `1aaaafa`: exact candidate preserved; no confirmed extension
-defect. The bounded owner-HUD prerequisite repair is documented separately in
-`wsl-prerequisite-recovery.md`; apply requires explicit owner approval. T022/T023
-remain open and the original partial evidence remains unchanged.
+Final WSL return, 2026-10-11: T022 is complete for the existing OpenClaw
+Windows/WSL scope documented in evidence/wsl-followup.md and its structured report.
+The owner-approved HUD Node and isolated RAG prerequisites were repaired; the
+Windows update finished normally. Two reproduced extension defects were fixed:
+webview message sequence reset after tab changes, and Windows-local WSL guidance.
+The exact final VSIX is artifacts/netclaw-0.1.0-wsl-fixes.vsix, SHA-256
+`f75b73bdeaf524bf647ad4920ea5b5c85979ee1c20cba62d9cd6a20f6f79af45`.
+Live workflows, host/trust boundaries, fixture-only settings/fault cases and actual
+installed lifecycle are recorded with their limits. The original and intermediate
+VSIX/evidence remain preserved. No owner device configuration or external peer work
+was submitted, and no WSL reboot/second-host or live Hermes acceptance is implied.
 
-WSL return, 2026-10-11: exact candidate installation/activation and 16 source-suite
-checks passed (one optional RAG check skipped). The owner-designated HUD API is
-unavailable; the owner requested blocked-live reporting. An isolated Windows editor
-launch also failed on an existing VS Code update mutex. Live workflows, interactive
-Copilot/Claude Code/Codex and full installed lifecycle remain unqualified. T022 and
-T023 remain open; see evidence/wsl.md and mac-return.md.
-
-WSL follow-up, 2026-10-11: the owner explicitly approved the bounded prerequisite
-repair. Locked HUD dependencies were restored with rollback backups and the HUD
-alone restarted under existing Node 24.19. Its real identity/readiness and gateway
-status now respond. A fresh isolated Windows launch still did not start; the
-updater and its mutex remain present. RAG GETs also reveal a separate existing
-Python/FastMCP mismatch, left unchanged outside the approved repair scope. No
-extension defect is established. T022/T023 remain open; see evidence/wsl-followup.md
-and evidence/wsl-followup-checks.json. The original partial evidence is preserved.
+T019 is reopened because Mac must review and requalify the exact replacement.
+T023 remains open for publication and Marketplace installation verification after
+that review. Publisher authentication remains on Mac; no merge or publication was
+performed on WSL. See mac-return.md for the continuation prompt and exact evidence
+reference.

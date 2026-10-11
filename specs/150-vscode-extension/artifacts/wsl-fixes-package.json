@@ -6,7 +6,7 @@
   "sha256": "f75b73bdeaf524bf647ad4920ea5b5c85979ee1c20cba62d9cd6a20f6f79af45",
   "bytes": 2349236,
   "artifact": "netclaw-0.1.0-wsl-fixes.vsix",
-  "qualification": "Both confirmed WSL/Windows extension fixes; final installed-host matrix pending. Do not publish.",
+  "qualification": "Windows/WSL existing OpenClaw scope qualified with documented limitations; exact replacement Mac review/requalification and publication remain.",
   "changesSinceFirstReplacement": [
     "extension/changelog.md",
     "extension/readme.md",

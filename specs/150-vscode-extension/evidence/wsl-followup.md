@@ -1,4 +1,16 @@
-# WSL follow-up — HUD repaired; acceptance remains incomplete
+# WSL qualification — Mac replacement review pending
+
+Current result: the final Windows/WSL OpenClaw matrix is qualified with the
+recorded limitations. Use `artifacts/netclaw-0.1.0-wsl-fixes.vsix`, SHA-256
+`f75b73bdeaf524bf647ad4920ea5b5c85979ee1c20cba62d9cd6a20f6f79af45`.
+See **Final Windows/WSL disposition** below for the consolidated matrix and
+[mac-return.md](../mac-return.md) for next steps. Mac replacement qualification
+and publication remain pending.
+
+The earlier sections preserve the initial blocked checkpoint and subsequent
+observations chronologically; their past-tense scope statements are historical.
+
+## Initial HUD-repair checkpoint (preserved)
 
 Observed 2026-10-11 on the owner's existing Windows/WSL installation. This is a
 checkpoint for continuation, not release acceptance. The original
@@ -410,3 +422,137 @@ extension-only correction uses `workbench.action.quickOpen` with `>WSL:` and
 shows explicit WSL workspace guidance. Check/build and the 18 source tests passed
 again (one optional RAG fixture skipped). A new package and actual Windows retest
 are required; the first replacement is intermediate evidence, not the final VSIX.
+
+### Final candidate and actual host boundaries
+
+Both fixes are in source commit `7b4ebee3cf819aeab86622606eb9afc729a7748b`.
+The clean-source final candidate is `artifacts/netclaw-0.1.0-wsl-fixes.vsix`,
+SHA-256 `f75b73bdeaf524bf647ad4920ea5b5c85979ee1c20cba62d9cd6a20f6f79af45`,
+2,349,236 bytes, committed in `79b94f80`. It differs from the intermediate
+webview-fix package only in the extension bundle's Windows guidance branch,
+changelog and committed-source README links. All webview resources and the
+assistant adapter are byte-identical to the intermediate package. The original
+and intermediate VSIX files remain available for review; neither is the release
+candidate now.
+
+The exact final candidate loaded in the private Windows-local host and passed
+the corrected Add Connection boundary: explicit WSL workspace guidance, palette
+input `>WSL:`, no saved profile or backend execution. A separate normal Windows
+VS Code window (not an Extension Development Host) opened an empty private WSL
+folder in Restricted Mode. Actual Add Connection refused with “Trust this
+workspace before connecting.” No trusted-parent entry was removed or changed.
+The extra boundary-test windows were closed normally after observation.
+
+A synthetic 0.0.0 package, derived only for the upgrade test, loaded in the
+private WSL host and reconnected the existing saved profile. Upgrade to the exact
+final 0.1.0 candidate retained that profile and reconnected the live installation.
+Native Disable plus window reload removed the target from the extension host.
+The remaining re-enable/uninstall checks are recorded below when complete.
+
+The native service form also rejected a separately created private identity
+fixture with “Selected home belongs to a different installation.” This is a
+fixture boundary check, not qualification of a second real installation.
+All 12 protected file observations compared unchanged across the cancelled
+management reviews. The HUD, gateway and core federation identities stayed
+stable; scheduled DDNS and already-restarting Zoom RTMS identities varied
+independently. GAIT `9fe859f9` records this milestone.
+
+## Final Windows/WSL disposition — 2026-10-11
+
+**The final candidate is qualified for this existing OpenClaw Windows/WSL scope,
+with the explicit limitations below. Mac must review and requalify this replacement
+before publication.** T022 is complete for the recorded scope; T019 is reopened
+for the replacement on Mac, and T023 remains open. No merge or publication occurred.
+
+| Handoff area | Actual result and evidence boundary |
+| --- | --- |
+| Exact package and host | Final SHA-256 `f75b73bdeaf524bf647ad4920ea5b5c85979ee1c20cba62d9cd6a20f6f79af45`; Windows VS Code 1.141.0 with the installed extension and private storage in WSL. Installed payload matches the ZIP, allowing only VS Code metadata in package.json. |
+| Binding and reconnect | Native review of the real installation matched its original pin. A temporary review profile was removed; the primary saved profile reconnected after reload and lifecycle tests. |
+| Windows local and trust | Final Windows-local Add Connection displays WSL guidance and `>WSL:`. A separate normal Windows/WSL window in Restricted Mode refused Add Connection. No trusted-parent entries changed. |
+| Populated observations | All 22 domain views rendered and accepted actual refresh clicks on the exact final candidate. Data/optional-feature limitations remain explicit below. |
+| Chat and selected context | Exact final candidate returned `SPEC150_FINAL_CHAT_OK APRICOT_B7A3D92E SELECTED_WSL_C8F2` from the selected RAG citation and selected editor text through the real configured provider. Prior owned history, new-conversation and 10 model-choice checks are retained. |
+| Canvas and Avatar | Final candidate rendered both local characters with the same conversation. A real Canvas context request returned `SPEC150_FINAL_CANVAS_OK` and Thursday 14:20 UTC. Save/reopen/reveal/export/import passed; imported lanes returned to Ready without execution. The earlier branch check created the two retained lanes. |
+| RAG | The original native reviewed upload actually indexed one fixture chunk. Final candidate inventory showed it ready; actual retrieval returned its citation, native review staged it, and explicit Chat/Canvas sends used it. No broad deletion or reindex. |
+| Settings | Real-owner environment/budget final reviews were cancelled. On the final candidate, actual native Apply against an isolated unchanged HUD fixture replaced a fake environment value and budget field, verified results and preserved unrelated fields. No owner setting was written. |
+| Service commands | Real-owner HUD status command was reviewed and staged without Enter, then cleared with Ctrl+C. A private mismatched identity fixture was refused. No owner lifecycle command executed. |
+| Assistants | Actual signed-in Copilot, Claude Code and Codex inspected, created inert drafts, delegated harmless questions and inspected results. Normal native consent was used; Copilot's deviation and default-mode follow-up remain recorded. All registrations were disabled and cached calls refused. Adapter bytes are identical in original and final VSIX. |
+| Stale work and mismatch | Final candidate refused a saved pin after an isolated unchanged HUD was restarted with an alternate test identity. A pending observation against a paused isolated fixture became disabled on disconnect. Final disconnect from the real owner also disabled Chat Send. No owner identity/process was changed for these negative tests. |
+| Installed lifecycle | Actual private WSL host: synthetic 0.0.0 → exact final 0.1.0, native disable/re-enable, native uninstall, absent host/CLI inventory, exact reinstall. All 20 extension state files survived uninstall byte-for-byte; saved profile/reconnect survived. |
+
+### Final preservation and cleanup
+
+The owner checkout remains at `aa2795313b487e00ccbe85d53f6a78db07b10a94` with
+its pre-existing testbed edit and backup, plus the deliberately retained HUD
+node_modules rollback directory. Source, testbed content, observed credential
+files and native installation identity are unchanged. The owner extension payload
+still matches the original VSIX; the validation install matches the final VSIX.
+All 12 protected observations stayed unchanged across management/lifecycle tests.
+Across the longer interactive session, 11 of 12 match the pre-RAG baseline;
+`.claude.json` changed during the signed-in CLI session that included the owner's
+explicit private-folder trust approval. The exact pre-session backup was
+unavailable, so a complete field-level diff or attribution of every changed
+field to client bookkeeping is not claimed.
+Codex's global configuration hash is unchanged. No global MCP registration command
+or approval-policy edit was performed.
+
+HUD, gateway and core federation identities remained stable during final checks.
+Scheduled DDNS and already-restarting Zoom RTMS services varied independently.
+The explicitly approved Node/RAG repair remains active with rollback material;
+its private isolated RAG runtime and dispatcher are service dependencies and must
+not be deleted as disposable test cache.
+
+All test assistant registrations are disabled. Copilot's original Built-In tool
+selection and Default permissions were restored; both owned terminal clients
+exited normally. The three final private validation windows closed normally,
+including the normal Restricted Mode window; their debug listeners stopped.
+The temporary server-env-setup hook was hash-checked and restored to its original
+absence. Private exports and screenshots remain local. Two temporary native
+connection profiles were removed; the original validation profile remains saved.
+
+The isolated HUD fixtures were stopped. The original fixture launcher required
+forced termination after its cleanup helper waited for an already-exited child
+following the controlled identity restart. This affected only the test launcher;
+no owner process was stopped, and fixture evidence was retained.
+
+### Limitations carried to Mac
+
+- Copilot's permission picker showed Allow all after the first delegated check;
+  the cause was not established. It was restored before further calls. A fresh
+  Default permissions check completed and required the owner's normal Allow Once
+  result review. This is not a claim of uninterrupted default permissions.
+- Only the existing OpenClaw installation was live-qualified. No live Hermes,
+  WSL reboot, second distribution or Remote SSH qualification is implied. Active
+  owner services/work were preserved instead of forcing those platform events.
+- Network/Intent inventory was observed without device configuration. No external
+  peer work, approval/apply operation or physical mobile capture was submitted.
+  Science showed a stale advisory snapshot; mobile showed an unreachable edge;
+  OpenShell gateway status was unavailable while sandbox listing returned. Empty
+  operation/approval inventories do not establish healthy execution.
+- The final source check/build and suite passed: 18 tests, zero failures, one
+  optional RAG fixture skipped. Real owner RAG was separately exercised above.
+  The new editor regression was exercised through the actual Windows/WSL UI;
+  the standalone test:editor runner was not run here and belongs in Mac requalification.
+- The original Mac evidence covers the original VSIX. The exact replacement needs
+  Mac review/regression/lifecycle checks before Marketplace publication/install
+  verification using the existing Mac-local publisher authentication.
+
+The requested pyATS MCP testbed create/upload/edit capability is recorded as a
+separate follow-up. No testbed-management backend or other new capability was
+implemented in this extension qualification work.
+
+### Audit and milestone documentation
+
+GAIT branch `spec150-qualification-unblock-plan-20261011` records the complete
+follow-up; qualification summary `14507b33` and the full 14-entry first-parent
+checkpoint log are in [wsl-gait-checkpoint.json](wsl-gait-checkpoint.json). The log
+was displayed through `gait_log`; the final push/session-end turn follows locally.
+Daily memory was appended in the isolated checkout. A local
+[blog draft](../wsl-milestone-blog-draft.md) is ready for review. WordPress and
+MemPalace tools were unavailable in this agent session; no external draft/message
+or diary write is claimed. No ticket was created.
+
+The installed GAIT server hardcodes its model-provider metadata and default note
+to `vscode-copilot`. The Codex-authored qualification records above retain that
+server metadata; it is not evidence that Copilot authored those audit turns.
+Their recorded user/assistant text identifies the work. No audit history or
+backend implementation was rewritten; the final return uses a descriptive note.

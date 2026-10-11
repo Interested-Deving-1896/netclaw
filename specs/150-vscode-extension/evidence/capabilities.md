@@ -34,8 +34,12 @@ validation and policy, not a new transaction/rollback/authorization layer.
 Terminal assistants retain whatever independent OS access the user already gave
 them; this adapter does not constrain that access.
 
-Operational verification remaining on the real WSL installation: populated estate,
-security/optional integrations, existing provider/harness behavior, terminal
-Intent and peer chat where safe/authorized, assistant interactive consent, WSL
-host/reconnect isolation and packaged lifecycle. Empty fixture inventories are
-not evidence for a populated production Risk or successful network operations.
+Windows/WSL qualification of the existing OpenClaw installation is recorded in
+[wsl-followup.md](wsl-followup.md), including real provider/context/RAG workflows,
+interactive assistants, host/trust boundaries and installed lifecycle. All 22
+observation panels rendered; that is not blanket operational health. The observed
+Science snapshot was stale, mobile edge was unreachable, and OpenShell gateway
+status was unavailable although sandbox listing returned. Device/Intent inventory
+was inspected without configuration or external peer work. Hermes, WSL restart,
+second-distribution/SSH and physical mobile qualification are not implied.
+The final replacement still requires Mac requalification and publication review.

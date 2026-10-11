@@ -1,5 +1,14 @@
 # Final Windows/WSL validation handoff
 
+**Completed WSL follow-up, 2026-10-11:** the current return uses
+`artifacts/netclaw-0.1.0-wsl-fixes.vsix`, SHA-256
+`f75b73bdeaf524bf647ad4920ea5b5c85979ee1c20cba62d9cd6a20f6f79af45`.
+Two confirmed extension fixes and the final matrix are in
+[evidence/wsl-followup.md](evidence/wsl-followup.md). T022 is complete for its
+recorded Windows/WSL OpenClaw scope; Mac requalification (T019) and publication
+(T023) remain. Use [mac-return.md](mac-return.md) next. The original handoff and
+blocked checkpoint below are preserved as history, not current blockers.
+
 **Follow-up after the partial 2026-10-11 return:** start from
 `origin/150-vscode-extension-wsl-review-20261011` to retain the returned evidence
 and Mac review. Read [wsl-prerequisite-recovery.md](wsl-prerequisite-recovery.md)
