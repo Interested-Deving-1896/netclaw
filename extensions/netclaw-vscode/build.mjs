@@ -38,3 +38,13 @@ await build({
   target: "es2022",
   legalComments: "linked",
 });
+await build({
+  entryPoints: ["webview/topology.js"],
+  outfile: "dist/topology.js",
+  bundle: true,
+  platform: "browser",
+  format: "iife",
+  target: "es2022",
+  minify: true,
+  legalComments: "linked",
+});

@@ -7,7 +7,7 @@ import { realHud } from "./real-hud-fixture.mjs";
 const { HudClient } = await load("src/client/hud.ts");
 const { inspect } = await load("src/client/domains.ts");
 test(
-  "replacement client works with real unchanged HUD: ownership, chat, reads, writes, preservation",
+  "replacement client works with real source HUD (existing contracts): ownership, chat, reads, writes, preservation",
   { timeout: 60000 },
   async (t) => {
     const f = await realHud();
@@ -111,8 +111,8 @@ test(
     await assert.rejects(client.openConversation(id), /404/);
     console.log(
       JSON.stringify({
-        evidence: "unchanged-main-HUD",
-        source: "f943637",
+        evidence: "current-worktree-HUD-existing-contracts",
+        source: "copied local worktree; synthetic gateway",
         root: f.root,
         gateway: "synthetic local process",
         providerCalls: 0,

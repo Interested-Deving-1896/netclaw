@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { randomBytes, randomUUID } from "node:crypto";
+import { pageHeader, escape, actionCommand } from "./shell";
 import { Connection } from "../connection/connect";
 
 export interface ViewDefinition {
@@ -7,14 +8,6 @@ export interface ViewDefinition {
   kind: string;
   load: () => Promise<unknown>;
 }
-const escape = (text: string): string =>
-  text.replace(
-    /[&<>"']/g,
-    (c) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
-        c
-      ]!,
-  );
 export function openDataView(
   context: vscode.ExtensionContext,
   connection: Connection,
@@ -28,6 +21,7 @@ export function openDataView(
       enableScripts: true,
       localResourceRoots: [
         vscode.Uri.joinPath(context.extensionUri, "resources"),
+        vscode.Uri.joinPath(context.extensionUri, "dist"),
       ],
     },
   );
@@ -43,7 +37,9 @@ export function openDataView(
   const messaging = panel.webview.asWebviewUri(
     vscode.Uri.joinPath(context.extensionUri, "resources", "messaging.js"),
   );
-  panel.webview.html = `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource}; style-src ${panel.webview.cspSource}; script-src 'nonce-${nonce}';"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="${css}"></head><body class="data-view" data-view-id="${viewId}"><header><p class="eyebrow">NETCLAW</p><h1>${escape(view.title)}</h1><p id="binding">${escape(connection.profile?.label || "Disconnected")} · ${escape(connection.identity?.harness.type || "No runtime")}</p><button id="refresh" type="button">Refresh</button><label for="filter">Filter loaded entries</label><input id="filter" type="search" maxlength="200" aria-describedby="filter-hint"><p id="filter-hint" class="hint">Filters list entries in this observation only. Source and policy metadata remain visible. Lists show up to 50 entries per page.</p></header><main><p id="status" role="status" aria-live="polite">Loading…</p><div id="content"></div></main><script nonce="${nonce}" src="${messaging}"></script><script nonce="${nonce}" src="${script}"></script></body></html>`;
+  const resource = (file: string) =>
+    panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, file));
+  panel.webview.html = `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource}; style-src ${panel.webview.cspSource}; script-src 'nonce-${nonce}';"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="${css}"></head><body class="data-view" data-kind="${escape(view.kind)}" data-view-id="${viewId}">${pageHeader(view.kind, view.title, connection.profile?.label || "Disconnected", connection.identity?.kind || "")}<main><div class="filter-bar"><div class="search-field"><label for="filter">Search this view</label><input id="filter" type="search" maxlength="200" placeholder="Find a device, integration or entry…" aria-describedby="filter-hint"></div><button id="refresh" type="button" class="secondary">Refresh</button></div><p id="filter-hint" class="hint">Search loaded entries · 50 per page. Source information stays visible.</p><p id="status" role="status" aria-live="polite">Loading…</p>${view.kind === "overview" ? `<div class="welcome-art" aria-hidden="true"><img src="${resource("resources/brand/network-core.png")}" alt=""></div>` : ""}<div id="content"></div></main><script nonce="${nonce}" src="${messaging}"></script><script nonce="${nonce}" src="${resource("resources/presenters.js")}"></script><script nonce="${nonce}" src="${script}"></script>${view.kind === "topology" ? `<script nonce="${nonce}" src="${resource("dist/topology.js")}"></script>` : ""}</body></html>`;
   let disposed = false,
     loading = false,
     received = 0;
@@ -79,8 +75,12 @@ export function openDataView(
     if (!message || typeof message !== "object") return;
     const m = message as Record<string, unknown>;
     if (
-      Object.keys(m).sort().join(",") !== "requestId,type,viewId" ||
-      !["ready", "refresh"].includes(String(m.type)) ||
+      (m.type === "action"
+        ? Object.keys(m).some(
+            (k) => !["requestId", "type", "viewId", "action", "id"].includes(k),
+          )
+        : Object.keys(m).sort().join(",") !== "requestId,type,viewId") ||
+      !["ready", "refresh", "action"].includes(String(m.type)) ||
       m.viewId !== viewId ||
       typeof m.requestId !== "string" ||
       !/^\d{1,12}$/.test(m.requestId) ||
@@ -89,7 +89,18 @@ export function openDataView(
       return;
     received = Number(m.requestId);
     if (!vscode.workspace.isTrusted) return;
-    void load();
+    if (connection.generation !== generation) return;
+    if (m.type === "action") {
+      const command =
+        typeof m.action === "string" ? actionCommand(m.action) : undefined;
+      if (
+        !command ||
+        (m.id !== undefined &&
+          (typeof m.id !== "string" || !/^[a-z0-9_-]{1,100}$/.test(m.id)))
+      )
+        return;
+      void vscode.commands.executeCommand(command, m.id);
+    } else void load();
   });
   const changed = connection.changed.event(() => {
     if (!disposed && connection.generation !== generation)

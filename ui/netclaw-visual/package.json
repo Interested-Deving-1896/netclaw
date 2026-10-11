@@ -1,7 +1,7 @@
 {
   "name": "netclaw-hud",
   "version": "1.0.0",
-  "description": "NetClaw Three.js HUD — futuristic network operations dashboard",
+  "description": "NetClaw Three.js HUD \u2014 futuristic network operations dashboard",
   "type": "module",
   "scripts": {
     "dev": "concurrently \"node server.js\" \"vite\"",
@@ -30,7 +30,8 @@
     "test:change-policy": "node test/terminal-change-policy.mjs",
     "test:artifacts": "node test/artifact-formats.mjs",
     "test:genie": "node test/genie-parser.mjs",
-    "test:observability": "node test/observability.mjs"
+    "test:observability": "node test/observability.mjs",
+    "test:experience": "node --test test/testbed-document.mjs test/mcp-configuration.mjs"
   },
   "dependencies": {
     "@daily-co/daily-js": "0.93.0",

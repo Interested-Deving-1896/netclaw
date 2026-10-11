@@ -14,7 +14,7 @@ const { Client } = await import(
 const { StdioClientTransport } = await import(
   pathToFileURL(require.resolve("@modelcontextprotocol/client/stdio"))
 );
-test("bundled official MCP transport against unchanged HUD; no approval/apply surface", async (t) => {
+test("bundled official MCP transport against source HUD; no approval/apply surface", async (t) => {
   const f = await realHud();
   t.after(f.close);
   const registration = path.join(f.root, "mcp.json"),

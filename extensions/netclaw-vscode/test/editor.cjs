@@ -36,7 +36,7 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
   const api = await extension.activate();
   assert.ok(extension.isActive);
   const profile = await api.profiles.save({
-    label: "Isolated unchanged NetClaw",
+    label: "Isolated source NetClaw",
     url: process.env.NETCLAW_TEST_URL,
     installationId: process.env.NETCLAW_TEST_ID,
     harness: "openclaw",
@@ -55,7 +55,7 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
   const checks = [
     "actual extension activation",
     "saved host-local profile",
-    "unchanged HUD identity binding",
+    "source HUD identity binding",
     "mismatched identity rejected",
   ];
 
@@ -248,8 +248,8 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
       await shot("chat");
       mark(
         liveProvider
-          ? "actual composer -> unchanged HUD -> existing configured provider -> rendered reply"
-          : "actual composer -> unchanged HUD -> synthetic gateway -> rendered reply",
+          ? "actual composer -> source HUD -> existing configured provider -> rendered reply"
+          : "actual composer -> source HUD -> synthetic gateway -> rendered reply",
       );
       overviewPanel.reveal();
       const revealedOverview = await frameFor(".data-view");
@@ -395,8 +395,8 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
         checks,
         screenshots,
         scope: liveProvider
-          ? "Actual desktop extension against unchanged HUD and existing configured OpenClaw provider; only harmless acceptance text, no device/WSL claim."
-          : "Actual desktop extension against unchanged HUD with synthetic local gateway; no real provider/device/WSL claim.",
+          ? "Actual desktop extension against source HUD and existing configured OpenClaw provider; only harmless acceptance text, no device/WSL claim."
+          : "Actual desktop extension against source HUD with synthetic local gateway; no real provider/device/WSL claim.",
       },
       null,
       2,

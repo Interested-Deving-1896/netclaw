@@ -1026,3 +1026,14 @@ never replay uncertain work. Hermes mobile media attachments are unavailable;
 voice-transcribed text and Siri voice origin are supported. Production Hermes
 model-guard/confinement remains unavailable and fails closed. See
 `docs/HERMES-FEDERATION.md` and spec149 verification before claiming broader support.
+
+
+## VS Code experience (spec151, local source)
+
+The extension uses theme-native cards, local decorative artwork and reported BGP-session 3D with a semantic list. New inventory/configuration routes stay in the existing HUD; there is no new MCP server or tool authority. Testbed forms/advanced YAML and YAML/JSON/CSV imports use masked secrets, revision-bound previews, private backups and explicit saves. The actual HUD testbed may differ from PYATS_TESTBED_PATH or be shared across installations; inventory edits revoke affected collector consent and never connect devices.
+
+Per-MCP fields use keep/replace/clear with explicit shared-use review. Scoped setup reuses staged pyATS/GAIT installers, canonical OpenClaw registration and owned N2N restart after target review; unsupported lifecycle/Hermes registration stays guidance. Saved/installed/registered does not imply endpoint or agent execution. Private operation evidence lives in the selected home under netclaw-hud/setup; uncertain operations never replay. See extensions/netclaw-vscode/README.md and specs/151-extension-experience/verification.md. No package, push, live deployment or Marketplace publication is authorized for this spec.
+
+Spec151 security amendment adds native host-bound DefenseClaw tool-rule/mode controls and OpenShell sandbox network-policy controls, with observed status/log snapshots, redacted before/after review, explicit weakening acknowledgment, private originals and verified/unknown outcomes. Shared security scope is separate from selected NetClaw identity. No lifecycle or live-environment changes are implied. Modern DefenseClaw connector/config-writer capabilities differ from historical `--source` examples; OpenShell global policy stays read-only and its CLI has no CAS write flag. See specs/151-extension-experience/research-security.md and the extension README. Mac contract-fixture acceptance is not live vendor enforcement qualification.
+
+Owner subsequently authorized the Spec151 commit/push/PR/main-merge step on2026-10-11. The packaging, deployment and release/Marketplace publication hold remains.

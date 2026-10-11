@@ -90,3 +90,17 @@ def test_canonical_source_venv_launch_uses_successful_recovery_record(tmp_path, 
     template = {'command': f'mcp-servers/{component}-mcp/.venv/bin/python', 'args': ['-u', 'server.py']}
     assert module.bind_entry(template, tmp_path, str(python))['command'] == str(python)
     assert module.bind_entry({'command': '/operator/venv/bin/python'}, tmp_path, str(python))['command'] == '/operator/venv/bin/python'
+
+
+def test_reviewed_revision_refuses_config_or_sidecar_changes(tmp_path):
+    import hashlib
+    path = tmp_path / 'openclaw.json'
+    path.write_text('{}')
+    revision = hashlib.sha256(b'{}').hexdigest()
+    module.merge_config(path, {}, {}, expected_revision=revision, expected_managed_revision='missing')
+    before = path.read_text()
+    with pytest.raises(ValueError, match='changed'):
+        module.merge_config(path, {}, {}, expected_revision='stale', expected_managed_revision='missing')
+    assert path.read_text() == before
+    with pytest.raises(ValueError, match='changed'):
+        module.merge_config(path, {}, {}, expected_revision=hashlib.sha256(before.encode()).hexdigest(), expected_managed_revision='missing')
