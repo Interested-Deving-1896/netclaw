@@ -46,6 +46,11 @@ scope expansion at a demonstrated gap and report it; do not silently add a servi
 T018 records actual results and limitations; it does not assert full named-client acceptance.
 Interactive Copilot/Codex consent remains a T022 validation gate. See evidence/assistants.md.
 
+Mac review of returned `1aaaafa`: exact candidate preserved; no confirmed extension
+defect. The bounded owner-HUD prerequisite repair is documented separately in
+`wsl-prerequisite-recovery.md`; apply requires explicit owner approval. T022/T023
+remain open and the original partial evidence remains unchanged.
+
 WSL return, 2026-10-11: exact candidate installation/activation and 16 source-suite
 checks passed (one optional RAG check skipped). The owner-designated HUD API is
 unavailable; the owner requested blocked-live reporting. An isolated Windows editor

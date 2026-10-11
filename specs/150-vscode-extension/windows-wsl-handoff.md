@@ -1,5 +1,12 @@
 # Final Windows/WSL validation handoff
 
+**Follow-up after the partial 2026-10-11 return:** start from
+`origin/150-vscode-extension-wsl-review-20261011` to retain the returned evidence
+and Mac review. Read [wsl-prerequisite-recovery.md](wsl-prerequisite-recovery.md)
+before repeating the matrix. Its owner-installation repair requires explicit
+scope approval; it has not been executed on Mac. The transfer commands below
+describe the original candidate handoff, not the newer follow-up branch.
+
 Use **150-vscode-extension-only**, not the preserved expanded-backend release/WSL
 branches. This candidate is an extension client of unchanged NetClaw. Implementation
 source is `8db2c2144e169f4c2ab832d3d62c40f1b1c6a807`; later commits add evidence and the

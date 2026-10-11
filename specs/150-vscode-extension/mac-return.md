@@ -1,5 +1,11 @@
 # Mac return — partial WSL validation, release still blocked
 
+Mac reviewed this return in `150-vscode-extension-wsl-review-20261011`.
+See [the review](evidence/mac-wsl-return-review.md) and
+[bounded WSL prerequisite recovery](wsl-prerequisite-recovery.md).
+The original return and its limitations below remain valid. No repair or
+acceptance is implied by preparing that plan.
+
 Return branch: `150-vscode-extension-wsl-20261011`.
 Evidence commit: `5983cc37e192ba4954ff50fa65d502a5fa385d8f`.
 The following return-document commit changes only this file; the final branch-tip
