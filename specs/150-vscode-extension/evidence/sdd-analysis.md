@@ -1,0 +1,35 @@
+# Recovery consistency review
+
+2026-10-11. Spec Kit prerequisites passed with SPECIFY_FEATURE=150-vscode-extension;
+spec, plan, tasks and contracts were checked against the constitution and approved
+extension-only boundary. Existing expansion artifacts/branches remain preserved.
+
+| Requirement | Coverage |
+| --- | --- |
+| FR-001–003, SC-001 | T003–007: existing interface, host/trust/identity, bounded transport |
+| FR-004, SC-002 | T006, T013: native views and explicit capability matrix |
+| FR-005–006 | T008–011: owned conversations, context, Canvas/Avatar, integrated RAG |
+| FR-007–009 | T012–014: reviewed existing writers/workflows and documented limitations |
+| FR-010, SC-003 | T015–018: official SDK, opt-in, denied authority and named-client evidence |
+| FR-011–013, SC-004 | T019–022: installed lifecycle, package/docs, Mac and WSL evidence |
+| FR-014, SC-005 | T021–023: exact source/artifact transfer and qualified publication |
+
+No uncovered requirement or contradictory backend implementation was found in the
+recovered design. Plan wording for assistant proposals was reconciled to private
+local drafts. Extension-owned dependency/build/storage instructions replace the
+abandoned new backend framework; no installer/catalog change is needed to register
+this editor client. The constitution itself is unchanged.
+
+Acceptance findings remain open and must not be hidden by implementation checkmarks:
+
+- HIGH: real WSL installation and assistant interactive workflows require T022.
+- HIGH: public publication/installation requires returned acceptance and T023.
+- MEDIUM: existing APIs lack OpenClaw request status/stop and atomic environment CAS;
+  recorded limits are reflected in client behavior and user documentation.
+- MEDIUM: service actions are reviewed existing commands, not automatic verified
+  execution; peering/permissions and broader delegation remain existing NCFED work.
+
+No base addition was required to make the retained client features work against
+unchanged f943637. Future backend requests require their own demonstrated gap and
+review, not extension scope expansion. Publication milestone blog draft/review
+remains a session-end/release responsibility under the constitution.

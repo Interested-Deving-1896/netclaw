@@ -30,14 +30,14 @@ inside this spec rather than rewriting the owner's base AGENTS.md.
 1. Existing HUD client: verified identity, independent owned session, bounded requests.
 2. Native UI: reuse navigation, rendering, logo; map domains to existing endpoints.
 3. Owned chat/context/Canvas/Avatar; integrated RAG and reviewed configuration.
-4. MCP adapter: fixed inspect domains, owned delegation, in-memory proposal drafts;
+4. MCP adapter: fixed inspect domains, owned delegation, private local proposal drafts;
    no backend grant service and no assistant approval/apply methods.
 5. Mac isolated unchanged-HUD and actual editor/VSIX checks; final WSL handoff.
 
 ## Structure
 extensions/netclaw-vscode/{src,resources,webview,test,scripts,package.json}
 specs/150-vscode-extension/{spec.md,plan.md,tasks.md,research.md,data-model.md,contracts,evidence}
-tests/vscode/ for editor/platform harnesses if shared outside the extension.
+Editor/platform harnesses remain inside the extension; none modifies base tests.
 
 ## Validation
 Transport tests cover identity changes, cross-target callbacks, redirect/URL
