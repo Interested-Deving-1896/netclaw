@@ -26,6 +26,7 @@ import {openOpenShell} from './views/openshell';
 import {configureService} from './views/lifecycle';
 import {openNativeRuntime} from './views/native-runtime';
 import {openAvatar} from './views/avatar';
+import {openScience} from './views/science';
 
 type Domain={title:string;method:string;args:Record<string,unknown>;group:string;icon:string};
 const domains:Record<string,Domain>={
@@ -111,7 +112,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('exportGait',()=>exportGait(connection));
   register('inspectEstateResource',node=>inspectEstateResource(context,connection,node));
   register('openNetwork',()=>vscode.commands.executeCommand('netclaw.openDomain','network'));
-  register('openScience',()=>vscode.commands.executeCommand('netclaw.openDomain','science'));
+  register('openScience',()=>openScience(context,connection));
   register('openSecurity',()=>openSecurity(context,connection));
   register('openOpenShell',()=>openOpenShell(context,connection));
   register('configureService',()=>configureService(connection));
@@ -125,7 +126,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   const estate=new EstateTree(connection);trees.push(estate);context.subscriptions.push(estate,vscode.window.registerTreeDataProvider('netclaw.estate',estate));
   for(const group of ['operations','integrations','knowledge','security','help']){
     const tree=new NavigationTree(()=>{
-      const items:Navigation[]=Object.entries(domains).filter(([,d])=>d.group===group).map(([key,d])=>({label:d.title,command:key==='security'?'netclaw.openSecurity':key==='openshell'?'netclaw.openOpenShell':key==='operations'?'netclaw.openOperations':key==='gait'?'netclaw.openGait':key==='integrations'?'netclaw.openIntegrations':key==='skills'?'netclaw.openSkills':key==='documentation'?'netclaw.openDocumentation':key==='tokenomics'?'netclaw.openTokenomics':'netclaw.openDomain',args:[key],icon:d.icon}));
+      const items:Navigation[]=Object.entries(domains).filter(([,d])=>d.group===group).map(([key,d])=>({label:d.title,command:key==='science'?'netclaw.openScience':key==='security'?'netclaw.openSecurity':key==='openshell'?'netclaw.openOpenShell':key==='operations'?'netclaw.openOperations':key==='gait'?'netclaw.openGait':key==='integrations'?'netclaw.openIntegrations':key==='skills'?'netclaw.openSkills':key==='documentation'?'netclaw.openDocumentation':key==='tokenomics'?'netclaw.openTokenomics':'netclaw.openDomain',args:[key],icon:d.icon}));
       if(group==='help')items.push({label:'Getting started',command:'netclaw.help',icon:'info'});
       if(group==='knowledge')items.unshift({label:'RAG knowledge base',command:'netclaw.openRag',icon:'search'});
       if(group==='knowledge')items.push({label:'Search recorded memory',command:'netclaw.searchMemory',icon:'history'});

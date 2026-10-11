@@ -63,6 +63,28 @@ def result_data(result):
     return json.loads(next(content.text for content in result.content if content.type == 'text'))
 
 
+def test_managed_review_rejects_changed_configuration_before_ledger_or_provider(tmp_path):
+    directory = tmp_path / 'jev'
+    directory.mkdir(mode=0o700)
+    with provider() as (endpoint, received):
+        async def exercise():
+            env = {'PATH': os.environ['PATH'], 'HOME': str(tmp_path), 'JEV_ENABLED': 'true',
+                   'JEV_BASE_URL': endpoint, 'JEV_MODEL': 'fixture-1', 'JEV_INPUT_PRICE_PER_MILLION': '.042',
+                   'JEV_DATA_DIR': str(directory), 'JEV_TASK_ID': 'owned-task'}
+            params = StdioServerParameters(command=sys.executable,
+                                          args=[str(SERVER), '--managed-config-sha256', '0' * 64], env=env)
+            async with stdio_client(params) as (read, write):
+                async with ClientSession(read, write) as session:
+                    await session.initialize()
+                    result = result_data(await session.call_tool('jev_evaluate', {
+                        'state': 'Synthetic', 'questions': {'q': {'type': 'noul', 'instructions': 'Enough evidence?'}},
+                        'purpose': 'evidence_review', 'evidence_metadata': []}))
+                    assert result['status'] == 'stale_configuration'
+        asyncio.run(exercise())
+        assert not received
+        assert not (directory / 'ledger.sqlite3').exists()
+
+
 def test_real_stdio_mixed_batch_readback_and_disabled_no_send(tmp_path):
     with provider() as (endpoint, received):
         async def exercise(enabled):

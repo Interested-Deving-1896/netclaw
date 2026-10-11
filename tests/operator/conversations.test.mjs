@@ -130,6 +130,15 @@ test('missing audit prevents creation of a saved conversation and does not dispa
   await assert.rejects(f.service.open(owner,input),{code:'UNKNOWN_OUTCOME'});assert.equal(f.calls.length,0);
 });
 
+test('runtime assessment proofs become owned links; ledger task identifiers never enter public request receipts',async t=>{
+  const f=fixture(t,'openclaw'),owner=f.binding.principal,c=await f.service.open(owner,{nonce:nonce(),view:'chat'}),registrations=[];
+  f.service.science={register(principal,id,proofs){registrations.push({principal,id,proofs});return ['assessment-owned'];}};
+  f.setStatus({state:'succeeded',output:'Advice reviewed',assessmentProofs:[{assessmentId:'assessment-owned',ledgerTask:'private-ledger-task',toolEventId:'runtime-result'}]});
+  const op=await f.service.submit(owner,{nonce:nonce(),conversationId:c.conversationId,prompt:'Review',contextIds:[]});
+  const result=await f.service.run(op.operationId);assert.equal(registrations.length,1);assert.equal(registrations[0].id,op.operationId);
+  assert.deepEqual(result.result.assessmentIds,['assessment-owned']);assert.equal(JSON.stringify(result).includes('private-ledger-task'),false);
+});
+
 test('short streamed answers survive lifecycle coalescing and event floods remain bounded',async t=>{
   const f=fixture(t,'openclaw'),owner=f.binding.principal,c=await f.service.open(owner,{nonce:nonce(),view:'chat'});
   f.runtime.submit=async input=>{

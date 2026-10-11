@@ -8,8 +8,8 @@ const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 
 /** Owned admissions are independent of an editor, MCP connection, or webview. */
 export class Conversations {
-  constructor({binding,journal,audit,runtime,start,clean}) {
-    Object.assign(this,{binding,journal,audit,runtime,start,clean});this.artifacts=new ArtifactStore(journal);
+  constructor({binding,journal,audit,runtime,start,clean,science}) {
+    Object.assign(this,{binding,journal,audit,runtime,start,clean,science});this.artifacts=new ArtifactStore(journal);
   }
   authority(principal) {
     this.binding.assertCurrent();authorize(principal,'delegate',[this.binding.installationId]);
@@ -124,8 +124,10 @@ export class Conversations {
         this.authority(principal);
         for(const event of await this.runtime.progress?.({conversationId:input.conversationId,requestId:operationId})||[])onProgress(event);
         flushProgress();
-        const result=this.clean({runtime:this.binding.kind,source:observed.source||'Owned runtime request',...observed});
+        const {assessmentProofs,...publicObservation}=observed;
+        const result=this.clean({runtime:this.binding.kind,source:observed.source||'Owned runtime request',...publicObservation});
         if(finished.has(observed.state)){
+          if(this.science&&assessmentProofs)result.assessmentIds=this.science.register(principal,operationId,assessmentProofs);
           this.journal.event(operationId,'runtime-observation',{state:observed.state,source:result.source});
           await this.audit.record({operationId,state:observed.state});
           return this.journal.finish(operationId,lease,observed.state,result);
@@ -145,8 +147,10 @@ export class Conversations {
     const result=await this.runtime.observe({conversationId:input.conversationId,requestId:operationId});
     this.authority(principal);
     if(!finished.has(result.state))return operation;
+    const {assessmentProofs,...publicResult}=result;
+    if(this.science&&assessmentProofs)publicResult.assessmentIds=this.science.register(principal,operationId,assessmentProofs);
     await this.audit.record({operationId,state:'reconciled'});
-    return this.journal.reconcile(operationId,operation.externalReference,result.state,this.clean(result));
+    return this.journal.reconcile(operationId,operation.externalReference,result.state,this.clean(publicResult));
   }
   async cancel(principal,input) {
     this.authority(principal);authorize(principal,'cancel',[this.binding.installationId]);

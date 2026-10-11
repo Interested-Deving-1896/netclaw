@@ -282,3 +282,13 @@ passed on Mac. T044/T046 remain unchecked because scanner execution and qualifie
 OpenShell managed writes still need implementation. The upstream CLI's missing
 durable request IDs and expected identity/revision preconditions are explicit
 adapter dependencies; rendering unavailable actions is not task completion.
+
+## Science Officer checkpoint
+
+The [workspace evidence](evidence/workspace.md) records owned assessment reads,
+runtime proof registration, original/reconsidered relationships, exact task
+budget projections, native review, and durable reconsideration through the
+existing Jev MCP. Actual Jev/GAIT/worker and controlled-provider checks passed;
+the originating runtime proof in that process case is synthetic. GCF, meetings,
+mobile controls, protected Hermes proofs and full supporting-domain qualification
+remain incomplete. T061/T062/T064/T066 remain unchecked.

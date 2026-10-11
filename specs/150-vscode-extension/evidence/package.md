@@ -5,10 +5,10 @@ arm64. This is a candidate preservation result, not publication or full release
 qualification. No owner service/configuration or external provider was changed.
 
 - Candidate: `NetClaw.netclaw` 0.1.0, source
-  `8aae44cbb34c40904d3a6e10b1f450e583a11447`.
+  `cdd0ba8742e2e679e4433ba32b3b304326adb4e1`.
 - VSIX SHA-256:
-  `d5f192d54070e871f92058ce702ce42a0a6151c51ec32b4420f493956574f5e6`.
-- Size: 2,782,500 bytes. Package allowlist: 22 extension files plus two VSIX
+  `9e8963d6adc447c9ce99946aa26b1ab9e1bc674782de8214aaa0b14dc404a341`.
+- Size: 2,782,827 bytes. Package allowlist: 22 extension files plus two VSIX
   metadata entries. No runtime trees, private state or synthetic secret markers.
 - Real desktop versions: VS Code 1.102.0 and 1.141.0, separate clean profile and
   extension directory per run.
@@ -34,13 +34,20 @@ VSCODE_VERSION=1.102.0 node tests/vscode/package-acceptance.mjs
 ```
 
 Local raw reports (not portable release artifacts):
-`netclaw150-vsix-DAIBcW/report.json` (minimum) and
-`netclaw150-vsix-aUpK52/report.json` (current) under the Mac temporary directory.
+`netclaw150-vsix-aROgRF/report.json` (minimum) and
+`netclaw150-vsix-VznC7c/report.json` (current) under the Mac temporary directory.
 The committed harness identifies the candidate source and digest in each report.
 
 This checkpoint includes the service/security posture, protected assistant and native
-runtime navigation work. Later DefenseClaw component controls need a new matching
-package checkpoint.
+runtime navigation, DefenseClaw and OpenShell component work. Later Science Officer
+implementation requires a new matching package checkpoint.
 T070 remains open until that new artifact is built and exercised. E1/E2/E3 and
 other platform/client rows, complete lifecycle management (service start/stop),
 full release regression and public Marketplace installation remain separate.
+
+The first 1.102.0 lifecycle run failed during editor CLI uninstall with a native
+`v8::ToLocalChecked Empty MaybeLocal` fatal error in Node package loading. An
+unchanged retry completed every phase. Both results are retained; no extension
+fix is attributed to the retry. Local failure log:
+`/tmp/netclaw150-vsix-cdd0ba8-min.log`; passing retry/current logs use suffixes
+`-min-retry.log` and `-current.log`. Package allowlist inspection also passed.

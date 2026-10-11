@@ -638,13 +638,14 @@ Flags mentioned: none
 
 Static source declarations; lexical flags may include delegated commands. No execution performed.
 
-Flags mentioned: `--env-file`, `--read-task-id`, `--status`
+Flags mentioned: `--env-file`, `--managed-config-sha256`, `--read-task-id`, `--status`
 
 ```text
-L113: argparse.ArgumentParser(description=__doc__)
-L114: parser.add_argument("--status", action="store_true", help="Print secret-free local status without inference")
-L115: parser.add_argument("--env-file", metavar="PATH", help="Load allowlisted literal Jev settings from this operator-selected environment file")
-L116: parser.add_argument("--read-task-id", help="Operator-owned task binding for a read-only assessment process; never a model argument")
+L147: argparse.ArgumentParser(description=__doc__)
+L148: parser.add_argument("--status", action="store_true", help="Print secret-free local status without inference")
+L149: parser.add_argument("--env-file", metavar="PATH", help="Load allowlisted literal Jev settings from this operator-selected environment file")
+L150: parser.add_argument("--read-task-id", help="Operator-owned task binding for a read-only assessment process; never a model argument")
+L151: parser.add_argument("--managed-config-sha256", help="Host-only configuration review digest for the management adapter")
 ```
 
 ## mcp-servers/memory-mcp/memory_mcp_server.py

@@ -5,6 +5,8 @@ import { environment } from './configuration.js';
 import { invariant, fail } from './errors.js';
 import { createHermesRuntime } from '../hud-server/runtime/hermes.js';
 import { gatewayAgentId } from '../hud-server/gateway-agent.js';
+import {assessmentProofs,attachInfluences} from '../hud-server/bindings.js';
+import {readScienceTranscript} from './science.js';
 
 /** Browser navigation metadata only. Authentication remains with the native UI. */
 export function nativeHarnessUi(binding){
@@ -150,6 +152,7 @@ export function createManagementRuntime(binding,root){
       return {selectionVerified:true,...selected,source:'OpenClaw sessions.patch resolved model and effort'};
     },
     async submit(input){
+      const before=readScienceTranscript(binding,input.conversationId);
       let last=-1;
       const subscribed=await gateway.call('sessions.messages.subscribe',{key:sessionKey(input.conversationId),agentId});
       invariant(subscribed.subscribed===true&&subscribed.key===sessionKey(input.conversationId),'UNQUALIFIED');
@@ -162,7 +165,8 @@ export function createManagementRuntime(binding,root){
       invariant(result.status==='ok','UNKNOWN_OUTCOME');
       const payload=result.result||result;
       const output=(payload.payloads||[]).filter(p=>typeof p.text==='string').map(p=>p.text).join('\n');
-      completed.set(input.requestId,{state:'succeeded',output,usage:payload.meta?.usage||payload.meta?.agentMeta?.usage||null,source:'OpenClaw final agent response'});
+      const after=readScienceTranscript(binding,input.conversationId);
+      completed.set(input.requestId,{state:'succeeded',output,usage:payload.meta?.usage||payload.meta?.agentMeta?.usage||null,source:'OpenClaw final agent response',assessmentProofs:attachInfluences(assessmentProofs(before,after),before,after)});
       return {reference:input.requestId};
     },
     async observe(input){

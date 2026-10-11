@@ -28,6 +28,7 @@ const workspaceSchemas={
   'canvas-export':object({id:z.string().uuid(),name:z.string(),content:json,source:z.string()}),
   'memory-search':envelopeSchema,'gcf-read':envelopeSchema,'meeting-read':envelopeSchema,'assessment-read':envelopeSchema,
   'assessment-reconsider':operationSchema,'mobile-capture-request':operationSchema,
+  'assessment-preview':envelopeSchema,
 };
 export const operatorOutputs=Object.freeze({operator_identity:identitySchema,
   operator_resources:envelopeSchema,operator_snapshot:envelopeSchema,operator_events:envelopeSchema,operator_evidence:envelopeSchema,

@@ -1316,28 +1316,33 @@
       "kind": "Python",
       "flags": [
         "--env-file",
+        "--managed-config-sha256",
         "--read-task-id",
         "--status"
       ],
       "declarations": [
         {
-          "line": 113,
+          "line": 147,
           "declaration": "argparse.ArgumentParser(description=__doc__)"
         },
         {
-          "line": 114,
+          "line": 148,
           "declaration": "parser.add_argument(\"--status\", action=\"store_true\", help=\"Print secret-free local status without inference\")"
         },
         {
-          "line": 115,
+          "line": 149,
           "declaration": "parser.add_argument(\"--env-file\", metavar=\"PATH\", help=\"Load allowlisted literal Jev settings from this operator-selected environment file\")"
         },
         {
-          "line": 116,
+          "line": 150,
           "declaration": "parser.add_argument(\"--read-task-id\", help=\"Operator-owned task binding for a read-only assessment process; never a model argument\")"
+        },
+        {
+          "line": 151,
+          "declaration": "parser.add_argument(\"--managed-config-sha256\", help=\"Host-only configuration review digest for the management adapter\")"
         }
       ],
-      "sha256": "72628f1403653124b5e936e3ceceb38ead7f52aa307e77e95e396623bcecc763",
+      "sha256": "0e49aaedc3bb143ede6d547fa466f3967d3820b81b60174e5f05fb400fc079a6",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -6129,7 +6134,7 @@
       "kind": "Node launcher",
       "flags": [],
       "declarations": [],
-      "sha256": "c51aca47889a7a39bcd2b19b035c0a198ed5b3d61177d44648c1ac56496f9257",
+      "sha256": "1bfcbb49cb35a0b50199b07c48f7bf374759a819592d7e1f1709cf4e9c2ba7e7",
       "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
     },
     {
@@ -8974,21 +8979,21 @@
           "signature": "",
           "description": "Read Jev configuration, UTC daily/task budgets and latest local assessment; no inference.",
           "source": "mcp-servers/jev-mcp/server.py",
-          "line": 67
+          "line": 88
         },
         {
           "name": "jev_evaluate",
           "signature": "state: str | dict, questions: dict, purpose: str, evidence_metadata: list[dict], data_classification: str='sanitized', prepare_only: bool=False, reconsideration_of: str | None=None",
           "description": "Request advisory Noul/Choice/Score judgments over shared permitted evidence.\n\nAuthor questions dynamically from the user's task and member evidence. This\ncannot execute actions, grant approval, select task identity or raise budgets.\npurpose must be evidence_review, specialist_advice, answer_review,\ndiagnostic_advice, change_review, or incident_triage.\nquestions maps caller-authored IDs to objects with type and instructions:\nNoul: {\"type\":\"noul\",\"instructions\":\"a yes/no proposition\"}.\nChoice: {\"type\":\"choice\",\"instructions\":\"select an alternative\",\n         \"criteria\":{\"label\":\"description\",\"uncertain\":\"insufficient evidence\"}}.\nScore: {\"type\":\"score\",\"instructions\":\"evaluate one dimension\",\n        \"criteria\":[\"lowest descriptive level\",\"highest descriptive level\"]}.\nChoice requires 2\u2013255 labeled criteria; Score requires 2\u201310 ordered levels.\nDo not use text, options, output, or scale_levels as question fields.\nprepare_only returns the exact request digest for operator disclosure approval\nwithout sending. approval_required is a local ledger gate: show its operator\ncommand, retain the exact arguments, and do not claim a Slack confirmation\nalone records the grant. Use at most one reconsideration of a successful initial result.",
           "source": "mcp-servers/jev-mcp/server.py",
-          "line": 72
+          "line": 93
         },
         {
           "name": "jev_assessment",
           "signature": "assessment_id: str",
           "description": "Read an assessment from the active trusted task's local audit; no inference.",
           "source": "mcp-servers/jev-mcp/server.py",
-          "line": 100
+          "line": 134
         }
       ],
       "coverage": "Source-declared tool signatures/schemas; runtime tools/list is authoritative."

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
@@ -59,7 +60,27 @@ def safe_status() -> dict:
                 "advisory_only": True, "message": exc.message if isinstance(exc, core.Refused) else "Local Jev status unavailable."}
 
 
-def serve(read_only: bool = False):
+def managed_configuration_digest() -> str:
+    """Host-only review binding; never a model-supplied expected configuration."""
+    directory = Path(os.environ['JEV_DATA_DIR'])
+    if not directory.is_absolute() or directory.resolve() != directory or directory.stat().st_uid != os.getuid() or directory.stat().st_mode & 0o077:
+        raise ValueError('Private absolute Jev directory required')
+    filename = directory / 'settings.json'
+    raw = b''
+    if filename.exists() or filename.is_symlink():
+        descriptor = os.open(filename, os.O_RDONLY | os.O_NOFOLLOW)
+        with os.fdopen(descriptor, 'rb') as stream:
+            info = os.fstat(stream.fileno())
+            if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid() or info.st_mode & 0o077 or info.st_size > 1024 * 1024:
+                raise ValueError('Private bounded Jev settings required')
+            raw = stream.read(1024 * 1024 + 1)
+            if len(raw) > 1024 * 1024:
+                raise ValueError('Settings changed during read')
+    selected = [[key, os.environ[key]] for key in sorted(ENV_KEYS) if key in os.environ]
+    return hashlib.sha256((json.dumps(selected, separators=(',', ':'), ensure_ascii=False) + '\n').encode() + raw).hexdigest()
+
+
+def serve(read_only: bool = False, managed_config: str | None = None):
     from fastmcp import FastMCP
     mcp = FastMCP("jev-mcp")
 
@@ -93,8 +114,21 @@ def serve(read_only: bool = False):
         """
         if read_only:
             return {"status": "unavailable", "message": "This task-bound process permits assessment reads only."}
+        config = None
+        if managed_config:
+            try:
+                # Freeze the exact reviewed configuration into the evaluation.
+                # Check both sides of Config parsing to reject concurrent edits.
+                if managed_configuration_digest() != managed_config:
+                    raise ValueError('stale')
+                config = core.Config.from_env()
+                if managed_configuration_digest() != managed_config:
+                    raise ValueError('stale')
+            except (ValueError, OSError, core.Refused):
+                return {"status": "stale_configuration", "advisory_only": True,
+                        "message": "Jev configuration changed since operator review. Prepare a fresh review."}
         return await core.evaluate(state, questions, purpose, evidence_metadata,
-                                   data_classification, prepare_only, reconsideration_of)
+                                   data_classification, prepare_only, reconsideration_of, config=config)
 
     @mcp.tool()
     def jev_assessment(assessment_id: str) -> dict:
@@ -114,6 +148,7 @@ if __name__ == "__main__":
     parser.add_argument("--status", action="store_true", help="Print secret-free local status without inference")
     parser.add_argument("--env-file", metavar="PATH", help="Load allowlisted literal Jev settings from this operator-selected environment file")
     parser.add_argument("--read-task-id", help="Operator-owned task binding for a read-only assessment process; never a model argument")
+    parser.add_argument("--managed-config-sha256", help="Host-only configuration review digest for the management adapter")
     args = parser.parse_args()
     if args.env_file is not None:
         try:
@@ -133,4 +168,6 @@ if __name__ == "__main__":
     if args.status:
         print(json.dumps(safe_status()))
     else:
-        serve(read_only=args.read_task_id is not None)
+        if args.managed_config_sha256 and not re.fullmatch(r'[a-f0-9]{64}', args.managed_config_sha256):
+            parser.error('Invalid managed configuration digest')
+        serve(read_only=args.read_task_id is not None, managed_config=args.managed_config_sha256)

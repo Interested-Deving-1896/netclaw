@@ -122,3 +122,6 @@ fixtures. See [qualification gates](../specs/150-vscode-extension/contracts/qual
 Publishing requires all required workflows/platforms and the actual named-client
 checks, a valid local publisher login, and a verified public install of the exact
 release. Current partial evidence does not satisfy those gates.
+
+Science Officer task ownership, budget review and durable reconsideration are
+documented in [VSCODE-SCIENCE.md](VSCODE-SCIENCE.md).

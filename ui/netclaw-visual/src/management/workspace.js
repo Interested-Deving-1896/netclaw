@@ -34,10 +34,13 @@ export function importedCanvas(text){
 }
 
 export class Workspace {
-  constructor({binding,journal,audit,clean,rag,start}){Object.assign(this,{binding,journal,audit,clean,rag,start});this.artifacts=new ArtifactStore(journal);}
+  constructor({binding,journal,audit,clean,rag,start,science}){Object.assign(this,{binding,journal,audit,clean,rag,start,science});this.artifacts=new ArtifactStore(journal);}
   async call(principal,input){
     this.binding.assertCurrent();authorize(principal,'inspect',[this.binding.installationId]);
     invariant(principal.surface==='operator','DENIED');
+    if(input.action==='assessment-read')return this.clean({contractVersion:1,installationId:this.binding.installationId,source:'Owned Jev assessment',observedAt:new Date().toISOString(),freshness:'observed',warnings:[],data:this.science.read(principal,input.args.id)});
+    if(input.action==='assessment-preview')return this.clean({contractVersion:1,installationId:this.binding.installationId,source:'Existing Jev disclosure and cost preparation; no provider dispatch',observedAt:new Date().toISOString(),freshness:'observed',warnings:[],data:await this.science.preview(principal,input.args)});
+    if(input.action==='assessment-reconsider')return this.science.reconsider(principal,input);
     if(input.action==='memory-search')return this.clean({contractVersion:1,installationId:this.binding.installationId,source:'Selected installation memory database',observedAt:new Date().toISOString(),freshness:'observed',warnings:[],data:searchMemory(this.binding,input.args.query)});
     if(['rag-list','rag-search','rag-upload','rag-index','rag-context'].includes(input.action))return this.ragCall(principal,input);
     if(input.action==='canvas-export'){

@@ -51,7 +51,8 @@ const workspaceActions = {
   'rag-context': [true,{id,indices:z.array(z.number().int().min(0).max(19)).min(1).max(20).refine(v=>new Set(v).size===v.length)}],
   'memory-search': [false,{query}], 'gcf-read': [false,{id:id.optional()}],
   'meeting-read': [false,{id:id.optional()}], 'assessment-read': [false,{id}],
-  'assessment-reconsider': [true,{id,query}],
+  'assessment-preview': [false,{id,query}],
+  'assessment-reconsider': [true,{id,query,reviewId:id}],
   'canvas-import': [true,{name:name.optional(),content}], 'canvas-export': [false,{id}],
   'mobile-capture-request': [true,{id,consentReference:id,capability:z.enum(['camera.capture','audio.record'])}],
 };

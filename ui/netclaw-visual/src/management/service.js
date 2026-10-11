@@ -32,6 +32,7 @@ import {ServiceNowAuthority} from './change-authority.js';
 import {AssistantRequests,ProtectedAssistantRuntime} from './assistant-requests.js';
 import {DefenseClawComponent} from './defenseclaw.js';
 import {OpenShellComponent} from './openshell.js';
+import {ScienceOfficer} from './science.js';
 
 export class ManagementService {
   constructor({root,home,kind,expectedInstallationId,audit,adapters={},authority}) {
@@ -43,13 +44,14 @@ export class ManagementService {
     this.services=new OwnedServiceController(this.binding,{ready:async id=>id==='federation'?Boolean((await this.readFederation('overview')).value):Boolean((await this.runtime.readiness()).ready)});
     this.defenseclaw=new DefenseClawComponent(this.binding);
     this.openshell=new OpenShellComponent(this.binding);
+    this.science=new ScienceOfficer({binding:this.binding,journal:this.journal,root,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.adapters={...configurationAdapters(this.binding),'security.patch':this.defenseclaw.adapter(),...lifecycleAdapters({binding:this.binding,journal:this.journal,controller:this.services}),...adapters};
     this.clients=new ClientGrants({binding:this.binding,journal:this.journal,audit:this.audit});
     this.assistants=new AssistantRequests({binding:this.binding,journal:this.journal,audit:this.audit,clients:this.clients,runtime:new ProtectedAssistantRuntime(this.binding),
       start:operationId=>startOwnedWorker({root:this.root,binding:this.binding,operationId}),clean:value=>this.clean(value)});
     this.proposals=new Proposals({binding:this.binding,journal:this.journal,audit:this.audit,adapters:this.adapters,authority:authority||new ServiceNowAuthority(this.binding),validatePrincipal:principal=>this.clients.validate(principal)});
-    this.workspace=new Workspace({binding:this.binding,journal:this.journal,audit:this.audit,clean:value=>this.clean(value),rag:new RagClient(this.binding,root),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
-    this.conversations=new Conversations({binding:this.binding,journal:this.journal,audit:this.audit,runtime:this.runtime,
+    this.workspace=new Workspace({binding:this.binding,journal:this.journal,science:this.science,audit:this.audit,clean:value=>this.clean(value),rag:new RagClient(this.binding,root),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
+    this.conversations=new Conversations({binding:this.binding,journal:this.journal,science:this.science,audit:this.audit,runtime:this.runtime,
       start:operationId=>startOwnedWorker({root,binding:this.binding,operationId}),clean:value=>this.clean(value)});
     this.journal.reconcileExpired();
   }
@@ -100,7 +102,7 @@ export class ManagementService {
       const rows=entries.filter(e=>fs.existsSync(path.join(directory,e.name,'SKILL.md'))).map(e=>({id:e.name,installed:true,executionVerified:null,source:'Installed skill directory'}));
       return this.envelope(this.paginate(rows,input),'Selected installation skill files');
     }
-    if(input.kind==='advisor')return this.envelope({enabled:environment(this.binding).JEV_ENABLED==='true',role:'advice-only',taskOwnedAssessments:this.journal.records('assessment',principal)},'Selected installation settings and owned assessments');
+    if(input.kind==='advisor')return this.envelope(this.science.list(principal),'Selected installation settings and owned assessments');
     if(input.kind==='network'){
       const result=configuredNetwork(this.binding);
       return this.envelope({...result,...(result.devices?{...this.paginate(result.devices,input),devices:undefined}:{})},'Selected installation configured inventory');
@@ -150,6 +152,7 @@ export class ManagementService {
       const value=this.journal.get(principal,args.operationId);
       if(value.state==='unknown'&&value.kind==='conversation-request')return this.clean(await this.conversations.reconcile(principal,args.operationId));
       if(value.state==='unknown'&&value.kind==='assistant-request')return this.clean(await this.assistants.reconcile(principal,args.operationId));
+      if(value.state==='unknown'&&value.kind==='assessment-reconsider')return this.clean(await this.science.reconcile(principal,args.operationId));
       return this.clean(value);
     }
     if(name==='operator_request_submit')return this.clean(await this.conversations.submit(principal,args));

@@ -318,6 +318,12 @@
     "category": "Guides"
   },
   {
+    "id": "7764546478762eb4",
+    "path": "docs/VSCODE-SCIENCE.md",
+    "title": "Science Officer in VS Code",
+    "category": "Guides"
+  },
+  {
     "id": "9231471336642bc3",
     "path": "docs/VSCODE-SECURITY.md",
     "title": "DefenseClaw and OpenShell in VS Code",
