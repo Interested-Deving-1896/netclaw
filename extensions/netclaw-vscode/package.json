@@ -261,6 +261,12 @@
         "enablement": "isWorkspaceTrusted"
       },
       {
+        "command": "netclaw.openPeerExecution",
+        "title": "Run Reviewed External Peer Calculation",
+        "category": "NetClaw",
+        "enablement": "isWorkspaceTrusted"
+      },
+      {
         "command": "netclaw.openPeerChat",
         "title": "External Peer Conversations",
         "category": "NetClaw",

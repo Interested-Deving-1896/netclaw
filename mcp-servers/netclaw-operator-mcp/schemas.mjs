@@ -50,6 +50,10 @@ const content = z.string().max(14*1024*1024);
 const name = z.string().min(1).max(200);
 const intentInput={request:z.string().min(1).max(4000).refine(value=>value.trim().length>0),requestKind:z.enum(['read-only','change']),changeMode:z.enum(['production','local-lab']),targetDeviceIds:z.array(id).min(1).max(100).refine(ids=>new Set(ids).size===ids.length),expectedRevision:z.string().uuid(),policyRevision:z.string().uuid().optional()};
 const workspaceActions = {
+  'peer-execution-list':[false,{}],
+  'peer-execution-snapshot':[false,{peer:id}],
+  'peer-execution-preview':[false,{peer:id,mode:z.enum(['tool','skill']),cidr:z.string().max(18)}],
+  'peer-execution-submit':[true,{reviewId:z.string().uuid()}],
   'security-scan-list':[false,{}],
   'security-scan-read':[false,{id:z.string().uuid()}],
   'security-scan-preview':[false,{name:z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$/).refine(value=>!value.includes('..'))}],

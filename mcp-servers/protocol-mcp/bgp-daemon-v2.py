@@ -211,6 +211,18 @@ async def handle_n2n(method, path, body):
     parts = path.strip("/").split("/")  # e.g. ["n2n","peers","as65007-7.7.7.7","inventory"]
 
     try:
+        if path == '/n2n/management/peer-execution' and method == 'POST':
+            from bgp.federation.management_peer_execution import ManagementPeerExecution
+            try:
+                if not isinstance(body,dict):raise ValueError('Invalid execution request')
+                controller=ManagementPeerExecution(fed);action=body.get('action')
+                if action=='snapshot' and set(body)=={'action','peer'}:return 200,controller.snapshot(body['peer'])
+                if action=='status' and set(body)=={'action','operationId'}:return 200,controller.status(body['operationId'])
+                if action in ('start','cancel') and set(body)=={'action','operationId','lease'}:
+                    return 200,(await controller.start(body['operationId'],body['lease']) if action=='start' else controller.cancel(body['operationId'],body['lease']))
+                raise ValueError('Invalid execution action')
+            except (ValueError,KeyError,TypeError,OSError):
+                return 409,{'error':'Peer execution is outside its current reviewed authority or owned source.'}
         if path == '/n2n/management/peer-chat' and method == 'POST':
             from bgp.federation.management_peer_chat import ManagementPeerChat
             try:

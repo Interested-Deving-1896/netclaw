@@ -26,6 +26,7 @@ import { RagClient } from './rag.js';
 import {installationLogs,ownedUsage,configuredNetwork} from './observability.js';
 import {retainedTopology} from './topology.js';
 import {PeerConversations} from './peer-chat.js';
+import {PeerExecution} from './peer-execution.js';
 import { parseOperatorInput } from '../../../../mcp-servers/netclaw-operator-mcp/schemas.mjs';
 import { validateOperatorOutput } from '../../../../mcp-servers/netclaw-operator-mcp/responses.mjs';
 import {OwnedServiceController} from './service-ownership.js';
@@ -56,6 +57,7 @@ export class ManagementService {
     this.runtimeSelection=new RuntimeSelection({binding:this.binding,journal:this.journal,root});
     this.peerPermissions=new FederationPermissions({binding:this.binding});
     this.peerConversations=new PeerConversations({binding:this.binding,journal:this.journal,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
+    this.peerExecution=new PeerExecution({binding:this.binding,journal:this.journal,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.defenseclaw=new DefenseClawComponent(this.binding);
     this.defenseRules=new DefenseToolRules(this.defenseclaw,this.journal);
     this.defenseScans=new DefenseScans({binding:this.binding,journal:this.journal,audit:this.audit,scanner:new DefenseScanner({binding:this.binding,component:this.defenseclaw,root,audit:this.audit}),clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
@@ -173,6 +175,10 @@ export class ManagementService {
     if(name==='operator_resources')return this.resources(principal,args);
     if(name==='operator_snapshot')return this.snapshot(principal,args);
     if(name==='operator_workspace'){
+      if(args.action==='peer-execution-list')return this.envelope(this.peerExecution.list(principal),'Owned peer execution receipts');
+      if(args.action==='peer-execution-snapshot')return this.envelope(await this.peerExecution.snapshot(principal,args.args.peer),'Existing peer and received supported calculation profiles; no peer contact');
+      if(args.action==='peer-execution-preview')return this.envelope(await this.peerExecution.preview(principal,args.args),'Exact external subnet calculation review; no dispatch');
+      if(args.action==='peer-execution-submit')return this.peerExecution.submit(principal,args);
       if(args.action==='security-scan-list')return this.envelope(this.defenseScans.list(principal,{cursor:args.cursor,limit:args.limit}),'Owned static skill scan reports and requests');
       if(args.action==='security-scan-read')return this.envelope(this.defenseScans.read(principal,args.args.id),'Owned static skill scan completion receipt');
       if(args.action==='security-scan-preview')return this.envelope(await this.defenseScans.preview(principal,args.args),'Exact installed skill snapshot review; no scan launched');
@@ -196,6 +202,7 @@ export class ManagementService {
       if(value.state==='unknown'&&value.kind==='assessment-reconsider')return this.clean(await this.science.reconcile(principal,args.operationId));
       if(value.state==='unknown'&&value.kind==='mobile-capture')return this.clean(await this.mobile.reconcile(principal,args.operationId));
       if(value.state==='unknown'&&value.kind==='peer-chat')return this.clean(await this.peerConversations.reconcile(principal,args.operationId));
+      if(value.state==='unknown'&&value.kind==='peer-execution')return this.clean(await this.peerExecution.reconcile(principal,args.operationId));
       if(value.state==='unknown'&&value.kind==='defense-scan')return this.clean(await this.defenseScans.reconcile(principal,args.operationId));
       return this.clean(value);
     }
@@ -204,6 +211,7 @@ export class ManagementService {
       const value=this.journal.get(principal,args.operationId);
       if(value.kind==='mobile-capture')return this.clean(await this.mobile.cancel(principal,args));
       if(value.kind==='peer-chat')return this.clean(await this.peerConversations.cancel(principal,args));
+      if(value.kind==='peer-execution')return this.clean(await this.peerExecution.cancel(principal,args));
       if(value.kind==='defense-scan')return this.clean(await this.defenseScans.cancel(principal,args));
       if(value.kind==='terminal-intent')return this.clean(await this.intent.cancel(principal,args));
       return this.clean(value.kind==='assistant-request'?await this.assistants.cancel(principal,{nonce:args.nonce,requestId:args.operationId}):await this.conversations.cancel(principal,args));

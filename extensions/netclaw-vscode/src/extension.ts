@@ -25,6 +25,7 @@ import {openGait,exportGait} from './views/gait';
 import {EstateTree,inspectEstateResource} from './views/estate';
 import {openPeers} from './views/peers';
 import {openPeerChat} from './views/peer-chat';
+import {openPeerExecution} from './views/peer-execution';
 import {openSecurity} from './views/security';
 import {openOpenShell} from './views/openshell';
 import {configureService} from './views/lifecycle';
@@ -122,6 +123,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('inspectEstateResource',node=>inspectEstateResource(context,connection,node));
   register('openPeers',()=>openPeers(context,connection));
   register('openPeerChat',()=>openPeerChat(context,connection));
+  register('openPeerExecution',()=>openPeerExecution(context,connection));
   register('openNetwork',()=>openNetwork(context,connection));
   register('openIntent',()=>openIntent(context,connection));
   register('openScience',()=>openScience(context,connection));
