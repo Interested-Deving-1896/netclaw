@@ -8,6 +8,7 @@ exports.run=async()=>{
   const api=await extension.activate();assert.ok(extension.isActive,'extension activated');
   const commands=await vscode.commands.getCommands(true);for(const name of ['addConnection','selectConnection','disconnect','openOverview','prepareChange','reviewProposal'])assert.ok(commands.includes('netclaw.'+name));
   const fixtures=JSON.parse(process.env.NETCLAW_TEST_FIXTURES),root=process.env.NETCLAW_TEST_ROOT;
+  const initialProfileCount=api.profiles.list().length;
   const profiles=[];let count=0;
   for(const fixture of fixtures){
     const profile=await api.profiles.save({label:'Same label',transport:'local',nodePath:process.env.NETCLAW_TEST_NODE,launcherPath:path.join(root,'scripts/netclaw-operator.mjs'),home:fixture.home,harness:fixture.kind,installationId:fixture.installationId});profiles.push(profile);
@@ -15,7 +16,7 @@ exports.run=async()=>{
     const response=await api.connection.call('operator_resources',{kind:'integration',limit:3});assert.equal(response.data.items.length,3);count++;
     assert.equal(api.connection.ready,true);
   }
-  assert.equal(api.profiles.list().length,2,JSON.stringify({saved:profiles.map(p=>({id:p.id,context:p.context})),listed:api.profiles.list().map(p=>({id:p.id,context:p.context}))}));assert.notEqual(profiles[0].id,profiles[1].id);
+  assert.equal(api.profiles.list().length,initialProfileCount+2,JSON.stringify({saved:profiles.map(p=>({id:p.id,context:p.context})),listed:api.profiles.list().map(p=>({id:p.id,context:p.context}))}));assert.notEqual(profiles[0].id,profiles[1].id);
   await assert.rejects(api.connection.connect({...profiles[0],installationId:fixtures[1].installationId}));count++;
   await api.connection.connect(profiles[0]);
   const initialOperations=(await api.connection.call('operator_resources',{kind:'overview'})).data.operations.length;

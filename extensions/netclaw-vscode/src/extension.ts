@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { randomUUID } from 'node:crypto';
-import { Connection } from './connection/connect';
+import { Connection,boundCaller } from './connection/connect';
 import { Profiles,ConnectionProfile,hostContext } from './state/profiles';
 import { NavigationTree,connectionTree,Navigation } from './views/overview';
 import { openDataView } from './webview/bridge';
@@ -42,10 +42,10 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   }
   async function connectProfile(profile:ConnectionProfile):Promise<void>{
     const identity=await vscode.window.withProgress({location:vscode.ProgressLocation.Notification,title:`Connecting to ${profile.label}`},()=>connection.connect(profile));
-    if(!profile.installationId){
+    if(!profile.installationId||!profile.principalId){
       const answer=await vscode.window.showInformationMessage(`Bind ${profile.label} to ${identity.harness.type} installation ${identity.installationId}?`,{modal:true,detail:`Host context: ${hostContext()}\nBackend source: ${identity.sourceVersion}\nPrincipal: ${identity.principalId}`},'Bind installation');
       if(answer!=='Bind installation'){await connection.disconnect();return;}
-      await profiles.save({...profile,installationId:identity.installationId,hostId:identity.hostId});
+      await profiles.save({...profile,installationId:identity.installationId,hostId:identity.hostId,principalId:identity.principalId});
     }
     refresh();
   }
@@ -77,29 +77,31 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('openRag',()=>openRag(context,connection));
   register('addSelectedContext',()=>stageSelectedContext(connection));
   register('prepareChange',async()=>{
-    const snapshot=await connection.call<{data:{revision:string;environment:{managedFields:{key:string;secret:boolean}[]}}}>('operator_snapshot',{domain:'settings'});
+    const call=boundCaller(connection);
+    const snapshot=await call<{data:{revision:string;environment:{managedFields:{key:string;secret:boolean}[]}}}>('operator_snapshot',{domain:'settings'});
     const field=await vscode.window.showQuickPick(snapshot.data.environment.managedFields.map(f=>({label:f.key,description:f.secret?'Secret · presence only':'Configuration value',field:f})),{title:'Choose a managed environment field'});if(!field)return;
     const intent=await vscode.window.showQuickPick(['keep','replace','clear'],{title:`${field.label}: desired change`});if(!intent)return;
     let value:string|undefined;if(!field.field.secret&&intent==='replace'){value=await vscode.window.showInputBox({title:`New ${field.label}`});if(value===undefined)return;}
-    const prepared=await connection.call<{proposalId:string}>('operator_change_prepare',{nonce:nonce(),action:'integration.configure',targets:[connection.identity!.installationId],expectedRevision:snapshot.data.revision,patch:{fields:[{key:field.label,intent,...(value===undefined?{}:{value})}]}});
+    const prepared=await call<{proposalId:string}>('operator_change_prepare',{nonce:nonce(),action:'integration.configure',targets:[connection.identity!.installationId],expectedRevision:snapshot.data.revision,patch:{fields:[{key:field.label,intent,...(value===undefined?{}:{value})}]}});
     await vscode.commands.executeCommand('netclaw.reviewProposal',prepared.proposalId);
   });
   register('reviewProposal',async id=>{
+    const call=boundCaller(connection);
     let proposalId=typeof id==='string'?id:undefined;
     if(!proposalId){
-      const overview=await connection.call<{data:{operations:{operationId:string;state:string;result?:{proposalId?:string}}[]}}>('operator_resources',{kind:'overview'});
+      const overview=await call<{data:{operations:{operationId:string;state:string;result?:{proposalId?:string}}[]}}>('operator_resources',{kind:'overview'});
       const item=await vscode.window.showQuickPick(overview.data.operations.filter(o=>o.state==='waiting-approval'&&o.result?.proposalId).map(o=>({label:o.result!.proposalId!,description:o.state})),{title:'Pending managed proposals'});proposalId=item?.label;
     }
     if(!proposalId)return;
-    const response=await connection.call<{data:{action:string;targets:string[];expectedRevision:string;impact:string;changeClass:string;patch:{fields?:{key:string;intent:string}[]}}}>('operator_evidence',{kind:'approval',id:proposalId});
+    const response=await call<{data:{action:string;targets:string[];expectedRevision:string;impact:string;changeClass:string;patch:{fields?:{key:string;intent:string}[]}}}>('operator_evidence',{kind:'approval',id:proposalId});
     const proposal=response.data;
     const review=await vscode.window.showInformationMessage(`Review ${proposal.action}`,{modal:true,detail:`Installation: ${connection.identity?.installationId}\nTargets: ${proposal.targets.join(', ')}\n${proposal.impact}\n${JSON.stringify(proposal.patch,null,2)}`},'Apply reviewed change');if(review!=='Apply reviewed change')return;
     const replacements:Record<string,string>={};
     for(const field of proposal.patch.fields||[]){if(field.intent!=='replace'||!/KEY|TOKEN|PASSWORD|SECRET|AUTH|CREDENTIAL/i.test(field.key))continue;const value=await vscode.window.showInputBox({title:`Replace ${field.key}`,password:true,prompt:'Blank keeps the existing value. This input is sent only to the selected backend.'});if(value===undefined)return;replacements[field.key]=value;}
     const approvalReference=proposal.changeClass==='production'?await vscode.window.showInputBox({title:'Independently approved ServiceNow change reference',prompt:'NetClaw verifies the live Implement state and exact approved scope. This field does not approve the change.'}):undefined;
     if(proposal.changeClass==='production'&&!approvalReference)return;
-    const result=await connection.call<{operationId:string}>('operator_change_apply',{proposalId,nonce:nonce(),expectedRevision:proposal.expectedRevision,replacements,...(approvalReference?{approvalReference}:{})});
-    openDataView(context,connection,{title:'Change outcome',kind:'change',load:()=>connection.call('operator_operation_get',{operationId:result.operationId})});
+    const result=await call<{operationId:string}>('operator_change_apply',{proposalId,nonce:nonce(),expectedRevision:proposal.expectedRevision,replacements,...(approvalReference?{approvalReference}:{})});
+    openDataView(context,connection,{title:'Change outcome',kind:'change',load:()=>call('operator_operation_get',{operationId:result.operationId})});
   });
   register('exportDiagnostics',async()=>{
     const result=await connection.call('operator_identity');const content=JSON.stringify({generatedAt:new Date().toISOString(),extensionVersion:'0.1.0',identity:result},null,2);

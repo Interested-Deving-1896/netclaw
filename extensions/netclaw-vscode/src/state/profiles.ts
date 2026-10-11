@@ -6,7 +6,7 @@ import path from 'node:path';
 
 export interface ConnectionProfile {
   id:string;label:string;transport:'local'|'ssh';nodePath:string;launcherPath:string;home:string;
-  harness:'openclaw'|'hermes';sshAlias?:string;context:string;installationId?:string;hostId?:string;
+  harness:'openclaw'|'hermes';sshAlias?:string;context:string;installationId?:string;hostId?:string;principalId?:string;
 }
 export interface Identity {
   contract:{major:number;minor:number};installationId:string;principalId:string;hostId:string;sourceVersion:string;

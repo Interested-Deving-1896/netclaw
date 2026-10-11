@@ -23,6 +23,15 @@ test('binding uses actual OS principal and detects replacement installation', t 
   fs.writeFileSync(path.join(f.statePath, 'installation.json'), JSON.stringify({ schemaVersion: 1, installationId: randomUUID() }));
   assert.throws(() => b.assertCurrent(), { code: 'IDENTITY_CHANGED' });
 });
+test('WSL backend host binding distinguishes cloned installation labels across distributions', t => {
+  const f=installationFixture(t),previous=process.env.WSL_DISTRO_NAME;
+  try {
+    process.env.WSL_DISTRO_NAME='synthetic-wsl-a';const first=bindInstallation(f);
+    process.env.WSL_DISTRO_NAME='synthetic-wsl-b';const second=bindInstallation(f);
+    assert.notEqual(first.hostId,second.hostId);
+    assert.equal(first.installationId,second.installationId);
+  } finally { if(previous===undefined)delete process.env.WSL_DISTRO_NAME;else process.env.WSL_DISTRO_NAME=previous; }
+});
 test('binding rejects symlinked home and config', t => {
   const f = installationFixture(t); fs.symlinkSync(f.home, path.join(f.root, 'alias'));
   assert.throws(() => bindInstallation({ home: path.join(f.root, 'alias'), kind: f.kind }));

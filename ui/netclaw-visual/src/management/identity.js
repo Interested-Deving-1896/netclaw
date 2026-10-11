@@ -27,7 +27,16 @@ export function bindInstallation({ home, kind, expectedInstallationId }, { nodeV
   const configPath = path.join(home, kind === 'hermes' ? 'config.yaml' : 'openclaw.json');
   readOwned(configPath, { limit: 4 * 1024 * 1024 });
   const user = os.userInfo();
-  const hostId = createHash('sha256').update(`${os.hostname()}\0${fs.realpathSync(home)}\0${installationId}`).digest('hex');
+  // WSL distributions can share hostname, UID and copied installation paths.
+  // Include OS machine identity; never return the raw identifier to clients.
+  let machine = '';
+  if (process.platform === 'linux') {
+    try { machine = fs.readFileSync('/etc/machine-id', 'utf8').trim(); }
+    catch { fail('INCOMPATIBLE'); }
+    invariant(/^[a-f\d]{32}$/.test(machine), 'INCOMPATIBLE');
+  }
+  const hostIdentity = process.platform === 'linux' ? `${os.hostname()}\0${machine}\0${process.env.WSL_DISTRO_NAME||''}` : os.hostname();
+  const hostId = createHash('sha256').update(`${hostIdentity}\0${fs.realpathSync(home)}\0${installationId}`).digest('hex');
   const principal = Object.freeze({ surface: 'operator', principalId: `os:${user.uid}`, grantId: null, generation: 0, installationId });
   return Object.freeze({ installationId, home, kind, statePath, configPath, envPath: path.join(home, '.env'), hostId, principal,
     assertCurrent() { ownedDirectory(home, { privateMode: false }); invariant(readIdentity() === installationId, 'IDENTITY_CHANGED'); readOwned(configPath, { limit: 4 * 1024 * 1024 }); },

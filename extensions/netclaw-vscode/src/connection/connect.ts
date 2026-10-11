@@ -3,10 +3,25 @@ import { ConnectionProfile,Identity,hostContext,validateProfile } from '../state
 import type { Client } from '@modelcontextprotocol/client' with { "resolution-mode": "import" };
 export const quotePosix=(value:string):string=>`'${value.replaceAll("'","'\\''")}'`;
 
+/** Bind multi-step human review to its original destination before any await. */
+export function boundCaller(connection:Connection){
+  const generation=connection.generation;
+  return <T=Record<string,unknown>>(name:string,args:Record<string,unknown>={}):Promise<T>=>{
+    if(connection.generation!==generation)throw Error('Connection changed. Review the operation again before sending.');
+    return connection.call<T>(name,args);
+  };
+}
+
+export function verifyBinding(profile:ConnectionProfile,identity:Identity):void {
+  if(identity?.contract?.major!==1||!identity.installationId||!identity.hostId||!identity.principalId)throw Error('Backend management contract 1 with stable identity is required.');
+  if(identity.harness?.type!==profile.harness)throw Error('The backend returned a different harness. Review the selected runtime home.');
+  if((profile.installationId&&identity.installationId!==profile.installationId)||(profile.hostId&&identity.hostId!==profile.hostId)||(profile.principalId&&identity.principalId!==profile.principalId))throw Error('The installation, host or operator identity changed. Review a new connection.');
+}
+
 export function launchProfile(profile:ConnectionProfile):{command:string;args:string[];env:Record<string,string>} {
   validateProfile(profile);
   const args=[profile.launcherPath,'--home',profile.home,'--runtime',profile.harness,...(profile.installationId?['--installation',profile.installationId]:[])];
-  const env=Object.fromEntries(['HOME','USER','LOGNAME','PATH','SHELL','SystemRoot','WINDIR','TEMP','TMP'].flatMap(k=>process.env[k]===undefined?[]:[[k,process.env[k]!]]));
+  const env=Object.fromEntries(['HOME','USER','LOGNAME','PATH','SHELL','SystemRoot','WINDIR','TEMP','TMP','WSL_DISTRO_NAME'].flatMap(k=>process.env[k]===undefined?[]:[[k,process.env[k]!]]));
   if(profile.transport==='ssh')return {command:'ssh',args:['-T','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes','-o','ForwardAgent=no','-o','ClearAllForwardings=yes','--',profile.sshAlias!,[profile.nodePath,...args].map(quotePosix).join(' ')],env};
   if(process.platform==='win32')throw Error('Open the intended WSL distribution using “WSL: Connect to WSL using Distro”, or select an existing SSH profile.');
   return {command:profile.nodePath,args,env};
@@ -35,9 +50,7 @@ export class Connection implements vscode.Disposable {
       const response=await client.callTool({name:'operator_identity',arguments:{}},{timeout:15000});
       if(response.isError)throw Error('The backend refused the identity handshake. Check supported Node and installed management prerequisites.');
       const identity=response.structuredContent as unknown as Identity;
-      if(identity?.contract?.major!==1||!identity.installationId||!identity.hostId||!identity.principalId)throw Error('Backend management contract 1 with stable identity is required.');
-      if(identity.harness?.type!==profile.harness)throw Error('The backend returned a different harness. Review the selected runtime home.');
-      if((profile.installationId&&identity.installationId!==profile.installationId)||(profile.hostId&&identity.hostId!==profile.hostId))throw Error('The installation or host identity changed. Review a new connection.');
+      verifyBinding(profile,identity);
       if(generation!==this.serial||!vscode.workspace.isTrusted)throw Error('Connection cancelled.');
       this.client=client;this.identity=identity;this.profile=profile;
       client.onclose=()=>{if(this.client===client){this.client=undefined;this.identity=undefined;this.serial++;this.changed.fire();}};

@@ -2,6 +2,24 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { sourceModule } from './bundle-fixture.mjs';
 
+test('reviewed commands cannot send secret replacements after a profile switch',async()=>{
+  const {boundCaller}=await sourceModule('connection/connect.ts',{env:{}});
+  const calls=[],connection={generation:1,call:async(name,args)=>{calls.push({name,args});return {};}};
+  const call=boundCaller(connection);
+  await call('operator_evidence',{kind:'approval',id:'reviewed-proposal'});
+  connection.generation++;
+  assert.throws(()=>call('operator_change_apply',{replacements:{ANTHROPIC_API_KEY:'synthetic-secret'}}));
+  assert.equal(calls.length,1);assert.ok(!JSON.stringify(calls).includes('synthetic-secret'));
+});
+
+test('reconnect refuses a changed operator even when installation and host match',async()=>{
+  const {verifyBinding}=await sourceModule('connection/connect.ts',{env:{}});
+  const profile={harness:'hermes',installationId:'fixture-installation',hostId:'fixture-host',principalId:'os:1000'};
+  const identity={contract:{major:1,minor:0},harness:{type:'hermes'},installationId:profile.installationId,hostId:profile.hostId,principalId:profile.principalId};
+  assert.doesNotThrow(()=>verifyBinding(profile,identity));
+  for(const changed of [{principalId:'os:1001'},{hostId:'other-host'},{installationId:'other-installation'},{harness:{type:'openclaw'}},{contract:{major:2}}])assert.throws(()=>verifyBinding(profile,{...identity,...changed}));
+});
+
 test('WSL profiles do not cross distributions sharing a Windows hostname and Linux UID',async()=>{
   const previous=process.env.WSL_DISTRO_NAME;
   try{

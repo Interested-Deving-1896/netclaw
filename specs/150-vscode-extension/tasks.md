@@ -28,7 +28,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 **Independent test**: Negative permission/direct-call and lost-receipt tests fail closed; real shared adapters preserve prior clients.
 
 - [ ] T005 Define versioned strict envelopes, fixed tool/action unions, response bounds and stable errors in `mcp-servers/netclaw-operator-mcp/schemas.mjs` and `mcp-servers/netclaw-assistant-mcp/schemas.mjs` from both contracts. (FR-005, FR-036, FR-039, FR-043)
-- [ ] T006 Implement authenticated installation/principal binding and opaque revisions in `ui/netclaw-visual/src/management/identity.js`; derive identity from launch context, never supplied client labels. (FR-005, FR-006, FR-044, SC-005)
+- [X] T006 Implement authenticated installation/principal binding and opaque revisions in `ui/netclaw-visual/src/management/identity.js`; derive identity from launch context, never supplied client labels. (FR-005, FR-006, FR-044, SC-005)
 - [ ] T007 Implement immutable grant propagation, per-hop target/action checks, authoritative CR validation and strict Local/Lab distinction in `ui/netclaw-visual/src/management/policy.js`; disable delegation where a runtime lacks enforceable attenuation. (FR-017, FR-022, FR-023, FR-035, FR-043, FR-044, SC-006, SC-013)
 - [ ] T008 Implement SQLite admission, nonce digest uniqueness, leases, revision locks, ownership, event sequence and retained tombstones in `ui/netclaw-visual/src/management/journal.js`; test migrations and stale/expired nonces. (FR-006, FR-013, FR-020, SC-005, SC-007)
 - [ ] T009 Implement independently owned workers and authoritative reconciliation in `ui/netclaw-visual/src/management/worker.js`; façade exit cannot kill services and uncertain dispatch never requeues. (FR-013, FR-021, SC-007, SC-011)
@@ -212,7 +212,7 @@ Deliver small story checkpoints with real behavioral evidence, preserve the exis
 
 ## Counts and traceability
 
-79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks are complete at the Mac development checkpoint; 74 remain unchecked. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
+79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. Six tasks are complete; 73 remain unchecked. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
 
 | Group | Tasks |
 |---|---|
@@ -243,5 +243,5 @@ checkboxes remain unchecked**; the baseline is not E3/E8 or extension acceptance
 
 See [WSL acceptance evidence](evidence/wsl-acceptance.md) for reproduced permission,
 audit-contention and distribution-isolation fixes plus separate actual process
-results. These partial results do not close the full task gates; checkboxes remain
-unchanged. Work continues on `150-vscode-extension-wsl`.
+results. T006 binding/revision behavior is verified and checked. Remaining partial results
+do not close their full task gates. Work continues on `150-vscode-extension-wsl`.
