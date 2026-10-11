@@ -90,3 +90,6 @@ Follow-up verification found version **0.1.1** with a public visibility flag in 
 ### Public-page availability correction
 
 At 2026-10-11T23:16:25Z the public item page still returned **HTTP404**. The authenticated publisher API confirms installation target **Microsoft.VisualStudio.Code**, but version0.1.1 has not been marked validated; a validated-only gallery query excludes it. No validation failure message was returned. Upload success, the gallery public flag and a downloadable archive must not be reported as proof that the public listing is working. The exact-artifact acceptance and CDN hash verification above remain valid. README promotion and the requested website feature article are held until the item page works.
+
+
+At **2026-10-11T23:20:32Z**, validation completed: the item page returned **HTTP200**, displayed the **Visual Studio Code** category and `vscode:extension/NetClaw.netclaw` Install link, and the validated-only gallery returned version **0.1.1**. The public-link gate is now satisfied.

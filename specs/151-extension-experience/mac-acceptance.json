@@ -64,11 +64,11 @@
     "payloadFilesMatched": 32,
     "listing": "https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw",
     "galleryPublicFlag": true,
-    "itemPageHttpStatus": 404,
-    "versionValidated": false,
-    "validatedCatalogContainsVersion": false,
-    "statusObservedAt": "2026-10-11T23:16:25Z",
+    "itemPageHttpStatus": 200,
+    "versionValidated": true,
+    "validatedCatalogContainsVersion": true,
+    "statusObservedAt": "2026-10-11T23:20:32Z",
     "installationTarget": "Microsoft.VisualStudio.Code",
-    "statusNote": "Successful upload and a public gallery flag do not establish a working public item page. Microsoft has not yet marked version0.1.1 validated. No validation failure message was returned."
+    "statusNote": "Public item page returned200 and displayed the Visual Studio Code category and Install link; validated-only gallery included0.1.1."
   }
 }
