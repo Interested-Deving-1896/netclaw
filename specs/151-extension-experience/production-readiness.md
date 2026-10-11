@@ -77,7 +77,7 @@ Machine-readable scope and results: [mac-acceptance.json](mac-acceptance.json). 
 
 After the owner's conditional publication authorization and the Mac acceptance above, `vsce publish --packagePath` submitted the **unchanged original VSIX** from this Mac on 2026-10-11. Microsoft returned `Published NetClaw.netclaw v0.1.1`. No new package, version bump or application-source change was made. The listing is [NetClaw on Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw); Marketplace processing and listing visibility are separate from successful submission. The GitHub artifact handoff remains a draft release.
 
-Follow-up verification found the public listing at version **0.1.1** and downloaded its VSIX from Microsoft's gallery CDN. Its complete archive matched the original SHA256 **`0a7c43238f3df39f409054d8ccb76975aa847d5986ffbcb2a2c645574da75d57`**, byte for byte; all 32 extension payload files matched as well.
+Follow-up verification found version **0.1.1** with a public visibility flag in Microsoft's gallery API and downloaded its VSIX from the gallery CDN. Its complete archive matched the original SHA256 **`0a7c43238f3df39f409054d8ccb76975aa847d5986ffbcb2a2c645574da75d57`**, byte for byte; all 32 extension payload files matched as well.
 
 ## Primary references
 
@@ -85,3 +85,8 @@ Follow-up verification found the public listing at version **0.1.1** and downloa
 - [OpenShell v0.0.32 native policy implementation](https://github.com/NVIDIA/OpenShell/blob/v0.0.32/crates/openshell-server/src/grpc/policy.rs)
 - [OpenShell v0.0.32 CLI](https://github.com/NVIDIA/OpenShell/blob/v0.0.32/crates/openshell-cli/src/run.rs)
 - [DefenseClaw upstream](https://github.com/cisco-ai-defense/defenseclaw), with installed 0.8.4 `commands/cmd_tool.py` and `enforce/policy.py` used to verify connector/global/source semantics.
+
+
+### Public-page availability correction
+
+At 2026-10-11T23:16:25Z the public item page still returned **HTTP404**. The authenticated publisher API confirms installation target **Microsoft.VisualStudio.Code**, but version0.1.1 has not been marked validated; a validated-only gallery query excludes it. No validation failure message was returned. Upload success, the gallery public flag and a downloadable archive must not be reported as proof that the public listing is working. The exact-artifact acceptance and CDN hash verification above remain valid. README promotion and the requested website feature article are held until the item page works.

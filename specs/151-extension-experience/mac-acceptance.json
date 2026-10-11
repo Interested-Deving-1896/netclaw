@@ -58,11 +58,17 @@
   ],
   "marketplace": {
     "version": "0.1.1",
-    "publicListing": true,
     "downloadedArtifactSha256": "0a7c43238f3df39f409054d8ccb76975aa847d5986ffbcb2a2c645574da75d57",
     "originalArtifactSha256": "0a7c43238f3df39f409054d8ccb76975aa847d5986ffbcb2a2c645574da75d57",
     "archiveIdentical": true,
     "payloadFilesMatched": 32,
-    "listing": "https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw"
+    "listing": "https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw",
+    "galleryPublicFlag": true,
+    "itemPageHttpStatus": 404,
+    "versionValidated": false,
+    "validatedCatalogContainsVersion": false,
+    "statusObservedAt": "2026-10-11T23:16:25Z",
+    "installationTarget": "Microsoft.VisualStudio.Code",
+    "statusNote": "Successful upload and a public gallery flag do not establish a working public item page. Microsoft has not yet marked version0.1.1 validated. No validation failure message was returned."
   }
 }
