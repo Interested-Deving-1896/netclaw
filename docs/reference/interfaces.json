@@ -924,7 +924,7 @@
           "declaration": "npm run publisher:verify \u2192 vsce verify-pat NetClaw"
         }
       ],
-      "sha256": "7df6da30b85df4b718fd2c1611dcbdfdec5c6faa1bdf470d8299c9f41cd57cfd",
+      "sha256": "70bb526bd21b1a18d28be8cb05ab1b9bff37e6728aee818fb2b60c9ec4a368f3",
       "coverage": "All package.json script commands. Arguments after -- are delegated to the underlying command."
     },
     {
@@ -1463,7 +1463,7 @@
         "--edge"
       ],
       "declarations": [],
-      "sha256": "4e286cf67dcd63f806572ccdb0dbe48c59df4d2d7c393bbbf4d64e1c71bbc763",
+      "sha256": "99dd63f192cc302ea77634d89e204fe851e19abfc7e9db4efe0771938a421860",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -6150,7 +6150,7 @@
       "kind": "Node launcher",
       "flags": [],
       "declarations": [],
-      "sha256": "b4500f418e573c43a08c4b0cdcd3d2b8469c84193c557a2fcdefcd43e95f1922",
+      "sha256": "e2d0001fd1e5242314a21dfaed5e8fa04c28a022e64d68f33f31b484b429d22f",
       "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
     },
     {
@@ -12642,250 +12642,254 @@
     "conditions": [
       {
         "line": 214,
+        "declaration": "if path == '/n2n/management/peer-chat' and method == 'POST':"
+      },
+      {
+        "line": 226,
         "declaration": "if path == '/n2n/management/peer-policy' and method == 'POST':"
       },
       {
-        "line": 227,
+        "line": 239,
         "declaration": "if path == '/n2n/management/estate' and method == 'POST':"
       },
       {
-        "line": 233,
+        "line": 245,
         "declaration": "if path == '/n2n/management/meetings' and method == 'POST':"
       },
       {
-        "line": 241,
+        "line": 253,
         "declaration": "if path == '/n2n/management/mobile' and method == 'GET':"
       },
       {
-        "line": 244,
+        "line": 256,
         "declaration": "if path == '/n2n/management/capture' and method == 'POST':"
       },
       {
-        "line": 258,
+        "line": 270,
         "declaration": "if method == \"GET\" and path == \"/n2n/status\":"
       },
       {
-        "line": 271,
+        "line": 283,
         "declaration": "if method == \"POST\" and path == \"/n2n/consent\":"
       },
       {
-        "line": 290,
+        "line": 302,
         "declaration": "if method == \"POST\" and path == \"/n2n/kill\":"
       },
       {
-        "line": 297,
+        "line": 309,
         "declaration": "if method == \"POST\" and path == \"/n2n/visibility\":"
       },
       {
-        "line": 311,
+        "line": 323,
         "declaration": "if method == \"GET\" and len(parts) >= 3 and parts[1] == \"peers\":"
       },
       {
-        "line": 324,
+        "line": 336,
         "declaration": "if len(parts) == 4 and parts[1] == \"peers\" and parts[3] == \"refresh\" and method == \"POST\":"
       },
       {
-        "line": 328,
+        "line": 340,
         "declaration": "if path == \"/n2n/grants\" and method == \"GET\":"
       },
       {
-        "line": 331,
+        "line": 343,
         "declaration": "if path == \"/n2n/grants\" and method == \"POST\":"
       },
       {
-        "line": 345,
+        "line": 357,
         "declaration": "if len(parts) == 3 and parts[1] == \"grants\" and method == \"DELETE\":"
       },
       {
-        "line": 355,
+        "line": 367,
         "declaration": "if path == \"/n2n/invoke\" and method == \"POST\":"
       },
       {
-        "line": 373,
+        "line": 385,
         "declaration": "if path == \"/n2n/knowledge/route\" and method == \"POST\":"
       },
       {
-        "line": 381,
+        "line": 393,
         "declaration": "if path == \"/n2n/knowledge/query\" and method == \"POST\":"
       },
       {
-        "line": 394,
+        "line": 406,
         "declaration": "if path == \"/n2n/approvals\" and method == \"GET\":"
       },
       {
-        "line": 397,
+        "line": 409,
         "declaration": "if len(parts) == 3 and parts[1] == \"approvals\" and method == \"POST\":"
       },
       {
-        "line": 403,
+        "line": 415,
         "declaration": "if path == \"/n2n/audit\" and method == \"GET\":"
       },
       {
-        "line": 406,
+        "line": 418,
         "declaration": "if path == \"/n2n/config\" and method == \"POST\":"
       },
       {
-        "line": 416,
+        "line": 428,
         "declaration": "if path in (\"/n2n/chat/open\", \"/n2n/chat/send\") and method == \"POST\":"
       },
       {
-        "line": 424,
+        "line": 436,
         "declaration": "if path == \"/n2n/chats\" and method == \"GET\":"
       },
       {
-        "line": 428,
+        "line": 440,
         "declaration": "if path == \"/n2n/replicate\" and method == \"POST\":"
       },
       {
-        "line": 434,
+        "line": 446,
         "declaration": "if path == \"/n2n/replicate/resync\" and method == \"POST\":"
       },
       {
-        "line": 440,
+        "line": 452,
         "declaration": "if len(parts) == 4 and parts[1] == \"replicate\" and method == \"DELETE\":"
       },
       {
-        "line": 444,
+        "line": 456,
         "declaration": "if path == \"/n2n/tasks\" and method == \"POST\":"
       },
       {
-        "line": 461,
+        "line": 473,
         "declaration": "if path == \"/n2n/tasks\" and method == \"GET\":"
       },
       {
-        "line": 464,
+        "line": 476,
         "declaration": "if len(parts) == 4 and parts[1] == \"tasks\" and parts[3] == \"cancel\" and method == \"POST\":"
       },
       {
-        "line": 494,
+        "line": 506,
         "declaration": "if path == \"/n2n/health\" and method == \"GET\":"
       },
       {
-        "line": 554,
+        "line": 566,
         "declaration": "if path == \"/n2n/peers/forget-endpoint\" and method == \"POST\":"
       },
       {
-        "line": 585,
+        "line": 597,
         "declaration": "if path == \"/n2n/peer/edge_gate\" and method == \"POST\":"
       },
       {
-        "line": 605,
+        "line": 617,
         "declaration": "if path == \"/n2n/connect\" and method == \"POST\":"
       },
       {
-        "line": 618,
+        "line": 630,
         "declaration": "if path == \"/n2n/trust\" and method == \"POST\":"
       },
       {
-        "line": 631,
+        "line": 643,
         "declaration": "if len(parts) == 3 and parts[1] == \"tasks\" and method == \"GET\":"
       },
       {
-        "line": 661,
+        "line": 673,
         "declaration": "if path == \"/n2n/risk\" and method == \"GET\":"
       },
       {
-        "line": 674,
+        "line": 686,
         "declaration": "if path == \"/n2n/posture\" and method == \"GET\":"
       },
       {
-        "line": 684,
+        "line": 696,
         "declaration": "if path == \"/n2n/certs\" and method == \"GET\":"
       },
       {
-        "line": 733,
+        "line": 745,
         "declaration": "if path == \"/n2n/certs/rotate\" and method == \"POST\":"
       },
       {
-        "line": 747,
+        "line": 759,
         "declaration": "if path == \"/n2n/certs/renew\" and method == \"POST\":"
       },
       {
-        "line": 753,
+        "line": 765,
         "declaration": "if path == \"/n2n/gait\" and method == \"GET\":"
       },
       {
-        "line": 759,
+        "line": 771,
         "declaration": "if path == \"/n2n/faults\" and method == \"GET\":"
       },
       {
-        "line": 762,
+        "line": 774,
         "declaration": "if path == \"/n2n/risk\" and method == \"POST\":"
       },
       {
-        "line": 775,
+        "line": 787,
         "declaration": "if path == \"/n2n/members\" and method == \"GET\":"
       },
       {
-        "line": 802,
+        "line": 814,
         "declaration": "if path == \"/n2n/members/health\" and method == \"GET\":"
       },
       {
-        "line": 816,
+        "line": 828,
         "declaration": "if path == \"/n2n/members/remove\" and method == \"POST\":"
       },
       {
-        "line": 839,
+        "line": 851,
         "declaration": "if path == \"/n2n/members/add\" and method == \"POST\":"
       },
       {
-        "line": 857,
+        "line": 869,
         "declaration": "if path == \"/n2n/enroll/token\" and method == \"POST\":"
       },
       {
-        "line": 865,
+        "line": 877,
         "declaration": "if path == \"/n2n/route\" and method == \"POST\":"
       },
       {
-        "line": 872,
+        "line": 884,
         "declaration": "if path == \"/n2n/edge/push\" and method == \"POST\":"
       },
       {
-        "line": 1300,
+        "line": 1312,
         "declaration": "if method == \"GET\" and path == \"/status\":"
       },
       {
-        "line": 1313,
+        "line": 1325,
         "declaration": "elif method == \"GET\" and path == \"/rib\":"
       },
       {
-        "line": 1351,
+        "line": 1363,
         "declaration": "elif method == \"GET\" and path == \"/peers\":"
       },
       {
-        "line": 1359,
+        "line": 1371,
         "declaration": "elif method == \"POST\" and path == \"/inject\":"
       },
       {
-        "line": 1369,
+        "line": 1381,
         "declaration": "elif method == \"POST\" and path == \"/withdraw\":"
       },
       {
-        "line": 1378,
+        "line": 1390,
         "declaration": "elif method == \"POST\" and path == \"/add_peer\":"
       },
       {
-        "line": 1422,
+        "line": 1434,
         "declaration": "elif method == \"POST\" and path == \"/remove_peer\":"
       },
       {
-        "line": 1438,
+        "line": 1450,
         "declaration": "elif method == \"GET\" and path == \"/mesh_directory\":"
       },
       {
-        "line": 1453,
+        "line": 1465,
         "declaration": "elif method == \"POST\" and path == \"/set_mesh_endpoint\":"
       },
       {
-        "line": 1465,
+        "line": 1477,
         "declaration": "elif method == \"GET\" and path == \"/tunnels\":"
       },
       {
-        "line": 1475,
+        "line": 1487,
         "declaration": "elif method == \"POST\" and path == \"/tunnel/retry\":"
       },
       {
-        "line": 1495,
+        "line": 1507,
         "declaration": "elif path.startswith(\"/n2n\"):"
       }
     ]

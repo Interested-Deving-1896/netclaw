@@ -25,6 +25,7 @@ import { Workspace } from './workspace.js';
 import { RagClient } from './rag.js';
 import {installationLogs,ownedUsage,configuredNetwork} from './observability.js';
 import {retainedTopology} from './topology.js';
+import {PeerConversations} from './peer-chat.js';
 import { parseOperatorInput } from '../../../../mcp-servers/netclaw-operator-mcp/schemas.mjs';
 import { validateOperatorOutput } from '../../../../mcp-servers/netclaw-operator-mcp/responses.mjs';
 import {OwnedServiceController} from './service-ownership.js';
@@ -51,6 +52,7 @@ export class ManagementService {
     this.risk=new RiskConfiguration({binding:this.binding,journal:this.journal,readFederation:this.readFederation,services:this.services});
     this.runtimeSelection=new RuntimeSelection({binding:this.binding,journal:this.journal,root});
     this.peerPermissions=new FederationPermissions({binding:this.binding});
+    this.peerConversations=new PeerConversations({binding:this.binding,journal:this.journal,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.defenseclaw=new DefenseClawComponent(this.binding);
     this.openshell=new OpenShellComponent(this.binding);
     this.science=new ScienceOfficer({binding:this.binding,journal:this.journal,root,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
@@ -166,6 +168,10 @@ export class ManagementService {
     if(name==='operator_resources')return this.resources(principal,args);
     if(name==='operator_snapshot')return this.snapshot(principal,args);
     if(name==='operator_workspace'){
+      if(args.action==='peer-chat-list')return this.envelope(this.peerConversations.list(principal,{cursor:args.cursor,limit:args.limit}),'Owned operator peer conversations');
+      if(args.action==='peer-chat-read')return this.envelope(this.peerConversations.read(principal,{id:args.args.id,cursor:args.cursor,limit:args.limit}),'Retained owned peer messages and operation receipts; remote text is untrusted');
+      if(args.action==='peer-chat-preview')return this.envelope(await this.peerConversations.preview(principal,args.args),'Exact external peer and message review; no dispatch');
+      if(args.action==='peer-chat-submit')return this.peerConversations.submit(principal,args);
       if(args.action==='peer-policy')return this.envelope({...await this.peerPermissions.snapshot(args.args.id),revision:this.proposals.revision()},'Exact existing peer permissions and local grant candidates; no peer contact');
       if(args.action==='intent-state')return this.envelope(this.intent.state(principal),'Existing Terminal Intent configuration and durable requests');
       if(args.action==='intent-read')return this.envelope(this.intent.read(principal,args.args.id),'Owned durable Terminal Intent evidence');
@@ -179,12 +185,14 @@ export class ManagementService {
       if(value.state==='unknown'&&value.kind==='assistant-request')return this.clean(await this.assistants.reconcile(principal,args.operationId));
       if(value.state==='unknown'&&value.kind==='assessment-reconsider')return this.clean(await this.science.reconcile(principal,args.operationId));
       if(value.state==='unknown'&&value.kind==='mobile-capture')return this.clean(await this.mobile.reconcile(principal,args.operationId));
+      if(value.state==='unknown'&&value.kind==='peer-chat')return this.clean(await this.peerConversations.reconcile(principal,args.operationId));
       return this.clean(value);
     }
     if(name==='operator_request_submit')return this.clean(await this.conversations.submit(principal,args));
     if(name==='operator_cancel_request'){
       const value=this.journal.get(principal,args.operationId);
       if(value.kind==='mobile-capture')return this.clean(await this.mobile.cancel(principal,args));
+      if(value.kind==='peer-chat')return this.clean(await this.peerConversations.cancel(principal,args));
       if(value.kind==='terminal-intent')return this.clean(await this.intent.cancel(principal,args));
       return this.clean(value.kind==='assistant-request'?await this.assistants.cancel(principal,{nonce:args.nonce,requestId:args.operationId}):await this.conversations.cancel(principal,args));
     }

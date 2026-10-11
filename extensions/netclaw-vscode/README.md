@@ -42,6 +42,11 @@ tool/skill grant changes for native review. New invocation grants require NCFED
 approval. Existing peer identities, consent, certificate pins and unselected
 grants are preserved; already dispatched work may continue.
 
+**External Peer Conversations** reviews the exact peer and message, then uses
+its existing authenticated channel and recipient chat policy. Owned history and
+receipts survive editor disconnect. Replies are untrusted plain text; uncertain
+work is never resent. Remote-model/platform qualification remains in progress.
+
 ## Connect
 
 1. Open a trusted desktop VS Code window. For Windows/WSL, first open the intended

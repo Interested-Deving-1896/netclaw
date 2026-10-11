@@ -140,3 +140,61 @@ Logs: `/tmp/netclaw150-peer-{process,python,n2n-regression,backend,extension}.lo
 The native permission implementation is ready for further controlled acceptance,
 not a claim of full federation, named-client, actual ServiceNow, WSL or Linux
 qualification. Public release remains gated.
+
+## Reviewed peer conversations checkpoint
+
+The native operator workflow now reviews an exact existing peer and message,
+opens/resumes a privately owned conversation through the existing NCFED chat
+path, and retains request/history/cancellation evidence independently of the
+editor. No channel is dialed and no permission or trust is changed. The recipient
+still decides admission and applies its existing runtime/tool policy. Assistant
+origins cannot enter the operator path. Remote answers render as plain text;
+usage remains unavailable rather than inferred.
+
+The five-minute review binds installation, peer, message digest, conversation and
+local policy/channel revision. The fixed daemon route reads it from the private
+journal using the live worker lease. It validates owner, identity, state, content
+and expiry, then repeats preflight between remote session opening and message
+send. Retained task receipts deduplicate admission and support read-only status
+reconciliation. A lost worker or uncertain remote outcome never replays work;
+it blocks another turn in that conversation. Local cancellation does not assert
+remote cancellation. History uses independent cursor paging, so unrelated
+management operations cannot push an older conversation out of reach.
+
+Mac results using isolated synthetic installations:
+
+- Node peer-conversation boundaries: **7 passed**. Exact review/content/peer,
+  ownership, expiry, policy/channel change, audit loss, explicit recipient
+  denial, cancellation, lost receipt/status reconciliation, independent history
+  paging, large Unicode/escaped answers and response byte bounds.
+- Python task/chat boundaries: **8 passed**. These use real SQLite/task/chat
+  implementations but synthetic journal admission and peer channel. They cover
+  recipient denial, repeat admission, follow-up ownership, authority loss after
+  opening, unattested/closed channels, cancellation, missing worker and linked
+  result-file rejection. Combined existing peer-policy and chat regressions:
+  **31 passed**.
+- Separate real Node worker + Python receiver + private journal + GAIT process
+  check: **1 passed**, both OpenClaw and Hermes selections. It preserves work
+  after facade exit and reconciles a deliberately lost start response. Forged/
+  expired leases, altered content/owner/state, expired review and changed live
+  installation identity are denied before dispatch. Exactly one synthetic
+  session-open and two synthetic message calls occurred per selection, with no
+  provider, real peer or network-device contact. Config and environment bytes
+  remained identical. Existing peer-permission and Risk process regressions also
+  passed (**3 process cases total**).
+- Native boundaries: **4 passed**, including exact destination/content review,
+  cancellation/connection changes, lost admission nonce lookup, retained history
+  follow-up and inert remote text. Entire extension suite: **71 passed**;
+  TypeScript and build passed.
+- Entire operator/assistant suite: **215 passed, 18 opt-in skipped**. The process
+  checks above were run separately; skipped entries are not acceptance evidence.
+
+The large-answer test exposed the journal's 64 KiB encoded-event limit. Receipts
+now bound encoded text with visible truncation while preserving Unicode, and
+history paginates early at 512 KiB. A long valid answer no longer becomes unknown
+merely because its receipt exceeds that limit.
+
+Logs: `/tmp/netclaw150-peer-chat-{regression-final,extension,final-process}.log`.
+Live remote-model/runtime combinations, exact platform acceptance and the
+remaining membership/peering/tool/skill workflows are still open. This checkpoint
+does not close T030/T032/T033/T034 or publish the extension.

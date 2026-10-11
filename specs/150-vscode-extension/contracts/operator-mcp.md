@@ -111,6 +111,25 @@ Records identify reports separately from actual transcript activity and set
 assistant discovery or dispatch. The adapter reuses the existing OpenClaw engine;
 protected Hermes Intent remains explicitly unqualified.
 
+## Reviewed external peer conversations
+
+`operator_workspace` also supports `peer-chat-list`, `peer-chat-read`,
+`peer-chat-preview` and `peer-chat-submit`. List uses normal cursor/limit paging;
+read takes a conversation UUID and returns at most 20 retained messages per page
+independently of unrelated management history. Preview takes an exact existing
+peer ID, message up to 4,000 characters/16,000 bytes, and optional owned
+conversation UUID. Its five-minute immutable record binds destination, content
+digest and channel/policy revision. Submit requires that review ID plus the same
+peer/text and a nonce. Preview and history do not contact the peer.
+
+The operator-only daemon receiver accepts an operation ID and live worker lease,
+never caller-supplied message content or approval. Existing authenticated NCFED
+chat and recipient admission remain authoritative. Durable task receipts support
+status-only reconciliation; lost workers or ambiguous dispatch are unknown and
+never replayed. Native confirmation discloses the peer/model destination. Remote
+answers remain untrusted and usage remains unavailable. Local cancellation is
+not proof of remote cancellation. Assistant grants cannot enter this surface.
+
 ## Durability and GAIT
 
 Persist canonical admission/ownership before effects, then dispatch to an existing durable runtime or installation-owned worker. Worker startup uses only the admitted operation ID, not user command text, and rechecks authority. Lost receipts resolve through nonce lookup. Do not retry uncertain writes; reattach/read authoritative state instead. WSL shutdown can interrupt services; restart reads journal and preserves unknown outcomes.

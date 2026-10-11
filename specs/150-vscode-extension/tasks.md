@@ -336,8 +336,14 @@ inference, editor performance, WSL or native Linux.
 The later peer-permission checkpoint in the same evidence closes T029's boundary
 tests. Exact reviewed chat/grant/revoke controls, receiver admission, shared SQLite
 revisions and native review are implemented. T030/T032 remain open for their
-remaining membership/peering and remote conversation/tool/skill workflows;
+remaining membership/peering and remote tool/skill workflows;
 T033/T034 remain full runtime/platform gates.
+
+The peer-conversation checkpoint adds exact native destination/content review,
+durable operator chat, retained paginated history and status-only reconciliation.
+The real worker/receiver/GAIT process passed on both selected harnesses with a
+synthetic peer response. This is not live remote-model or platform acceptance.
+T030/T032 remain open for membership/peering and remote tool/skill controls.
 
 ## Log review checkpoint
 

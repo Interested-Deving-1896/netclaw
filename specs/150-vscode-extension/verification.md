@@ -35,7 +35,7 @@ requires a new build and the affected checks. See [package evidence](evidence/pa
 | FR-013 | Durable journal/workers, no replay, observed runtime recovery | All mutation receipts/reconciliation and real host faults |
 | FR-014 | Distinct native estate branches and cached source freshness | Full mixed estate/editor/platform matrix |
 | FR-015 | Exact bounded received capability details; advertisement is not execution | All posture/details and independently qualified execution |
-| FR-016 | Exact reviewed external-peer permission changes and durable receipts | Membership lifecycle, peering establishment/severing, remote conversations/tools/skills |
+| FR-016 | Exact reviewed external-peer permission changes; reviewed peer conversations, retained history and durable receipts | Membership lifecycle, peering establishment/severing, remote tools/skills; live runtime conversation matrix |
 | FR-017 | Both harness identities enforced; unsupported paths denied | Full internal/external runtime matrix and Linux/WSL host-control dependency |
 | FR-018 | Provider/model, budgets, existing runtime default and Risk role proposals | Full effective-state and platform acceptance |
 | FR-019 | Presence-only secrets, explicit replacements, multiline preservation tests | Complete release UI/export/client matrix |

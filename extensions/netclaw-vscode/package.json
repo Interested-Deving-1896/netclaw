@@ -261,6 +261,12 @@
         "enablement": "isWorkspaceTrusted"
       },
       {
+        "command": "netclaw.openPeerChat",
+        "title": "External Peer Conversations",
+        "category": "NetClaw",
+        "enablement": "isWorkspaceTrusted"
+      },
+      {
         "command": "netclaw.openNetwork",
         "title": "Inspect Configured Network",
         "category": "NetClaw",

@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'mcp-servers/protocol-mcp'))
@@ -42,18 +43,31 @@ async def main():
         # Controlled local catalog, no actual tool or model execution.
         fed.inventory._load_mcp_servers=lambda:[{'name':'fixture-mcp','tools':['calculate'],'invocable_tools':['calculate'],'qualification':'synthetic catalog only'}]
         fed.inventory._load_skills=lambda:[];fed.inventory._load_knowledge=lambda peer:[]
-    requests=[];drop_policy_reply=False
+    chat_calls=[]
+    if '--peer-chat' in sys.argv:
+        fed.manager.local_consent(65002,'2.2.2.2');fed.manager.remote_consent(65002,'2.2.2.2')
+        async def chat_call(method,body,**kwargs):
+            # Synthetic channel only: the receiver, task journal and chat
+            # transcript implementation are real; no remote model is contacted.
+            chat_calls.append({'method':method,'session':body.get('session_id')})
+            await asyncio.sleep(.35)
+            if method=='n2n/chat/open':return {'accepted':True,'session_id':body['session_id']}
+            return {'session_id':body['session_id'],'text':'Synthetic external peer response'}
+        fed.channels['as65002-2.2.2.2']=SimpleNamespace(peer_identity='as65002-2.2.2.2',attestation='possession',_closed=False,call=chat_call)
+    requests=[];drop_policy_reply=False;drop_chat_reply=False
     async def handle(reader,writer):
-        nonlocal drop_policy_reply
+        nonlocal drop_policy_reply,drop_chat_reply
         try:
             head=await asyncio.wait_for(reader.readuntil(b'\r\n\r\n'),5);assert len(head)<=8192
-            method,route,_=head.decode().split('\r\n')[0].split(' ');assert method=='GET' or ('--estate' in sys.argv or '--peer-policy' in sys.argv) and method=='POST';requests.append(route)
+            method,route,_=head.decode().split('\r\n')[0].split(' ');assert method=='GET' or any(flag in sys.argv for flag in ['--estate','--peer-policy','--peer-chat']) and method=='POST';requests.append(route)
             length=next((int(line.split(':',1)[1]) for line in head.decode().split('\r\n') if line.lower().startswith('content-length:')),0)
             assert 0<=length<=8192;body=json.loads(await reader.readexactly(length)) if length else {}
             if route=='/status':code,value=200,{'installation_id':installation,'harness_type':kind,'federation_ready':True}
             else:code,value=await daemon.handle_n2n(method,route,body)
             if drop_policy_reply and route=='/n2n/management/peer-policy' and body.get('action')=='apply' and code==200:
                 drop_policy_reply=False;return  # Effect committed; deliberately lose its receipt.
+            if drop_chat_reply and route=='/n2n/management/peer-chat' and body.get('action')=='start' and code==200:
+                drop_chat_reply=False;return
             data=json.dumps(value).encode();writer.write(f'HTTP/1.1 {code} Result\r\nContent-Type: application/json\r\nContent-Length: {len(data)}\r\nConnection: close\r\n\r\n'.encode()+data);await writer.drain()
         finally:writer.close();await writer.wait_closed()
     api=await asyncio.start_server(handle,'127.0.0.1',0)
@@ -66,6 +80,10 @@ async def main():
                 os.environ['N2N_RISK_MODE']='production';print(json.dumps({'production':True}),flush=True)
             if line.strip()=='drop-next-policy-reply':
                 drop_policy_reply=True;print(json.dumps({'armed':True}),flush=True)
+            if line.strip()=='drop-next-chat-reply':
+                drop_chat_reply=True;print(json.dumps({'armed':True}),flush=True)
+            if line.strip()=='check-chat':
+                print(json.dumps({'calls':chat_calls,'tasks':fed.manager._conn.execute("SELECT count(*) FROM delegated_task WHERE target_type='chat'").fetchone()[0]}),flush=True)
             if line.strip()=='check-estate':
                 print(json.dumps({'writes':fed.manager._conn.total_changes-estate_changes,'routes':sorted(set(requests)),'channels':len(fed.channels),'membersConnected':len(fed.member_channels)}),flush=True)
             if line.strip()=='startup-sync':

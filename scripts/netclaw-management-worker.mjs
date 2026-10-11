@@ -12,12 +12,13 @@ try{
   service=new ManagementService({root,home:values.home,kind:values.runtime,expectedInstallationId:values.installation});
   const row=service.journal._row(values.operation);
   // The fixed worker executes only admitted backend operation kinds; never a command from a request.
-  invariant(['apply','conversation-request','assistant-request','rag-index','assessment-reconsider','mobile-capture','terminal-intent'].includes(row.kind),'UNSUPPORTED');
+  invariant(['apply','conversation-request','assistant-request','rag-index','assessment-reconsider','mobile-capture','terminal-intent','peer-chat'].includes(row.kind),'UNSUPPORTED');
   if(row.kind==='conversation-request')await service.conversations.run(values.operation);
   else if(row.kind==='assistant-request')await service.assistants.run(values.operation);
   else if(row.kind==='rag-index')await service.workspace.runIndex(values.operation);
   else if(row.kind==='assessment-reconsider')await service.science.run(values.operation);
   else if(row.kind==='mobile-capture')await service.mobile.run(values.operation);
+  else if(row.kind==='peer-chat')await service.peerConversations.run(values.operation);
   else if(row.kind==='terminal-intent')await service.intent.run(values.operation);
   else lease=service.journal.claim(values.operation,{pid:process.pid,start:new Date().toISOString()});
   if(lease){

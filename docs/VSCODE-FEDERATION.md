@@ -80,8 +80,39 @@ and the original owned database inode. Custom/shared/linked or writable-by-other
 stores are unavailable for these mutations. Updating backend files does not
 update an already running daemon; use the normal operator update/restart process.
 
-Membership lifecycle, peer establishment/severing, remote conversations and
-remote tool/skill invocation controls remain incomplete in Spec 150. Their enum
+## External peer conversations
+
+Run **NetClaw: External Peer Conversations** from the command palette or estate
+tree. Choose an existing peer, write a message, and review the exact destination
+and content before sending. An existing possession-authenticated channel and
+mutual federation consent are required. This command does not dial a peer or
+change its permissions. The recipient independently enforces chat admission,
+budget and its configured runtime/tool policy, and may refuse the request.
+
+The native review expires after five minutes and binds the message digest,
+peer, conversation, channel and current local peer policy. The daemon receives
+only the owned operation ID and live worker lease. It reads the reviewed message
+from the installation's private journal and rechecks authority before opening
+the remote session and before sending. This human operator workflow is separate
+from assistant delegation: an assistant grant cannot enter it or borrow its
+permissions. Message content is disclosed to the peer and its configured model.
+
+Reopen the command to inspect a pending request, request cancellation, or read
+retained conversations and send an explicitly reviewed follow-up. Replies are
+untrusted plain text; no remote markup or commands execute in the editor.
+Conversation/message lists are paginated, with at most 20 messages per history
+page and explicit redaction/truncation. Prompt drafts are not stored in editor
+state; the backend retains the admitted request. Token/cost usage is unavailable
+through this chat interface and is not inferred from the response.
+
+Editor disconnect does not stop the independent worker. Lost receipts reconcile
+against the exact retained task; unknown work is never resent and blocks another
+turn in that conversation. Cancellation stops local waiting where possible and
+does not claim to undo remote execution. A daemon restart can leave an in-flight
+remote chat unknown; no model text is treated as proof of completion.
+
+Membership lifecycle, peer establishment/severing and remote tool/skill
+invocation controls remain incomplete in Spec 150. Their enum
 declarations do not enable dispatch. Existing Spec 149 runtime evidence does not
 qualify new extension workflows automatically. See the current
 [federation evidence](../specs/150-vscode-extension/evidence/federation.md).
