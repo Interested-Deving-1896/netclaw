@@ -29,8 +29,9 @@ test('estate inspector refreshes only its exact bound resource and fails when it
   const panel={webview:{cspSource:'fixture:',asWebviewUri:value=>value,onDidReceiveMessage:fn=>{receive=fn;},postMessage:async value=>{posted.push(value);}},onDidDispose(){}};
   const mock={...api,window:{createWebviewPanel:()=>panel},ViewColumn:{One:1},Uri:{joinPath:(...parts)=>parts.join('/')},workspace:{isTrusted:true}};
   const {inspectEstateResource}=await sourceModule('views/estate.ts',mock);
-  const connection={generation:1,identity:{harness:{type:'hermes'}},call:async(name,input)=>{calls.push({name,input});return {data:{items:calls.length===1?[{id:'peer',inventory:{detail:true}}]:[]},source:'fresh cache',observedAt:'fixture-time',warnings:[]};}};
+  const connection={generation:1,changed:new api.EventEmitter(),identity:{harness:{type:'hermes'}},call:async(name,input)=>{calls.push({name,input});return {data:{items:calls.length===1?[{id:'peer',inventory:{detail:true}}]:[]},source:'fresh cache',observedAt:'fixture-time',warnings:[]};}};
   inspectEstateResource({extensionUri:'fixture'},connection,{label:'Peer',generation:1,resource:{id:'peer'},resourceKind:'peer'});
+  assert.equal(calls.length,0);receive({type:'ready',viewId:panel.webview.html.match(/data-view-id="([^"]+)"/)[1],requestId:'1'});
   await new Promise(resolve=>setImmediate(resolve));
   assert.deepEqual(JSON.parse(JSON.stringify(calls[0])),{name:'operator_resources',input:{kind:'peer',resourceId:'peer',limit:1}});assert.equal(posted[0].data.resource.inventory.detail,true);
   receive({type:'refresh',viewId:posted[0].viewId,requestId:'2'});await new Promise(resolve=>setImmediate(resolve));

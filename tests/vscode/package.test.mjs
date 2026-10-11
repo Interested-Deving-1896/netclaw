@@ -6,7 +6,7 @@ import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('../../',import.meta.url)),extension=path.join(root,'extensions/netclaw-vscode');
 const require=createRequire(path.join(extension,'package.json')),{listFiles,PackageManager}=require('@vscode/vsce');
-const expected=new Set(['package.json','README.md','CHANGELOG.md','LICENSE','PRIVACY.md','dist/extension.cjs','dist/extension.cjs.LEGAL.txt','dist/avatar.js','dist/avatar.js.LEGAL.txt','dist/canvas.js','resources/icon.png','resources/activity.svg','resources/workbench.css','resources/chat.js','resources/rag.js','resources/network.js','resources/pal/john.glb','resources/pal/john.png','resources/pal/lobster.glb','resources/pal/lobster.png','resources/pal/manifest.json','resources/screenshots/rag.png','resources/screenshots/canvas.png','resources/screenshots/network.png']);
+const expected=new Set(['package.json','README.md','CHANGELOG.md','LICENSE','PRIVACY.md','dist/extension.cjs','dist/extension.cjs.LEGAL.txt','dist/avatar.js','dist/avatar.js.LEGAL.txt','dist/canvas.js','resources/icon.png','resources/activity.svg','resources/workbench.css','resources/chat.js','resources/rag.js','resources/network.js','resources/data.js','resources/pal/john.glb','resources/pal/john.png','resources/pal/lobster.glb','resources/pal/lobster.png','resources/pal/manifest.json','resources/screenshots/rag.png','resources/screenshots/canvas.png','resources/screenshots/network.png']);
 
 test('VSIX file discovery includes only the exact runtime allowlist and excludes synthetic private material',async()=>{
   const probes=['.env.package-leak-fixture','credentials.fixture.json','private-installation.fixture.sqlite'];

@@ -12,6 +12,11 @@ dt {color:var(--vscode-descriptionForeground);font-weight:500;overflow-wrap:anyw
 dd {margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 dd dl {grid-template-columns:minmax(90px,140px) minmax(0,1fr)}
 #status {color:var(--vscode-descriptionForeground)}
+.data-view #filter {width:min(100%,480px);box-sizing:border-box;padding:8px}
+.data-view section article {margin:8px 0}
+.data-view nav {margin:12px 0}
+.vscode-high-contrast button,.vscode-high-contrast-light button {border-color:var(--vscode-contrastBorder,var(--vscode-foreground))}
+@media(forced-colors:active){button{border-color:ButtonText}article{border-color:CanvasText}}
 .toolbar {display:flex;flex-wrap:wrap;gap:8px}
 label {display:block;margin:10px 0 5px}
 textarea,input,select {font:inherit;color:var(--vscode-input-foreground);background:var(--vscode-input-background);border:1px solid var(--vscode-input-border,var(--vscode-panel-border));border-radius:3px}

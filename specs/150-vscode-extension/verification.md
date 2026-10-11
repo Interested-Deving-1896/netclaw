@@ -10,9 +10,9 @@ ready. Local Marketplace authentication for publisher `NetClaw` succeeded and
 was independently verified. No token is stored here. No extension is published.
 The previous TF400813 authentication failure is resolved.
 
-Current candidate checkpoint: source `f95a32294f466deae27d63e5ad9c81ef82c2ef6b`,
+Current candidate checkpoint: source `ba91ecb45b89e8619fcff01c8c30a06b5ac01615`,
 version `NetClaw.netclaw` 0.1.0, SHA-256
-`eac6dbf4c1f56f65edb88b65ec731825c2348a44d91c404da695ac30dca84750`.
+`ea5db2b929f5dbbcf96abf980530a806cac4b75a0a09b250f7f597572745984a`.
 Evidence applies only to its identified source/artifact; later implementation
 requires a new build and the affected checks. See [package evidence](evidence/package.md).
 
@@ -44,7 +44,7 @@ requires a new build and the affected checks. See [package evidence](evidence/pa
 | FR-022 | Independent authoritative CR contract, incident/state checks, refusal tests | Real production authority/device qualification; no synthetic approval claim |
 | FR-023 | Durable operator Intent around existing scoped Local/Lab engine | Physical designated endpoints and real preparation/APPLY/rollback proof |
 | FR-024 | Installation GAIT records and native inspection; audit-loss denials | Full domain/session outcome and remote acceptance |
-| FR-025 | Bound DefenseClaw settings/events/scans, reviewed connector tool rules and observed OpenShell state | Scanner execution and qualified OpenShell lifecycle/policy writes; running enforcement acceptance |
+| FR-025 | Bound DefenseClaw settings/events, reviewed connector tool rules and local static skill scans; observed OpenShell state | Other scanner families and qualified OpenShell lifecycle/policy writes; running enforcement acceptance |
 | FR-026 | Independent controls and truthful degraded/unknown posture | Full actual enforcement and production matrix |
 | FR-027 | Recorded usage/cost/gap reconciliation; scoped budgets | Complete domain/platform acceptance; no invented Hermes totals |
 | FR-028 | Catalog/config/install inventory and reviewed configuration | Remaining supported management and actual execution qualification |
@@ -60,7 +60,7 @@ requires a new build and the affected checks. See [package evidence](evidence/pa
 | FR-038 | No telemetry, reviewed selected sharing and local diagnostic save | Full client/remote disclosure matrix |
 | FR-039 | Shared existing backends, writer locks and domain regressions | Remaining implementations and full applicable regression rollup |
 | FR-040 | Actual candidate lifecycle and package checks | All required environments plus exact public Marketplace installation |
-| FR-041 | Opt-in Copilot MCP discovery, immutable grants and revocation | Actual Copilot inference and remote/WSL policy scenarios |
+| FR-041 | Opt-in Copilot discovery; actual Mac inference, inspect/propose/revoke and immutable grants | Full delegation, expiry/fault and remote/WSL policy scenarios |
 | FR-042 | Actual Claude/Codex inspection; Claude proposal; reviewed setup | Codex client confirmation, permitted delegation and remote/WSL matrix |
 | FR-043 | Inspection/proposals, immutable grants, protected Hermes local subnet profile | Broader OpenClaw/federated delegation with enforceable per-hop grants |
 | FR-044 | Principal/grant/installation ownership, disclosure and expiry/revocation | Actual named-client/runtime/remote end-to-end matrix |
@@ -72,13 +72,13 @@ requires a new build and the affected checks. See [package evidence](evidence/pa
 | SC-001 | Actual isolated Mac editor connections | Required physical/native/WSL/SSH onboarding times unrun |
 | SC-002 | Implemented domain handlers and honest limitations | Incomplete workflows remain blockers |
 | SC-003 | Retained Spec149 reference proof and selected Spec150 domain processes | Full Spec150 harness/host action matrix incomplete |
-| SC-004 | Bounded 100-member/100-peer backend reads with measured latency | Actual all-domain editor p95 and 1,000-row matrix incomplete |
+| SC-004 | Bounded estate reads; actual 100/100/1,000 inspection-panel filtering p95 90–91 ms, refresh 17–27 ms in both editors | Native navigation and full domain performance matrix incomplete |
 | SC-005 | Synthetic identity/grant/window/distro denial tests | Physical cross-context fault matrix incomplete |
 | SC-006 | Reviewed changes and production/Local-Lab refusal fixtures | Remaining domain and actual-authority checks incomplete |
 | SC-007 | Real worker/facade loss, lease expiry and no replay in isolated requests | All actions and WSL restart reconciliation incomplete |
 | SC-008 | Configuration/log/export/package synthetic-secret tests | Final release security sweep incomplete |
 | SC-009 | Exact fixture costs, missing data and explicit scope | Mac reconciliation passed; full domain acceptance remains |
-| SC-010 | Native controls and rendered minimum/current panels | Full keyboard and three-theme matrix unrun |
+| SC-010 | Actual three-theme inspection panels and keyboard paging/refresh in minimum/current editors | Full connection/chat/settings/GAIT keyboard and domain theme matrix incomplete |
 | SC-011 | Actual candidate lifecycle preserves independent OpenClaw and saved work | Mac result only; required other contexts incomplete |
 | SC-012 | Local VSIX and authenticated publisher | Not published; no public install claim |
 | SC-013 | Actual Claude, Copilot and Codex partial evidence; protected Hermes process proof | Real Mac Copilot inspect/propose/revoke passed; full three-client WSL/SSH/harness matrix incomplete |
@@ -89,7 +89,7 @@ requires a new build and the affected checks. See [package evidence](evidence/pa
   [conversations](evidence/conversations.md) and [workspace](evidence/workspace.md).
 - [Federation](evidence/federation.md), [assistant clients](evidence/assistant-clients.md),
   [security](evidence/security.md) and [security components](evidence/security-components.md).
-- [Observability](evidence/observability.md), [package](evidence/package.md) and
+- [Observability](evidence/observability.md), [workbench](evidence/workbench.md), [package](evidence/package.md) and
   [prior real WSL findings](evidence/wsl-acceptance.md).
 
 Finish missing Mac implementation first: remaining estate and

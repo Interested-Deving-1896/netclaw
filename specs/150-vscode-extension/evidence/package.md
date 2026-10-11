@@ -52,3 +52,30 @@ unchanged retry completed every phase. Both results are retained; no extension
 fix is attributed to the retry. Local failure log:
 `/tmp/netclaw150-vsix-f95a322-min.log`; passing retry/current logs use suffixes
 `-min-retry.log` and `-current.log`. Package allowlist inspection also passed.
+
+
+## Scanner and actual-Copilot checkpoint candidate
+
+After committed source `ba91ecb45b89e8619fcff01c8c30a06b5ac01615`, a fresh
+`NetClaw.netclaw` 0.1.0 VSIX was packaged with **26 archive files** (24 allowlisted
+runtime files and two VSIX metadata entries), **2,959,957 bytes**, SHA-256
+`ea5db2b929f5dbbcf96abf980530a806cac4b75a0a09b250f7f597572745984a`.
+
+Actual isolated **VS Code 1.102.0 and 1.141.0** lifecycle checks both passed on
+Mac arm64: clean previous-candidate install, upgrade to the exact new VSIX,
+disable, uninstall and rollback/retained profile. Each run kept an independently
+owned installed OpenClaw process alive, made one controlled loopback-provider
+request and preserved configuration/.env bytes, its completed request, saved
+Canvas/context and profile identity. Actual installation GAIT was enabled.
+The previous version is a synthetic `0.0.1` candidate, not a public release.
+
+Local reports (sanitized summary above):
+
+- Minimum: `/private/var/folders/ln/99pzcfd950j6vxf7gbfjjm5w0000gq/T/netclaw150-vsix-T7B2KM/report.json`
+- Current: `/private/var/folders/ln/99pzcfd950j6vxf7gbfjjm5w0000gq/T/netclaw150-vsix-pJCqsl/report.json`
+- Logs: `/tmp/netclaw150-vsix-ba91ecb-{1.102.0,1.141.0}.log`
+
+This supersedes the older candidate for these identified Mac lifecycle rows.
+Subsequent inspection-rendering changes need a fresh candidate. No public
+publication, clean Marketplace installation, real WSL/native Linux or Remote SSH
+acceptance is claimed. T070 remains open for the final source/platform artifact.

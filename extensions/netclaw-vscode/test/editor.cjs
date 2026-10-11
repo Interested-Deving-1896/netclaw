@@ -22,6 +22,7 @@ exports.run=async()=>{
   const initialOperations=(await api.connection.call('operator_resources',{kind:'overview'})).data.operations.length;
   await vscode.commands.executeCommand('netclaw.openOverview');count++;
   const rendered=[];
+  const performance=[];
   if(process.env.NETCLAW_TEST_CDP_PORT){
     const {chromium}=require(process.env.NETCLAW_TEST_PLAYWRIGHT);
     const browser=await chromium.connectOverCDP('http://127.0.0.1:'+process.env.NETCLAW_TEST_CDP_PORT);
@@ -31,6 +32,48 @@ exports.run=async()=>{
         for(let attempt=0;attempt<80;attempt++){for(const frame of page.frames()){try{if(!frame.isDetached()&&await frame.locator(selector).count())return frame;}catch(error){if(!frame.isDetached())throw error;}}await new Promise(resolve=>setTimeout(resolve,100));}
         throw Error('Webview did not render '+selector);
       }
+      // Actual Chromium webview measurements with explicit synthetic source
+      // rows. This qualifies rendering/filtering, not backend or native tree
+      // latency, remote execution, or all-domain workflow acceptance.
+      const originalCall=api.connection.call.bind(api.connection);let revision=0,backendMs=0;
+      const observation={source:'Synthetic cached estate; no peer contacted',observedAt:'2026-10-11T00:00:00Z',freshness:'stale',executionVerified:false,
+        members:Array.from({length:100},(_,i)=>({id:'member-'+i,harness:i%2?'hermes':'openclaw',state:'unknown'})),
+        peers:Array.from({length:100},(_,i)=>({id:'peer-'+i,trust:'advertised',state:'unknown'})),
+        tools:Array.from({length:1000},(_,i)=>({id:'tool-'+i,description:i===999?'<script>hostile()</script> command:unsafe':'Advertised tool; execution not verified',executionVerified:null}))};
+      api.connection.call=async(name,args)=>{
+        if(name==='operator_resources'&&args.kind==='overview'){
+          const started=Date.now();const value={...observation,sourceRevision:++revision};backendMs=Date.now()-started;return value;
+        }return originalCall(name,args);
+      };
+      try{
+        await vscode.commands.executeCommand('netclaw.openOverview');const overview=await frameFor('.data-view #filter');
+        await overview.locator('#content').getByText('Synthetic cached estate; no peer contacted',{exact:true}).waitFor();
+        for(const [theme,bodyClass] of [['Default Dark Modern','vscode-dark'],['Default Light Modern','vscode-light'],['Default High Contrast','vscode-high-contrast']]){
+          await vscode.workspace.getConfiguration('workbench').update('colorTheme',theme,vscode.ConfigurationTarget.Global);
+          await overview.locator('body.'+bodyClass).waitFor();
+          const filter=overview.locator('#filter'),samples=[];
+          for(let i=0;i<20;i++){
+            const prior=await overview.locator('#content').getAttribute('data-rendered'),started=Date.now();await filter.fill('tool-'+(980+i));
+            await overview.waitForFunction(value=>document.getElementById('content').dataset.rendered!==value,prior);
+            samples.push(Date.now()-started);assert.equal(await overview.locator('section[aria-label="observation.tools"] article').count(),1);
+          }
+          const p95=[...samples].sort((a,b)=>a-b)[Math.ceil(samples.length*.95)-1];assert.ok(p95<1000,theme+' local filter p95 '+p95+'ms');
+          await filter.fill('');await overview.locator('section[aria-label="observation.tools"] article').nth(49).waitFor();
+          // Paging stays on the keyboard and returns focus to a usable control.
+          const next=overview.getByRole('button',{name:'Next entries for observation.tools',exact:true});await next.focus();await page.keyboard.press('Enter');
+          await overview.locator('section[aria-label="observation.tools"] article').first().getByText('tool-50',{exact:true}).waitFor();
+          assert.match(await overview.evaluate(()=>document.activeElement.getAttribute('aria-label')),/entries for observation.tools/);
+          const prior=await overview.locator('#content').getAttribute('data-rendered'),started=Date.now();await overview.getByRole('button',{name:'Refresh',exact:true}).focus();await page.keyboard.press('Enter');
+          await overview.waitForFunction(value=>document.getElementById('content').dataset.rendered!==value,prior);const refreshedMs=Date.now()-started;assert.ok(refreshedMs-backendMs<2000,theme+' refresh render '+refreshedMs+'ms');
+          await filter.fill('tool-999');await overview.locator('section[aria-label="observation.tools"] article').getByText('tool-999',{exact:true}).waitFor();
+          assert.equal(await overview.locator('#content script,#content img,#content a').count(),0);assert.match(await overview.locator('#content').textContent(),/<script>hostile\(\)<\/script>/);
+          if(bodyClass==='vscode-high-contrast')assert.notEqual(await overview.getByRole('button',{name:'Refresh',exact:true}).evaluate(button=>getComputedStyle(button).borderTopColor),'rgba(0, 0, 0, 0)');
+          await vscode.commands.executeCommand('notifications.clearAll');
+          await page.screenshot({path:path.join(process.env.NETCLAW_TEST_SCREENSHOTS,'inventory-'+bodyClass+'.png')});
+          performance.push({theme,fixture:{members:100,peers:100,tools:1000},samples:20,localFilterP95Ms:p95,refreshTotalMs:refreshedMs,backendFixtureMs:backendMs,keyboardPaging:true,hostileContentInert:true});
+        }
+        rendered.push('Actual three-theme paged inspection, keyboard paging and refresh, 100/100/1000 synthetic local-filter measurements');count++;
+      }finally{api.connection.call=originalCall;await vscode.workspace.getConfiguration('workbench').update('colorTheme','Default Dark Modern',vscode.ConfigurationTarget.Global);}
       await vscode.commands.executeCommand('netclaw.openChat');
       const chat=await frameFor('#composer');await chat.locator('#prompt').fill('An unsent draft');
       assert.equal(await chat.locator('#send').textContent(),'Send to NetClaw');rendered.push('Chat composer');
@@ -71,5 +114,5 @@ exports.run=async()=>{
   await api.connection.disconnect();assert.equal(api.connection.ready,false);count++;
   await assert.rejects(api.connection.call('operator_identity'));count++;
   for(const profile of profiles)await api.profiles.remove(profile.id);
-  fs.writeFileSync(process.env.NETCLAW_TEST_REPORT,JSON.stringify({editor:vscode.version,remoteName:vscode.env.remoteName||null,platform:process.platform,architecture:process.arch,osRelease:os.release(),extensionVersion:extension.packageJSON.version,backendNode:process.env.NETCLAW_TEST_NODE,assertionGroups:count,rendered,screenshots:process.env.NETCLAW_TEST_SCREENSHOTS,passed:true}));
+  fs.writeFileSync(process.env.NETCLAW_TEST_REPORT,JSON.stringify({editor:vscode.version,remoteName:vscode.env.remoteName||null,platform:process.platform,architecture:process.arch,osRelease:os.release(),extensionVersion:extension.packageJSON.version,backendNode:process.env.NETCLAW_TEST_NODE,assertionGroups:count,rendered,performance,screenshots:process.env.NETCLAW_TEST_SCREENSHOTS,passed:true}));
 };

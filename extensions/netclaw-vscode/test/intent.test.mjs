@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {sourceModule} from './bundle-fixture.mjs';
 function fixture(){
   const state=new Map(),calls=[],panels=[];
-  const connection={generation:1,identity:{installationId:'installation',hostId:'host',principalId:'principal',harness:{type:'openclaw'}},call:async(name,args)=>{
+  const connection={generation:1,changed:{event:()=>({dispose(){}})},identity:{installationId:'installation',hostId:'host',principalId:'principal',harness:{type:'openclaw'}},call:async(name,args)=>{
     calls.push({name,args});
     if(args.action==='intent-state')return {data:{available:true,revision:'revision',scope:'Operator-only scope',devices:[{id:'LAB-A',name:'Lab A',host:'192.0.2.1',port:22,protocol:'ssh',supported:true}],policy:{enabled:true,revision:'policy-revision',devices:[{id:'LAB-A',valid:true}]},operations:[]}};
     if(args.action==='intent-preview')return {data:{scope:'Exact endpoints; no broader approval.',approval:null}};

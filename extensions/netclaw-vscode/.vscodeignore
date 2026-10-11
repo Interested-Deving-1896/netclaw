@@ -16,6 +16,7 @@
 !resources/chat.js
 !resources/rag.js
 !resources/network.js
+!resources/data.js
 !resources/pal/john.glb
 !resources/pal/john.png
 !resources/pal/lobster.glb

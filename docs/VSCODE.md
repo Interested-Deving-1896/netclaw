@@ -32,6 +32,12 @@ The Activity Bar provides Connections, Risk & Federation, Operations,
 Integrations, Knowledge, Security and Help. Commands also work without an open
 folder. Overview reports the selected installation and supported capabilities.
 
+Inspection panels page loaded lists in groups of 50. **Filter loaded entries**
+searches those lists locally; source, freshness and policy metadata remain visible.
+It does not fetch more source records. Use **Refresh** for a new observation.
+Changing the connection clears the panel and requires reopening it, so old data
+cannot be mistaken for the newly selected installation.
+
 The [security component guide](VSCODE-SECURITY.md) covers explicit DefenseClaw
 ownership, retained scans/rules/events and reviewed saved-mode changes. Stored
 policy, daemon observations and OpenShell qualification are shown separately.
