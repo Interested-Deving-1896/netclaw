@@ -1,5 +1,29 @@
 # Recovery consistency review
 
+## Final implementation review — 2026-10-11
+
+Spec/plan/tasks/contracts and closure were checked again after the WSL return and
+Mac RAG correction. The owner's explicit publication hold now appears in the core
+artifacts and return prompt. All 14 functional requirements and five success
+criteria have task coverage; T001–T022 implementation work is complete. Public
+SC-005/T023 is held, not asserted as passed. The original review follows as history.
+
+No critical implementation gap or backend scope expansion was found. Package
+inputs remain confined to the extension; cumulative base source/installer/MCP
+changes against f943637 are zero. The RAG busy-state correction is within existing
+US2/FR-006 and has focused regression plus exact installed Mac evidence.
+
+The former WSL/interactive-client gate is satisfied for its recorded OpenClaw
+artifact. The final Mac RAG delta needs a targeted WSL check before future release;
+that limit is explicit in tasks, package provenance and closure. Copilot's deviation,
+the minimum-editor CLI anomaly and unqualified live platform/runtime scope are
+retained. No fixture or earlier-artifact evidence is labeled as final WSL acceptance.
+
+The local milestone blog draft is retained for review. Publication and advanced
+Spec151 work are not authorized by this completion. No constitution change.
+
+## Original recovery review
+
 2026-10-11. Spec Kit prerequisites passed with SPECIFY_FEATURE=150-vscode-extension;
 spec, plan, tasks and contracts were checked against the constitution and approved
 extension-only boundary. Existing expansion artifacts/branches remain preserved.

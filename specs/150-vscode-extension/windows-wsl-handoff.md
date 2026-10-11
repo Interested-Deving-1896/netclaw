@@ -1,5 +1,10 @@
 # Final Windows/WSL validation handoff
 
+**Historical handoff:** Windows/WSL results were returned and reviewed. Current
+implementation closure, final Mac RAG correction and publication hold are in
+[closure.md](closure.md). Do not repeat this entire matrix or publish automatically.
+Before a future release, the final RAG busy-state delta needs targeted WSL confirmation.
+
 **Completed WSL follow-up, 2026-10-11:** the current return uses
 `artifacts/netclaw-0.1.0-wsl-fixes.vsix`, SHA-256
 `f75b73bdeaf524bf647ad4920ea5b5c85979ee1c20cba62d9cd6a20f6f79af45`.

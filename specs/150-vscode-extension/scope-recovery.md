@@ -1,5 +1,9 @@
 # Spec 150: extension-only recovery
 
+Historical audit and recovery plan. The correction was subsequently implemented;
+current completion, artifact and publication hold are in [closure.md](closure.md).
+Original audit findings and estimates below are preserved as historical context.
+
 Date: 2026-10-11. Status: source audit and recovery plan; implementation has not
 been migrated or accepted on this branch.
 

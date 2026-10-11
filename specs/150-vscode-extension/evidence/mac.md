@@ -1,5 +1,9 @@
 # Mac recovery verification — 2026-10-11
 
+Historical original-candidate evidence below is preserved. Final implementation,
+replacement package and Mac qualification are recorded in [mac-final.md](mac-final.md).
+Publication is held by the owner; this historical document does not authorize it.
+
 Baseline: NetClaw 1.8.0, unchanged source f943637. macOS arm64, isolated Node
 24.19.0. All tests use isolated fixture homes and allocated loopback ports.
 The owner NetClaw was neither restarted nor upgraded; no device configuration or

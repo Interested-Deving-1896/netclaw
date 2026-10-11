@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { fileURLToPath } from "node:url";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { runTests } from "@vscode/test-electron";
 import { realHud, freePort } from "../test/real-hud-fixture.mjs";
@@ -32,6 +32,7 @@ fs.writeFileSync(
     "update.mode": "none",
     "extensions.autoUpdate": false,
     "workbench.startupEditor": "none",
+    "window.dialogStyle": "custom",
     "security.workspace.trust.enabled": true,
     "security.workspace.trust.startupPrompt": "never",
   }),
@@ -114,7 +115,7 @@ try {
     c.close();
     if (!ready) throw Error("RAG fixture indexing unavailable");
   }
-  await runTests({
+  const options = {
     version: process.env.VSCODE_VERSION || "1.102.0",
     ...(process.env.VSCODE_EXECUTABLE
       ? { vscodeExecutablePath: process.env.VSCODE_EXECUTABLE }
@@ -147,7 +148,65 @@ try {
       "--disable-telemetry",
       `--remote-debugging-port=${port}`,
     ],
-  });
+  };
+  if (liveUrl) {
+    if (!candidate || !process.env.VSCODE_EXECUTABLE)
+      throw Error(
+        "Native live checks require an installed VSIX and explicit editor executable.",
+      );
+    // VS Code intentionally refuses native review dialogs under extensionTestsPath.
+    // Launch a normal isolated development window with a separate observer instead.
+    const manifestPath = path.join(developmentPath, "package.json");
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    manifest.activationEvents = ["onStartupFinished"];
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest));
+    const errorPath = path.join(profile, "driver-error.txt");
+    fs.writeFileSync(
+      path.join(developmentPath, "index.cjs"),
+      `
+const fs=require('node:fs'), vscode=require('vscode');
+exports.activate=()=>{setImmediate(async()=>{
+ try { await require(${JSON.stringify(path.join(extension, "test/editor.cjs"))}).run(); }
+ catch(error) { fs.writeFileSync(${JSON.stringify(errorPath)},String(error.stack || error)); }
+ finally { await vscode.commands.executeCommand('workbench.action.quit'); }
+});};`,
+    );
+    await new Promise((resolve, reject) => {
+      const child = spawn(
+        process.env.VSCODE_EXECUTABLE,
+        [
+          ...options.launchArgs,
+          "--extensionDevelopmentPath=" + developmentPath,
+        ],
+        {
+          env: {
+            ...process.env,
+            ...options.extensionTestsEnv,
+            ELECTRON_RUN_AS_NODE: undefined,
+          },
+          stdio: "inherit",
+        },
+      );
+      const timer = setTimeout(() => {
+        child.kill();
+        reject(
+          Error("Isolated live editor timed out; no automatic provider retry."),
+        );
+      }, 480000);
+      child.once("error", (error) => {
+        clearTimeout(timer);
+        reject(error);
+      });
+      child.once("exit", (code, signal) => {
+        clearTimeout(timer);
+        code === 0 && !signal
+          ? resolve()
+          : reject(Error("Live editor exited " + code + "/" + signal));
+      });
+    });
+    if (fs.existsSync(errorPath))
+      throw Error(fs.readFileSync(errorPath, "utf8"));
+  } else await runTests(options);
   console.log(
     JSON.stringify(
       {

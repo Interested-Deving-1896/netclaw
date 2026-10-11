@@ -42,4 +42,6 @@ Science snapshot was stale, mobile edge was unreachable, and OpenShell gateway
 status was unavailable although sandbox listing returned. Device/Intent inventory
 was inspected without configuration or external peer work. Hermes, WSL restart,
 second-distribution/SSH and physical mobile qualification are not implied.
-The final replacement still requires Mac requalification and publication review.
+The final Mac implementation and package are recorded in [mac-final.md](mac-final.md).
+Mac qualification is complete; the final RAG busy-state delta needs targeted WSL
+confirmation before a future release. Publication is explicitly held by the owner.

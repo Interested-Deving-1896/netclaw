@@ -1,4 +1,10 @@
-# Mac return — Windows/WSL qualified; replacement review required
+# Mac return — completed implementation; publication held
+
+This return was processed on `150-vscode-extension-mac-final-20261011`.
+See [closure.md](closure.md) and [final Mac evidence](evidence/mac-final.md) for the
+new RAG correction, exact final artifact, completed implementation and remaining
+future-release confirmation. The older handoff below is retained as history;
+do not rerun it or substitute its preceding artifact for the final build.
 
 **Owner override, 2026-10-11: DO NOT PUBLISH.** Finish Spec150 implementation,
 features, functionality and replacement Mac qualification. Publication is on hold

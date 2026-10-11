@@ -38,3 +38,17 @@ This is not a claim that every optional feature or platform is qualified. The
 run used the existing OpenClaw installation, kept active owner work running,
 and reported stale/unavailable observations as they appeared. The final VSIX now
 returns to Mac for review and requalification before Marketplace publication.
+
+## Mac completion addendum — unpublished draft
+
+Spec150 implementation is complete for the documented client scope. Mac
+qualification caught and corrected a RAG overlap issue: controls now wait for
+active work and remain disabled after disconnection. The exact final VSIX passed
+installed Mac checks, real provider/context integration and current-editor
+lifecycle. The final small RAG delta still needs targeted WSL confirmation before
+a future public release. Prior Windows/WSL and assistant evidence remains scoped
+to the exact artifact tested there; no backend source changes were introduced.
+
+John explicitly requested **no publication yet**. Marketplace and blog publication
+are held. Advanced workflows and aesthetics will be specified separately in
+Spec151; this draft does not authorize that implementation or publication.

@@ -37,7 +37,7 @@ Advanced enhancements/aesthetics are future Spec151 scope.
 - [x] T018 [US4] Record named-client Mac checks in specs/150-vscode-extension/evidence/assistants.md.
 
 ## US5: qualification and release
-- [ ] T019 [US5] Requalify the exact WSL replacement VSIX on Mac and append editor/lifecycle evidence in specs/150-vscode-extension/evidence/mac.md; original Mac results remain preserved.
+- [x] T019 [US5] Review the WSL replacement, fix the reproduced RAG overlap defect and qualify the exact final VSIX on Mac; preserve original evidence and record final results in evidence/mac-final.md.
 - [x] T020 [US5] Finalize extension README/privacy/package documentation in extensions/netclaw-vscode/.
 - [x] T021 [US5] Package committed source, push and provide final specs/150-vscode-extension/windows-wsl-handoff.md.
 - [x] T022 [US5] Receive real Windows/WSL results and resolve confirmed extension defects; preserve evidence/wsl.md and record final scope/limitations in evidence/wsl-followup.md.
@@ -65,8 +65,11 @@ installed lifecycle are recorded with their limits. The original and intermediat
 VSIX/evidence remain preserved. No owner device configuration or external peer work
 was submitted, and no WSL reboot/second-host or live Hermes acceptance is implied.
 
-T019 is reopened because Mac must review and requalify the exact replacement.
-T023 remains open for publication and Marketplace installation verification after
-that review. Publisher authentication remains on Mac; no merge or publication was
-performed on WSL. See mac-return.md for the continuation prompt and exact evidence
-reference.
+Final Mac work: T019 is complete, including an additional RAG busy-state fix.
+Implementation tasks T001–T022 are complete for the documented scope. T022 above
+qualifies its recorded WSL artifact, not the later Mac RAG delta; targeted WSL
+confirmation of that delta is a future release prerequisite. See closure.md and
+evidence/mac-final.md for the final source/digest and exact acceptance limits.
+
+T023 is explicitly held by the owner. No merge/publication occurred. Prior release
+authorization is revoked; new explicit authorization is required before publication.

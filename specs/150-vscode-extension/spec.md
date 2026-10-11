@@ -1,7 +1,8 @@
 # Spec 150: NetClaw for VS Code
 
 Branch: `150-vscode-extension-only`. Updated 2026-10-11.
-Status: owner-authorized recovery implementation ("alright do 1 - 5").
+Status: implementation complete for the documented client scope; publication held.
+See [closure.md](closure.md) for final artifact, evidence and qualification limits.
 
 Owner direction, 2026-10-11 after the qualified WSL return: finish implementation
 and Mac qualification of the replacement, **do not publish**. T023/SC-005 public

@@ -31,7 +31,7 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
   }
   const liveProvider = process.env.NETCLAW_TEST_LIVE_PROVIDER === "1";
   const expectedReply = liveProvider
-    ? "SPEC150_MAC_FINAL_OK MAC_CONTEXT_20261011"
+    ? /Thursday[\s\S]*14:20\s*UTC/i
     : "Synthetic gateway reply";
   const api = await extension.activate();
   assert.ok(extension.isActive);
@@ -183,7 +183,7 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
       if (liveProvider) {
         const document = await vscode.workspace.openTextDocument({
           content:
-            "Harmless extension acceptance fixture. The acceptance context marker is MAC_CONTEXT_20261011.",
+            "Fictional training note: the maintenance window is Thursday at 14:20 UTC. This note describes no real device or approved change.",
           language: "plaintext",
         });
         const editor = await vscode.window.showTextDocument(document);
@@ -191,12 +191,35 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
           document.positionAt(0),
           document.positionAt(document.getText().length),
         );
+        await vscode.commands.executeCommand("editor.action.selectAll");
+        assert.equal(
+          vscode.window.activeTextEditor?.document.uri.toString(),
+          document.uri.toString(),
+        );
+        assert.equal(
+          vscode.window.activeTextEditor.document.getText(
+            vscode.window.activeTextEditor.selection,
+          ),
+          document.getText(),
+        );
         const staging = vscode.commands.executeCommand(
           "netclaw.addSelectedContext",
         );
-        await page
-          .getByRole("button", { name: "Stage selected text", exact: true })
-          .click();
+        try {
+          await page
+            .getByRole("button", { name: "Stage selected text", exact: true })
+            .click();
+        } catch (error) {
+          await shot("context-review-failure");
+          fs.writeFileSync(
+            path.join(
+              path.dirname(process.env.NETCLAW_TEST_REPORT),
+              "context-review-failure.txt",
+            ),
+            await page.locator("body").innerText(),
+          );
+          throw error;
+        }
         await staging;
         assert.equal(api.connection.contexts.size, 1);
         mark(
@@ -211,13 +234,16 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
         .locator("#prompt")
         .fill(
           liveProvider
-            ? "This is a harmless extension acceptance check. Do not use tools or change anything. Reply with exactly SPEC150_MAC_FINAL_OK followed by one space and the acceptance context marker from the selected context. No other text."
+            ? "What day and time does the fictional training note schedule its maintenance window? Summarize those two details in an ordinary sentence. This is a reading exercise only; do not use tools or perform any action."
             : "Synthetic fixture greeting",
         );
       await chat.locator("#send").click();
       await chat
-        .locator("#transcript")
-        .getByText(expectedReply, { exact: true })
+        .locator("#transcript article")
+        .filter({
+          has: chat.getByRole("heading", { name: "NetClaw", exact: true }),
+        })
+        .getByText(expectedReply, { exact: !liveProvider })
         .waitFor({ timeout: liveProvider ? 180000 : 20000 });
       await shot("chat");
       mark(
@@ -245,8 +271,14 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
         .waitFor();
       await revealedChat.locator("#refresh").click();
       await revealedChat
-        .locator("#transcript")
-        .getByText(expectedReply, { exact: true })
+        .locator("#transcript article")
+        .filter({
+          has: revealedChat.getByRole("heading", {
+            name: "NetClaw",
+            exact: true,
+          }),
+        })
+        .getByText(expectedReply, { exact: !liveProvider })
         .waitFor();
       mark(
         "hidden Overview and Chat restore and accept refresh without resending work",
@@ -326,7 +358,14 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
           "hidden RAG restores inventory and accepts refresh/search with cited retrieval",
         );
       }
-      await vscode.commands.executeCommand("workbench.action.closeAllEditors");
+      const closingEditors = vscode.commands.executeCommand(
+        "workbench.action.closeAllEditors",
+      );
+      if (liveProvider)
+        await page
+          .getByRole("button", { name: "Don't Save", exact: true })
+          .click();
+      await closingEditors;
       await vscode.commands.executeCommand("netclaw.openAvatar");
       const avatar = await frameFor("#avatar-character");
       await avatar.locator("#avatar-character").selectOption("lobster");

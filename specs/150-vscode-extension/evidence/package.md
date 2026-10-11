@@ -1,4 +1,10 @@
-# Packaged Mac candidate
+# Historical original package evidence
+
+For the final implementation candidate, use [mac-final.md](mac-final.md) and
+`../artifacts/mac-final-package.json`. Prior artifacts below remain preserved.
+Publication is explicitly held by the owner.
+
+# Original Mac candidate
 
 Built from clean source commit `8db2c2144e169f4c2ab832d3d62c40f1b1c6a807`.
 Publisher/name/version: `NetClaw.netclaw` / `0.1.0`.
