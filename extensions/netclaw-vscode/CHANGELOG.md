@@ -5,10 +5,13 @@
 - Connect to an existing installation using a local extension host or an existing SSH alias.
 - Inspect installation identity, integrations, configuration presence, usage and GAIT evidence.
 - Use owned Chat conversations, an integrated Canvas and the existing local Avatar.
+- Open the selected native OpenClaw browser UI through a reviewed, credential-free destination.
 - Browse the existing RAG collections, upload a reviewed document, track indexing and search with citations. Select retrieved passages as context for Chat or Canvas.
 - Prepare and review supported environment changes with retained baseline and verification evidence.
 - Review provider/model and session-budget saves and normalize legacy credentials into backend `.env` references.
 - Manage expiring assistant grants, opt-in Copilot MCP discovery and Claude Code/Codex setup previews; recheck revocation across asynchronous work.
+- Delegate the qualified local Hermes subnet profile with grant checks on every provider/tool hop, retained cancellation and explicit answer disclosure.
+- Prepare lifecycle changes for explicitly bound installation services; inspect configured security separately from current daemon observations.
 - Browse bounded installation logs, filter recorded usage, inspect configured network inventory and search recorded memory with validity windows.
 - Search local backend documentation through a safe native editor workflow.
 

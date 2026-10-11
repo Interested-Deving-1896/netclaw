@@ -32,7 +32,7 @@ export function projectFederation(kind,value){
   const seen=new Set(),items=[];
   for(const row of rows){
     const id=kind==='peer'?row.identity:row.member_id;
-    invariant(typeof id==='string'&&/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,199}$/.test(id)&&!seen.has(id),'SOURCE_UNAVAILABLE');seen.add(id);
+    invariant(typeof id==='string'&&/^[A-Za-z0-9][A-Za-z0-9_./:-]{0,199}$/.test(id)&&!seen.has(id),'SOURCE_UNAVAILABLE');seen.add(id);
     if(kind==='edge'&&row.node_type!=='edge'||kind==='member'&&row.node_type==='edge')continue;
     const inventory=row.inventory,capabilities=[];
     for(const server of (Array.isArray(inventory?.mcp_servers)?inventory.mcp_servers:[]).slice(0,256)){

@@ -6,6 +6,17 @@ import { invariant, fail } from './errors.js';
 import { createHermesRuntime } from '../hud-server/runtime/hermes.js';
 import { gatewayAgentId } from '../hud-server/gateway-agent.js';
 
+/** Browser navigation metadata only. Authentication remains with the native UI. */
+export function nativeHarnessUi(binding){
+  binding.assertCurrent();
+  if(binding.kind!=='openclaw')return {available:false,reason:'The protected Hermes companion exposes an authenticated API, not a browser UI. Use the existing Hermes interface separately; no private companion endpoint is opened.'};
+  const config=JSON.parse(readOwned(binding.configPath,{limit:4*1024*1024})),gateway=config.gateway||{};
+  if(gateway.controlUi?.enabled===false)return {available:false,reason:'OpenClaw Control UI is disabled in this installation.'};
+  const port=gateway.port??18789,pathname=gateway.controlUi?.basePath||'/';
+  if(!(Number.isInteger(port)&&port>0&&port<=65535&&typeof pathname==='string'&&/^\/[A-Za-z0-9/_-]*$/.test(pathname)))return {available:false,reason:'This native gateway path or port is outside the supported browser navigation format.'};
+  return {available:true,scheme:gateway.tls?.enabled===true?'https':'http',port,pathname,source:'Configured selected OpenClaw gateway. Browser availability and authentication are checked by its native UI.'};
+}
+
 /** Only public answer text and tool milestones from this exact run cross into
  * management evidence. Thinking, prompts, tool arguments and other runs do not. */
 export function projectGatewayEvent(frame,requestId){

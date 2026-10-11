@@ -41,6 +41,14 @@ uses its configured companion model. Answer progress and tool milestones retain
 their runtime source; partial or bounded evidence is labeled. RAG searches the selected local corpus and preserves
 citations. RAG retrieval and recorded Memory search are separate operations.
 
+**Open Native Harness UI** opens the selected OpenClaw Control UI in your
+browser after destination review. Its own authentication remains in place;
+no credential, query token or fragment is added to the URL. WSL and Remote SSH
+extension hosts use VS Code's [external URI handling](https://code.visualstudio.com/api/references/vscode-api#env.openExternal).
+A separate SSH connection profile requires an existing reviewed loopback forward
+on the extension host. The private Hermes companion is an API, so it is never
+presented as a native browser UI. Opening any of these views sends no prompt.
+
 Settings expose reviewed provider/model, OpenClaw budget and environment
 changes. Keep, replace and clear are distinct secret actions. A proposal records
 the expected revision, baseline, impact and rollback; approval is a separate

@@ -24,6 +24,8 @@ import {EstateTree,inspectEstateResource} from './views/estate';
 import {openSecurity} from './views/security';
 import {openOpenShell} from './views/openshell';
 import {configureService} from './views/lifecycle';
+import {openNativeRuntime} from './views/native-runtime';
+import {openAvatar} from './views/avatar';
 
 type Domain={title:string;method:string;args:Record<string,unknown>;group:string;icon:string};
 const domains:Record<string,Domain>={
@@ -93,7 +95,8 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('help',async()=>{const document=await vscode.workspace.openTextDocument(vscode.Uri.joinPath(context.extensionUri,'README.md'));await vscode.window.showTextDocument(document);});
   register('refresh',refresh);
   register('openChat',()=>openChat(context,connection));
-  register('openAvatar',()=>openChat(context,connection,true));
+  register('openAvatar',()=>openAvatar(context,connection));
+  register('openNativeRuntime',()=>openNativeRuntime(connection));
   register('openCanvas',()=>openCanvas(context,connection));
   register('openRag',()=>openRag(context,connection));
   register('addSelectedContext',()=>stageSelectedContext(connection));
@@ -134,6 +137,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
       if(group==='operations')items.push({label:'Installation logs',command:'netclaw.openLogs',icon:'output'});
       if(group==='operations')items.push({label:'Avatar',command:'netclaw.openAvatar',icon:'person'});
       if(group==='operations')items.push({label:'Canvas',command:'netclaw.openCanvas',icon:'preview'});
+      if(group==='operations')items.push({label:'Native harness UI',command:'netclaw.openNativeRuntime',icon:'link-external'});
       if(group==='operations')items.push({label:'Prepare a managed change',command:'netclaw.prepareChange',icon:'git-pull-request'},{label:'Review a proposal',command:'netclaw.reviewProposal',icon:'checklist'});
       return items;
     });trees.push(tree);context.subscriptions.push(vscode.window.registerTreeDataProvider(`netclaw.${group}`,tree));

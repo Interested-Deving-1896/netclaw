@@ -279,6 +279,11 @@
         "title": "Control a Bound Service",
         "category": "NetClaw",
         "enablement": "isWorkspaceTrusted"
+      },
+      {
+        "command": "netclaw.openNativeRuntime",
+        "title": "Open Native Harness UI",
+        "category": "NetClaw"
       }
     ],
     "mcpServerDefinitionProviders": [

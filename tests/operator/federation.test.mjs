@@ -31,3 +31,7 @@ test('legacy/stale cards and advertised tools cannot become execution authority'
 test('duplicate member identities fail instead of silently merging installations',()=>{
   assert.throws(()=>projectFederation('member',{members:[{member_id:'same'},{member_id:'same'}]}),{code:'SOURCE_UNAVAILABLE'});
 });
+test('canonical Risk member identifiers retain their namespace separator',()=>{
+  const value=projectFederation('member',{members:[{member_id:'risk/subnet',node_type:'claw',state:'active'}]});
+  assert.equal(value.items[0].id,'risk/subnet');
+});
