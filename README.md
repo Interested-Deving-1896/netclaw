@@ -10,7 +10,9 @@ Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one Ne
 
 **Start here:** [Choose a runtime](#hermes-or-openclaw) · [Install](#quick-install) · [Capabilities](#what-it-does) · [RAG](#rag--answers-grounded-in-your-documents) · [GCF](#gcf--compact-network-evidence) · [Mobile](#netclaw-mobile--your-network-in-your-pocket) · [Zoom](#zoom--network-investigations-in-the-meeting) · [HUD](#visual-hud) · [Jev](#optional-jev-science-officer)
 
-**Project:** [Source version 1.8.0](VERSION) · [Release notes](docs/releases/1.8.0.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
+**Project:** [Source version 1.9.0 — unpublished](VERSION) · [Release notes](docs/releases/1.9.0.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
+
+**VS Code:** [NetClaw extension](extensions/netclaw-vscode/README.md) for an existing installation: observation panels, Chat, Canvas, Avatar, RAG and optional Copilot/Claude Code/Codex access. Implementation is complete for the [documented scope](specs/150-vscode-extension/closure.md); Marketplace publication is on hold. The exact packaged RAG fix has one [final WSL confirmation](specs/150-vscode-extension/final-wsl-prompt.md) remaining.
 
 **Reference:** [Architecture](#architecture) · [MCP servers](#mcp-servers-176) · [Skills](#skills-237) · [Workflows](#standard-workflows) · [Safety](#safety)
 

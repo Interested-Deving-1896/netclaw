@@ -1,6 +1,7 @@
 # Implementation Plan: extension-only NetClaw workbench
 
-Branch `150-vscode-extension-only`; 2026-10-11; [spec](spec.md).
+Integration target `main`; recovery branch `150-vscode-extension-only`;
+2026-10-11; [spec](spec.md).
 
 ## Summary
 Reuse presentation and packaging from 4ed565b; implement a thin client of unchanged
@@ -44,6 +45,11 @@ The owner explicitly held publication after the final WSL return on 2026-10-11.
 Finish implementation and Mac qualification; retain exact-artifact/platform
 evidence and any remaining release checks without publishing. Advanced enhancement
 and aesthetic work is future Spec151 scope.
+
+The later owner instruction authorizes source PR/merge and cleanup onto main.
+Use [final-wsl-prompt.md](final-wsl-prompt.md) for the exact-package RAG delta;
+publication stays held. The required source version metadata is prepared without
+a release tag or Marketplace operation.
 
 Transport tests cover identity changes, cross-target callbacks, redirect/URL
 refusal, session separation, timeouts and bounded responses. Test user flows,

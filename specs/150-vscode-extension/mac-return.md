@@ -1,5 +1,10 @@
 # Mac return — completed implementation; publication held
 
+**Superseded handoff:** source consolidation onto main is now authorized. Use
+[final-wsl-prompt.md](final-wsl-prompt.md) for the remaining WSL delta. Instructions
+below are historical, including the former merge hold and old branch names.
+Publication remains prohibited.
+
 This return was processed on `150-vscode-extension-mac-final-20261011`.
 See [closure.md](closure.md) and [final Mac evidence](evidence/mac-final.md) for the
 new RAG correction, exact final artifact, completed implementation and remaining

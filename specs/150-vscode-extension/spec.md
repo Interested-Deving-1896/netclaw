@@ -1,6 +1,7 @@
 # Spec 150: NetClaw for VS Code
 
-Branch: `150-vscode-extension-only`. Updated 2026-10-11.
+Canonical integration target: `main`; recovered implementation began on
+`150-vscode-extension-only`. Updated 2026-10-11.
 Status: implementation complete for the documented client scope; publication held.
 See [closure.md](closure.md) for final artifact, evidence and qualification limits.
 
@@ -9,6 +10,10 @@ and Mac qualification of the replacement, **do not publish**. T023/SC-005 public
 release are held pending new explicit authorization and excluded from the current
 implementation-completion milestone. Advanced enhancements and aesthetics belong
 to a future Spec151; no backend or testbed-management expansion is added here.
+
+Subsequent owner instruction authorizes PR/merge and branch consolidation onto
+main, with one final targeted WSL confirmation. It does not revoke the publication
+hold. See [current handoff](final-wsl-prompt.md).
 
 ## Scope and clarification
 

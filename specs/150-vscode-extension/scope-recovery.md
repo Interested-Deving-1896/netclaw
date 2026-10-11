@@ -3,6 +3,9 @@
 Historical audit and recovery plan. The correction was subsequently implemented;
 current completion, artifact and publication hold are in [closure.md](closure.md).
 Original audit findings and estimates below are preserved as historical context.
+The later main consolidation replaces superseded branch names with verified
+[archive tags](evidence/archived-refs.json); the recovered client history is merged
+through its final PR. Do not merge any archived backend experiment.
 
 Date: 2026-10-11. Status: source audit and recovery plan; implementation has not
 been migrated or accepted on this branch.

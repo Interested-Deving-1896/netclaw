@@ -71,5 +71,8 @@ qualifies its recorded WSL artifact, not the later Mac RAG delta; targeted WSL
 confirmation of that delta is a future release prerequisite. See closure.md and
 evidence/mac-final.md for the final source/digest and exact acceptance limits.
 
-T023 is explicitly held by the owner. No merge/publication occurred. Prior release
-authorization is revoked; new explicit authorization is required before publication.
+T023 is explicitly held by the owner. The later 2026-10-11 instruction authorizes
+PR/merge and branch cleanup onto main, with the final targeted WSL check described
+in final-wsl-prompt.md. Publication authorization remains revoked; new explicit
+authorization is required before publication. Do not turn this pending release
+action into an implementation checkmark.

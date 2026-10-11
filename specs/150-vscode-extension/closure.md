@@ -3,6 +3,13 @@
 Owner direction: finish implementation/features/functionality; **do not publish**.
 Advanced enhancements and aesthetics belong to a future Spec151.
 
+Later owner direction, 2026-10-11: push the completed work, reconcile branches and
+PRs, merge to `main`, and leave one final WSL prompt before Spec151. This authorizes
+source consolidation and supersedes the earlier merge hold only. Marketplace,
+GitHub release and blog publication remain prohibited. See
+[consolidation record](evidence/main-consolidation.md) and
+[current WSL prompt](final-wsl-prompt.md).
+
 ## Implemented baseline
 
 T001–T022 implementation work is complete for the retained client scope:
@@ -40,15 +47,18 @@ fresh Default-permissions recheck remain part of [WSL evidence](evidence/wsl-fol
 
 **Implementation completion is not a public-release or all-platform acceptance
 claim.** The final RAG busy-state change has Mac/DOM coverage but needs a targeted
-actual WSL confirmation before a future release. No new full WSL handoff is being
-required now while the owner has explicitly held publication. Broader live Hermes,
+actual WSL confirmation. The owner now requests that targeted final handoff;
+the previously completed full WSL/assistant matrix need not be repeated without
+a new regression or changed package inputs. Broader live Hermes,
 Remote SSH/second-distribution/reboot and network-write qualification remain outside
 the recorded OpenClaw acceptance scope.
 
 ## Publication hold
 
 T023 remains unchecked and held. Do not run `vsce publish`, upload to Marketplace,
-merge to main, create a public release or publish the blog. Existing publisher
+create a public release or publish the blog. Merge to main is now authorized.
+Source 1.9.0 metadata is prepared under repository contribution policy; it is not
+a release tag or public-release claim. Existing publisher
 authentication is not permission to publish. A new explicit owner instruction is
 required, followed by review of the exact then-current artifact and its remaining
 release qualification. No credential needs to be transferred or sent in chat.

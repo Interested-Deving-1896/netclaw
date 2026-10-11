@@ -1,5 +1,15 @@
 # Recovery consistency review
 
+## Main consolidation review — 2026-10-11
+
+The owner now authorizes PR/merge and branch cleanup, while publication remains
+held. Current spec/plan/tasks/closure and final-wsl-prompt.md reflect that distinction;
+old return prompts are labeled historical. No feature requirement or extension
+package input changes in consolidation. Repository 1.9.0 metadata is prepared
+without a release tag/publication. Final exact-package WSL RAG confirmation remains
+pending and is not disguised as all-platform acceptance. Archived experiments and
+deferred specs are retained through verified remote tags, never merged as features.
+
 ## Final implementation review — 2026-10-11
 
 Spec/plan/tasks/contracts and closure were checked again after the WSL return and

@@ -1,5 +1,10 @@
 # WSL follow-up prompt
 
+**Historical — do not run this prompt again.** The full WSL follow-up is complete.
+Use [final-wsl-prompt.md](final-wsl-prompt.md) for the final exact-package RAG delta.
+Old repair/publication directions below do not authorize new service changes or
+publication. Old branch tips remain reachable through main or archive tags.
+
 Use this after saving Windows VS Code work and completing any pending update
 through its normal UI. No automatic window termination or WSL shutdown is requested.
 The bounded HUD repair approval was requested on Mac; if granted in the conversation,

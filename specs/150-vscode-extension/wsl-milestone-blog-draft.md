@@ -52,3 +52,10 @@ to the exact artifact tested there; no backend source changes were introduced.
 John explicitly requested **no publication yet**. Marketplace and blog publication
 are held. Advanced workflows and aesthetics will be specified separately in
 Spec151; this draft does not authorize that implementation or publication.
+# Main consolidation addendum — unpublished
+
+The owner authorized consolidating the completed thin extension into main and
+archiving superseded experiment branches. Source 1.9.0 metadata is prepared; the
+extension remains 0.1.0 and Marketplace/GitHub/blog publication is still on hold.
+One focused Windows/WSL check covers the final RAG busy-state correction. Advanced
+enhancements and aesthetics will start through a separate Spec151 after this work.
