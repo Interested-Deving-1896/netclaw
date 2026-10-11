@@ -15,6 +15,45 @@ export const patch = z.strictObject({
   acknowledgeActiveWork: z.boolean().optional(),
 });
 export const changeInput = { nonce, action, targets: z.array(id).min(1).max(100), expectedRevision: z.string().uuid(), patch };
+// Action-specific shapes prevent an accepted field from becoming an accidental
+// cross-domain capability as adapters are implemented. Unsupported adapters still
+// deny dispatch; a schema alone never advertises qualification.
+const fields = patch.shape;
+const nonempty = schema => schema.refine(value => Object.keys(value).length > 0);
+const servicePatch = z.strictObject({serviceId: fields.serviceId.unwrap(), acknowledgeActiveWork: fields.acknowledgeActiveWork});
+const patches = {
+  'settings.patch': nonempty(z.strictObject({provider:fields.provider,model:fields.model,effort:fields.effort})),
+  'runtime.select': z.strictObject({runtimeId:fields.runtimeId.unwrap(),acknowledgeActiveWork:fields.acknowledgeActiveWork}),
+  'service.start': servicePatch, 'service.stop': servicePatch, 'service.restart': servicePatch,
+  'risk.role': z.strictObject({role:fields.role.unwrap(),acknowledgeActiveWork:fields.acknowledgeActiveWork}),
+  'member.enroll': z.strictObject({}), 'member.disable': z.strictObject({}), 'member.enable': z.strictObject({}),
+  'peer.trust': z.strictObject({}), 'peer.untrust': z.strictObject({}),
+  'security.patch': z.strictObject({mode:fields.mode.unwrap()}),
+  'budget.patch': nonempty(z.strictObject({monthlyLimit:fields.monthlyLimit,dailyLimit:fields.dailyLimit})),
+  'integration.configure': z.strictObject({fields:fields.fields.unwrap().min(1).refine(rows=>new Set(rows.map(row=>row.key)).size===rows.length)}),
+  'terminal-intent.prepare': z.strictObject({intent:fields.intent.unwrap().min(1)}),
+  'terminal-intent.apply': z.strictObject({intent:fields.intent.unwrap().min(1)}),
+};
+export const changeSchema = z.discriminatedUnion('action',Object.entries(patches).map(([name,shape])=>
+  z.strictObject({...changeInput,action:z.literal(name),patch:shape})));
+const query = z.string().min(1).max(4000).refine(value=>value.trim().length>0);
+const content = z.string().max(14*1024*1024);
+const name = z.string().min(1).max(200);
+const workspaceActions = {
+  'rag-list': [false,{}],
+  'rag-search': [false,{query,collection:z.string().regex(/^[\w.-]{1,128}$/).refine(v=>!v.includes('..')).optional(),k:z.number().int().min(1).max(20).optional()}],
+  'rag-stage': [true,{name:name.optional(),content}],
+  'rag-upload': [true,{name,content,docType:z.enum(['vendor','standard','customer','install-guide','other']).optional()}],
+  'rag-index': [true,{id,expectedDocumentId:id.optional()}],
+  'rag-context': [true,{id,indices:z.array(z.number().int().min(0).max(19)).min(1).max(20).refine(v=>new Set(v).size===v.length)}],
+  'memory-search': [false,{query}], 'gcf-read': [false,{id:id.optional()}],
+  'meeting-read': [false,{id:id.optional()}], 'assessment-read': [false,{id}],
+  'assessment-reconsider': [true,{id,query}],
+  'canvas-import': [true,{name:name.optional(),content}], 'canvas-export': [false,{id}],
+  'mobile-capture-request': [true,{id,consentReference:id,capability:z.enum(['camera.capture','audio.record'])}],
+};
+const workspaceSchema = z.discriminatedUnion('action',Object.entries(workspaceActions).map(([action,[mutates,args]])=>
+  z.strictObject({action:z.literal(action),...(mutates?{nonce}:{}),args:z.strictObject(args),...page})));
 export const schemas = Object.freeze({
   operator_identity: z.strictObject({}),
   operator_resources: z.strictObject({ kind: kinds, filters: z.strictObject({ query: z.string().max(256).optional(), status: z.enum(['active','inactive','unknown']).optional() }).optional(), ...page }),
@@ -24,10 +63,10 @@ export const schemas = Object.freeze({
   operator_operation_get: z.strictObject({ operationId: id }),
   operator_events: z.strictObject({ operationId: id, after: z.number().int().min(0).default(0), ...page }),
   operator_cancel_request: z.strictObject({ operationId: id, nonce }),
-  operator_change_prepare: z.strictObject(changeInput),
+  operator_change_prepare: changeSchema,
   operator_change_apply: z.strictObject({ proposalId: id, nonce, expectedRevision: z.string().uuid(), approvalReference: id.optional(), replacements: z.record(envKey, z.string().max(65536)).optional() }),
   operator_evidence: z.strictObject({ kind: z.enum(['gait','log','artifact','approval']), id: id.optional(), filters: z.strictObject({ query: z.string().max(200).optional(), severity: z.enum(['info','warning','error']).optional() }).optional(), ...page }),
-  operator_workspace: z.strictObject({ action: z.enum(['rag-list','rag-search','rag-stage','rag-upload','rag-index','rag-context','memory-search','gcf-read','meeting-read','assessment-read','assessment-reconsider','canvas-import','canvas-export','mobile-capture-request']), nonce: nonce.optional(), args: z.strictObject({ id: id.optional(), query: z.string().max(4096).optional(), name: z.string().max(200).optional(), content: z.string().max(14*1024*1024).optional(), collection: z.string().regex(/^[\w.-]{1,128}$/).optional(), k: z.number().int().min(1).max(20).optional(), docType: z.enum(['vendor','standard','customer','install-guide','other']).optional(), indices: z.array(z.number().int().min(0).max(19)).min(1).max(20).optional(), expectedDocumentId: id.optional(), consentReference: id.optional(), capability: z.enum(['camera.capture','audio.record']).optional() }), ...page }),
+  operator_workspace: workspaceSchema,
   operator_client_prepare: z.strictObject({ nonce, client: z.enum(['copilot','claude-code','codex']), targets: z.array(id).min(1).max(100), actions: z.array(z.enum(['inspect','delegate','propose','evidence','cancel'])).min(1).max(5), disclosure: z.array(z.enum(['summary','usage','evidence','conversation'])).min(1).max(4), expiresAt: z.number().int().positive() }),
   operator_client_apply: z.strictObject({ proposalId: id, nonce, expectedRevision: z.string().uuid() }),
   operator_client_revoke: z.strictObject({ grantId: id, nonce }),

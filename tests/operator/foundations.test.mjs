@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { DatabaseSync } from 'node:sqlite';
 import { installationFixture, nonce, authoritativeApproval } from './fixtures.mjs';
 import { bindInstallation } from '../../ui/netclaw-visual/src/management/identity.js';
 import { Journal } from '../../ui/netclaw-visual/src/management/journal.js';
@@ -66,6 +67,14 @@ test('journal binds installation and refuses future schema without mutation', t 
   j.db.exec('PRAGMA user_version=99');
   assert.throws(() => new Journal(path.join(statePath, 'management'), j.installationId), { code: 'INCOMPATIBLE' });
   assert.equal(j.db.prepare('PRAGMA user_version').get().user_version, 99);
+});
+test('journal refuses a populated unversioned database without adopting or rewriting it',t=>{
+  const f=installationFixture(t),directory=path.join(f.statePath,'management');fs.mkdirSync(directory,{mode:0o700});
+  const file=path.join(directory,'operations.sqlite'),db=new DatabaseSync(file);
+  db.exec("CREATE TABLE existing_owner_data(value TEXT); INSERT INTO existing_owner_data VALUES ('retain');");db.close();fs.chmodSync(file,0o600);
+  const before=fs.readFileSync(file);
+  assert.throws(()=>new Journal(directory,f.installationId),{code:'INCOMPATIBLE'});
+  assert.deepEqual(fs.readFileSync(file),before);
 });
 test('expired execution is unknown, never admitted or automatically replayed', t => {
   const { j } = fixtureJournal(t), op = j.admit(owner, nonce(), 'request', {});

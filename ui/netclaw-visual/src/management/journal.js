@@ -34,6 +34,10 @@ export class Journal {
     try {
       const version = this.db.prepare('PRAGMA user_version').get().user_version;
       invariant(version <= 1, 'INCOMPATIBLE');
+      // Schema zero is only our empty initial file, never permission to adopt
+      // an existing application's database or a damaged journal. Refuse before
+      // any schema/identity write so recovery retains the original bytes.
+      if (version === 0) invariant(this.db.prepare("SELECT name FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%'").all().length === 0, 'INCOMPATIBLE');
       this.db.exec('PRAGMA busy_timeout=5000; PRAGMA foreign_keys=ON;');
       if (version === 0) this.transaction(() => {
         this.db.exec(`

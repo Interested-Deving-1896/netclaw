@@ -4156,3 +4156,24 @@ component_install_hermes_hud() {
     node "$NETCLAW_DIR/scripts/hud-launch.mjs" select hermes "$RUNTIME_HOME" || return 1
     log_info "Hermes HUD installed. Start it with: netclaw hud"
 }
+
+# Explicit owner backend setup only. The editor never invokes these functions.
+# Do not initialize identities, select runtimes, restart services or mint grants.
+component_install_netclaw_operator() {
+    node "$NETCLAW_DIR/scripts/hud-node-version.mjs" || {
+        log_error "Management requires supported HUD Node (24.19–24.x or 26.1+)."
+        return 1
+    }
+    (cd "$NETCLAW_DIR/ui/netclaw-visual" && npm ci --ignore-scripts) || return 1
+    (cd "$NETCLAW_DIR/mcp-servers/netclaw-operator-mcp" && npm ci --ignore-scripts) || return 1
+    log_info "Private management dependencies installed; no services or credentials changed."
+    log_info "Existing installation identity and isolated GAIT are required. See docs/VSCODE.md."
+    log_info "Development candidate: do not register netclaw-operator with any assistant."
+}
+
+component_install_netclaw_assistant() {
+    component_install_netclaw_operator || return 1
+    (cd "$NETCLAW_DIR/mcp-servers/netclaw-assistant-mcp" && npm ci --ignore-scripts) || return 1
+    log_info "Scoped assistant dependencies installed; no grant or client registration created."
+    log_info "Runtime delegation remains unavailable until per-hop enforcement is qualified."
+}

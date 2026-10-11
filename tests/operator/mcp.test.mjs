@@ -17,6 +17,8 @@ test('real official MCP handshake binds identity, serves bounded inventory and r
   assert.equal(identity.structuredContent.installationId,fixture.installationId);assert.equal(identity.structuredContent.contract.major,1);
   const resources=await client.callTool({name:'operator_resources',arguments:{kind:'integration',limit:2}});
   assert.equal(resources.structuredContent.data.items.length,2);assert.equal(resources.structuredContent.data.nextCursor,'2');
+  const invalidWorkspace=await client.callTool({name:'operator_workspace',arguments:{action:'rag-list',args:{content:'unrelated'}}});
+  assert.equal(invalidWorkspace.isError,true);
   const bad=await client.callTool({name:'operator_identity',arguments:{approved:true}});assert.equal(bad.isError,true);
   try{const result=await client.callTool({name:'shell',arguments:{command:'noop'}});assert.equal(result.isError,true);}catch(error){assert.ok(error);}
   assert.equal(diagnostics,'');

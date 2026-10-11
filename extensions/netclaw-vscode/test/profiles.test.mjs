@@ -2,6 +2,20 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { sourceModule } from './bundle-fixture.mjs';
 
+test('a delayed backend response is discarded after disconnect instead of crossing profiles',async()=>{
+  class EventEmitter {event=()=>({dispose(){}});fire(){} dispose(){}}
+  const {Connection}=await sourceModule('connection/connect.ts',{env:{},workspace:{isTrusted:true},EventEmitter});
+  const connection=new Connection({appendLine(){}});
+  let finish;
+  connection.client={callTool:()=>new Promise(resolve=>{finish=resolve;}),close:async()=>{}};
+  connection.identity={installationId:'first'};
+  const pending=connection.call('operator_identity');
+  await connection.disconnect();
+  finish({structuredContent:{installationId:'first',privateResult:'old installation'},content:[]});
+  await assert.rejects(pending,/response was discarded/);
+  assert.equal(connection.identity,undefined);assert.equal(connection.ready,false);
+});
+
 test('reviewed commands cannot send secret replacements after a profile switch',async()=>{
   const {boundCaller}=await sourceModule('connection/connect.ts',{env:{}});
   const calls=[],connection={generation:1,call:async(name,args)=>{calls.push({name,args});return {};}};

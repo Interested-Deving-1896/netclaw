@@ -118,6 +118,8 @@ GROUPED_EXTERNAL_COVERAGE = {
 # the only way to silence it is to state why -- which is human knowledge that
 # cannot be inferred from the source.
 VENDORED_STATE_REASONS = {
+    "netclaw-operator-mcp": "Private operator stdio surface, installed by catalog netclaw-operator; never agent-registered (spec 150 development)",
+    "netclaw-assistant-mcp": "Separately scoped stdio surface, installed by catalog netclaw-assistant; explicit reviewed client grants only, no default agent registration (spec 150 development)",
     "hermes-hud-mcp": "HUD-private eight-tool bridge; never agent-native to prevent recursive conversation dispatch (spec 148)",
     "tavus-pal-mcp": "optional HUD-invoked stdio facade; deliberately absent from the main agent registry to prevent recursive agent dispatch (spec 144)",
     "netclaw-dot-mcp": "operator-run HTTP service (netclaw-dot.service) that ChatGPT Dots call over OAuth; deliberately NOT registered as an agent MCP (spec 134)",

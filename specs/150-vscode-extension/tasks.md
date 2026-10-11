@@ -47,7 +47,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 **Independent test**: Clean VSIX candidate connects two real reference targets and isolates state; Restricted Mode and missing prerequisites never dispatch.
 
 - [ ] T015 [P] [US1] Add connection/identity/SSH/WSL mismatch, no-folder/multi-root and Restricted Mode contract tests in `tests/vscode/connections.test.mjs`. (FR-004, FR-005, FR-006, FR-007, FR-008, FR-035, SC-005)
-- [ ] T016 [P] [US1] Add multiwindow/profile storage, stale-response and mobile-logo manifest tests in `extensions/netclaw-vscode/test/profiles.test.ts`. (FR-002, FR-003, FR-006, SC-005)
+- [X] T016 [P] [US1] Add multiwindow/profile storage, stale-response and mobile-logo manifest tests in `extensions/netclaw-vscode/test/profiles.test.mjs`. (FR-002, FR-003, FR-006, SC-005)
 - [ ] T017 [US1] Implement verified local/SSH transport and explicit WSL reopen flow in `extensions/netclaw-vscode/src/connection/connect.ts`; show backend compatibility/prerequisite guidance without installation. (FR-004, FR-005, FR-007, FR-008)
 - [ ] T018 [US1] Implement nonsecret host/principal/profile storage and immutable connection generations in `extensions/netclaw-vscode/src/state/profiles.ts`; never sync credentials or retarget running requests. (FR-004, FR-006, SC-005)
 - [ ] T019 [US1] Implement native explorer/status/output/commands and trust handlers in `extensions/netclaw-vscode/src/extension.ts` and `src/views/overview.ts`; typed resource identity and bounded partial failure. (FR-003, FR-014, FR-035, FR-037)
@@ -183,7 +183,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 
 **Independent test**: All required rows pass with exact evidence; otherwise release remains incomplete.
 
-- [ ] T071 Add private operator/assistant components to `scripts/lib/catalog.sh`, `scripts/lib/install-steps.sh` and `scripts/verify-catalog-coverage.py`; owner installs through normal NetClaw updates, never the extension. Keep private operator out of `config/openclaw.json` and document registration applicability. (FR-007, FR-039, FR-040)
+- [X] T071 Add private operator/assistant components to `scripts/lib/catalog.sh`, `scripts/lib/install-steps.sh` and `scripts/verify-catalog-coverage.py`; owner installs through normal NetClaw updates, never the extension. Keep private operator out of `config/openclaw.json` and document registration applicability. (FR-007, FR-039, FR-040)
 - [ ] T072 Complete HUD integration visibility and architecture/count/setup updates in `ui/netclaw-visual/src/dashboard/model.js`, `README.md`, `SOUL.md`, `TOOLS.md`, `.env.example`, both new MCP READMEs and `workspace/skills/netclaw-operator/SKILL.md`; document secret-free private setup and operations. (FR-003, FR-028, FR-034, FR-039, FR-040)
 - [ ] T073 Run 23-domain coverage, keyboard/theme, hostile-content and measured inventory p95 acceptance in `tests/vscode/workbench-acceptance.mjs`; summarize exact SC-004/010 results in `specs/150-vscode-extension/evidence/workbench.md`. (FR-003, FR-036, FR-037, SC-002, SC-004, SC-008, SC-010)
 - [ ] T074 Run applicable existing HUD/Canvas/mobile/CLI/federation/runtime suites and catalog/spec artifact checks in declared isolated environments; record commands/counts/limits in `specs/150-vscode-extension/evidence/regression.md`. (FR-039, FR-040, SC-003, SC-011)
@@ -212,7 +212,7 @@ Deliver small story checkpoints with real behavioral evidence, preserve the exis
 
 ## Counts and traceability
 
-79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. Six tasks are complete; 73 remain unchecked. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
+79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Eight tasks are complete; 71 remain unchecked. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
 
 | Group | Tasks |
 |---|---|

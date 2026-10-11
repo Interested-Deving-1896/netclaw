@@ -6,6 +6,8 @@
 
 CATALOG=(
     "hermes-hud|Runtime|Hermes HUD bridge|Private HUD conversation bridge; isolated pinned Hermes companion (8 private tools)"
+    "netclaw-operator|Runtime|NetClaw editor management (development)|Private operator stdio backend; existing installations only; no agent registration"
+    "netclaw-assistant|Runtime|Scoped NetClaw assistant MCP (development)|Explicit owner-reviewed grants; no automatic client registration; delegation not yet qualified"
     "pyats|Device Automation|Cisco pyATS|Cisco device CLI + Genie parsers (core device automation)"
     "junos|Device Automation|Juniper JunOS|PyEZ/NETCONF CLI, config mgmt, Jinja2 templates (10 tools)"
     "arista-cvp|Device Automation|Arista CloudVision|Device inventory, events, connectivity monitor, tags (4 tools)"
