@@ -73,7 +73,7 @@ export class Journal {
   }
   _row(id) { const row = this.db.prepare('SELECT * FROM operations WHERE id=?').get(id); invariant(row, 'DENIED'); return row; }
   _owned(owner, row) { invariant(row && (row.owner === ownerKey(owner) || owner.surface === 'operator'), 'DENIED'); return row; }
-  get(owner, id) { return this.view(this._owned(owner, this._row(id))); }
+  get(owner, id) { this._owned(owner, this._row(id)); this.reconcileExpired(); return this.view(this._row(id)); }
   byNonce(owner, nonce) {
     const row = this.db.prepare('SELECT * FROM operations WHERE owner=? AND nonce=?').get(ownerKey(owner), nonce);
     return row ? this.view(row) : null;
@@ -134,12 +134,13 @@ export class Journal {
     });
   }
   renew(id, token, duration = 30000) {
-    invariant(this.db.prepare("UPDATE operations SET lease_until=? WHERE id=? AND lease=? AND state IN ('running','cancellation-requested')").run(Date.now() + duration, id, token).changes === 1, 'UNKNOWN_OUTCOME');
+    const now=Date.now();
+    invariant(this.db.prepare("UPDATE operations SET lease_until=? WHERE id=? AND lease=? AND state IN ('running','cancellation-requested') AND lease_until>?").run(now + duration, id, token, now).changes === 1, 'UNKNOWN_OUTCOME');
   }
   finish(id, token, state, result) {
     return this.transaction(() => {
       const row = this._row(id);
-      invariant(row.lease === token && transitions[row.state]?.includes(state), 'UNKNOWN_OUTCOME');
+      invariant(row.lease === token && row.lease_until > Date.now() && transitions[row.state]?.includes(state), 'UNKNOWN_OUTCOME');
       this.db.prepare('UPDATE operations SET state=?,result=?,lease=NULL,lease_until=NULL WHERE id=?').run(state, canonical(result), id);
       this._event(id, state, result); return this.view(this._row(id));
     });
@@ -164,9 +165,9 @@ export class Journal {
     });
   }
   attachReference(id, token, reference) {
-    invariant(this.db.prepare('UPDATE operations SET external_reference=? WHERE id=? AND lease=? AND external_reference IS NULL').run(reference, id, token).changes === 1, 'UNKNOWN_OUTCOME');
+    invariant(this.db.prepare('UPDATE operations SET external_reference=? WHERE id=? AND lease=? AND external_reference IS NULL AND lease_until>?').run(reference, id, token, Date.now()).changes === 1, 'UNKNOWN_OUTCOME');
   }
-  input(id, token) { const row = this._row(id); invariant(row.lease === token && row.state === 'running', 'DENIED'); return JSON.parse(row.input); }
+  input(id, token) { const row = this._row(id); invariant(row.lease === token && row.state === 'running', 'DENIED'); invariant(row.lease_until > Date.now(), 'UNKNOWN_OUTCOME'); return JSON.parse(row.input); }
   lock(resource, owner, duration = 30000) {
     return this.transaction(() => {
       // Expiry is evidence of interruption, never permission to race an old worker.

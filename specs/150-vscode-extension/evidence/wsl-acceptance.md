@@ -23,7 +23,7 @@ Three failures were reproduced and corrected with failing-then-passing regressio
   Existing ambiguous WSL profiles are retained on disk but require explicit new
   binding; they are not silently migrated to the current distribution.
 
-After corrections: backend suite **48 pass, 4 opt-in skips**; extension **12 pass**;
+After corrections: backend suite **50 pass, 4 opt-in skips**; extension **12 pass**;
 TypeScript passes. Separate real process tests:
 
 | Check | Observed result | Scope |
@@ -33,7 +33,7 @@ TypeScript passes. Separate real process tests:
 | Hermes contextual conversation | Pass after audit contention fix | Pinned v0.21.6 source; existing isolated Python 3.14 companion and 3.12 bridge; fresh synthetic home and deterministic loopback provider. Two contextual turns, stable nonce, companion preserved. |
 
 These process tests do not prove hosted-provider, device-tool, assistant delegation
-or Windows editor acceptance. RAG process/model acceptance has not run here.
+or Windows editor acceptance. Separate later observations are recorded below.
 
 ## Host and disruption scope
 
@@ -144,3 +144,41 @@ previously accepted unrelated patch fields, and workspace schemas accepted missi
 required arguments; action-specific strict unions now reject both on operator and
 assistant interfaces. Both new schema regressions failed before the fix and pass
 after it. Full response/domain contract qualification under T005 remains open.
+
+## Local RAG and recovery follow-up
+
+The real RAG process check passed with existing cached `BAAI/bge-small-en-v1.5`
+embeddings and `cross-encoder/ms-marco-MiniLM-L-6-v2` reranker in offline mode.
+A new synthetic store accepted a reviewed document, completed detached indexing
+after facade exit, retained nonce identity, returned the expected citation/text,
+and staged only explicitly selected context. No owner RAG store was used.
+The first attempt with host Python dependencies failed `SOURCE_UNAVAILABLE`;
+the isolated environment below resolved the prerequisite without changing them.
+
+Private environment: Python 3.12.10, FastMCP 4.0.11, MCP 2.3.0, ChromaDB 1.5.9,
+sentence-transformers 5.7.0, CPU torch 2.14.1+cpu. Dependency installation used
+`uv venv --python 3.12`, CPU torch from its official index, and `uv pip install -e
+mcp-servers/rag-mcp`. The extension never downloaded models or installed Python.
+
+The direct service dispatcher now validates the same action-specific schema as
+the MCP facade before invoking a domain. A failing-then-passing regression verifies
+that malformed direct calls cannot bypass transport validation.
+
+A second recovery regression showed that an expired worker could renew its lease
+before a recovery sweep. Renewal, completion, input retrieval and receipt attachment
+now refuse expired leases; status reads reconcile expired work to `unknown` and
+replacement claims remain denied. This preserves uncertainty rather than replay.
+
+Preservation recheck: all four sampled owner credential/configuration/testbed files
+retain their exact bytes and modes, and the one baseline-sampled process retains
+its start identity. This sample does not claim to enumerate every running service.
+No owner configuration or source testbed edits were staged. See
+[Mac return checkpoint](../mac-return.md) for remaining work and the return prompt.
+
+Final affected process rerun after direct-dispatch and lease fixes:
+`node --test tests/operator/live-audit-worker.test.mjs
+ tests/operator/runtime-process.test.mjs tests/operator/rag-process.test.mjs`
+with explicit isolated interpreter/runtime/cache variables: **4 pass, 0 skip,
+0 fail** (29.65 seconds). Default non-opt-in suite: **50 pass, 4 skips**;
+those four skips are covered by the separate run, not silently counted as passes.
+Extension tests: **12 pass**; TypeScript and catalog checks pass.

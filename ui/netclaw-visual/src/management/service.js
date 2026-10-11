@@ -23,6 +23,7 @@ import { Conversations } from './conversations.js';
 import { createManagementRuntime } from './chat-runtime.js';
 import { Workspace } from './workspace.js';
 import { RagClient } from './rag.js';
+import { parseOperatorInput } from '../../../../mcp-servers/netclaw-operator-mcp/schemas.mjs';
 
 export class ManagementService {
   constructor({root,home,kind,expectedInstallationId,audit,adapters={},authority}) {
@@ -105,6 +106,7 @@ export class ManagementService {
     // scoped domain entry points; hiding operator tools in discovery is not an
     // authorization boundary for callers that invoke methods directly.
     invariant(principal?.surface==='operator' && principal.principalId===this.binding.principal.principalId && principal.installationId===this.binding.installationId,'DENIED');
+    args=parseOperatorInput(name,args);
     if(name==='operator_identity')return this.identity();
     if(name==='operator_resources')return this.resources(principal,args);
     if(name==='operator_snapshot')return this.snapshot(principal,args);

@@ -122,3 +122,14 @@ test('assistant self-approval and generic lab flags never provide authority', as
   await assert.rejects(verifyChangeApproval({ ...owner, surface: 'assistant' }, { changeClass: 'operator-local' }, null), { code: 'DENIED' });
   await assert.rejects(verifyChangeApproval(owner, { changeClass: 'lab', approved: true }, null), { code: 'DENIED' });
 });
+
+test('an expired worker cannot revive its lease or report completion before a recovery sweep',t=>{
+  const {j}=fixtureJournal(t),op=j.admit(owner,nonce(),'request',{});
+  const token=j.claim(op.operationId,{pid:123,start:'fixture'},1,Date.now()-100);
+  assert.throws(()=>j.renew(op.operationId,token),{code:'UNKNOWN_OUTCOME'});
+  assert.throws(()=>j.finish(op.operationId,token,'succeeded',{}),{code:'UNKNOWN_OUTCOME'});
+  assert.throws(()=>j.attachReference(op.operationId,token,'late-receipt'),{code:'UNKNOWN_OUTCOME'});
+  assert.throws(()=>j.input(op.operationId,token),{code:'UNKNOWN_OUTCOME'});
+  assert.equal(j.get(owner,op.operationId).state,'unknown');
+  assert.equal(j.claim(op.operationId,{pid:124,start:'replacement'}),null);
+});

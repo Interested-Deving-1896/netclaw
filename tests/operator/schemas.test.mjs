@@ -35,3 +35,15 @@ test('workspace arguments and nonce requirements are specific to each action',()
     {action:'mobile-capture-request',nonce:nonce(),args:{id:'edge',capability:'camera.capture'}},
   ])assert.throws(()=>parse(input),{code:'INVALID_INPUT'});
 });
+
+test('direct management dispatcher enforces the same strict contract before invoking a domain',async t=>{
+  const {ManagementService}=await import('../../ui/netclaw-visual/src/management/service.js');
+  const {installationFixture,auditFixture}=await import('./fixtures.mjs');
+  const {fileURLToPath}=await import('node:url');
+  const f=installationFixture(t),service=new ManagementService({root:fileURLToPath(new URL('../../',import.meta.url)),home:f.home,kind:f.kind,audit:auditFixture()});
+  t.after(()=>service.close());
+  let dispatched=false;service.workspace.call=async()=>{dispatched=true;return {};};
+  await assert.rejects(service.call('operator_workspace',{action:'rag-list',args:{content:'unrelated'}}),{code:'INVALID_INPUT'});
+  assert.equal(dispatched,false);
+  await assert.rejects(service.call('operator_identity',{approved:true}),{code:'INVALID_INPUT'});
+});
