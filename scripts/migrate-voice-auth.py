@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Preview/apply the spec-124 voice authentication configuration migration."""
 import argparse
+from contextlib import nullcontext
 import hashlib
 import json
 import getpass
@@ -87,6 +88,11 @@ def restore_backup(path, backup, apply=False):
 
 
 def migrate(path, public_url=None, apply=False, restore=False):
+    with _codec.configuration_lock(Path(path).absolute().parent) if apply else nullcontext():
+        return _migrate_locked(path, public_url, apply, restore)
+
+
+def _migrate_locked(path, public_url=None, apply=False, restore=False):
     path = Path(path).absolute()
     backup = path.with_name(path.name + '.pre-voice-auth')
     regular_file(path)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Preview/apply secure iN2N transport settings; preserve a private rollback file."""
 import argparse
+from contextlib import nullcontext
 import importlib.util
 import os
 from pathlib import Path
@@ -16,6 +17,11 @@ helpers=importlib.util.module_from_spec(_spec);_spec.loader.exec_module(helpers)
 
 
 def migrate(path, bind='127.0.0.1', cert=None, key=None, ca=None, apply=False, restore=False):
+    with helpers._codec.configuration_lock(Path(path).absolute().parent) if apply else nullcontext():
+        return _migrate_locked(path, bind, cert, key, ca, apply, restore)
+
+
+def _migrate_locked(path, bind='127.0.0.1', cert=None, key=None, ca=None, apply=False, restore=False):
     path=Path(path).absolute();backup=path.with_name(path.name+'.pre-in2n-tls')
     helpers.regular_file(path);helpers.regular_file(backup)
     original=path.read_bytes() if path.exists() else b''

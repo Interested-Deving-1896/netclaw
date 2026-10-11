@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Preview/apply Zoom webhook and panel authentication settings without printing secrets."""
 import argparse
+from contextlib import nullcontext
 import getpass
 import importlib.util
 import os
@@ -13,6 +14,11 @@ KEYS=('ZOOM_RTMS_WEBHOOK_SECRET','ZOOM_CLIENT_ID','ZOOM_CLIENT_SECRET')
 
 
 def migrate(path, apply=False, restore=False):
+    with helpers._codec.configuration_lock(Path(path).absolute().parent) if apply else nullcontext():
+        return _migrate_locked(path, apply, restore)
+
+
+def _migrate_locked(path, apply=False, restore=False):
     path=Path(path).absolute();backup=path.with_name(path.name+'.pre-zoom-auth')
     helpers.regular_file(path);helpers.regular_file(backup)
     original=path.read_bytes() if path.exists() else b''

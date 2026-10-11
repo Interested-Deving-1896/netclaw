@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Prepare an isolated all-tools-denied companion; never restart or invoke it."""
 import argparse
+from contextlib import nullcontext
 import importlib.util
 import json
 import os
@@ -12,6 +13,10 @@ ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("pal_core", ROOT / "mcp-servers/tavus-pal-mcp/core.py")
 core = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(core)
+_lock_spec = importlib.util.spec_from_file_location('pal_config_lock', ROOT / 'scripts/management_lock.py')
+_lock = importlib.util.module_from_spec(_lock_spec)
+_lock_spec.loader.exec_module(_lock)
+
 
 def write_private(file, text):
     if file.is_symlink():
@@ -26,6 +31,11 @@ def write_private(file, text):
         if os.path.exists(temp):os.unlink(temp)
 
 def prepare(home, apply=False, enable_http=False):
+    with _lock.configuration_lock(Path(home).expanduser().absolute()) if apply else nullcontext():
+        return _prepare_locked(home, apply, enable_http)
+
+
+def _prepare_locked(home, apply=False, enable_http=False):
     home=home.expanduser().resolve()
     file=home/"openclaw.json"
     if file.is_symlink():raise ValueError("Refusing a linked config")

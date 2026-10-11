@@ -24,16 +24,17 @@ const transitions = {
 
 /** One database per stable installation. Never garbage-collect admission tombstones. */
 export class Journal {
-  constructor(directory, installationId) {
-    ownedDirectory(path.dirname(directory)); ownedDirectory(directory, { create: true });
+  constructor(directory, installationId, {existingOnly=false}={}) {
+    ownedDirectory(path.dirname(directory)); ownedDirectory(directory, { create: !existingOnly });
     this.directory = directory; this.installationId = installationId;
     const file = path.join(directory, 'operations.sqlite');
-    if (!fs.existsSync(file)) { const fd = fs.openSync(file, 'wx', 0o600); fs.closeSync(fd); }
+    if (!fs.existsSync(file)) { invariant(!existingOnly,'INCOMPATIBLE'); const fd = fs.openSync(file, 'wx', 0o600); fs.closeSync(fd); }
     ownedFile(file);
+    for(const suffix of ['-wal','-shm']){try{ownedFile(file+suffix);}catch(error){if(error.code!=='ENOENT')throw error;}}
     this.db = new DatabaseSync(file);
     try {
       const version = this.db.prepare('PRAGMA user_version').get().user_version;
-      invariant(version <= 1, 'INCOMPATIBLE');
+      invariant(existingOnly?version===1:version<=1, 'INCOMPATIBLE');
       // Schema zero is only our empty initial file, never permission to adopt
       // an existing application's database or a damaged journal. Refuse before
       // any schema/identity write so recovery retains the original bytes.

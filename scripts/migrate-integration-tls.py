@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Preview/apply/restore verified integration transport configuration."""
 import argparse
+from contextlib import nullcontext
 import importlib.util
 import os
 from pathlib import Path
@@ -11,6 +12,11 @@ helpers=importlib.util.module_from_spec(spec);spec.loader.exec_module(helpers)
 
 
 def migrate(path, ca=None, lab_insecure=False, apply=False, restore=False, service="redfish"):
+    with helpers._codec.configuration_lock(Path(path).absolute().parent) if apply else nullcontext():
+        return _migrate_locked(path, ca, lab_insecure, apply, restore, service)
+
+
+def _migrate_locked(path, ca=None, lab_insecure=False, apply=False, restore=False, service="redfish"):
     keys={"redfish":("REDFISH_VERIFY_TLS","REDFISH_CA_BUNDLE"),
           "nautobot":("NAUTOBOT_VERIFY_SSL","NAUTOBOT_CA_BUNDLE"),
           "anta":("ANTA_VERIFY_TLS","ANTA_CA_BUNDLE")}

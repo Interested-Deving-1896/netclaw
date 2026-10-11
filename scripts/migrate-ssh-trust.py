@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Adopt explicit multivendor SSH trust without fetching or trusting remote keys."""
 import argparse
+from contextlib import nullcontext
 import importlib.util
 import os
 from pathlib import Path
@@ -11,6 +12,11 @@ spec.loader.exec_module(helpers)
 
 
 def migrate(path, known_hosts=None, apply=False, restore=False):
+    with helpers._codec.configuration_lock(Path(path).absolute().parent) if apply else nullcontext():
+        return _migrate_locked(path, known_hosts, apply, restore)
+
+
+def _migrate_locked(path, known_hosts=None, apply=False, restore=False):
     path = Path(path).absolute()
     backup = path.with_name(path.name + '.pre-ssh-trust')
     helpers.regular_file(path)

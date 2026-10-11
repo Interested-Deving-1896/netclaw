@@ -192,24 +192,25 @@ def save_tokens(path, access_token, refresh_token):
     spec = importlib.util.spec_from_file_location('env_writer', Path(__file__).with_name('write-env.py'))
     writer = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(writer)
-    # Validate both before changing any assignment.
-    writer.quote(access_token)
-    if refresh_token:
-        writer.quote(refresh_token)
-    updates = {'TWITTER_OAUTH2_ACCESS_TOKEN': access_token}
-    if refresh_token:
-        updates['TWITTER_OAUTH2_REFRESH_TOKEN'] = refresh_token
-    path = Path(path)
-    if path.is_symlink():
-        raise ValueError('Refusing linked environment path')
-    original = path.read_text() if path.exists() else ''
-    lines = []
-    for line in original.splitlines():
-        match = writer.ASSIGNMENT.match(line.strip())
-        if not match or match[1] not in updates:
-            lines.append(line)
-    lines.extend(key + '=' + writer.quote(value) for key, value in updates.items())
-    writer.write_private(path, '\n'.join(lines) + '\n')
+    with writer.configuration_lock(Path(path).absolute().parent):
+        # Validate both before changing any assignment.
+        writer.quote(access_token)
+        if refresh_token:
+            writer.quote(refresh_token)
+        updates = {'TWITTER_OAUTH2_ACCESS_TOKEN': access_token}
+        if refresh_token:
+            updates['TWITTER_OAUTH2_REFRESH_TOKEN'] = refresh_token
+        path = Path(path)
+        if path.is_symlink():
+            raise ValueError('Refusing linked environment path')
+        original = path.read_text() if path.exists() else ''
+        lines = []
+        for line in original.splitlines():
+            match = writer.ASSIGNMENT.match(line.strip())
+            if not match or match[1] not in updates:
+                lines.append(line)
+        lines.extend(key + '=' + writer.quote(value) for key, value in updates.items())
+        writer.write_private(path, '\n'.join(lines) + '\n')
 
 if __name__ == "__main__":
     main()

@@ -2687,7 +2687,7 @@
           "declaration": "if(!['start','status','--dry-run'].includes(mode)) throw Error('Usage: netclaw hud [start|status|select KIND HOME] [--runtime KIND --home PATH] [--dry-run]');"
         }
       ],
-      "sha256": "1daf557f7fcdab2fb6c6c96fd51b1de7a54e76402b9430fa02741c88f8fe1d0c",
+      "sha256": "23b8f6a09d2560866fa98486a276edecf5bafb27a1b2fd0fbb2eceecac1b2ef5",
       "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
     },
     {
@@ -2714,27 +2714,27 @@
       ],
       "declarations": [
         {
-          "line": 99,
+          "line": 106,
           "declaration": "argparse.ArgumentParser(description=__doc__)"
         },
         {
-          "line": 100,
+          "line": 107,
           "declaration": "parser.add_argument('--source', type=Path, default=ROOT / '.env')"
         },
         {
-          "line": 101,
+          "line": 108,
           "declaration": "parser.add_argument('--target', type=Path, help='Override the runtime dotenv path')"
         },
         {
-          "line": 102,
+          "line": 109,
           "declaration": "parser.add_argument('--runtime', choices=('openclaw', 'hermes'), default=os.environ.get('NETCLAW_RUNTIME', 'openclaw'))"
         },
         {
-          "line": 103,
+          "line": 110,
           "declaration": "parser.add_argument('--apply', action='store_true', help='Write missing settings; default is preview only')"
         }
       ],
-      "sha256": "c4df084aa32e95b4fc590f1483f2cb3d7eeb4a159330c20d3375e9ba89e0a1e3",
+      "sha256": "d0aa6308cb738f07e643518266e9b22fd6289e731edabc7587bd6a7cf9319f5b",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -3021,31 +3021,31 @@
       ],
       "declarations": [
         {
-          "line": 115,
+          "line": 120,
           "declaration": "argparse.ArgumentParser(description=__doc__)"
         },
         {
-          "line": 116,
+          "line": 121,
           "declaration": "parser.add_argument('--repo', type=Path, required=True)"
         },
         {
-          "line": 117,
+          "line": 122,
           "declaration": "parser.add_argument('--runtime-root', type=Path, required=True)"
         },
         {
-          "line": 118,
+          "line": 123,
           "declaration": "parser.add_argument('--components', required=True)"
         },
         {
-          "line": 119,
+          "line": 124,
           "declaration": "parser.add_argument('--output', type=Path, required=True)"
         },
         {
-          "line": 120,
+          "line": 125,
           "declaration": "parser.add_argument('--config', type=Path)"
         }
       ],
-      "sha256": "313757e1bf2fc7f3a0be15f5bda83c0d217541d3ae2f963961726691f00040e7",
+      "sha256": "a3b841c6fea24290d0453b2c6680d1ca50488d2aba8900b56449570314169334",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -3777,31 +3777,31 @@
       ],
       "declarations": [
         {
-          "line": 73,
+          "line": 79,
           "declaration": "argparse.ArgumentParser(description=__doc__)"
         },
         {
-          "line": 74,
+          "line": 80,
           "declaration": "parser.add_argument('--config', required=True, type=Path, help='Discovered active Border OpenClaw config')"
         },
         {
-          "line": 75,
+          "line": 81,
           "declaration": "parser.add_argument('--env-file', type=Path, help='Chosen runtime env file; required except restore')"
         },
         {
-          "line": 76,
+          "line": 82,
           "declaration": "parser.add_argument('--repo', type=Path, default=Path(__file__).resolve().parents[1])"
         },
         {
-          "line": 77,
+          "line": 83,
           "declaration": "parser.add_argument('--apply', action='store_true')"
         },
         {
-          "line": 78,
+          "line": 84,
           "declaration": "parser.add_argument('--restore', action='store_true')"
         }
       ],
-      "sha256": "b7161df5718b949f172756912100031c75837c1c006634888ff292d22bd5348b",
+      "sha256": "b1b54671cb4962f393145d366a9a890199d070f9d05032aa45f654586a70f2aa",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -5099,7 +5099,7 @@
       "kind": "Python",
       "flags": [],
       "declarations": [],
-      "sha256": "c0e38243708ec7a0aee90984906eaf776454c15cf89d3fa16bdc4ca55328dfd4",
+      "sha256": "580df2f5ff06d9806b573e5e80abff61e37610defc2b7f759f94b59e368c342d",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -5249,23 +5249,23 @@
       ],
       "declarations": [
         {
-          "line": 48,
+          "line": 54,
           "declaration": "argparse.ArgumentParser(description=__doc__)"
         },
         {
-          "line": 48,
+          "line": 54,
           "declaration": "p.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))"
         },
         {
-          "line": 49,
+          "line": 55,
           "declaration": "p.add_argument('--apply',action='store_true')"
         },
         {
-          "line": 49,
+          "line": 55,
           "declaration": "p.add_argument('--restore',action='store_true')"
         }
       ],
-      "sha256": "9de9f0fdd609735642d2a47a10fc654c353e87424808b77c5f3c0e6c1e61b8de",
+      "sha256": "0900e17f88e5d0561333f93e6fa7184c530a128472acb8034b8d7ef0f57b9941",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -5316,39 +5316,39 @@
       ],
       "declarations": [
         {
-          "line": 53,
+          "line": 59,
           "declaration": "argparse.ArgumentParser(description=__doc__)"
         },
         {
-          "line": 54,
+          "line": 60,
           "declaration": "p.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))"
         },
         {
-          "line": 55,
+          "line": 61,
           "declaration": "p.add_argument('--bind',default='127.0.0.1')"
         },
         {
-          "line": 55,
+          "line": 61,
           "declaration": "p.add_argument('--cert')"
         },
         {
-          "line": 55,
+          "line": 61,
           "declaration": "p.add_argument('--key')"
         },
         {
-          "line": 55,
+          "line": 61,
           "declaration": "p.add_argument('--ca-file')"
         },
         {
-          "line": 56,
+          "line": 62,
           "declaration": "p.add_argument('--apply',action='store_true')"
         },
         {
-          "line": 56,
+          "line": 62,
           "declaration": "p.add_argument('--restore',action='store_true')"
         }
       ],
-      "sha256": "944a79fee9b6133fe9ec828f4eb0a0eba38ddf033d5ce1f988e898762d11016a",
+      "sha256": "c09a8d049cc06deed43462833fe3c39832551039d6bafa034e8ee7118c8b2eda",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -5364,35 +5364,35 @@
       ],
       "declarations": [
         {
-          "line": 46,
+          "line": 52,
           "declaration": "argparse.ArgumentParser(description=__doc__)"
         },
         {
-          "line": 47,
+          "line": 53,
           "declaration": "p.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))"
         },
         {
-          "line": 48,
+          "line": 54,
           "declaration": "p.add_argument('--service',choices=('redfish','nautobot','anta'),default='redfish')"
         },
         {
-          "line": 49,
+          "line": 55,
           "declaration": "p.add_argument('--ca-bundle')"
         },
         {
-          "line": 49,
+          "line": 55,
           "declaration": "p.add_argument('--lab-insecure',action='store_true')"
         },
         {
-          "line": 50,
+          "line": 56,
           "declaration": "p.add_argument('--apply',action='store_true')"
         },
         {
-          "line": 50,
+          "line": 56,
           "declaration": "p.add_argument('--restore',action='store_true')"
         }
       ],
-      "sha256": "d482a6f2d6fddd87e290e7f24b77bf78ace335af6b18b13e656dd40b93368cd3",
+      "sha256": "26364d2bcd62b58010ed2cd70c523fb9c1f5bbeb2b5901cc7c90c32bd2cd356e",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -5442,35 +5442,35 @@
       ],
       "declarations": [
         {
-          "line": 53,
+          "line": 59,
           "declaration": "argparse.ArgumentParser(description=__doc__)"
         },
         {
-          "line": 54,
+          "line": 60,
           "declaration": "ap.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))"
         },
         {
-          "line": 55,
+          "line": 61,
           "declaration": "ap.add_argument('--repo',default=str(Path(__file__).resolve().parents[1]))"
         },
         {
-          "line": 56,
+          "line": 62,
           "declaration": "ap.add_argument('--venv',default=str(Path.home()/'.openclaw/pyats-venv'))"
         },
         {
-          "line": 57,
+          "line": 63,
           "declaration": "ap.add_argument('--upstream',help='Explicit verified managed server script; legacy repo path remains the default')"
         },
         {
-          "line": 58,
+          "line": 64,
           "declaration": "ap.add_argument('--apply',action='store_true')"
         },
         {
-          "line": 58,
+          "line": 64,
           "declaration": "ap.add_argument('--restore',action='store_true')"
         }
       ],
-      "sha256": "dc5fd688d9d34778ae02c4428edc6b31cb497160dad45d3a3917544500abb089",
+      "sha256": "9e69bcca27ab7462f5b91d1e67c3ce56f081bce6fde55d6e0afa888fdcb49cd1",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -5484,27 +5484,27 @@
       ],
       "declarations": [
         {
-          "line": 55,
+          "line": 61,
           "declaration": "argparse.ArgumentParser(description=__doc__)"
         },
         {
-          "line": 56,
+          "line": 62,
           "declaration": "parser.add_argument('--env-file', default=str(Path.home() / '.openclaw/.env'))"
         },
         {
-          "line": 57,
+          "line": 63,
           "declaration": "parser.add_argument('--known-hosts')"
         },
         {
-          "line": 58,
+          "line": 64,
           "declaration": "parser.add_argument('--apply', action='store_true')"
         },
         {
-          "line": 59,
+          "line": 65,
           "declaration": "parser.add_argument('--restore', action='store_true')"
         }
       ],
-      "sha256": "e5047a8e2c0898c3cbc57dffa490413b8de5d699d838b59357c8336c238587d5",
+      "sha256": "c7cacec8094ae7dd5239a8ecb1876d2d7931d089201f07dd2c00460681b225b6",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -5518,27 +5518,27 @@
       ],
       "declarations": [
         {
-          "line": 61,
+          "line": 67,
           "declaration": "argparse.ArgumentParser(description=__doc__)"
         },
         {
-          "line": 62,
+          "line": 68,
           "declaration": "parser.add_argument('--config', default=str(Path.home() / '.openclaw/openclaw.json'))"
         },
         {
-          "line": 63,
+          "line": 69,
           "declaration": "parser.add_argument('--repo', default=str(Path(__file__).resolve().parent.parent))"
         },
         {
-          "line": 64,
+          "line": 70,
           "declaration": "parser.add_argument('--apply', action='store_true')"
         },
         {
-          "line": 65,
+          "line": 71,
           "declaration": "parser.add_argument('--restore', action='store_true')"
         }
       ],
-      "sha256": "95b61744272f37b0149cd7504343ceef0f3e7867e4b7998a0e3862b5080c7f10",
+      "sha256": "59d606758027a7ebf7858207f053cec080dbcbdd4a50abd9c45fee7a15584bad",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -5552,27 +5552,27 @@
       ],
       "declarations": [
         {
-          "line": 148,
+          "line": 154,
           "declaration": "argparse.ArgumentParser(description=__doc__)"
         },
         {
-          "line": 149,
+          "line": 155,
           "declaration": "parser.add_argument('--env-file', default='.env')"
         },
         {
-          "line": 150,
+          "line": 156,
           "declaration": "parser.add_argument('--public-url')"
         },
         {
-          "line": 151,
+          "line": 157,
           "declaration": "parser.add_argument('--apply', action='store_true')"
         },
         {
-          "line": 152,
+          "line": 158,
           "declaration": "parser.add_argument('--restore', action='store_true')"
         }
       ],
-      "sha256": "07dd46d843082604a9837c5a1f3b69bb8ab2b1e7e442ab46eb9b56df20260b8e",
+      "sha256": "e877c3401b8a4d1c2669d4b809d04319c94fd3272c1df3b470ebf8197257cf28",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -5585,23 +5585,23 @@
       ],
       "declarations": [
         {
-          "line": 43,
+          "line": 49,
           "declaration": "argparse.ArgumentParser(description=__doc__)"
         },
         {
-          "line": 43,
+          "line": 49,
           "declaration": "p.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))"
         },
         {
-          "line": 44,
+          "line": 50,
           "declaration": "p.add_argument('--apply',action='store_true')"
         },
         {
-          "line": 44,
+          "line": 50,
           "declaration": "p.add_argument('--restore',action='store_true')"
         }
       ],
-      "sha256": "54c91b400ccdcb144ce45ca5f226193f7e24be501e06f16d30d430bf3bb30080",
+      "sha256": "8f98520a3c7139efb10d13be8fb26189d139988fc595133d2a380d31f8693986",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -6240,19 +6240,19 @@
       ],
       "declarations": [
         {
-          "line": 51,
+          "line": 52,
           "declaration": "argparse.ArgumentParser()"
         },
         {
-          "line": 52,
+          "line": 53,
           "declaration": "ap.add_argument(\"--config\", required=True)"
         },
         {
-          "line": 53,
+          "line": 54,
           "declaration": "ap.add_argument(\"--repo\", required=True)"
         },
         {
-          "line": 54,
+          "line": 55,
           "declaration": "ap.add_argument(\"--dry-run\", action=\"store_true\")"
         },
         {
@@ -6260,7 +6260,7 @@
           "declaration": "Usage:"
         }
       ],
-      "sha256": "1cf33974a5300d53e0b842b762daa724ffe31b0dc00c0b635fb6c82cf3a6861d",
+      "sha256": "8b1e14c7002d010b3f37fb5c3be8f5db3d6f36339addff611a0c3cf11bbc0bd5",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -6303,7 +6303,7 @@
           "declaration": "Usage:"
         }
       ],
-      "sha256": "9c09415edb0b5952df64123e9f5d5ef2fb94aaa3526d518143d222b9a5c62100",
+      "sha256": "4bf4b436363f49bb15fc2178edfa0e43dfed26937a8fa65c7e595e76bee120c8",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -6316,23 +6316,23 @@
       ],
       "declarations": [
         {
-          "line": 56,
+          "line": 66,
           "declaration": "argparse.ArgumentParser(description=__doc__)"
         },
         {
-          "line": 57,
+          "line": 67,
           "declaration": "parser.add_argument(\"--home\",type=Path,default=Path(os.environ.get(\"OPENCLAW_HOME\",str(Path.home()/\".openclaw\"))))"
         },
         {
-          "line": 58,
+          "line": 68,
           "declaration": "parser.add_argument(\"--apply\",action=\"store_true\")"
         },
         {
-          "line": 59,
+          "line": 69,
           "declaration": "parser.add_argument(\"--enable-http\",action=\"store_true\",help=\"Also enable the authenticated local chat compatibility endpoint\")"
         }
       ],
-      "sha256": "b6ecdd4eda769d020ed9098dd32ec968f3096585cb507b6eaa6071df5dc6bbb7",
+      "sha256": "95a250774bfdce2f423f5b5f0c33806b71f6506dd66647a86fc0c07e6f07d26d",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -7251,7 +7251,7 @@
           "declaration": "Usage:"
         }
       ],
-      "sha256": "46c70433dbcda231cc882d3407e3aa90d99f8a9deaee8b2624c96d03e53cee30",
+      "sha256": "2aef0472048aec16ceda6d52ed35e143a5708fd1887a611bc7d70f9b2d9f47e3",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -7391,27 +7391,27 @@
       ],
       "declarations": [
         {
-          "line": 139,
+          "line": 140,
           "declaration": "systemd = '--systemd' in sys.argv"
         },
         {
-          "line": 141,
+          "line": 142,
           "declaration": "sys.argv.remove('--systemd')"
         },
         {
-          "line": 142,
+          "line": 143,
           "declaration": "if sys.argv[1] == '--get':"
         },
         {
-          "line": 143,
+          "line": 144,
           "declaration": "print(values(Path(sys.argv[2]).read_text()).get(sys.argv[3], ''), end='')"
         },
         {
-          "line": 145,
+          "line": 146,
           "declaration": "update(sys.argv[1], sys.argv[2], sys.stdin.read(), systemd=systemd)"
         }
       ],
-      "sha256": "a83ef1351adc5eb865a473a30e63bf0ccbb59f5511865c7f7ad604ba74f71ecb",
+      "sha256": "7ff1fefeacb130cb3a352a39b3f70a7ff951c4330bb6932a5006d5d05cdbb39e",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {

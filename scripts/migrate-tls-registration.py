@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Preview/apply/restore known legacy MCP TLS registrations; preserve credentials."""
 import argparse
+from contextlib import nullcontext
 import importlib.util
 import json
 import os
@@ -12,6 +13,11 @@ spec.loader.exec_module(helpers)
 
 
 def migrate(path, repo, apply=False, restore=False):
+    with helpers._codec.configuration_lock(Path(path).absolute().parent) if apply else nullcontext():
+        return _migrate_locked(path, repo, apply, restore)
+
+
+def _migrate_locked(path, repo, apply=False, restore=False):
     path = Path(path).absolute()
     backup = path.with_name(path.name + '.pre-tls-registration')
     helpers.regular_file(path)

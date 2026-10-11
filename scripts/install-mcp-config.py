@@ -64,6 +64,11 @@ def launch(entry):
 
 
 def merge_config(path, generated, template):
+    with writer.configuration_lock(Path(path).absolute().parent):
+        return _merge_config_locked(path, generated, template)
+
+
+def _merge_config_locked(path, generated, template):
     original = path.read_text() if path.exists() else '{}'
     config = json.loads(original)
     state_path = path.with_name(path.name + '.netclaw-managed.json')

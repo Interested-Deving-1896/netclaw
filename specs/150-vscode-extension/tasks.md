@@ -35,7 +35,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 - [X] T010 Implement shared proposal preparation/approval/verification/recovery state machine in `ui/netclaw-visual/src/management/proposals.js`; store real private baseline artifacts and redacted intent only. (FR-020, FR-022, FR-023, FR-024, FR-043, SC-006, SC-008)
 - [X] T011 Add installation-specific GAIT sessions, bounded redaction/evidence access and fail-closed audit in `ui/netclaw-visual/src/management/evidence.js`; isolate root/sticky file and never rewrite history. (FR-024, FR-029, FR-036, FR-038, SC-008)
 - [X] T012 Implement fixed private MCP façade and safe launchers in `mcp-servers/netclaw-operator-mcp/server.mjs` and `scripts/netclaw-operator.mjs`; stdio-only output, verified SSH path quoting, no shell/URL dispatcher. (FR-005, FR-007, FR-039, SC-005)
-- [ ] T013 Extract shared non-listening domain entry points from `ui/netclaw-visual/server.js` and runtime adapters; route existing managed-resource writes through shared revision/ownership locks without changing unrelated routes. (FR-020, FR-039, SC-011)
+- [X] T013 Extract shared non-listening domain entry points from `ui/netclaw-visual/server.js` and runtime adapters; route existing managed-resource writes through shared revision/ownership locks without changing unrelated routes. (FR-020, FR-039, SC-011)
 - [ ] T014 Run foundation denial, CR withdrawal, grant spoofing/nested delegation, audit loss, database/crash/replay and cross-client fixtures in `tests/operator/foundations.test.mjs`; fix failures before story dispatch is enabled. (FR-022, FR-023, FR-024, FR-036, FR-043, FR-044, SC-005, SC-006, SC-007, SC-008, SC-013)
 
 **Parallel example**: Keep this phase sequential because its tasks share adapters, manifests or acceptance dependencies; fixture drafting may be prepared independently but does not close a task.
@@ -212,7 +212,7 @@ Deliver small story checkpoints with real behavioral evidence, preserve the exis
 
 ## Counts and traceability
 
-79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Forty-five tasks are complete; 34 remain unchecked. T027 adds explicit native UI navigation to the already rendered Canvas/Avatar implementation; remote browser acceptance remains a platform gate. T049/T050/T053 have protected Hermes MCP/worker/runtime and native grant-review evidence in evidence/assistant-clients.md; broad federation, named-client and platform acceptance remain open. T036 has isolated Mac launchd and controller fault evidence in evidence/services-mac.md; T037 and T063 have configuration/RAG behavioral and rendered-editor evidence. Full story/platform qualification remains separate. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
+79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Forty-six tasks are complete; 33 remain unchecked. T027 adds explicit native UI navigation to the already rendered Canvas/Avatar implementation; remote browser acceptance remains a platform gate. T049/T050/T053 have protected Hermes MCP/worker/runtime and native grant-review evidence in evidence/assistant-clients.md; broad federation, named-client and platform acceptance remain open. T036 has isolated Mac launchd and controller fault evidence in evidence/services-mac.md; T037 and T063 have configuration/RAG behavioral and rendered-editor evidence. Full story/platform qualification remains separate. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
 
 | Group | Tasks |
 |---|---|
@@ -303,3 +303,11 @@ retention now complete T062. Detailed commands, counts and source limitations
 are in [workspace evidence](evidence/workspace.md). T066 remains open; synthetic
 transcripts and loopback proofs do not establish a real Zoom/WSL or physical
 mobile pass.
+
+## Shared writer checkpoint
+
+[Configuration evidence](evidence/configuration.md) closes T013 for shared
+non-listening domains and NetClaw configuration writers. It also records the
+Hermes normalized-credential launcher fix and actual read-only status check.
+The owner completed local publisher authentication, independently verified;
+publication and broader runtime/role/platform tasks remain open.

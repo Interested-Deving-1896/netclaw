@@ -28,15 +28,21 @@ def configuration_lock(home):
     state = home / 'netclaw-hud'
     directory = state / 'management'
     database = directory / 'operations.sqlite'
-    if not database.exists() and not database.is_symlink():
+    if not directory.exists() and not directory.is_symlink():
         yield
         return
-    if home.is_symlink():
+    if home.resolve() != home:
         raise ValueError('Installation home must not be linked')
     _owned(state, True)
     _owned(directory, True)
     _owned(database)
     _owned(state / 'installation.json')
+    if (state / 'installation.json').stat().st_size > 8192:
+        raise ValueError('Invalid installation identity')
+    for suffix in ('-wal', '-shm'):
+        sidecar = database.with_name(database.name + suffix)
+        if sidecar.exists() or sidecar.is_symlink():
+            _owned(sidecar)
     identity = json.loads((state / 'installation.json').read_bytes())
     connection = sqlite3.connect(database.as_uri() + '?mode=rw', uri=True, timeout=5)
     token = None

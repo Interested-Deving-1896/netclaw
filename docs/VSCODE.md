@@ -130,3 +130,13 @@ documented in [VSCODE-SCIENCE.md](VSCODE-SCIENCE.md).
 
 Mobile enrollment, device consent, capture outcomes and explicit local media saves
 are documented in [VSCODE-MOBILE.md](VSCODE-MOBILE.md).
+
+## Concurrent configuration writers
+
+HUD settings, extension proposals and NetClaw configuration/import/migration
+helpers share the selected installation’s configuration lock. A busy or damaged
+management journal blocks a write; it is never silently replaced. Preserve an
+interrupted operation’s journal and baseline for recovery. Manual or upstream
+configuration changes still invalidate prepared revisions and must be reviewed
+again. Credential normalization is supported by both management and the normal
+Hermes HUD launch/status workflow.

@@ -5,6 +5,7 @@ No shell evaluation, interpolation, provider calls, or runtime config changes.
 Existing destination assignments always win. Diagnostics contain names only.
 """
 import argparse
+from contextlib import nullcontext
 import importlib.util
 import os
 from pathlib import Path
@@ -16,6 +17,10 @@ ROOT = Path(__file__).resolve().parents[1]
 ASSIGNMENT = re.compile(r'^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$')
 QUOTED = re.compile(r'''^(["'`])((?:\\.|(?!\1).)*)\1\s*(?:\#.*)?$''')
 PLACEHOLDER = re.compile(r'^(?:changeme|your[-_].*|.*\.\.\..*|/path/to/.*|x{8}-x{4}-x{4}-x{4}-x{12})$', re.I)
+
+spec = importlib.util.spec_from_file_location('netclaw_env_writer', ROOT / 'scripts/write-env.py')
+writer = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(writer)
 
 
 def records(text):
@@ -50,6 +55,11 @@ def read_regular(path):
 
 
 def import_env(source, target, apply=False):
+    with writer.configuration_lock(Path(target).absolute().parent) if apply else nullcontext():
+        return _import_env_locked(source, target, apply)
+
+
+def _import_env_locked(source, target, apply=False):
     # Validate both files completely before any mutation, even in preview mode.
     source_text = read_regular(source)
     original = read_regular(target)
@@ -74,9 +84,6 @@ def import_env(source, target, apply=False):
             groups['import'].append(key)
             additions.append(line)
     if apply and additions:
-        spec = importlib.util.spec_from_file_location('netclaw_env_writer', ROOT / 'scripts/write-env.py')
-        writer = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(writer)
         separator = '\n' if original and not original.endswith('\n') else ''
         writer.write_private(target, original + separator + '\n'.join(additions) + '\n')
     print('Dotenv import: ' + ('applied' if apply else 'preview (use --apply to write)'))

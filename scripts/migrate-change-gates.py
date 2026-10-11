@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Preflight and adopt mandatory production change verification; never creates a CR."""
 import argparse
+from contextlib import nullcontext
 import importlib.util
 import os
 from pathlib import Path
@@ -12,6 +13,11 @@ REQUIRED=('SERVICENOW_INSTANCE_URL','SERVICENOW_USERNAME','SERVICENOW_PASSWORD')
 
 
 def migrate(path, apply=False, restore=False):
+    with helpers._codec.configuration_lock(Path(path).absolute().parent) if apply else nullcontext():
+        return _migrate_locked(path, apply, restore)
+
+
+def _migrate_locked(path, apply=False, restore=False):
     path=Path(path).absolute();backup=path.with_name(path.name+'.pre-change-gates')
     helpers.regular_file(path);helpers.regular_file(backup)
     original=path.read_bytes() if path.exists() else b''

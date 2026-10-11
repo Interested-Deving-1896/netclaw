@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Preview/apply/restore the pyATS HTTP launcher environment migration."""
 import argparse
+from contextlib import nullcontext
 import importlib.util
 from pathlib import Path
 import os
@@ -12,6 +13,11 @@ _spec.loader.exec_module(_helpers)
 
 
 def migrate(path, root, venv, apply=False, restore=False, upstream=None):
+    with _helpers._codec.configuration_lock(Path(path).absolute().parent) if apply else nullcontext():
+        return _migrate_locked(path, root, venv, apply, restore, upstream)
+
+
+def _migrate_locked(path, root, venv, apply=False, restore=False, upstream=None):
     path, root, venv = (Path(p).absolute() for p in (path, root, venv))
     # Managed-source adoption is a separate migration from the original HTTP
     # bridge. Preserve that earlier recovery point on an existing installation.

@@ -1399,11 +1399,11 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--apply`, `--runtime`, `--source`, `--target`
 
 ```text
-L99: argparse.ArgumentParser(description=__doc__)
-L100: parser.add_argument('--source', type=Path, default=ROOT / '.env')
-L101: parser.add_argument('--target', type=Path, help='Override the runtime dotenv path')
-L102: parser.add_argument('--runtime', choices=('openclaw', 'hermes'), default=os.environ.get('NETCLAW_RUNTIME', 'openclaw'))
-L103: parser.add_argument('--apply', action='store_true', help='Write missing settings; default is preview only')
+L106: argparse.ArgumentParser(description=__doc__)
+L107: parser.add_argument('--source', type=Path, default=ROOT / '.env')
+L108: parser.add_argument('--target', type=Path, help='Override the runtime dotenv path')
+L109: parser.add_argument('--runtime', choices=('openclaw', 'hermes'), default=os.environ.get('NETCLAW_RUNTIME', 'openclaw'))
+L110: parser.add_argument('--apply', action='store_true', help='Write missing settings; default is preview only')
 ```
 
 ## scripts/in2n-border-workspace.py
@@ -1521,12 +1521,12 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--components`, `--config`, `--output`, `--repo`, `--runtime-root`
 
 ```text
-L115: argparse.ArgumentParser(description=__doc__)
-L116: parser.add_argument('--repo', type=Path, required=True)
-L117: parser.add_argument('--runtime-root', type=Path, required=True)
-L118: parser.add_argument('--components', required=True)
-L119: parser.add_argument('--output', type=Path, required=True)
-L120: parser.add_argument('--config', type=Path)
+L120: argparse.ArgumentParser(description=__doc__)
+L121: parser.add_argument('--repo', type=Path, required=True)
+L122: parser.add_argument('--runtime-root', type=Path, required=True)
+L123: parser.add_argument('--components', required=True)
+L124: parser.add_argument('--output', type=Path, required=True)
+L125: parser.add_argument('--config', type=Path)
 ```
 
 ## scripts/install-pyats-genie.py
@@ -1733,12 +1733,12 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--apply`, `--config`, `--env-file`, `--repo`, `--restore`
 
 ```text
-L73: argparse.ArgumentParser(description=__doc__)
-L74: parser.add_argument('--config', required=True, type=Path, help='Discovered active Border OpenClaw config')
-L75: parser.add_argument('--env-file', type=Path, help='Chosen runtime env file; required except restore')
-L76: parser.add_argument('--repo', type=Path, default=Path(__file__).resolve().parents[1])
-L77: parser.add_argument('--apply', action='store_true')
-L78: parser.add_argument('--restore', action='store_true')
+L79: argparse.ArgumentParser(description=__doc__)
+L80: parser.add_argument('--config', required=True, type=Path, help='Discovered active Border OpenClaw config')
+L81: parser.add_argument('--env-file', type=Path, help='Chosen runtime env file; required except restore')
+L82: parser.add_argument('--repo', type=Path, default=Path(__file__).resolve().parents[1])
+L83: parser.add_argument('--apply', action='store_true')
+L84: parser.add_argument('--restore', action='store_true')
 ```
 
 ## scripts/jev-audit/build_findings.py
@@ -2265,10 +2265,10 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--apply`, `--env-file`, `--restore`
 
 ```text
-L48: argparse.ArgumentParser(description=__doc__)
-L48: p.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))
-L49: p.add_argument('--apply',action='store_true')
-L49: p.add_argument('--restore',action='store_true')
+L54: argparse.ArgumentParser(description=__doc__)
+L54: p.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))
+L55: p.add_argument('--apply',action='store_true')
+L55: p.add_argument('--restore',action='store_true')
 ```
 
 ## scripts/migrate-hud-access.py
@@ -2292,14 +2292,14 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--apply`, `--bind`, `--ca-file`, `--cert`, `--env-file`, `--key`, `--restore`
 
 ```text
-L53: argparse.ArgumentParser(description=__doc__)
-L54: p.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))
-L55: p.add_argument('--bind',default='127.0.0.1')
-L55: p.add_argument('--cert')
-L55: p.add_argument('--key')
-L55: p.add_argument('--ca-file')
-L56: p.add_argument('--apply',action='store_true')
-L56: p.add_argument('--restore',action='store_true')
+L59: argparse.ArgumentParser(description=__doc__)
+L60: p.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))
+L61: p.add_argument('--bind',default='127.0.0.1')
+L61: p.add_argument('--cert')
+L61: p.add_argument('--key')
+L61: p.add_argument('--ca-file')
+L62: p.add_argument('--apply',action='store_true')
+L62: p.add_argument('--restore',action='store_true')
 ```
 
 ## scripts/migrate-integration-tls.py
@@ -2309,13 +2309,13 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--apply`, `--ca-bundle`, `--env-file`, `--lab-insecure`, `--restore`, `--service`
 
 ```text
-L46: argparse.ArgumentParser(description=__doc__)
-L47: p.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))
-L48: p.add_argument('--service',choices=('redfish','nautobot','anta'),default='redfish')
-L49: p.add_argument('--ca-bundle')
-L49: p.add_argument('--lab-insecure',action='store_true')
-L50: p.add_argument('--apply',action='store_true')
-L50: p.add_argument('--restore',action='store_true')
+L52: argparse.ArgumentParser(description=__doc__)
+L53: p.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))
+L54: p.add_argument('--service',choices=('redfish','nautobot','anta'),default='redfish')
+L55: p.add_argument('--ca-bundle')
+L55: p.add_argument('--lab-insecure',action='store_true')
+L56: p.add_argument('--apply',action='store_true')
+L56: p.add_argument('--restore',action='store_true')
 ```
 
 ## scripts/migrate-local-file-permissions.py
@@ -2339,13 +2339,13 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--apply`, `--env-file`, `--repo`, `--restore`, `--upstream`, `--venv`
 
 ```text
-L53: argparse.ArgumentParser(description=__doc__)
-L54: ap.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))
-L55: ap.add_argument('--repo',default=str(Path(__file__).resolve().parents[1]))
-L56: ap.add_argument('--venv',default=str(Path.home()/'.openclaw/pyats-venv'))
-L57: ap.add_argument('--upstream',help='Explicit verified managed server script; legacy repo path remains the default')
-L58: ap.add_argument('--apply',action='store_true')
-L58: ap.add_argument('--restore',action='store_true')
+L59: argparse.ArgumentParser(description=__doc__)
+L60: ap.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))
+L61: ap.add_argument('--repo',default=str(Path(__file__).resolve().parents[1]))
+L62: ap.add_argument('--venv',default=str(Path.home()/'.openclaw/pyats-venv'))
+L63: ap.add_argument('--upstream',help='Explicit verified managed server script; legacy repo path remains the default')
+L64: ap.add_argument('--apply',action='store_true')
+L64: ap.add_argument('--restore',action='store_true')
 ```
 
 ## scripts/migrate-ssh-trust.py
@@ -2355,11 +2355,11 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--apply`, `--env-file`, `--known-hosts`, `--restore`
 
 ```text
-L55: argparse.ArgumentParser(description=__doc__)
-L56: parser.add_argument('--env-file', default=str(Path.home() / '.openclaw/.env'))
-L57: parser.add_argument('--known-hosts')
-L58: parser.add_argument('--apply', action='store_true')
-L59: parser.add_argument('--restore', action='store_true')
+L61: argparse.ArgumentParser(description=__doc__)
+L62: parser.add_argument('--env-file', default=str(Path.home() / '.openclaw/.env'))
+L63: parser.add_argument('--known-hosts')
+L64: parser.add_argument('--apply', action='store_true')
+L65: parser.add_argument('--restore', action='store_true')
 ```
 
 ## scripts/migrate-tls-registration.py
@@ -2369,11 +2369,11 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--apply`, `--config`, `--repo`, `--restore`
 
 ```text
-L61: argparse.ArgumentParser(description=__doc__)
-L62: parser.add_argument('--config', default=str(Path.home() / '.openclaw/openclaw.json'))
-L63: parser.add_argument('--repo', default=str(Path(__file__).resolve().parent.parent))
-L64: parser.add_argument('--apply', action='store_true')
-L65: parser.add_argument('--restore', action='store_true')
+L67: argparse.ArgumentParser(description=__doc__)
+L68: parser.add_argument('--config', default=str(Path.home() / '.openclaw/openclaw.json'))
+L69: parser.add_argument('--repo', default=str(Path(__file__).resolve().parent.parent))
+L70: parser.add_argument('--apply', action='store_true')
+L71: parser.add_argument('--restore', action='store_true')
 ```
 
 ## scripts/migrate-voice-auth.py
@@ -2383,11 +2383,11 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--apply`, `--env-file`, `--public-url`, `--restore`
 
 ```text
-L148: argparse.ArgumentParser(description=__doc__)
-L149: parser.add_argument('--env-file', default='.env')
-L150: parser.add_argument('--public-url')
-L151: parser.add_argument('--apply', action='store_true')
-L152: parser.add_argument('--restore', action='store_true')
+L154: argparse.ArgumentParser(description=__doc__)
+L155: parser.add_argument('--env-file', default='.env')
+L156: parser.add_argument('--public-url')
+L157: parser.add_argument('--apply', action='store_true')
+L158: parser.add_argument('--restore', action='store_true')
 ```
 
 ## scripts/migrate-zoom-auth.py
@@ -2397,10 +2397,10 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--apply`, `--env-file`, `--restore`
 
 ```text
-L43: argparse.ArgumentParser(description=__doc__)
-L43: p.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))
-L44: p.add_argument('--apply',action='store_true')
-L44: p.add_argument('--restore',action='store_true')
+L49: argparse.ArgumentParser(description=__doc__)
+L49: p.add_argument('--env-file',default=str(Path.home()/'.openclaw/.env'))
+L50: p.add_argument('--apply',action='store_true')
+L50: p.add_argument('--restore',action='store_true')
 ```
 
 ## scripts/mobile-release-archive.sh
@@ -2630,10 +2630,10 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--config`, `--dry-run`, `--repo`
 
 ```text
-L51: argparse.ArgumentParser()
-L52: ap.add_argument("--config", required=True)
-L53: ap.add_argument("--repo", required=True)
-L54: ap.add_argument("--dry-run", action="store_true")
+L52: argparse.ArgumentParser()
+L53: ap.add_argument("--config", required=True)
+L54: ap.add_argument("--repo", required=True)
+L55: ap.add_argument("--dry-run", action="store_true")
 L20: Usage:
 ```
 
@@ -2660,10 +2660,10 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--apply`, `--enable-http`, `--home`
 
 ```text
-L56: argparse.ArgumentParser(description=__doc__)
-L57: parser.add_argument("--home",type=Path,default=Path(os.environ.get("OPENCLAW_HOME",str(Path.home()/".openclaw"))))
-L58: parser.add_argument("--apply",action="store_true")
-L59: parser.add_argument("--enable-http",action="store_true",help="Also enable the authenticated local chat compatibility endpoint")
+L66: argparse.ArgumentParser(description=__doc__)
+L67: parser.add_argument("--home",type=Path,default=Path(os.environ.get("OPENCLAW_HOME",str(Path.home()/".openclaw"))))
+L68: parser.add_argument("--apply",action="store_true")
+L69: parser.add_argument("--enable-http",action="store_true",help="Also enable the authenticated local chat compatibility endpoint")
 ```
 
 ## scripts/pal-settings.mjs
@@ -3136,11 +3136,11 @@ Static source declarations; lexical flags may include delegated commands. No exe
 Flags mentioned: `--get`, `--systemd`
 
 ```text
-L139: systemd = '--systemd' in sys.argv
-L141: sys.argv.remove('--systemd')
-L142: if sys.argv[1] == '--get':
-L143: print(values(Path(sys.argv[2]).read_text()).get(sys.argv[3], ''), end='')
-L145: update(sys.argv[1], sys.argv[2], sys.stdin.read(), systemd=systemd)
+L140: systemd = '--systemd' in sys.argv
+L142: sys.argv.remove('--systemd')
+L143: if sys.argv[1] == '--get':
+L144: print(values(Path(sys.argv[2]).read_text()).get(sys.argv[3], ''), end='')
+L146: update(sys.argv[1], sys.argv[2], sys.stdin.read(), systemd=systemd)
 ```
 
 ## scripts/zabbix-stdio.py

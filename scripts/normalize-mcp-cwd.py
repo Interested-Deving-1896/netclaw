@@ -21,6 +21,7 @@ Usage:
     normalize-mcp-cwd.py --config <path> --repo <netclaw repo root> [--dry-run]
 """
 import argparse
+from contextlib import nullcontext
 import json
 import importlib.util
 import sys
@@ -57,42 +58,43 @@ def main() -> int:
     cfg_path = Path(args.config)
     repo = Path(args.repo).resolve()
 
-    if not cfg_path.is_file():
-        print(f"normalize-mcp-cwd: {cfg_path} not found — nothing to do")
+    with _writer.configuration_lock(cfg_path.absolute().parent) if not args.dry_run else nullcontext():
+        if not cfg_path.is_file():
+            print(f"normalize-mcp-cwd: {cfg_path} not found — nothing to do")
+            return 0
+
+        cfg = json.loads(cfg_path.read_text())
+
+        # Support both the flat `mcpServers` shape and the nested `mcp.servers`.
+        if isinstance(cfg.get("mcpServers"), dict):
+            servers = cfg["mcpServers"]
+        elif isinstance(cfg.get("mcp"), dict) and isinstance(cfg["mcp"].get("servers"), dict):
+            servers = cfg["mcp"]["servers"]
+        else:
+            print("normalize-mcp-cwd: no MCP server block found — nothing to do")
+            return 0
+
+        fixed = []
+        for name, entry in servers.items():
+            if isinstance(entry, dict) and needs_cwd(entry, repo):
+                entry["cwd"] = str(repo)
+                fixed.append(name)
+
+        if not fixed:
+            print("normalize-mcp-cwd: all MCP entries already resolve correctly")
+            return 0
+
+        print(f"normalize-mcp-cwd: set cwd={repo} on {len(fixed)} entries:")
+        for name in fixed:
+            print(f"  - {name}")
+
+        if args.dry_run:
+            print("normalize-mcp-cwd: dry run, not writing")
+            return 0
+
+        _writer.write_private(cfg_path, json.dumps(cfg, indent=2) + "\n")
+        print(f"normalize-mcp-cwd: wrote {cfg_path}")
         return 0
-
-    cfg = json.loads(cfg_path.read_text())
-
-    # Support both the flat `mcpServers` shape and the nested `mcp.servers`.
-    if isinstance(cfg.get("mcpServers"), dict):
-        servers = cfg["mcpServers"]
-    elif isinstance(cfg.get("mcp"), dict) and isinstance(cfg["mcp"].get("servers"), dict):
-        servers = cfg["mcp"]["servers"]
-    else:
-        print("normalize-mcp-cwd: no MCP server block found — nothing to do")
-        return 0
-
-    fixed = []
-    for name, entry in servers.items():
-        if isinstance(entry, dict) and needs_cwd(entry, repo):
-            entry["cwd"] = str(repo)
-            fixed.append(name)
-
-    if not fixed:
-        print("normalize-mcp-cwd: all MCP entries already resolve correctly")
-        return 0
-
-    print(f"normalize-mcp-cwd: set cwd={repo} on {len(fixed)} entries:")
-    for name in fixed:
-        print(f"  - {name}")
-
-    if args.dry_run:
-        print("normalize-mcp-cwd: dry run, not writing")
-        return 0
-
-    _writer.write_private(cfg_path, json.dumps(cfg, indent=2) + "\n")
-    print(f"normalize-mcp-cwd: wrote {cfg_path}")
-    return 0
 
 
 if __name__ == "__main__":

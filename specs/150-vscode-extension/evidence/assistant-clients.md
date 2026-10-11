@@ -107,3 +107,12 @@ grant mutation and operator cancellation after revocation. Native setup offers
 delegation only for the exact qualified local profile, and answer disclosure is
 reviewed separately. T049/T050/T053 implementation is complete; T054 and the
 remaining broad runtime/federation/platform acceptance remain open.
+
+## Publisher authentication resolved — 2026-10-11
+
+The owner completed `publisher:login` locally for `NetClaw`, without transmitting
+credentials in chat. A separate read-only `publisher:verify` using locked vsce
+and supported Node 24.19.0 succeeded. The earlier TF400813 failures above remain
+historical evidence; publisher authentication is no longer a blocker. No publish
+was attempted. Product completion, exact release artifacts and real platform
+acceptance remain release gates.

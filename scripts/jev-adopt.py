@@ -5,6 +5,7 @@ Does not install dependencies, enable inference, edit credentials, restart servi
 or replace an existing custom Jev registration. Retains a private recovery original.
 """
 import argparse
+from contextlib import nullcontext
 import importlib.util
 import json
 import os
@@ -23,6 +24,11 @@ def safe_file(path):
 
 
 def adopt(config, env_file, repo, apply=False, restore=False):
+    with helpers._codec.configuration_lock(Path(config).expanduser().absolute().parent) if apply else nullcontext():
+        return _adopt_locked(config, env_file, repo, apply, restore)
+
+
+def _adopt_locked(config, env_file, repo, apply=False, restore=False):
     config = Path(config).expanduser().absolute()
     backup = config.with_name(config.name+'.pre-jev-registration')
     safe_file(config)

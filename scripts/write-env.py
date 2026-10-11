@@ -16,6 +16,7 @@ import importlib.util
 _lock_spec = importlib.util.spec_from_file_location('netclaw_management_lock', Path(__file__).with_name('management_lock.py'))
 _lock_module = importlib.util.module_from_spec(_lock_spec)
 _lock_spec.loader.exec_module(_lock_module)
+configuration_lock = _lock_module.configuration_lock
 
 ASSIGNMENT = re.compile(r'^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$')
 

@@ -4,9 +4,9 @@ import { supportsHudNode } from './hud-node-version.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
-import { randomBytes } from 'node:crypto';
 import net from 'node:net';
-import { resolveRuntime, selectRuntime, readPrivate, writePrivate } from './runtime-selection.mjs';
+import { resolveRuntime, selectRuntime } from './runtime-selection.mjs';
+import {prepareCompanionAuth,readCompanionAuth} from '../ui/netclaw-visual/src/hud-server/companion-auth.js';
 import { parseEnvData } from '../ui/netclaw-visual/src/security/private-files.js';
 import { hudPorts, hudHost } from '../ui/netclaw-visual/src/security/local-access.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -33,7 +33,7 @@ try {
       let readiness={ready:false,code:'runtime_stopped',executionVerified:false};
       if(selected.kind==='hermes' && mode==='status') {
         try {
-          const auth=readPrivate(path.join(selected.statePath,'companion-auth.json'));
+          const auth=readCompanionAuth(selected,env);
           const response=await fetch(`http://127.0.0.1:${auth.port || 8643}/health/detailed`,{headers:{Authorization:'Bearer '+auth.key},signal:AbortSignal.timeout(1500)});
           const status=await response.json();
           if(response.ok && status.installationId===selected.installationId)readiness=status;
@@ -46,7 +46,8 @@ try {
       if(!fs.existsSync(selected.configPath)) throw Error(`Run ${selected.kind} setup for the selected home before launching the HUD.`);
       const ui=path.join(root,'ui/netclaw-visual');
       // Parse only the selected home's literal dotenv. Explicit process values win.
-      const configured=fs.existsSync(selected.envPath)?parseEnvData(fs.readFileSync(selected.envPath,'utf8')):{};
+      const environmentBytes=fs.existsSync(selected.envPath)?fs.readFileSync(selected.envPath):null;
+      const configured=environmentBytes?parseEnvData(environmentBytes.toString()):{};
       Object.assign(env,{...configured,...env}, {NETCLAW_RUNTIME:selected.kind,NETCLAW_HUD_INSTALLATION_ID:selected.installationId});
       if(selected.kind==='hermes') { for(const key of Object.keys(env)) if(key.startsWith('OPENCLAW_')) delete env[key]; env.HERMES_HOME=selected.home; }
       else Object.assign(env,{OPENCLAW_HOME:selected.home,OPENCLAW_STATE_DIR:selected.home,OPENCLAW_CONFIG_PATH:selected.configPath});
@@ -68,16 +69,13 @@ try {
         child.once('exit',code=>{if(code)process.exitCode=code;stop();}); return child;
       };
       if(selected.kind==='hermes') {
-        const authFile=path.join(selected.statePath,'companion-auth.json');
-        let auth; try { auth=readPrivate(authFile); } catch(error) { if(error.code!=='ENOENT')throw error; auth={key:randomBytes(32).toString('hex')};writePrivate(authFile,auth); }
-        if(!/^[a-f0-9]{64}$/.test(auth.key)) throw Error('Private companion credential is invalid.');
-        env.NETCLAW_HERMES_HUD_API_KEY=auth.key;
         const base=path.join(selected.home,'python-runtimes/hermes-hud-agent');
         const source=env.NETCLAW_HERMES_SOURCE || path.join(base,'source');
         const python=env.NETCLAW_HERMES_PYTHON || path.join(base,'venv/bin/python');
         if(!fs.existsSync(python)) throw Error('Install the private companion first: ./scripts/install.sh --runtime hermes --add hermes-hud');
         const port=companionPort;
-        if(auth.port!==port)writePrivate(authFile,{...auth,port});
+        const auth=prepareCompanionAuth(selected,{key:env.NETCLAW_HERMES_HUD_API_KEY,port,expectedEnvironment:environmentBytes});
+        env.NETCLAW_HERMES_HUD_API_KEY=auth.key;
         launch(python,[path.join(root,'mcp-servers/hermes-hud-mcp/hermes_api.py'),'--home',selected.home,'--source',source,'--installation',selected.installationId,'--port',String(port)],root);
         let ready=false;
         for(let n=0;n<100;n++) {
