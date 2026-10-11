@@ -12,7 +12,7 @@ Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one Ne
 
 **Project:** [Source version 1.9.0 — unpublished](VERSION) · [Release notes](docs/releases/1.9.0.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 
-**VS Code:** [NetClaw extension](extensions/netclaw-vscode/README.md) for an existing installation: observation panels, Chat, Canvas, Avatar, RAG and optional Copilot/Claude Code/Codex access. Implementation is complete for the [documented scope](specs/150-vscode-extension/closure.md); Marketplace publication is on hold. The exact packaged RAG fix has one [final WSL confirmation](specs/150-vscode-extension/final-wsl-prompt.md) remaining.
+**VS Code:** [NetClaw extension](extensions/netclaw-vscode/README.md) for an existing installation: observation panels, Chat, Canvas, Avatar, RAG and optional Copilot/Claude Code/Codex access. Implementation and final validation are complete for the [documented scope](specs/150-vscode-extension/closure.md); Marketplace publication is on hold. The exact packaged RAG fix passed its [final Windows/WSL confirmation](specs/150-vscode-extension/evidence/wsl-final.md).
 
 **Reference:** [Architecture](#architecture) · [MCP servers](#mcp-servers-176) · [Skills](#skills-237) · [Workflows](#standard-workflows) · [Safety](#safety)
 
