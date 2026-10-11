@@ -34,14 +34,26 @@ Host: Ubuntu 22.04 under Windows WSL2. Supported build Node: 24.19.0. Existing a
 - Separate Docker-backed OpenShell sandbox: network update and active revision readback passed; real curl request **denied → allowed → denied** when adding and restoring a reviewed explicit rule. Filesystem/process policy was preserved. The initial hostname probe exposed DNS failure inside the sandbox; the successful probe used public IP `1.1.1.1`. This does not certify DNS or every destination/protocol. The test sandbox used native `--no-keep` lifecycle; the existing `netclaw` sandbox was untouched.
 - Live testbed SHA256 remained `0765b65271a064ca3077a1ae9db52d2c46791b5512da6f8c8c51eaee910d466c`, matching the pre-change baseline.
 
-Private machine evidence lives in `~/.cache/netclaw-prod-ready-20261011/`; raw native configuration, logs, recovery snapshots and live screenshots are deliberately not committed. Exact packaged-artifact results are recorded after packaging below.
+Private machine evidence lives in `~/.cache/netclaw-prod-ready-20261011/`; raw native configuration, logs, recovery snapshots and live screenshots are deliberately not committed.
+
+## Exact artifact and installed acceptance
+
+Source commit: `2afa5b1b7a953f4822bbb9a15e45ff06ff6facf5`. Artifact: `extensions/netclaw-vscode/netclaw-0.1.1.vsix`, 4,211,457 bytes. SHA256: `0a7c43238f3df39f409054d8ccb76975aa847d5986ffbcb2a2c645574da75d57`.
+
+- VSCE packaging and generated-asset validation passed. All 32 extension payload files were inspected; topology, all runtime bundles and third-party notices are present. Private state, testbeds, credentials, source/test code and development dependencies are excluded.
+- Installed VSIX experience acceptance on VS Code 1.102.0 passed: **14 checks, 149 layout cases, 42 screenshots**, including actual reviewed fixture writes and native cancellation. Every installed payload file was compared with the VSIX; the product was not loaded from a development path.
+- Separate installed VSIX acceptance against the actual running older HUD passed: five device cards; unsupported testbed writes disabled; scoped integration field presence; native environment review opened and cancelled without a write. Both actual DefenseClaw/OpenShell targets were bound through native dialogs, with visible permissions and redacted YAML. No real security-policy mutation occurred during these UI checks.
+- The same VSIX is installed in the owner's original temporary WSL editor profile; all 32 payload files match. Version 0.1.1 becomes active when that editor is reloaded. No reload was forced. Existing normal editor extension registries and the user's main checkout were not changed.
+- The isolated OpenShell create command stalled in its provisioning event stream even though native inspection showed the sandbox Ready and policy/traffic tests succeeded. Its requested `--no-keep` cleanup therefore did not run. The owned CLI was interrupted after qualification; `netclaw-prod-ready-check` remains available for inspection with its empty network-policy baseline restored. It has no attached model providers or copied host credentials. The preexisting `netclaw` sandbox remains at policy revision 2 with 29 network rules. No destructive cleanup command was issued.
+
+These results qualify the artifact above. Subsequent evidence-only commits do not change its application payload. The Linux desktop test runs under WSL/Xvfb; this is distinct from re-running all UI checks through the Windows Remote WSL transport.
 
 ## Remaining release gates and limits
 
 1. The currently running user HUD was started before the new safe editing routes existed. The compatibility UI restores reads and native environment review. Full testbed/scoped MCP editing requires a controlled HUD restart/update; the extension cannot add server routes to an already-running process. No restart was imposed while the owner was testing.
 2. Marketplace publishing credentials and publisher access have not been verified in this session; no configured VSCE PAT, Azure identity or VSCE store was found. Authenticate as an authorized member of publisher `NetClaw` before publication. No credentials belong in the repository or report.
 3. Push the reviewed source before publication so commit-pinned Marketplace README links resolve, and complete the owner's publication approval. No push or Marketplace publication is part of this qualification checkpoint.
-4. This patch's real native CLI and desktop acceptance was on the Linux host under WSL. Native Mac and Remote SSH requalification for this exact artifact remain separate; original Mac Spec151 fixture evidence is not new native-provider evidence. Native Windows runtime hosting and browser VS Code remain unsupported as documented.
+4. This patch's real native CLI and desktop acceptance was on the Linux host under WSL. Native Mac, Remote SSH and complete Windows Remote WSL UI requalification for this exact artifact remain separate; original Mac Spec151 fixture evidence is not new native-provider evidence. The temporary Windows Remote WSL installation is updated and byte-verified, awaiting the owner's reload. Native Windows runtime hosting and browser VS Code remain unsupported as documented.
 5. Native OpenShell and legacy DefenseClaw CLI writes lack an atomic compare-and-swap interface. Immediate rechecks, native scope, readback and private evidence protect against common mistakes; another editor or external writer can still race. Unknown outcomes block replay. Runtime traffic, connector hook enforcement and stored policy are separate states.
 
 The test results establish the stated coverage; they are not a claim that all possible deployments are defect-free.
