@@ -45,11 +45,15 @@ Copilot, Claude Code and Codex, live Chat/RAG/context and isolated lifecycle. Th
 adapter bytes are unchanged in this build. The Copilot permission deviation and
 fresh Default-permissions recheck remain part of [WSL evidence](evidence/wsl-followup.md).
 
-**Implementation completion is not a public-release or all-platform acceptance
-claim.** The final RAG busy-state change has Mac/DOM coverage but needs a targeted
-actual WSL confirmation. The owner now requests that targeted final handoff;
-the previously completed full WSL/assistant matrix need not be repeated without
-a new regression or changed package inputs. Broader live Hermes,
+**Final Spec150 validation is complete for the documented existing OpenClaw client
+scope.** The exact `b13bdfe6…` artifact's RAG busy-state delta passed targeted actual
+Windows/WSL confirmation: live inventory/citations, Refresh/Search overlap,
+pending hide/reveal, native upload cancellation, isolated errors and late completion
+after disconnect. See [final WSL evidence](evidence/wsl-final.md) and
+[structured results](evidence/wsl-final-checks.json). No product bytes changed and
+no further Mac handoff is required. The prior full WSL/assistant matrix and its
+limitations remain valid for their stated scope. This is not publication or
+all-platform acceptance. Broader live Hermes,
 Remote SSH/second-distribution/reboot and network-write qualification remain outside
 the recorded OpenClaw acceptance scope.
 

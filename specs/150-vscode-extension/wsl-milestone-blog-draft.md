@@ -59,3 +59,15 @@ archiving superseded experiment branches. Source 1.9.0 metadata is prepared; the
 extension remains 0.1.0 and Marketplace/GitHub/blog publication is still on hold.
 One focused Windows/WSL check covers the final RAG busy-state correction. Advanced
 enhancements and aesthetics will start through a separate Spec151 after this work.
+
+## Final Windows/WSL confirmation addendum — unpublished
+
+The final Mac artifact now passes the targeted RAG confirmation in the actual
+Windows desktop editor with its extension host in WSL. Busy controls survive tab
+recreation, native cancellation releases them, errors permit explicit next work,
+and late completion cannot reactivate a disconnected view. Live retrieval used
+the retained harmless fixture; deterministic fault checks used an isolated
+unchanged HUD. No product bytes or owner services changed, and no provider request
+was needed. The documented Spec150 validation is complete with the prior scope
+limits preserved. No further Mac handoff is required. Publication remains held;
+Spec151 has not started. This draft stays unpublished for owner review.

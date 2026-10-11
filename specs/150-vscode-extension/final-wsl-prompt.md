@@ -1,5 +1,10 @@
 # Final WSL confirmation — unpublished Spec150 on main
 
+**Completed 2026-10-11:** the exact artifact passed the targeted Windows/WSL
+confirmation. See [final evidence](evidence/wsl-final.md). The instructions below
+are retained as the executed handoff; they are not a request to repeat validation.
+Publication remains held and Spec151 has not started.
+
 This is the current handoff. Earlier WSL/Mac prompts are historical. Implementation
 T001–T022 is complete for the documented client scope; this checks the final small
 RAG correction on the exact package. **Do not publish.** Advanced enhancements and

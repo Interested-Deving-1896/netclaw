@@ -40,7 +40,7 @@ Advanced enhancements/aesthetics are future Spec151 scope.
 - [x] T019 [US5] Review the WSL replacement, fix the reproduced RAG overlap defect and qualify the exact final VSIX on Mac; preserve original evidence and record final results in evidence/mac-final.md.
 - [x] T020 [US5] Finalize extension README/privacy/package documentation in extensions/netclaw-vscode/.
 - [x] T021 [US5] Package committed source, push and provide final specs/150-vscode-extension/windows-wsl-handoff.md.
-- [x] T022 [US5] Receive real Windows/WSL results and resolve confirmed extension defects; preserve evidence/wsl.md and record final scope/limitations in evidence/wsl-followup.md.
+- [x] T022 [US5] Receive real Windows/WSL results and resolve confirmed extension defects; preserve evidence/wsl.md and evidence/wsl-followup.md, and qualify the exact final Mac artifact's RAG delta in evidence/wsl-final.md.
 - [ ] T023 [US5] **HELD BY OWNER — DO NOT PUBLISH:** publish qualified VSIX and verify Marketplace installation only after new explicit authorization; record in specs/150-vscode-extension/evidence/publication.md.
 
 Dependencies: foundation -> US1 -> US2/US3 -> US4 -> US5. Domain mapping and
@@ -67,9 +67,11 @@ was submitted, and no WSL reboot/second-host or live Hermes acceptance is implie
 
 Final Mac work: T019 is complete, including an additional RAG busy-state fix.
 Implementation tasks T001–T022 are complete for the documented scope. T022 above
-qualifies its recorded WSL artifact, not the later Mac RAG delta; targeted WSL
-confirmation of that delta is a future release prerequisite. See closure.md and
-evidence/mac-final.md for the final source/digest and exact acceptance limits.
+qualifies its recorded WSL artifact. The later targeted Windows/WSL run now
+qualifies the final Mac RAG delta on the unchanged `b13bdfe6…` artifact; see
+evidence/wsl-final.md and evidence/wsl-final-checks.json. No further Mac handoff is
+required for this validation. See closure.md and evidence/mac-final.md for the
+final source/digest and exact acceptance limits.
 
 T023 is explicitly held by the owner. The later 2026-10-11 instruction authorizes
 PR/merge and branch cleanup onto main, with the final targeted WSL check described
