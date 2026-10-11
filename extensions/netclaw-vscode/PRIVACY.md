@@ -27,3 +27,21 @@ Disconnect invalidates current views but does not cancel backend work. Disabling
 assistant registration denies later calls, including calls through a cached server.
 Uninstall does not revoke already-submitted NetClaw work or erase NetClaw data.
 Review/delete extension storage separately if desired after disabling registrations.
+
+Spec151 testbed drafts keep existing literal credentials behind baseline-bound
+keep tokens. New literal values remain in webview memory until an explicit save;
+they are not written into VS Code webview state. Invalidation clears drafts.
+Private testbed/configuration recovery copies can contain the original credentials
+and remain on the selected host. Exports require a destination and credential
+choice, with owner-only file permissions. CSV excludes credentials.
+
+Reviewed setup actions may download dependencies or source through existing
+installers. Private setup evidence records target identity, input hashes and
+controlled outcomes; baseline copies remain under the selected runtime home.
+Raw child output is not forwarded into the workbench. The bundled decorative
+image was generated using public descriptive art direction without private data;
+viewing it makes no image-generation or remote asset request.
+
+Security pages invoke only the selected native CLI with fixed operations and explicit scope. Security bindings retain paths/identities in host-local extension storage, not credentials. Existing policy secrets are masked before entering a webview; drafts remain in memory. Logs and status are bounded and redacted, but arbitrary upstream text still requires operator care. Native read commands may contact the selected security service. DefenseClaw update checks are disabled for these invocations.
+
+Security changes retain mode0600 original configuration/policy and operation evidence under this editor's private `security-operations` directory; originals can contain secrets. There is no automatic log export, cloud telemetry setup or external disclosure. Unknown outcomes are retained for inspection and are never replayed. Settings, observed loading and actual enforcement are reported separately.

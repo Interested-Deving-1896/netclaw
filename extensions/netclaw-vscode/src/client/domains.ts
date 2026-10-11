@@ -35,14 +35,14 @@ export const domains = {
     icon: "beaker",
   },
   network: {
-    title: "Configured network",
+    title: "Testbed inventory",
     route: "/api/graph",
     keys: ["devices", "generatedAt"],
     group: "estate",
     icon: "type-hierarchy",
   },
   topology: {
-    title: "BGP topology",
+    title: "BGP sessions & topology",
     route: "/api/bgp",
     group: "estate",
     icon: "git-merge",
@@ -100,7 +100,7 @@ export const domains = {
     icon: "credit-card",
   },
   security: {
-    title: "DefenseClaw posture",
+    title: "DefenseClaw controls",
     route: "/api/hud/security",
     group: "security",
     icon: "shield",
@@ -166,7 +166,7 @@ export async function inspect(client: HudClient, kind: Domain): Promise<Json> {
     observedAt: new Date().toISOString(),
     ...("keys" in d
       ? {
-          note: "Existing HUD projection; absence of a field is not proof of absence.",
+          note: "Missing information is shown as not reported.",
         }
       : {}),
     data: scrub(projected),

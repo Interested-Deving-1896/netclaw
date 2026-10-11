@@ -2,6 +2,15 @@
 
 NetClaw source releases use `1.x.y`. Feature specs increment the minor version and reset the patch; fixes, documentation and maintenance increment the patch. Every release records its numbered specs. Component and mobile distribution versions are independent.
 
+## [1.10.0] - 2026-10-11
+
+- Add an AYN-inspired VS Code workbench with responsive cards/forms, branded artwork, clearer connection setup and attributable3D BGP visualization.
+- Add reviewed testbed YAML/JSON/CSV management and contextual per-MCP configuration/setup.
+- Add DefenseClaw/OpenShell security rule, mode, status and log controls with explicit shared-scope and weakening reviews.
+- Record local source acceptance and remaining vendor/platform limits. Packaging, deployment and release/Marketplace publication remain held.
+
+Spec [151-extension-experience](specs/151-extension-experience/spec.md). See [release notes](docs/releases/1.10.0.md).
+
 ## [1.9.0] - 2026-10-11
 
 - Prepare the unpublished NetClaw VS Code extension for existing installations, with integrated Chat, Canvas, Avatar, RAG, observation panels, reviewed controls and opt-in assistant access.

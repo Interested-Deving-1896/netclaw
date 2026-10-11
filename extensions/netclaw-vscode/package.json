@@ -53,7 +53,8 @@
     "vscode:prepublish": "npm run check && npm run build",
     "package": "node scripts/package.mjs",
     "publisher:login": "vsce login NetClaw",
-    "publisher:verify": "vsce verify-pat NetClaw"
+    "publisher:verify": "vsce verify-pat NetClaw",
+    "preview:local": "npm run build && node scripts/preview.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.3.1",
@@ -295,13 +296,19 @@
       },
       {
         "command": "netclaw.openSecurity",
-        "title": "Inspect DefenseClaw Posture",
+        "title": "Manage DefenseClaw Security",
         "category": "NetClaw",
         "enablement": "isWorkspaceTrusted"
       },
       {
         "command": "netclaw.openOpenShell",
-        "title": "Inspect OpenShell and Host Confinement",
+        "title": "Manage OpenShell Security",
+        "category": "NetClaw",
+        "enablement": "isWorkspaceTrusted"
+      },
+      {
+        "command": "netclaw.configureMcp",
+        "title": "Configure an MCP Integration",
         "category": "NetClaw",
         "enablement": "isWorkspaceTrusted"
       },

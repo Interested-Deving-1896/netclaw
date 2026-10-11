@@ -6,8 +6,15 @@ import { execFileSync, spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { runTests } from "@vscode/test-electron";
 import { realHud, freePort } from "../test/real-hud-fixture.mjs";
+import { securityFixture } from "../test/security-fixture.mjs";
 const extension = fileURLToPath(new URL("../", import.meta.url));
 const liveUrl = process.env.NETCLAW_TEST_LIVE_HUD_URL;
+const nativeFixture =
+  process.env.NETCLAW_TEST_NATIVE_REVIEW === "1" && !liveUrl;
+const suite =
+  process.env.NETCLAW_TEST_SUITE === "experience"
+    ? "editor-experience.cjs"
+    : "editor.cjs";
 if (liveUrl && !process.env.NETCLAW_TEST_LIVE_ID)
   throw Error("A live HUD check requires its observed installation identity.");
 const fixture = liveUrl
@@ -24,6 +31,24 @@ const fixture = liveUrl
       }),
   profile = fs.mkdtempSync(path.join(os.tmpdir(), "netclaw150-client-editor-")),
   port = await freePort();
+if (nativeFixture && suite === "editor-experience.cjs") {
+  fs.writeFileSync(
+    path.join(fixture.root, "security-targets.json"),
+    JSON.stringify(
+      Object.fromEntries(
+        ["defenseclaw", "openshell"].map((product) => [
+          product,
+          securityFixture(
+            fixture.root,
+            product,
+            fixture.home,
+            fixture.installationId,
+          ),
+        ]),
+      ),
+    ),
+  );
+}
 fs.mkdirSync(path.join(profile, "user/User"), { recursive: true });
 fs.writeFileSync(
   path.join(profile, "user/User/settings.json"),
@@ -121,7 +146,7 @@ try {
       ? { vscodeExecutablePath: process.env.VSCODE_EXECUTABLE }
       : {}),
     extensionDevelopmentPath: developmentPath,
-    extensionTestsPath: path.join(extension, "test/editor.cjs"),
+    extensionTestsPath: path.join(extension, "test", suite),
     reuseMachineInstall: false,
     extensionTestsEnv: {
       NETCLAW_TEST_RAG_READY:
@@ -134,6 +159,7 @@ try {
       NETCLAW_TEST_URL: fixture.url,
       NETCLAW_TEST_ID: fixture.installationId,
       NETCLAW_TEST_REPORT: path.join(profile, "report.json"),
+      NETCLAW_TEST_FIXTURE_ROOT: liveUrl ? "" : fixture.root,
       NETCLAW_TEST_CDP_PORT: String(port),
       NETCLAW_TEST_PLAYWRIGHT: process.env.NETCLAW_TEST_PLAYWRIGHT || "",
     },
@@ -149,13 +175,27 @@ try {
       `--remote-debugging-port=${port}`,
     ],
   };
-  if (liveUrl) {
-    if (!candidate || !process.env.VSCODE_EXECUTABLE)
+  if (liveUrl || nativeFixture) {
+    if (liveUrl && (!candidate || !process.env.VSCODE_EXECUTABLE))
       throw Error(
         "Native live checks require an installed VSIX and explicit editor executable.",
       );
     // VS Code intentionally refuses native review dialogs under extensionTestsPath.
     // Launch a normal isolated development window with a separate observer instead.
+    if (nativeFixture) {
+      developmentPath = path.join(profile, "observer");
+      fs.mkdirSync(developmentPath);
+      fs.writeFileSync(
+        path.join(developmentPath, "package.json"),
+        JSON.stringify({
+          name: "netclaw-local-observer",
+          publisher: "fixture",
+          version: "0.0.0",
+          engines: { vscode: "^1.102.0" },
+          main: "index.cjs",
+        }),
+      );
+    }
     const manifestPath = path.join(developmentPath, "package.json");
     const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
     manifest.activationEvents = ["onStartupFinished"];
@@ -166,7 +206,7 @@ try {
       `
 const fs=require('node:fs'), vscode=require('vscode');
 exports.activate=()=>{setImmediate(async()=>{
- try { await require(${JSON.stringify(path.join(extension, "test/editor.cjs"))}).run(); }
+ try { await require(${JSON.stringify(path.join(extension, "test", suite))}).run(); }
  catch(error) { fs.writeFileSync(${JSON.stringify(errorPath)},String(error.stack || error)); }
  finally { await vscode.commands.executeCommand('workbench.action.quit'); }
 });};`,
@@ -177,6 +217,7 @@ exports.activate=()=>{setImmediate(async()=>{
         [
           ...options.launchArgs,
           "--extensionDevelopmentPath=" + developmentPath,
+          ...(nativeFixture ? ["--extensionDevelopmentPath=" + extension] : []),
         ],
         {
           env: {

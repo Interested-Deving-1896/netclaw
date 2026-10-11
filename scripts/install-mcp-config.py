@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Bind selected MCP registrations to installer runtimes, preserving custom entries."""
+import hashlib
 import argparse
 import copy
 import importlib.util
@@ -63,11 +64,22 @@ def launch(entry):
     return {key: entry.get(key) for key in ('command', 'args', 'cwd')}
 
 
-def merge_config(path, generated, template):
+def file_revision(path):
+    if path.is_symlink():
+        raise ValueError('Configuration target must not be a symlink')
+    return hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else 'missing'
+
+
+def merge_config(path, generated, template, expected_revision=None, expected_managed_revision=None):
     original = path.read_text() if path.exists() else '{}'
     config = json.loads(original)
     state_path = path.with_name(path.name + '.netclaw-managed.json')
-    prior = json.loads(state_path.read_text()) if state_path.exists() else {}
+    if expected_revision is not None and file_revision(path) != expected_revision:
+        raise ValueError('Reviewed configuration changed; prepare again')
+    if expected_managed_revision is not None and file_revision(state_path) != expected_managed_revision:
+        raise ValueError('Reviewed managed registration state changed; prepare again')
+    original_state = state_path.read_text() if state_path.exists() else None
+    prior = json.loads(original_state) if original_state is not None else {}
     if 'mcpServers' in config:
         servers = config['mcpServers']
     else:
@@ -103,12 +115,23 @@ def merge_config(path, generated, template):
         raise ValueError('Preserved custom launch commands; reconcile these registrations before retrying: '
                          + ', '.join(conflicts))
     data = json.dumps(config, indent=2) + '\n'
+    # Check immediately before writes as well as before merge preparation.
+    if expected_revision is not None and file_revision(path) != expected_revision:
+        raise ValueError('Reviewed configuration changed; prepare again')
+    if expected_managed_revision is not None and file_revision(state_path) != expected_managed_revision:
+        raise ValueError('Reviewed managed registration state changed; prepare again')
     if data != original:
         if path.exists():
             backup = path.with_name(path.name + f'.before-netclaw-{time.time_ns()}')
             writer.write_private(backup, original)
         writer.write_private(path, data)
-    writer.write_private(state_path, json.dumps(managed, indent=2) + '\n')
+    try:
+        writer.write_private(state_path, json.dumps(managed, indent=2) + '\n')
+    except BaseException:
+        # Roll back only the exact bytes this operation wrote, never an intervening writer.
+        if path.exists() and path.read_text() == data:
+            writer.write_private(path, original)
+        raise
 
 
 def main():
@@ -116,7 +139,10 @@ def main():
     parser.add_argument('--repo', type=Path, required=True)
     parser.add_argument('--runtime-root', type=Path, required=True)
     parser.add_argument('--components', required=True)
-    parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--output', type=Path)
+    parser.add_argument('--describe', action='store_true')
+    parser.add_argument('--expected-revision')
+    parser.add_argument('--expected-managed-revision')
     parser.add_argument('--config', type=Path)
     args = parser.parse_args()
     repo = args.repo.resolve()
@@ -132,14 +158,21 @@ def main():
         record = args.runtime_root / 'records' / component
         runtime = record.read_text().strip() if record.exists() else None
         generated[name] = bind_entry(entry, repo, runtime)
+        if component == 'gait':
+            generated[name].setdefault('env', {})['GAIT_VENV'] = str(args.runtime_root.resolve().parent / 'gait-venv')
         if 'scripts/component-launch.py' in entry.get('args', []):
             generated[name].setdefault('env', {}).update({
                 'NETCLAW_RUNTIME_ROOT': str(args.runtime_root.resolve()),
                 'NETCLAW_RUNTIME_ENV': str(args.runtime_root.resolve().parent / '.env'),
             })
+    if args.describe:
+        print(json.dumps({'servers': sorted(generated), 'components': sorted(selected)}))
+        return
+    if not args.output:
+        parser.error('--output is required unless --describe is used')
     writer.write_private(args.output, json.dumps({'mcpServers': generated}, indent=2) + '\n')
     if args.config:
-        merge_config(args.config, generated, template)
+        merge_config(args.config, generated, template, args.expected_revision, args.expected_managed_revision)
     print(f'Prepared {len(generated)} selected MCP registrations.')
 
 

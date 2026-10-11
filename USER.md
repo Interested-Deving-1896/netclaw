@@ -22,6 +22,13 @@
 
 ## Notes
 
+- Spec151 direction (2026-10-11): redesign the VS Code extension around automateyournetwork.com branding and responsive cards; preserve blue actions, filters and search. Add clear connection guidance, testbed CRUD/import and per-MCP environment/setup. Follow SDD with at least five clarification questions before plan/tasks/analyze/fixes/implementation. No packaging, pushing, live deployment or Marketplace/public release until explicitly requested.
+- Spec151 theme choice (2026-10-11): automatically follow VS Code's light/dark theme with branded cards, typography and accents; preserve high-contrast accessibility.
+- Spec151 testbed workflow (2026-10-11): device cards and guided forms plus an advanced YAML editor, with file import/export.
+- Spec151 testbed formats (2026-10-11): YAML/YML and equivalent JSON, plus CSV for basic device inventory fields.
+- Spec151 per-MCP setup (2026-10-11): include direct execution of supported installation, registration and restart actions after explicit confirmation, alongside configuration/help and reviewed command staging. Development and acceptance remain isolated; no live deployment is authorized.
+- Spec151 visuals (2026-10-11): custom branded imagery plus purposeful interactive 3D, especially topology, with restrained motion elsewhere. All five clarification decisions are complete; continue the authorized SDD workflow through local implementation.
+
 - (Add anything NetClaw should remember about you, your team, or your network here)
 - (e.g., "R1 and R2 are in the lab — less strict change control needed")
 - (e.g., "Always CC @oncall-noc in Slack for P1 alerts")
@@ -48,3 +55,5 @@
 - Pal design clarification (2026-10-09, supersedes the initial Free-only product scope): Free default with optional custom face/voice on entitled accounts; each owner supplies their own key; full authorized NetClaw access through Border with existing approvals; optional downloadable John photo/voice pack; automatic non-sensitive summaries with private details local. No paid upgrade or provider training has been authorized. John then requested PNG conversion and recording guidance, questioned the paid custom-avatar limitation, and asked to explore local Blender and other services.
 - Local Pal approved (2026-10-09): start with John and Lobster selectable local avatars. Existing configured frontier model produces the chat answer; local speech/animation presents it. Keep Blender MCP in the authoring path when connected. Prove the two-character formula before offering custom uploads or an external conversion script. Avatar left, Chat visible on the right, selection below; include move/pan, rotate, zoom and reset controls. Keep the same chat session when switching views or characters.
 - Interface correction (2026-10-09): Avatar is the fourth Chat interface beside Chat, Canvas and OpenClaw, not a separate Pal sidebar tab.
+- Spec151 security choice (2026-10-11): expose OpenShell and DefenseClaw allow/block rules, supported policies/enforcement modes, status and logs; require explicit acknowledgment for weakened protection. This addition does not include lifecycle start/stop/restart.
+- Spec151 merge authorization (2026-10-11): commit all completed work, push the feature branch, create and merge its PR into main, then stop for further instructions. Packaging, deployment, release tags and Marketplace/GitHub release/blog publication remain held.

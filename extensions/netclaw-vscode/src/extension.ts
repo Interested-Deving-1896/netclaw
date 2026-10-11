@@ -1,3 +1,4 @@
+import { openSecurity } from "./views/security";
 import * as vscode from "vscode";
 import path from "node:path";
 import fs from "node:fs";
@@ -10,6 +11,8 @@ import { domains, Domain, inspect } from "./client/domains";
 import { Json } from "./client/hud";
 import { openDataView } from "./webview/bridge";
 import { openChat } from "./views/chat";
+import { openMcp } from "./views/mcp";
+import { openTestbed } from "./views/testbed";
 import { openRag } from "./views/rag";
 import { openCanvas } from "./views/canvas";
 import { openIntent, peerChat } from "./views/intent";
@@ -112,14 +115,18 @@ export async function activate(context: vscode.ExtensionContext) {
       return;
     }
     const label = await vscode.window.showInputBox({
-      title: "Existing NetClaw connection",
-      prompt: "Connection label",
+      title: "Name this connection",
+      prompt:
+        "Choose a friendly name so you can recognize this NetClaw later. This is not a hostname or URL.",
+      placeHolder: "My Mac lab or WSL NetClaw",
+      validateInput: (value) =>
+        value.trim() ? undefined : "Enter a friendly name for this connection.",
     });
     if (!label) return;
     const url = await vscode.window.showInputBox({
-      title: "Host-local HUD API URL",
+      title: "NetClaw HUD API address",
       value: "http://127.0.0.1:3001",
-      prompt: `${hostContext()}. For another host, open its WSL or Remote SSH workspace first.`,
+      prompt: `Enter the running HUD API address on ${hostContext()}. The usual local address is http://127.0.0.1:3001. For another host, first open its WSL or Remote SSH workspace.`,
     });
     if (!url) return;
     const p = await profiles.save({ label, url });
@@ -169,7 +176,14 @@ export async function activate(context: vscode.ExtensionContext) {
   });
   const openDomain = (key: Domain) => {
     if (!Object.hasOwn(domains, key)) throw Error("Unknown view.");
+    if (key === "network") return openTestbed(context, connection);
     const b = connection.bound();
+    if (key === "security" || key === "openshell")
+      return openSecurity(
+        context,
+        connection,
+        key === "security" ? "defenseclaw" : "openshell",
+      );
     return openDataView(context, connection, {
       title: domains[key].title,
       kind: key,
@@ -177,6 +191,7 @@ export async function activate(context: vscode.ExtensionContext) {
     });
   };
   register("openDomain", openDomain);
+  register("configureMcp", (id?: string) => openMcp(context, connection, id));
   for (const [name, key] of Object.entries({
     openOverview: "overview",
     openSettings: "settings",
