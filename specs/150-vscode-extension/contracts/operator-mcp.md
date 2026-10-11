@@ -240,3 +240,22 @@ and is consumed once. Client/server roles differ. Neither proof carries the key;
 legacy secret-only hello remains investigation-only. The client verifies the
 server proof before sending its proof or providing context. Private installation
 identity is rechecked when context is read. No recording/listener is started.
+
+
+### Reviewed local static skill scans
+
+`security-scan-list` returns paginated retained report metadata and pending scan
+operations from the latest 100 management requests. Opening it launches no
+scanner. `security-scan-read` takes an owned report UUID and returns bounded
+completion metadata/findings as untrusted data. `security-scan-preview` takes
+one installed skill name, verifies the pinned existing SDK binding and returns a
+five-minute review ID, exact source manifest/hash, bounds and disclosure.
+`security-scan-submit` accepts only that review ID and a mutation nonce.
+
+The detached `defense-scan` worker validates the review/binding/source again,
+audits, stages private source bytes and runs the fixed bundled static profile.
+It has no arbitrary command/path/model option. Same-skill active/uncertain work
+is refused, with at most two active scans. Cancellation waits for owned-child
+exit. Worker loss closes a liveness pipe; actual lease expiry remains unknown.
+Reconciliation accepts only a retained completed-child receipt, never a dispatch
+intent, and never reruns a scan. All endpoints are operator-only.

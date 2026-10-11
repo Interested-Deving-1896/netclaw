@@ -2,17 +2,20 @@ import * as vscode from 'vscode';
 import {randomUUID} from 'node:crypto';
 import {Connection,boundCaller} from '../connection/connect';
 import {openDataView} from '../webview/bridge';
+import {openSecurityScans} from './security-scans';
 
 export async function openSecurity(context:vscode.ExtensionContext,connection:Connection):Promise<void>{
   const call=boundCaller(connection);
   const choice=await vscode.window.showQuickPick([
     {label:'Guard configuration and observed posture',value:'status'},
     {label:'Retained component scans',value:'scans'},
+    {label:'Local static skill scans',value:'local-scans'},
     {label:'Tool rules',value:'rules'},
     {label:'Security events',value:'events'},
     {label:'Review guard mode change',value:'settings'},
     {label:'Review connector tool rule',value:'tool-rule'},
   ],{title:'DefenseClaw'});if(!choice)return;
+  if(choice.value==='local-scans')return openSecurityScans(context,connection);
   if(choice.value==='tool-rule'){
     const identity=await call<{installationId:string;configurationRevision:string}>('operator_identity',{});
     const tool=await vscode.window.showInputBox({title:'Exact runtime tool name',prompt:'Applies only to this installation’s bound DefenseClaw connector. Enter the name seen by that runtime, without a source or connector prefix.',ignoreFocusOut:true,validateInput:value=>/^[A-Za-z][A-Za-z0-9_.:-]{0,127}$/.test(value)?undefined:'Enter a tool name up to 128 characters, without slashes or spaces.'});if(tool===undefined)return;

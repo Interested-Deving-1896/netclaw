@@ -2545,6 +2545,15 @@ Flags mentioned: none
 ```text
 ```
 
+## scripts/netclaw-bind-defenseclaw-scanner.mjs
+
+Node entry point; argument/source references only. npm wrapper commands are indexed separately.
+
+Flags mentioned: none
+
+```text
+```
+
 ## scripts/netclaw-bind-defenseclaw.mjs
 
 Node entry point; argument/source references only. npm wrapper commands are indexed separately.
@@ -2575,6 +2584,15 @@ Flags mentioned: none
 ## scripts/netclaw-bind-service.mjs
 
 Node entry point; argument/source references only. npm wrapper commands are indexed separately.
+
+Flags mentioned: none
+
+```text
+```
+
+## scripts/netclaw-defenseclaw-scan.py
+
+Static source declarations; lexical flags may include delegated commands. No execution performed.
 
 Flags mentioned: none
 

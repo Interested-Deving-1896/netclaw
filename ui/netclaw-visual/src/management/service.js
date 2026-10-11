@@ -41,6 +41,8 @@ import {RuntimeSelection} from './runtime-selection.js';
 import {TerminalIntent} from './intent.js';
 import {FederationPermissions} from './peer-policy.js';
 import {DefenseToolRules} from './defenseclaw-rules.js';
+import {DefenseScanner} from './defenseclaw-scanner.js';
+import {DefenseScans} from './defenseclaw-scan-operations.js';
 
 export class ManagementService {
   constructor({root,home,kind,expectedInstallationId,audit,adapters={},authority}) {
@@ -56,6 +58,7 @@ export class ManagementService {
     this.peerConversations=new PeerConversations({binding:this.binding,journal:this.journal,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.defenseclaw=new DefenseClawComponent(this.binding);
     this.defenseRules=new DefenseToolRules(this.defenseclaw,this.journal);
+    this.defenseScans=new DefenseScans({binding:this.binding,journal:this.journal,audit:this.audit,scanner:new DefenseScanner({binding:this.binding,component:this.defenseclaw,root,audit:this.audit}),clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.openshell=new OpenShellComponent(this.binding);
     this.science=new ScienceOfficer({binding:this.binding,journal:this.journal,root,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.mobile=new MobileWorkspace({binding:this.binding,journal:this.journal,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
@@ -140,7 +143,7 @@ export class ManagementService {
     }
     if(input.domain==='security'){
       const posture=await securitySnapshot(this.binding,this.readFederation),defenseclaw=this.defenseclaw.snapshot(),openshell=await this.openshell.snapshot();
-      return this.envelope({...posture,revision:this.proposals.revision(),defenseclaw,openshell,controls:{...posture.controls,settings:defenseclaw.settings||{supported:false,reason:defenseclaw.reason},scans:defenseclaw.scans||posture.controls.scans,openshell:openshell.actions||{supported:false,reason:openshell.reason}}},'Selected installation configuration, explicitly bound components and federation observations');
+      return this.envelope({...posture,revision:this.proposals.revision(),defenseclaw,openshell,controls:{...posture.controls,settings:defenseclaw.settings||{supported:false,reason:defenseclaw.reason},scans:defenseclaw.scans||posture.controls.scans,localSkillScans:this.defenseScans.status(),openshell:openshell.actions||{supported:false,reason:openshell.reason}}},'Selected installation configuration, explicitly bound components and federation observations');
     }
     if(input.domain==='documentation'){
       const entries=JSON.parse(fs.readFileSync(path.join(this.root,'docs/reference/documents.json'),'utf8'));
@@ -170,6 +173,10 @@ export class ManagementService {
     if(name==='operator_resources')return this.resources(principal,args);
     if(name==='operator_snapshot')return this.snapshot(principal,args);
     if(name==='operator_workspace'){
+      if(args.action==='security-scan-list')return this.envelope(this.defenseScans.list(principal,{cursor:args.cursor,limit:args.limit}),'Owned static skill scan reports and requests');
+      if(args.action==='security-scan-read')return this.envelope(this.defenseScans.read(principal,args.args.id),'Owned static skill scan completion receipt');
+      if(args.action==='security-scan-preview')return this.envelope(await this.defenseScans.preview(principal,args.args),'Exact installed skill snapshot review; no scan launched');
+      if(args.action==='security-scan-submit')return this.defenseScans.submit(principal,args);
       if(args.action==='peer-chat-list')return this.envelope(this.peerConversations.list(principal,{cursor:args.cursor,limit:args.limit}),'Owned operator peer conversations');
       if(args.action==='peer-chat-read')return this.envelope(this.peerConversations.read(principal,{id:args.args.id,cursor:args.cursor,limit:args.limit}),'Retained owned peer messages and operation receipts; remote text is untrusted');
       if(args.action==='peer-chat-preview')return this.envelope(await this.peerConversations.preview(principal,args.args),'Exact external peer and message review; no dispatch');
@@ -189,6 +196,7 @@ export class ManagementService {
       if(value.state==='unknown'&&value.kind==='assessment-reconsider')return this.clean(await this.science.reconcile(principal,args.operationId));
       if(value.state==='unknown'&&value.kind==='mobile-capture')return this.clean(await this.mobile.reconcile(principal,args.operationId));
       if(value.state==='unknown'&&value.kind==='peer-chat')return this.clean(await this.peerConversations.reconcile(principal,args.operationId));
+      if(value.state==='unknown'&&value.kind==='defense-scan')return this.clean(await this.defenseScans.reconcile(principal,args.operationId));
       return this.clean(value);
     }
     if(name==='operator_request_submit')return this.clean(await this.conversations.submit(principal,args));
@@ -196,6 +204,7 @@ export class ManagementService {
       const value=this.journal.get(principal,args.operationId);
       if(value.kind==='mobile-capture')return this.clean(await this.mobile.cancel(principal,args));
       if(value.kind==='peer-chat')return this.clean(await this.peerConversations.cancel(principal,args));
+      if(value.kind==='defense-scan')return this.clean(await this.defenseScans.cancel(principal,args));
       if(value.kind==='terminal-intent')return this.clean(await this.intent.cancel(principal,args));
       return this.clean(value.kind==='assistant-request'?await this.assistants.cancel(principal,{nonce:args.nonce,requestId:args.operationId}):await this.conversations.cancel(principal,args));
     }

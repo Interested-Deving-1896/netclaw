@@ -65,6 +65,45 @@ prepare this operator-only rule workflow.
 Success verifies stored policy resolution. Running hook/proxy enforcement still
 requires its own observed evidence; no tool or provider is invoked by a rule edit.
 
+## Local static skill scans
+
+**Local static skill scans** reviews an installed skill, shows its exact file
+manifest and hashes, then submits one durable request. Reports and pending
+requests remain available after reconnect. Findings are displayed as plain text;
+they do not establish that a skill is safe or that a running guard enforced it.
+Cancellation stops only the request's owned scanner process. An uncertain request
+is inspected without resubmitting it.
+
+This profile requires an explicitly bound existing Python 3.12 environment with
+the qualified DefenseClaw source at tag `0.8.10` (package version `0.8.6`) and
+Cisco skill-scanner `2.0.4`. Source hashes and the bound environment are verified
+at preview and dispatch. The extension does not install a scanner or accept an
+arbitrary command. With the component already bound, preview on the backend:
+
+```sh
+node scripts/netclaw-bind-defenseclaw-scanner.mjs \
+  --home /absolute/netclaw/home --runtime openclaw \
+  --installation INSTALLATION_UUID \
+  --python /absolute/existing-scanner-venv/bin/python
+```
+
+Review and repeat with `--record` to save the audited binding. The fixed bundled
+balanced profile runs static, bytecode and pipeline analyzers on a private copy
+of at most 256 files / 8 MiB (512 KiB per file). Environment files, dependency/cache
+directories and unsupported file types are omitted and counted in review. It
+runs no skill, model, external scanner, custom rule pack, quarantine or rule edit.
+Python network/process audit hooks constrain the pinned SDK; they are not an OS
+sandbox against arbitrary native code or the host user. Model-pricing metadata
+uses the dependency's bundled copy, so importing it makes no network request.
+
+Reports retain bounded finding metadata and reviewed source hashes, without raw
+skill contents or snippets. All three analyzers must complete before success is
+reported. Normal completion/cancellation removes staged copies. Abrupt worker
+loss terminates the child through its parent-liveness pipe; a private staged copy
+may remain for local interruption review. An expired lease stays uncertain until
+there is a genuine completion receipt. Other scanner families and host acceptance
+remain separate requirements.
+
 ## OpenShell
 
 The OpenShell panel observes an explicitly bound existing gateway and sandbox.
@@ -97,8 +136,8 @@ extension does not submit a new policy. A reported active policy is not proof
 that every denial path has been tested. Private annotations and middleware
 credential configuration are excluded from the projection.
 
-Scanner execution and OpenShell gateway/sandbox writes
-are still under implementation. The upstream 0.1.3 CLI's start/stop calls omit
+Additional scanner families and OpenShell gateway/sandbox writes
+remain under implementation. The upstream 0.1.3 CLI's start/stop calls omit
 request IDs and do not accept an expected sandbox identity/revision. Those calls
 are not exposed as qualified managed writes. Current controls do not invoke broad
 installer, upgrade, quarantine or ambient gateway commands.

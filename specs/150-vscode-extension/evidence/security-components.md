@@ -157,3 +157,68 @@ Pinned source and its tag/package version discrepancy are unchanged from above.
 Logs: `/tmp/netclaw150-defense-rules-{regression,extension,process-final}.log`.
 T044/T046 remain open for scanner execution and qualified OpenShell controls;
 actual runtime enforcement and host acceptance remain separate release gates.
+
+
+## Reviewed local static skill scanner — Mac, 2026-10-11
+
+A separate existing-environment binding pins Python/venv identity, helper bytes,
+DefenseClaw source, Cisco SDK source and installed dependency versions. The
+supported source is the existing upstream 0.8.10 checkout (package 0.8.6), with
+Cisco skill-scanner 2.0.4. No installer, owner component, hook or service changed.
+
+Native Security navigation now offers exact installed-skill manifest review,
+static scan admission, retained report history and cancellation. The operator
+schema accepts only a reviewed ID and nonce; it cannot supply commands, custom
+profiles, paths or analyzers. Assistant calls are refused. Snapshot hashes,
+component/environment identity and five-minute expiry are checked again at
+worker dispatch. Private snapshots exclude environment files and linked files;
+results contain bounded finding metadata, never raw source snippets. Two active
+scans maximum, and same-skill active/uncertain overlap is refused.
+
+The pinned SDK initially attempted a remote model-pricing fetch during import,
+even with LLM analysis disabled. The isolated audit hook blocked it; this trial
+was not acceptance. Inspection identified `LITELLM_LOCAL_MODEL_COST_MAP=True`.
+The corrected profile uses bundled metadata and requires all three analyzers
+(`static_analyzer`, `bytecode`, `pipeline`) to complete. It rejects failed/partial
+analysis or any blocked network/process attempt. Python hooks are not a general
+OS sandbox or protection against arbitrary native code/the host user.
+
+Mac checks (fresh private fixtures, supported Node 24.19.0):
+
+- **9 backend boundary tests passed**: both harness selections, exact reviewed
+  source/environment, expiry, assistant/extra-field denial, concurrency beyond
+  100 unrelated records, audit failure, cancellation, confirmed failure versus
+  uncertainty, final-audit-loss receipt reconciliation, bounded paginated
+  metadata, symlink/hardlink/traversal/oversize refusal and secret-file omission.
+- **4 native workflow tests passed**: exact manifest and installation review,
+  metadata-only pending storage, cancellation/connection/destination changes,
+  nonce-only reconnect and plain-text findings. Entire extension suite:
+  **77 passed**, with TypeScript check passed. These are native API fixtures,
+  not proof of a rendered editor interaction.
+- **3 actual process cases passed**, separately enabled with the existing pinned
+  Python environment. The direct SDK case used both harness selections and
+  proved all analyzers completed, no network attempts, no execution of a marker
+  script, source-change refusal and stage cleanup. The detached worker case used
+  both harness selections and actual installation GAIT, survived facade exit,
+  retained one dispatch, preserved component/runtime/environment bytes and
+  removed normal staging. The fault case observed real child PIDs: cancellation
+  stopped the child; killing the worker closed its liveness pipe and stopped the
+  scanner. Actual 30-second lease expiry retained `unknown` without replay.
+  After abrupt loss a private stage may remain until local interruption cleanup;
+  the test removed its own fixture after proving child exit. No clock mutation
+  or synthetic expired lease was used in that fault case.
+
+```sh
+NETCLAW_TEST_LIVE_GAIT=1 \
+NETCLAW_TEST_DEFENSECLAW_PYTHON=/absolute/existing-scanner-venv/bin/python \
+  node --test tests/operator/defenseclaw-scanner-process.test.mjs
+```
+
+Logs: `/tmp/netclaw150-scanner-operations-process.log`,
+`/tmp/netclaw150-scanner-extension.log`, `/tmp/netclaw150-scanner-regression.log`.
+Full operator/assistant regression: **231 passed, 22 opt-in skipped**.
+No model inference, network/device execution, enforcement, quarantine or owner
+installation mutation occurred. This qualifies the Mac isolated local-skill
+profile only. Other scanner families, running enforcement, OpenShell writes,
+WSL/native Linux and full security acceptance remain open; T044/T046 are not
+closed by these results.

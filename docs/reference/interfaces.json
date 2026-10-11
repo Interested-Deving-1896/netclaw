@@ -6106,6 +6106,14 @@
       "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
     },
     {
+      "path": "scripts/netclaw-bind-defenseclaw-scanner.mjs",
+      "kind": "Node launcher",
+      "flags": [],
+      "declarations": [],
+      "sha256": "dd5d41f01a8ae2961a0b54908bbc870079748d83b687a51455d1272b8601d5cd",
+      "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
+    },
+    {
       "path": "scripts/netclaw-bind-defenseclaw.mjs",
       "kind": "Node launcher",
       "flags": [],
@@ -6138,6 +6146,14 @@
       "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
     },
     {
+      "path": "scripts/netclaw-defenseclaw-scan.py",
+      "kind": "Python",
+      "flags": [],
+      "declarations": [],
+      "sha256": "0d2ae814271290e39839916f707b5ecbd970100dd84b3fadb9036570a9a7fe8d",
+      "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
+    },
+    {
       "path": "scripts/netclaw-gcf-review.py",
       "kind": "Python",
       "flags": [],
@@ -6150,7 +6166,7 @@
       "kind": "Node launcher",
       "flags": [],
       "declarations": [],
-      "sha256": "e2d0001fd1e5242314a21dfaed5e8fa04c28a022e64d68f33f31b484b429d22f",
+      "sha256": "661075b59358734a98a980dde9943042c1c0d4276ff3d1e18a697579e74e9380",
       "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
     },
     {

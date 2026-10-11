@@ -365,3 +365,13 @@ T059/T060 now complete with native Network layers, reviewed logs/export and
 source/cost provenance acceptance. See [observability evidence](evidence/observability.md)
 for actual HUD/SSH-loopback and minimum/current editor checks. These do not
 qualify physical device changes, WSL/Remote SSH or the full release UI matrix.
+
+
+## Local skill scanner checkpoint
+
+Reviewed local static skill scans now have exact native manifest review, durable
+workers/history/cancellation and pinned existing-SDK process evidence. See
+[component evidence](evidence/security-components.md). T044/T046 remain open for
+other scanner families, qualified OpenShell controls and full security acceptance.
+The task completion count remains 52/79; this checkpoint is partial implementation
+of already-open broad tasks, not a waiver of their remaining requirements.
