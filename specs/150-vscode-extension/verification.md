@@ -44,7 +44,7 @@ requires a new build and the affected checks. See [package evidence](evidence/pa
 | FR-022 | Independent authoritative CR contract, incident/state checks, refusal tests | Real production authority/device qualification; no synthetic approval claim |
 | FR-023 | Durable operator Intent around existing scoped Local/Lab engine | Physical designated endpoints and real preparation/APPLY/rollback proof |
 | FR-024 | Installation GAIT records and native inspection; audit-loss denials | Full domain/session outcome and remote acceptance |
-| FR-025 | Bound DefenseClaw settings/events/scans and observed OpenShell state | Scanner/rule mutation and qualified OpenShell lifecycle/policy writes |
+| FR-025 | Bound DefenseClaw settings/events/scans, reviewed connector tool rules and observed OpenShell state | Scanner execution and qualified OpenShell lifecycle/policy writes; running enforcement acceptance |
 | FR-026 | Independent controls and truthful degraded/unknown posture | Full actual enforcement and production matrix |
 | FR-027 | Recorded usage/cost/gap reconciliation; scoped budgets | Complete domain/platform acceptance; no invented Hermes totals |
 | FR-028 | Catalog/config/install inventory and reviewed configuration | Remaining supported management and actual execution qualification |

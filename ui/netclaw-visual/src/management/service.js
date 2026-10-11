@@ -40,6 +40,7 @@ import {RiskConfiguration} from './runtime.js';
 import {RuntimeSelection} from './runtime-selection.js';
 import {TerminalIntent} from './intent.js';
 import {FederationPermissions} from './peer-policy.js';
+import {DefenseToolRules} from './defenseclaw-rules.js';
 
 export class ManagementService {
   constructor({root,home,kind,expectedInstallationId,audit,adapters={},authority}) {
@@ -54,11 +55,12 @@ export class ManagementService {
     this.peerPermissions=new FederationPermissions({binding:this.binding});
     this.peerConversations=new PeerConversations({binding:this.binding,journal:this.journal,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.defenseclaw=new DefenseClawComponent(this.binding);
+    this.defenseRules=new DefenseToolRules(this.defenseclaw,this.journal);
     this.openshell=new OpenShellComponent(this.binding);
     this.science=new ScienceOfficer({binding:this.binding,journal:this.journal,root,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.mobile=new MobileWorkspace({binding:this.binding,journal:this.journal,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     const peerPolicyAdapter=this.peerPermissions.adapter();
-    this.adapters={...configurationAdapters(this.binding),'security.patch':this.defenseclaw.adapter(),'risk.role':this.risk.adapter(),'runtime.select':this.runtimeSelection.adapter(),'peer.trust':peerPolicyAdapter,'peer.untrust':peerPolicyAdapter,...lifecycleAdapters({binding:this.binding,journal:this.journal,controller:this.services}),...adapters};
+    this.adapters={...configurationAdapters(this.binding),'security.patch':this.defenseclaw.adapter(),'security.tool-rule':this.defenseRules.adapter(),'risk.role':this.risk.adapter(),'runtime.select':this.runtimeSelection.adapter(),'peer.trust':peerPolicyAdapter,'peer.untrust':peerPolicyAdapter,...lifecycleAdapters({binding:this.binding,journal:this.journal,controller:this.services}),...adapters};
     this.clients=new ClientGrants({binding:this.binding,journal:this.journal,audit:this.audit});
     this.assistants=new AssistantRequests({binding:this.binding,journal:this.journal,audit:this.audit,clients:this.clients,runtime:new ProtectedAssistantRuntime(this.binding),
       start:operationId=>startOwnedWorker({root:this.root,binding:this.binding,operationId}),clean:value=>this.clean(value)});
@@ -83,7 +85,7 @@ export class ManagementService {
     return this.clean({contract:{major:1,minor:0},installationId:this.binding.installationId,principalId:this.binding.principal.principalId,
       hostId:this.binding.hostId,sourceVersion:fs.readFileSync(path.join(this.root,'VERSION'),'utf8').trim(),harness:{type:this.binding.kind,version:null,versionSource:'Not probed'},
       role,configurationRevision:this.proposals.revision(),observedAt:new Date().toISOString(),
-      capabilities:{inspection:{supported:true,qualified:true},changes:Object.keys(this.adapters).map(action=>({action,supported:true,qualified:this.adapters[action].qualified===true&&!action.startsWith('service.')&&!action.startsWith('peer.')&&!['security.patch','runtime.select','risk.role'].includes(action),...(action.startsWith('service.')||action.startsWith('peer.')||['security.patch','runtime.select','risk.role'].includes(action)?{qualification:'Requires the existing domain prerequisites and current target preflight; platform release acceptance remains separate.'}:{})})),
+      capabilities:{inspection:{supported:true,qualified:true},changes:Object.keys(this.adapters).map(action=>({action,supported:true,qualified:this.adapters[action].qualified===true&&!/^(service|peer|security)\./.test(action)&&!['runtime.select','risk.role'].includes(action),...(/^(service|peer|security)\./.test(action)||['runtime.select','risk.role'].includes(action)?{qualification:'Requires the existing domain prerequisites and current target preflight; platform release acceptance remains separate.'}:{})})),
         delegation:{supported:this.binding.kind==='hermes',qualified:false,reason:'Protected Hermes local subnet delegation requires its existing federation companion. OpenClaw scoped execution and broader delegation remain unqualified.'}},
       runtimeSettings:this.binding.kind==='hermes'?hermesRuntimeSettings(config,'Selected installation'):runtimeSettings(config,0,'Selected installation')});
   }
@@ -173,6 +175,7 @@ export class ManagementService {
       if(args.action==='peer-chat-preview')return this.envelope(await this.peerConversations.preview(principal,args.args),'Exact external peer and message review; no dispatch');
       if(args.action==='peer-chat-submit')return this.peerConversations.submit(principal,args);
       if(args.action==='peer-policy')return this.envelope({...await this.peerPermissions.snapshot(args.args.id),revision:this.proposals.revision()},'Exact existing peer permissions and local grant candidates; no peer contact');
+      if(args.action==='security-rule')return this.envelope(this.defenseRules.snapshot(args.args.tool),'Bound DefenseClaw connector rule and global fallback; stored policy only');
       if(args.action==='intent-state')return this.envelope(this.intent.state(principal),'Existing Terminal Intent configuration and durable requests');
       if(args.action==='intent-read')return this.envelope(this.intent.read(principal,args.args.id),'Owned durable Terminal Intent evidence');
       if(args.action==='intent-preview')return this.envelope(this.intent.preview(principal,args.args),'Explicit Terminal Intent scope and approval digest; no dispatch');

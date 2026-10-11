@@ -103,3 +103,57 @@ receipts returned through overview inventory. Local logs:
 
 Primary sources: [DefenseClaw release](https://github.com/cisco-ai-defense/defenseclaw/releases/tag/0.8.10),
 [OpenShell release](https://github.com/NVIDIA/OpenShell/releases/tag/v0.1.3).
+
+## Reviewed connector tool rules
+
+The operator now previews and reviews `block`, `allow` and `inherit` for one
+exact runtime tool in the selected, explicitly bound DefenseClaw v8 connector.
+The normal proposal/independent production approval/GAIT pipeline applies.
+The proposal includes both configuration and rule/fallback content revisions.
+Private baselines retain the exact scoped row, original database inode and
+configuration; native output omits private reasons and source paths. Reads use
+stable copied DB/WAL snapshots and never initialize the component store.
+
+The write uses an exact-row SQLite transaction, checking the scoped row and
+global fallback again under the write lock. It updates only the encoded
+`@connector/tool` row in the global storage partition used by upstream's
+connector tool resolver. Global fallback and other connector rows remain intact.
+Unknown action columns, uniqueness contracts or triggers are refused. A private
+recovery record retains the intended row before effect; it is never considered
+proof of commit. Rollback compares actual state and refuses later owner changes.
+Generic interrupted-worker reconciliation remains part of open T009.
+
+The implementation follows upstream allow semantics: install becomes `allow`
+and scoped logical `file`/`runtime` flags are removed. Native review discloses
+the scanner bypass and these logical changes. No physical file/quarantine action
+occurs. Inherit removes the install override and may resolve to a global block
+or allow; it is not mislabeled as necessarily scanning. Completed changes report
+stored state verified and running enforcement unverified.
+
+Mac checks on isolated fixtures:
+
+- **7 backend cases passed**, both connectors where applicable: exact allow/
+  inherit semantics and unrelated-row preservation; ordinary CLI-style
+  change/restore with later timestamp; changed fallback; replaced database;
+  interleaved fallback change at the transaction boundary; approval withdrawal,
+  exact rollback and newer-owner rollback refusal; audit/assistant/production
+  denial; linked/public files, schema/trigger refusal; new override/removal.
+- **2 native cases passed**, covering exact tool/connector/revision review,
+  scanner-bypass disclosure, proposal-only behavior, cancellation and changed
+  connection. Entire extension suite: **73 passed**, TypeScript/build passed.
+- Full operator/assistant regression before the final added transaction-race
+  case: **221 passed, 19 opt-in skipped**. The seven-case focused suite then
+  passed including that race. Skipped process cases are not counted as passes.
+- **2 actual component process cases passed**: the existing retained-WAL/mode
+  reader regression and the new real upstream `Store`/`PolicyEngine`, detached
+  worker and installation GAIT scenario. The latter ran both OpenClaw/Hermes
+  connector selections. After facade exit, the same still-running Python writer
+  observed allow, block and global fallback through upstream's actual resolver.
+  Foreign/global rules and component/runtime configurations were preserved.
+  Zero providers, runtime tools, physical file actions or owner services were
+  contacted or changed. Fixture logical flags are not real quarantine evidence.
+
+Pinned source and its tag/package version discrepancy are unchanged from above.
+Logs: `/tmp/netclaw150-defense-rules-{regression,extension,process-final}.log`.
+T044/T046 remain open for scanner execution and qualified OpenShell controls;
+actual runtime enforcement and host acceptance remain separate release gates.

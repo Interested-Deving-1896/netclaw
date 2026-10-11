@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { fail } from '../../ui/netclaw-visual/src/management/errors.js';
 export const id = z.string().min(1).max(200).regex(/^[A-Za-z0-9][A-Za-z0-9_.:/-]*$/).refine(v => !v.includes('..'));
 export const nonce = z.string().regex(/^\d{13}:[a-f\d-]{36}$/);
-export const action = z.enum(['settings.patch','runtime.select','service.start','service.stop','service.restart','risk.role','member.enroll','member.disable','member.enable','peer.trust','peer.untrust','security.patch','budget.patch','integration.configure','terminal-intent.prepare','terminal-intent.apply']);
+export const action = z.enum(['settings.patch','runtime.select','service.start','service.stop','service.restart','risk.role','member.enroll','member.disable','member.enable','peer.trust','peer.untrust','security.patch','security.tool-rule','budget.patch','integration.configure','terminal-intent.prepare','terminal-intent.apply']);
 export const kinds = z.enum(['overview','member','peer','edge','advisor','integration','skill','network','client']);
 export const page = { cursor: z.string().max(512).optional(), limit: z.number().int().min(1).max(500).default(100) };
 export const envKey = z.string().regex(/^[A-Z][A-Z0-9_]{0,100}$/);
@@ -27,6 +27,7 @@ export const changeInput = { nonce, action, targets: z.array(id).min(1).max(100)
 const fields = patch.shape;
 const nonempty = schema => schema.refine(value => Object.keys(value).length > 0);
 const servicePatch = z.strictObject({serviceId: fields.serviceId.unwrap(), acknowledgeActiveWork: fields.acknowledgeActiveWork});
+const defenseTool=z.string().regex(/^[A-Za-z][A-Za-z0-9_.:-]{0,127}$/);
 const patches = {
   'settings.patch': nonempty(z.strictObject({provider:fields.provider,model:fields.model,effort:fields.effort,normalizeCredentials:fields.normalizeCredentials})),
   'runtime.select': z.strictObject({runtimeId:fields.runtimeId.unwrap(),acknowledgeActiveWork:fields.acknowledgeActiveWork}),
@@ -36,6 +37,7 @@ const patches = {
   'peer.trust': z.strictObject({chatEnabled:fields.chatEnabled,grant:fields.grant,acknowledgeActiveWork:z.literal(true)}).refine(value=>value.chatEnabled!==undefined||value.grant!==undefined),
   'peer.untrust': z.strictObject({disableChat:fields.disableChat,revokeGrantIds:fields.revokeGrantIds,acknowledgeActiveWork:z.literal(true)}).refine(value=>value.disableChat===true||value.revokeGrantIds!==undefined),
   'security.patch': z.strictObject({mode:fields.mode.unwrap()}),
+  'security.tool-rule':z.strictObject({tool:defenseTool,policy:z.enum(['block','allow','inherit']),expectedRuleRevision:z.string().regex(/^[a-f\d]{64}$/)}),
   'budget.patch': nonempty(z.strictObject({monthlyLimit:fields.monthlyLimit,dailyLimit:fields.dailyLimit,sessionBudgetUsd:fields.sessionBudgetUsd,maxToolCallsPerTurn:fields.maxToolCallsPerTurn,contextWarningTokens:fields.contextWarningTokens,allowOverride:fields.allowOverride,overrideIncrementUsd:fields.overrideIncrementUsd})),
   'integration.configure': z.strictObject({fields:fields.fields.unwrap().min(1).refine(rows=>new Set(rows.map(row=>row.key)).size===rows.length)}),
   'terminal-intent.prepare': z.strictObject({intent:fields.intent.unwrap().min(1)}),
@@ -48,6 +50,7 @@ const content = z.string().max(14*1024*1024);
 const name = z.string().min(1).max(200);
 const intentInput={request:z.string().min(1).max(4000).refine(value=>value.trim().length>0),requestKind:z.enum(['read-only','change']),changeMode:z.enum(['production','local-lab']),targetDeviceIds:z.array(id).min(1).max(100).refine(ids=>new Set(ids).size===ids.length),expectedRevision:z.string().uuid(),policyRevision:z.string().uuid().optional()};
 const workspaceActions = {
+  'security-rule':[false,{tool:defenseTool}],
   'peer-chat-list':[false,{}],
   'peer-chat-read':[false,{id:z.string().uuid()}],
   'peer-chat-preview':[false,{peer:id,text:query,conversationId:z.string().uuid().optional()}],

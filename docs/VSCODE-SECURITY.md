@@ -38,6 +38,33 @@ verified rollback apply. Saving is reported as pending restart; no hooks or
 processes are changed. Re-enabling a disabled guard uses its normal backend setup,
 because hook installation may modify additional runtime files.
 
+## Connector tool rules
+
+**Review connector tool rule** accepts an exact runtime tool name and shows its
+current connector override, global fallback and resolved stored policy. Review
+`block`, `allow`, or `inherit` before preparing the normal human-approved change.
+The target is always `@<selected connector>/<tool>` in the explicitly bound v8
+store. Global rules and other connectors are not edited. A rule does not install
+a tool or establish that the runtime exposes that name.
+
+`allow` follows the pinned upstream semantics: it bypasses rule/pattern/judge
+scanning for that tool and clears the same scoped row's logical file/runtime
+flags. Existing write-tool content inspection remains a separate CodeGuard path.
+No file is restored, moved or quarantined. `inherit` removes the scoped install
+override; the global fallback may still allow or block the tool. Native review
+shows these effects. Already dispatched work may continue.
+
+The proposal binds both configuration and exact rule/fallback revisions. Apply
+checks the original private database inode and compares rows inside a SQLite
+write transaction. Unknown schemas and action triggers are refused. Private
+baseline/recovery records and GAIT retain the change; rollback restores only the
+exact scoped row and refuses a newer owner's edit. Production changes use the
+existing independent change-control verifier. Assistant origins cannot apply or
+prepare this operator-only rule workflow.
+
+Success verifies stored policy resolution. Running hook/proxy enforcement still
+requires its own observed evidence; no tool or provider is invoked by a rule edit.
+
 ## OpenShell
 
 The OpenShell panel observes an explicitly bound existing gateway and sandbox.
@@ -70,7 +97,7 @@ extension does not submit a new policy. A reported active policy is not proof
 that every denial path has been tested. Private annotations and middleware
 credential configuration are excluded from the projection.
 
-Scanner execution, component rule mutations and OpenShell gateway/sandbox writes
+Scanner execution and OpenShell gateway/sandbox writes
 are still under implementation. The upstream 0.1.3 CLI's start/stop calls omit
 request IDs and do not accept an expected sandbox identity/revision. Those calls
 are not exposed as qualified managed writes. Current controls do not invoke broad

@@ -345,6 +345,13 @@ The real worker/receiver/GAIT process passed on both selected harnesses with a
 synthetic peer response. This is not live remote-model or platform acceptance.
 T030/T032 remain open for membership/peering and remote tool/skill controls.
 
+## Connector tool-rule checkpoint
+
+Reviewed DefenseClaw connector tool rules are now implemented; see
+[component evidence](evidence/security-components.md) for actual upstream policy
+resolution, detached worker/GAIT, exact rollback and native review checks.
+T044/T046 remain open for scanner execution and qualified OpenShell controls.
+
 ## Log review checkpoint
 
 Bounded time-filtered logs and editable local diagnostic export are implemented.

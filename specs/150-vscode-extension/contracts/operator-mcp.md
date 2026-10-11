@@ -50,7 +50,19 @@ from another client's recovery sweep.
 | `operator_client_prepare` / `operator_client_apply` | client type, installation, targets/actions/disclosure, expiry; reviewed proposal ID on apply | Owner-scoped grant configuration, exact preview and existing change-control rules where applicable; generates only the intended client credential in backend `.env` source. No client can mint its own grant. |
 | `operator_client_revoke` | grant ID, nonce | Revoke that grant generation, invalidate cached tools and prevent further dispatch; report actual in-flight cancellation state. |
 
-Supported managed action enum: `settings.patch`, `runtime.select`, `service.start`, `service.stop`, `service.restart`, `risk.role`, `member.enroll`, `member.disable`, `member.enable`, `peer.trust`, `peer.untrust`, `security.patch`, `budget.patch`, `integration.configure`, `terminal-intent.prepare`, `terminal-intent.apply`. Each action must map to a reviewed shared domain adapter; enum presence is not qualification. Enrollment only targets existing installations. Production and external-communication effects require their actual existing gates. Forbidden destructive device operations are never added through generic enum values.
+Supported managed action enum: `settings.patch`, `runtime.select`, `service.start`, `service.stop`, `service.restart`, `risk.role`, `member.enroll`, `member.disable`, `member.enable`, `peer.trust`, `peer.untrust`, `security.patch`, `security.tool-rule`, `budget.patch`, `integration.configure`, `terminal-intent.prepare`, `terminal-intent.apply`. Each action must map to a reviewed shared domain adapter; enum presence is not qualification. Enrollment only targets existing installations. Production and external-communication effects require their actual existing gates. Forbidden destructive device operations are never added through generic enum values.
+
+`operator_workspace(security-rule)` reads an exact runtime tool's stored
+connector override and global fallback from the explicitly bound DefenseClaw v8
+component. Its content revision covers private binding/configuration, original
+database identity and both exact rows. `security.tool-rule` targets only the
+selected installation and takes `{tool, policy, expectedRuleRevision}`, where
+policy is `block`, `allow` or `inherit`. Configuration `expectedRevision` is also
+required as for other proposals. These operator-only transactions never edit
+global/other-connector rows or execute tools/scanners. Native review discloses
+upstream allow's scan bypass and removal of scoped logical file/runtime flags;
+physical files remain untouched. Success verifies stored state, not running
+enforcement. Private recovery compares actual rows and refuses later edits.
 
 `operator_workspace` action `peer-policy` takes `{id}` for an exact existing
 external peer and returns local permissions, known work, current production mode,
