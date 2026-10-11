@@ -10,3 +10,6 @@ Uses unchanged NetClaw interfaces. Publication awaits Windows/WSL acceptance.
 WSL qualification fix: restore Chat, Canvas, RAG and observation views after
 switching tabs by retaining their message sequence across webview reloads.
 Installation binding and replay checks remain enforced.
+
+Windows local hosts now show explicit WSL guidance and filter the command palette
+to WSL commands before any connection can be added.

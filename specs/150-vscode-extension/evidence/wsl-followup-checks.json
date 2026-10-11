@@ -1,6 +1,6 @@
 {
   "observedOn": "2026-10-11",
-  "status": "partial-extension-fix-awaiting-packaged-retest",
+  "status": "partial-replacement-live-qualification-in-progress",
   "incomingCommit": "4e3cd2627ac80b7d160af7b135d30dec6580f202",
   "validationBranch": "150-vscode-extension-wsl-followup-20261011",
   "ownerSourceCommit": "aa2795313b487e00ccbe85d53f6a78db07b10a94",
@@ -462,13 +462,16 @@
       "ownedHistoryReopened": true,
       "modelChoices": 10,
       "newDefaultConversation": true,
-      "staleSendDisabled": true
+      "staleSendDisabled": true,
+      "selectedRagAndEditorContextAnswer": "APRICOT_B7A3D92E SELECTED_WSL_C8F2"
     },
     "panels": {
       "initialDomSuccesses": 21,
       "initialRagSourceFailure": true,
       "initialOnboardingOverlayObstructedVisualReview": true,
-      "visibleRecheckPending": true
+      "visibleRecheckPending": false,
+      "replacementVisibleRenderedAndRefreshClickable": 22,
+      "healthyStateNotInferredFromRendering": true
     },
     "ragRepair": {
       "explicitOwnerAuthorization": true,
@@ -499,13 +502,15 @@
     },
     "interactiveAssistants": {
       "copilot": "completed-with-recorded-permission-deviation-and-default-mode-followup",
-      "claudeCode": "inspection-and-draft-passed-delegation-pending",
+      "claudeCode": "interactive-completed-disabled-cached-call-refused",
       "codex": "interactive-completed-disabled-cached-call-refused",
       "registrationsCreated": 3,
       "backendApprovalsChanged": false,
       "copilotTemporaryAllowAllObserved": true,
       "copilotDefaultPermissionsRestored": true,
-      "copilotFollowupResultConsent": "human-Allow-Once"
+      "copilotFollowupResultConsent": "human-Allow-Once",
+      "registrationsDisabled": 3,
+      "terminalClientsExitedNormally": true
     },
     "extensionRagUpload": {
       "nativeFileReview": true,
@@ -515,10 +520,23 @@
       "documentId": "doc_0e84d3b40932",
       "actualIndexStatus": "ready",
       "actualChunks": 1,
-      "searchCitationContext": "actual-extension-search-citation-and-local-staging-passed; context-send-pending"
+      "searchCitationContext": "actual-native-search-stage-and-explicit-Chat-Canvas-provider-sends-passed"
     },
-    "canvasAvatar": "pending",
-    "settingsCancellation": "pending",
+    "canvasAvatar": {
+      "localAvatarBothCharactersRendered": true,
+      "conversationPreserved": true,
+      "canvasRealProviderContextAnswer": true,
+      "branchSaveReopen": true,
+      "nativeExportImport": true,
+      "importedLanesReady": 2,
+      "importAutomaticExecution": false,
+      "package": "intermediate-webview-fix"
+    },
+    "settingsCancellation": {
+      "nativeEnvironmentCancelled": true,
+      "nativeBudgetCancelled": true,
+      "budgetConfigurationUnchanged": true
+    },
     "installedLifecycle": "pending",
     "temporaryEditorIsolationHookRestored": false,
     "gait": {
@@ -527,7 +545,8 @@
         "2fac6b7e",
         "c775f650",
         "f2969ada",
-        "2f646369"
+        "2f646369",
+        "b0726e0c"
       ]
     },
     "T022": "open",
@@ -547,8 +566,33 @@
       "sourceTestsPassed": 18,
       "sourceTestsFailed": 0,
       "sourceTestsSkipped": 1,
-      "replacementPackagedRegression": "pending",
+      "replacementPackagedRegression": "actual-Windows-WSL-Chat-hide-reveal-refresh-passed",
       "originalVsixPreserved": true
+    },
+    "replacement": {
+      "source": "153e4f7238b4bdc737e06556217f361a03b6877e",
+      "artifactCommit": "5bd84624",
+      "artifact": "artifacts/netclaw-0.1.0-wsl-webview-fix.vsix",
+      "sha256": "d26a8d3bc08b9fcb69fa891bc7a6678ae998d119e6783bc533f47499e1170fee",
+      "bytes": 2349138,
+      "payloadFiles": 25,
+      "installedPayloadVerified": true,
+      "loadedOnWindowsWslAfterReload": true,
+      "assistantPayloadIdenticalToOriginal": true,
+      "macRequalificationPending": true
+    },
+    "serviceStaging": {
+      "nativeReview": true,
+      "hudStatusStagedWithoutEnter": true,
+      "clearedWithCtrlC": true,
+      "ownerLifecycleExecuted": false
+    },
+    "windowsGuidanceDefect": {
+      "actualPrivateWindowsHost": true,
+      "observedCommandPaletteInput": ">",
+      "connectionCreated": false,
+      "fix": "explicit WSL guidance plus quickOpen >WSL:",
+      "packagedRetest": "pending"
     }
   }
 }

@@ -102,9 +102,12 @@ export async function activate(context: vscode.ExtensionContext) {
     if (!vscode.workspace.isTrusted)
       throw Error("Trust this workspace before connecting.");
     if (process.platform === "win32") {
+      void vscode.window.showInformationMessage(
+        "Open this workspace in WSL before connecting to an existing NetClaw installation.",
+      );
       await vscode.commands.executeCommand(
-        "workbench.action.showCommands",
-        "WSL:",
+        "workbench.action.quickOpen",
+        ">WSL:",
       );
       return;
     }

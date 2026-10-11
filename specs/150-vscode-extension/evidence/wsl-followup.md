@@ -340,3 +340,73 @@ be packaged from the clean committed source and identified by a new digest.
 GAIT `2f646369` records the defect and assistant progress. The owner's separate
 question about creating/uploading/editing `testbed.yaml` through pyATS MCP is
 recorded as follow-up scope; no pyATS/backend implementation was added to Spec150.
+
+### Replacement package and completed assistant checks
+
+The extension fix is committed in `153e4f7238b4bdc737e06556217f361a03b6877e`.
+A clean-source package is retained as
+`artifacts/netclaw-0.1.0-wsl-webview-fix.vsix` (2,349,138 bytes; 25 files),
+SHA-256 `d26a8d3bc08b9fcb69fa891bc7a6678ae998d119e6783bc533f47499e1170fee`.
+The original VSIX is preserved unchanged. Only the intended webview payloads,
+changelog and committed-source README links differ. `dist/assistant.mjs` is
+byte-identical. Installed payloads match the replacement ZIP, excluding VS Code's
+added package metadata. The private Windows editor was reloaded; actual host
+observations still place the extension and storage in the isolated WSL directory.
+
+The original Chat tab-switch reproduction now passes on the installed replacement:
+ready before hiding, ready after revealing, refresh accepted and history unchanged
+without a new provider request. All 22 domain observation panels rendered and
+accepted actual refresh clicks with the onboarding overlay dismissed. Rendering
+is not a claim that every underlying feature is configured or healthy. RAG also
+restored its collection listing after hiding/revealing; a fresh search retrieved
+the retained fixture citation and native review staged it locally.
+
+Claude Code completed its harmless delegated question under manual permissions
+after the owner's explicit one-time consent. It returned `SPEC150_CLAUDE_WSL_OK`;
+`netclaw_request_status` for `spec150-claude-wsl-20261011-b7a3d92e` reported
+`completed` with the same answer. After the actual extension disabled its
+registration, a separately consented cached status call returned the disabled
+registration error. All three test registrations are now disabled. Both owned
+terminal clients exited normally. These interactive results used the original
+loaded adapter process; its payload is byte-identical in the replacement.
+Copilot's earlier permission deviation and subsequent default-mode check remain
+part of the evidence and are not erased by these successes.
+
+GAIT record `b0726e0c` records these checks. Remaining replacement matrix and
+Mac qualification are still pending; no merge or publication occurred.
+
+### Live context, Canvas/Avatar and management checks
+
+On the first replacement VSIX, explicit selection of the reviewed RAG fixture and
+a harmless editor selection produced the actual Chat answer
+`APRICOT_B7A3D92E SELECTED_WSL_C8F2`. An initial UI automation attempt selected
+the citation preview instead of the intended file; a pre-send assertion caught
+that, so no request was sent. The native file picker was then used explicitly
+and the correct selection staged. Only the two intended references were checked
+for the actual send; the duplicate local citation was not sent.
+
+Local Avatar rendered both bundled characters and preserved this conversation.
+Canvas sent only the reviewed citation through the real provider and returned
+Thursday at 14:20 UTC. Branch/save/reveal/open retained two lanes. Native export
+created a Canvas v1 document; native import restored both lanes to Ready with no
+execution bindings or automatic submission. The export remains in private evidence.
+
+Environment and budget native final reviews were both cancelled. The environment
+input used an explicitly fake test string; the old secret was never read. Budget
+configuration compared equal before and after. An existing-owner HUD status command
+was reviewed and staged in a new terminal without Enter, then cleared with Ctrl+C.
+The actual terminal screenshot shows the cancelled command and a fresh prompt.
+No lifecycle command was executed against the owner HUD.
+
+### Second confirmed extension defect: Windows-local guidance
+
+A separate private Windows-local VS Code 1.141.0 host loaded the installed first
+replacement (actual platform win32, no remote host, separate extensions/storage).
+After dismissing its normal onboarding without sign-in, Add Connection opened
+the entire command palette with input `>` instead of filtering to WSL commands.
+The existing call to `workbench.action.showCommands` ignored its filter argument.
+No connection/profile was created or backend operation executed. The confirmed
+extension-only correction uses `workbench.action.quickOpen` with `>WSL:` and
+shows explicit WSL workspace guidance. Check/build and the 18 source tests passed
+again (one optional RAG fixture skipped). A new package and actual Windows retest
+are required; the first replacement is intermediate evidence, not the final VSIX.
