@@ -1,18 +1,12 @@
 (() => {
   const api = acquireVsCodeApi(),
     viewId = document.body.dataset.viewId;
-  let sequence = 0,
-    selected = new Set(),
+  let selected = new Set(),
     sending = false,
     available = true;
   const el = (id) => document.getElementById(id);
-  const post = (type, payload) =>
-    api.postMessage({
-      viewId,
-      requestId: String(++sequence),
-      type,
-      ...(payload ? { payload } : {}),
-    });
+  const send = window.netclawPost(api, viewId);
+  const post = (type, payload) => send(type, payload ? { payload } : {});
   for (const id of ["refresh", "new", "settings", "cancel", "history"])
     el(id)?.addEventListener("click", () => post(id));
   const draft = () =>

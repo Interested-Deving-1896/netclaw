@@ -2,9 +2,7 @@
   const api = acquireVsCodeApi(),
     viewId = document.body.dataset.viewId,
     $ = (id) => document.getElementById(id);
-  let sequence = 0;
-  const post = (type, args = {}) =>
-    api.postMessage({ viewId, requestId: String(++sequence), type, ...args });
+  const post = window.netclawPost(api, viewId);
   const text = (tag, value, parent) => {
     const node = document.createElement(tag);
     node.textContent = String(value ?? "");

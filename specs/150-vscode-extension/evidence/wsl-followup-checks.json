@@ -1,6 +1,6 @@
 {
   "observedOn": "2026-10-11",
-  "status": "partial-blocked",
+  "status": "partial-extension-fix-awaiting-packaged-retest",
   "incomingCommit": "4e3cd2627ac80b7d160af7b135d30dec6580f202",
   "validationBranch": "150-vscode-extension-wsl-followup-20261011",
   "ownerSourceCommit": "aa2795313b487e00ccbe85d53f6a78db07b10a94",
@@ -444,5 +444,111 @@
     "T023": "open",
     "merged": false,
     "published": false
+  },
+  "checkpointStatus": "partial-blocked",
+  "postUpdate": {
+    "vscode": "1.141.0",
+    "vscodeCommit": "2a59476c9bfcb90b3ddc372c36762471b7dfad1c",
+    "updaterProcessesPresent": false,
+    "updatingMutexPresent": false,
+    "windowsDesktopWithWslHost": true,
+    "privateRemoteStorageVerified": true,
+    "runningExtensionsViewObserved": true,
+    "savedIdentityBoundProfile": true,
+    "bindingDialogVisualEvidence": false,
+    "profileReloadReconnect": true,
+    "chat": {
+      "realProviderAnswer": "SPEC150_WSL_CHAT_OK",
+      "ownedHistoryReopened": true,
+      "modelChoices": 10,
+      "newDefaultConversation": true,
+      "staleSendDisabled": true
+    },
+    "panels": {
+      "initialDomSuccesses": 21,
+      "initialRagSourceFailure": true,
+      "initialOnboardingOverlayObstructedVisualReview": true,
+      "visibleRecheckPending": true
+    },
+    "ragRepair": {
+      "explicitOwnerAuthorization": true,
+      "status": "applied-and-verified",
+      "python": "3.12.10",
+      "fastmcp": "4.0.11",
+      "fastmcpTasks": "4.0.11",
+      "mcp": "2.3.0",
+      "chromadb": "1.5.9",
+      "torch": "2.13.0+cpu",
+      "isolatedLockedEnvironment": true,
+      "pipCheckPassed": true,
+      "disposableNativeIngestSearchPassed": true,
+      "corpusBackupRetained": true,
+      "copiedCorpusCompatibilityPassed": true,
+      "exactInvocationDispatcher": true,
+      "hudOnlyDropIn": "60-spec150-rag-runtime.conf",
+      "onlyHudRestarted": true,
+      "liveListAndStatsHttp200": true,
+      "documentCount": 1,
+      "chunkCount": 1055,
+      "globalPythonPackagesUnchanged": true,
+      "protectedFilesUnchanged": 12,
+      "nativeIdentityPreserved": true,
+      "rollbackPrepared": true,
+      "rollbackUsed": false,
+      "runtimeMustBeRetainedWhileServiceDropInActive": true
+    },
+    "interactiveAssistants": {
+      "copilot": "completed-with-recorded-permission-deviation-and-default-mode-followup",
+      "claudeCode": "inspection-and-draft-passed-delegation-pending",
+      "codex": "interactive-completed-disabled-cached-call-refused",
+      "registrationsCreated": 3,
+      "backendApprovalsChanged": false,
+      "copilotTemporaryAllowAllObserved": true,
+      "copilotDefaultPermissionsRestored": true,
+      "copilotFollowupResultConsent": "human-Allow-Once"
+    },
+    "extensionRagUpload": {
+      "nativeFileReview": true,
+      "reviewedSha256": "d53b67547758ade86987aa0e0403fdb35abff20c9249ee8fc6623c23d2c4f8fa",
+      "bytes": 398,
+      "title": "spec150-wsl-rag-20261011-b7a3d92e.md",
+      "documentId": "doc_0e84d3b40932",
+      "actualIndexStatus": "ready",
+      "actualChunks": 1,
+      "searchCitationContext": "actual-extension-search-citation-and-local-staging-passed; context-send-pending"
+    },
+    "canvasAvatar": "pending",
+    "settingsCancellation": "pending",
+    "installedLifecycle": "pending",
+    "temporaryEditorIsolationHookRestored": false,
+    "gait": {
+      "branch": "spec150-qualification-unblock-plan-20261011",
+      "records": [
+        "2fac6b7e",
+        "c775f650",
+        "f2969ada",
+        "2f646369"
+      ]
+    },
+    "T022": "open",
+    "T023": "open",
+    "merged": false,
+    "published": false,
+    "confirmedDefect": {
+      "originalVsixRejectedForRelease": true,
+      "trigger": "hide and reveal existing webview tab",
+      "chatBefore": "Ready for an explicit request.",
+      "chatAfter": "Loading owned conversation\u2026",
+      "actualWindowsWslReproduced": true,
+      "cause": "frontend sequence reset on webview recreation; host replay guard retained",
+      "fix": "persist per-view message counter with getState/setState",
+      "sourceCheck": "passed",
+      "sourceBuild": "passed",
+      "sourceTestsPassed": 18,
+      "sourceTestsFailed": 0,
+      "sourceTestsSkipped": 1,
+      "replacementPackagedRegression": "pending",
+      "originalVsixPreserved": true
+    }
   }
 }

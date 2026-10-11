@@ -167,3 +167,176 @@ observer and private installed VSIX remain under the owner's private follow-up
 cache. No credentials or raw network responses are committed. See
 [wsl-followup-checks.json](wsl-followup-checks.json) and the updated
 [Mac return](../mac-return.md) for the exact transfer checkpoint.
+
+
+## Post-update continuation — 2026-10-11
+
+This section supersedes the prerequisite and unattempted-check status of the
+checkpoint above. The original checkpoint and prior `evidence/wsl.md` are retained
+as historical evidence. The artifact remains byte-identical; no product source was
+changed or rebuilt.
+
+### Windows editor and real provider
+
+After the owner completed the normal update, Windows VS Code **1.141.0**, commit
+`2a59476c9bfcb90b3ddc372c36762471b7dfad1c`, launched successfully through the
+Windows CLI with separate Windows user data/extensions and a conditional private
+WSL server-data directory. No updater process or update mutex remained. The
+observer in the actual Windows desktop's remote host reports `platform=linux`,
+`remoteName=wsl`, and private extension/storage paths. The installed NetClaw payload
+is the exact candidate. Developer: Show Running Extensions visibly lists NetClaw.
+The shared immutable server executable does not imply shared extension storage.
+
+A temporary, hash-recorded `server-env-setup` hook selects the private WSL data
+root only for the marked validation launch. Owner launches without that marker
+retain their defaults. This hook must be restored to its original absence when
+validation ends; it remains in use while the private window is open.
+
+The native connection flow created an owner-private profile bound to the existing
+OpenClaw installation identity. The saved profile survived reload and reconnected.
+The installation-binding dialog itself was not captured, so its visual review is
+not independently evidenced. A harmless Chat question returned the actual provider
+answer `SPEC150_WSL_CHAT_OK`. Owned history reopened that answer, ten model choices
+were displayed, and selecting the configured default created a separate empty
+conversation. No device command was requested. After disconnect, the old Chat view
+reported the connection change and disabled Send.
+
+Twenty-one domain panels returned observed results in their webviews; Knowledge
+reported the then-existing RAG dependency failure. These first DOM observations
+occurred behind the editor onboarding overlay and are not final visual-panel
+acceptance. The overlay was subsequently dismissed normally. Fresh visible RAG,
+panel and context checks remain to be recorded.
+
+### Separately approved RAG prerequisite repair
+
+The owner explicitly approved the concrete private plan with **“Apply this bounded
+RAG repair.”** A dedicated Python **3.12.10** environment was prepared from the
+existing RAG dependency requirements, with FastMCP/tasks **4.0.11**, MCP **2.3.0**,
+ChromaDB **1.5.9** matching the installed corpus version, and CPU-only Torch
+**2.13.0+cpu**. Its exact resolved dependencies are retained in a private lockfile;
+`uv pip check` passed. No global Python package or source was changed.
+
+Before activation, actual ingest/search returned a citation for a harmless fixture
+in a disposable corpus. Separately, a stable backup of the existing owner corpus
+and a second compatibility copy were retained; native listing/statistics succeeded
+on the compatibility copy. These are prerequisite checks, not live extension RAG
+acceptance. The owner corpus contained one document and 1,055 chunks.
+
+Activation added only `60-spec150-rag-runtime.conf` to the HUD user-service drop-ins.
+It prepends a private dispatcher after the already-approved Node directory. The
+dispatcher selects the dedicated interpreter only for the exact existing RAG
+server invocation (`python3 -u` with its observed absolute script path); every
+other Python invocation falls through to the original system interpreter. The
+existing Node drop-in, HUD command, source, credentials, runtime selection and
+OpenClaw CLI resolution are preserved. Service/corpus backups and a rollback helper
+that removes only this new drop-in remain private. Corpus rollback is not automatic,
+to avoid overwriting later owner writes.
+
+The extension disconnected first; no active RAG process or established connection
+to the HUD ports was observed before the bounded restart. Only the idle HUD was
+stopped/started. Live gateway status, RAG listing and RAG statistics then returned
+HTTP 200. The native installation identity and all 12 protected file observations
+were unchanged. Gateway/federation/member/security identities were unchanged; the
+HUD changed intentionally and the already-restarting Zoom RTMS service varied
+independently. System Python still reports its original packages. Rollback was not
+needed. The retained runtime/dispatcher are now service dependencies and must not
+be removed as disposable test cache while this drop-in is active.
+
+### Current acceptance boundary
+
+Actual Chat/provider, history/model choice, saved-profile reload/reconnect, remote
+host/storage placement and stale Chat disabling are now evidenced. RAG's runtime
+prerequisite is repaired. Native extension upload/index/citation/context,
+Canvas/Avatar, settings cancellation, trust/identity/host negatives, interactive
+Copilot/Claude Code/Codex and installed lifecycle remain open. Copilot sign-in in
+the isolated Windows window has been requested through its normal UI; default
+consent settings remain intact. No assistant registration or delegated assistant
+request has been created at this point. T022/T023 remain open.
+
+Current GAIT branch: `spec150-qualification-unblock-plan-20261011`, created and
+checked out. Records include `2fac6b7e` startup, `c775f650` approved RAG prechange,
+and `f2969ada` verified repair/live UI progress. Disposable RAG ingest also produced
+its native GAIT record. Raw screenshots, transcripts, corpus backups and paths
+remain owner-private. No raw topology, credentials or private corpus names are
+included here.
+
+
+### Live RAG and interactive assistant progress
+
+The owner completed Copilot sign-in normally. Native file selection/category and
+upload review sent the 398-byte harmless fixture
+`spec150-wsl-rag-20261011-b7a3d92e.md`, SHA-256
+`d53b67547758ade86987aa0e0403fdb35abff20c9249ee8fc6623c23d2c4f8fa`.
+The real index reports document `doc_0e84d3b40932`, `ready`, one chunk. The fixture
+is intentionally retained for owner review or a separately requested removal.
+No corpus deletion/reindex was requested. Both live API and actual extension
+search returned its citation and expected text. Only that harmless result was
+selected and staged through the native context review. A Chat/Canvas context send
+has not yet completed; the tab-return defect below interrupted that workflow.
+
+Copilot's actual discovered inventory contained exactly `netclaw_status`,
+`netclaw_inspect`, `netclaw_propose_change`, `netclaw_request`, and
+`netclaw_request_status`. No apply/approval/raw-shell/HTTP tool was exposed.
+Status and knowledge inspection succeeded (two documents, 1,056 chunks). The
+owner reviewed the native opt-in, allowed the inert draft, and explicitly allowed
+the harmless delegated request. It returned `SPEC150_COPILOT_WSL_OK`, completed.
+After this run, the editor permission picker was observed as **Allow all**; the
+mechanism that selected it was not established. It was restored to **Default
+permissions** before further requests. A new, completed-request-safe consent check
+in a fresh conversation returned `SPEC150_COPILOT_DEFAULT_OK`; the owner used the
+result-review dropdown's **Allow Once**, and Default permissions remained selected.
+The deviation is retained here rather than claiming uninterrupted default settings.
+After native registration disable, Copilot's cached status attempt was refused
+because the tool no longer existed in its catalog. It did not reconnect or retry.
+
+Codex CLI **0.162.1** ran interactively with on-request approvals and a read-only
+shell sandbox, using per-process MCP configuration. It listed the five tools,
+read status/knowledge and created an inert draft. Its native request-consent prompt
+was relayed to the owner, who authorized **Allow once** for the specific harmless
+request. The actual answer was `SPEC150_CODEX_WSL_OK`; its same-ID status was
+completed. After native extension disable, the still-running cached MCP client
+received `Assistant registration is disabled. Enable it in the NetClaw extension.`
+No owner Codex configuration was edited. An initial validation-launcher quoting
+error prevented startup; correcting that private launcher was not a product fix.
+
+Claude Code **2.1.288** ran interactively in manual mode with a session-only,
+strict MCP configuration. The owner approved its private test-folder trust prompt
+and one use each of status, knowledge inspection and the inert draft. Those checks
+passed. Delegation and cached-disable acceptance are still in progress. Its native
+updater reported an update staged for a later restart; this session did not invoke
+an update command or restart it to upgrade. Normal CLI bookkeeping and the
+explicitly approved test-folder trust must be distinguished from protected
+credentials in the final preservation comparison.
+
+### Confirmed extension defect and replacement preparation
+
+The exact original VSIX reproducibly loses communication when a webview tab is
+hidden and revealed. With a fresh Chat panel, the observed status was
+`Ready for an explicit request.`. Opening Overview and returning to that same Chat
+left it at `Loading owned conversation…` after five seconds. The same failure was
+observed during normal tab changes while exercising the RAG context flow. No
+provider request was sent by the failed context-send attempt.
+
+VS Code recreates hidden webview scripts. The original frontend counters restarted
+at zero while the extension host retained its monotonically increasing replay
+guard. The restored `ready` and following actions were therefore discarded.
+The extension-only correction persists the counter using VS Code webview
+`getState`/`setState`, scoped to the panel's existing view ID. Chat/Avatar, RAG,
+Canvas and data panels use the same small helper. It stores only the view ID and
+counter, not drafts or reference contents. Host sequence checks, identity binding,
+workspace trust, native review and backend approvals are unchanged. This follows
+[VS Code's webview state lifecycle](https://code.visualstudio.com/api/extension-guides/webview#persistence)
+without retaining every hidden document in memory.
+
+Supported-Node type checking and build passed. Source tests: **18 passed, zero
+failed, one optional RAG fixture skipped**. New tests exercise a destroyed/recreated
+frontend and a separate panel identity; the editor regression also covers returning
+to existing Overview and Chat tabs. The actual original Windows/WSL reproduction
+is recorded separately from these fixture/source checks. Packaged replacement
+regression and remaining live acceptance are pending. The original VSIX is retained
+unchanged; it is not qualified for publication with this defect. A replacement will
+be packaged from the clean committed source and identified by a new digest.
+
+GAIT `2f646369` records the defect and assistant progress. The owner's separate
+question about creating/uploading/editing `testbed.yaml` through pyATS MCP is
+recorded as follow-up scope; no pyATS/backend implementation was added to Spec150.

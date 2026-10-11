@@ -3,15 +3,12 @@ const api = acquireVsCodeApi(),
   viewId = document.body.dataset.viewId;
 let documentState = { v: 1, nodes: [] },
   requests = {},
-  sequence = 0,
   contexts = [],
   selectedContexts = {};
 const el = (id) => document.getElementById(id);
+const send = window.netclawPost(api, viewId);
 const post = (type, extra = {}) =>
-  api.postMessage({
-    viewId,
-    requestId: String(++sequence),
-    type,
+  send(type, {
     ...(type === "ready" ? {} : { document: documentState }),
     ...extra,
   });

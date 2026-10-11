@@ -6,15 +6,13 @@
     status = document.getElementById("status"),
     filter = document.getElementById("filter"),
     refresh = document.getElementById("refresh");
-  let count = 0,
-    observation,
+  let observation,
     invalidated = false,
     revision = 0,
     timer;
   const pages = new Map();
   let searchable = new WeakMap();
-  const post = (type) =>
-    vscode.postMessage({ type, viewId, requestId: String(++count) });
+  const post = window.netclawPost(vscode, viewId);
   const text = (tag, value, parent) => {
     const element = document.createElement(tag);
     element.textContent = value;

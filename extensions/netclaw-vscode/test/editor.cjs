@@ -119,7 +119,9 @@ exports.run = async () => {
         await page.screenshot({ path: file });
         screenshots.push(file);
       };
-      await vscode.commands.executeCommand("netclaw.openOverview");
+      const overviewPanel = await vscode.commands.executeCommand(
+        "netclaw.openOverview",
+      );
       const overview = await frameFor(".data-view");
       await overview
         .locator("#content")
@@ -156,6 +158,32 @@ exports.run = async () => {
       await shot("chat");
       checks.push(
         "actual composer -> unchanged HUD -> synthetic gateway -> rendered reply",
+      );
+      overviewPanel.reveal();
+      const revealedOverview = await frameFor(".data-view");
+      await revealedOverview
+        .locator("#status")
+        .filter({ hasText: "Observed result" })
+        .waitFor();
+      await revealedOverview.locator("#refresh").click();
+      await revealedOverview
+        .locator("#content")
+        .getByText(profile.installationId, { exact: true })
+        .first()
+        .waitFor();
+      await vscode.commands.executeCommand("netclaw.openChat");
+      const revealedChat = await frameFor("#composer");
+      await revealedChat
+        .locator("#status")
+        .filter({ hasText: "Ready for an explicit request." })
+        .waitFor();
+      await revealedChat.locator("#refresh").click();
+      await revealedChat
+        .locator("#transcript")
+        .getByText("Synthetic gateway reply", { exact: true })
+        .waitFor();
+      checks.push(
+        "hidden Overview and Chat restore and accept refresh without resending work",
       );
       await vscode.commands.executeCommand("netclaw.openCanvas");
       const canvas = await frameFor(".canvas-lane");
