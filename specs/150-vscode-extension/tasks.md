@@ -45,3 +45,10 @@ scope expansion at a demonstrated gap and report it; do not silently add a servi
 
 T018 records actual results and limitations; it does not assert full named-client acceptance.
 Interactive Copilot/Codex consent remains a T022 validation gate. See evidence/assistants.md.
+
+WSL return, 2026-10-11: exact candidate installation/activation and 16 source-suite
+checks passed (one optional RAG check skipped). The owner-designated HUD API is
+unavailable; the owner requested blocked-live reporting. An isolated Windows editor
+launch also failed on an existing VS Code update mutex. Live workflows, interactive
+Copilot/Claude Code/Codex and full installed lifecycle remain unqualified. T022 and
+T023 remain open; see evidence/wsl.md and mac-return.md.

@@ -125,3 +125,17 @@ publisher credentials. The Mac publisher authentication is already ready; no PAT
 belongs in chat or Git. Return branch, commit, digest and results with mac-return.md.
 Only mark T022 complete when the required real checks are supported by evidence.
 The public release remains T023, after review of returned acceptance.
+
+## WSL return — 2026-10-11
+
+The exact `c21b4f8` candidate was inspected in a separate WSL worktree. Its unchanged
+VSIX installed and activated in the real WSL extension host; check/build and 16
+source tests passed (one optional RAG test skipped). The owner HUD API is stopped
+with a missing installed MCP client dependency. The owner explicitly chose to
+record live checks as blocked. A separate editor launch was refused by the VS Code
+update mutex, so full lifecycle validation also remains open. No backend repair,
+upgrade, approval change, merge or publication was performed.
+
+Return branch: `150-vscode-extension-wsl-20261011`. See the complete row-by-row
+disposition in [evidence/wsl.md](evidence/wsl.md) and the [Mac return](mac-return.md).
+This return does not close T022 or authorize publication before acceptance.
