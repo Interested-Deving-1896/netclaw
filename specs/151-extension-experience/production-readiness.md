@@ -48,7 +48,9 @@ Source commit: `2afa5b1b7a953f4822bbb9a15e45ff06ff6facf5`. Artifact: `extensions
 
 These results qualify the artifact above. Subsequent evidence-only commits do not change its application payload. The Linux desktop test runs under WSL/Xvfb; this is distinct from re-running all UI checks through the Windows Remote WSL transport.
 
-## Remaining release gates and limits
+## WSL handoff release gates and limits
+
+These were the outstanding gates at the WSL handoff. The Mac follow-up below records their subsequent disposition.
 
 1. The currently running user HUD was started before the new safe editing routes existed. The compatibility UI restores reads and native environment review. Full testbed/scoped MCP editing requires a controlled HUD restart/update; the extension cannot add server routes to an already-running process. No restart was imposed while the owner was testing.
 2. Marketplace publishing credentials and publisher access have not been verified in this session; no configured VSCE PAT, Azure identity or VSCE store was found. Authenticate as an authorized member of publisher `NetClaw` before publication. No credentials belong in the repository or report.
@@ -57,6 +59,25 @@ These results qualify the artifact above. Subsequent evidence-only commits do no
 5. Native OpenShell and legacy DefenseClaw CLI writes lack an atomic compare-and-swap interface. Immediate rechecks, native scope, readback and private evidence protect against common mistakes; another editor or external writer can still race. Unknown outcomes block replay. Runtime traffic, connector hook enforcement and stored policy are separate states.
 
 The test results establish the stated coverage; they are not a claim that all possible deployments are defect-free.
+
+## Final Mac acceptance — 2026-10-11
+
+The original WSL-tested VSIX was retrieved from the draft release handoff and matched SHA256 `0a7c43238f3df39f409054d8ccb76975aa847d5986ffbcb2a2c645574da75d57` exactly. No repackaging or application changes were needed. The separately generated CI artifact differs only in its README's commit-pinned links; it is not the artifact qualified here.
+
+- Native macOS arm64, VS Code **1.108.0**: the original installed VSIX passed **14 experience checks, 149 layout cases and 42 screenshots**. All 32 installed payload files matched the original package (ignoring VS Code's added package metadata). The product loaded from the isolated installed extension directory; the development extension was only the test observer.
+- Connection prompts, Testbed creation/review/save, MCP secret replacement and reset, both security menus, native cancellation, weakening acknowledgment, security fixture writes/readback, topology fallback, theme changes, narrow layouts, keyboard navigation and 200% zoom passed. Security writes used isolated CLI fixtures.
+- The same original VSIX was installed in a persistent throwaway Mac editor and connected to the owner's actual installation through the updated HUD. Full Testbed and MCP editing routes were available, existing secret values stayed hidden, and both security menus displayed posture and suggested the identity-matching runtime home. Native target-binding dialogs were cancelled. Configuration/testbed hashes matched the baseline; no device, production configuration or security policy was changed.
+- Mac automated verification: extension typecheck/build and **56 tests passed**, with the optional cached-embedding RAG case skipped; HUD **372 unit tests and 9 document/configuration tests passed**, and its production build passed. The first extension test invocation preceded its required bundle build; the affected MCP transport test passed after building. The WSL record above retains its separate 57/57 extension result.
+- `prod-ready` and the packaged source commit are now on GitHub. Every commit-pinned README documentation link returned HTTP 200. Microsoft `vsce verify-pat NetClaw` verified the stored publisher credential without displaying or changing it.
+- Native DefenseClaw/OpenShell executables are not installed on this Mac. This acceptance establishes installed macOS UI and adapter-fixture behavior; actual vendor CLI operations and OpenShell traffic enforcement remain qualified on WSL as recorded above.
+
+Machine-readable scope and results: [mac-acceptance.json](mac-acceptance.json). Raw screenshots and machine evidence remain private in the Mac owner's cache.
+
+### Marketplace submission
+
+After the owner's conditional publication authorization and the Mac acceptance above, `vsce publish --packagePath` submitted the **unchanged original VSIX** from this Mac on 2026-10-11. Microsoft returned `Published NetClaw.netclaw v0.1.1`. No new package, version bump or application-source change was made. The listing is [NetClaw on Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw); Marketplace processing and listing visibility are separate from successful submission. The GitHub artifact handoff remains a draft release.
+
+Follow-up verification found the public listing at version **0.1.1** and downloaded its VSIX from Microsoft's gallery CDN. Its complete archive matched the original SHA256 **`0a7c43238f3df39f409054d8ccb76975aa847d5986ffbcb2a2c645574da75d57`**, byte for byte; all 32 extension payload files matched as well.
 
 ## Primary references
 
