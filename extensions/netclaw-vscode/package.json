@@ -229,6 +229,38 @@
         "command": "netclaw.searchMemory",
         "title": "Search Recorded Memory",
         "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.openIntegrations",
+        "title": "Browse Integrations",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.openSkills",
+        "title": "Browse Installed Skills",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.openOperations",
+        "title": "NetClaw: Browse Operations",
+        "enablement": "isWorkspaceTrusted"
+      },
+      {
+        "command": "netclaw.exportGait",
+        "title": "NetClaw: Export Reviewed GAIT Evidence",
+        "enablement": "isWorkspaceTrusted"
+      },
+      {
+        "command": "netclaw.openNetwork",
+        "title": "Inspect Configured Network",
+        "category": "NetClaw",
+        "enablement": "isWorkspaceTrusted"
+      },
+      {
+        "command": "netclaw.openScience",
+        "title": "Inspect Science Officer",
+        "category": "NetClaw",
+        "enablement": "isWorkspaceTrusted"
       }
     ],
     "mcpServerDefinitionProviders": [

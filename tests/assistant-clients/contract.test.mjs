@@ -8,6 +8,7 @@ import { ManagementService } from '../../ui/netclaw-visual/src/management/servic
 import { assistantCall } from '../../mcp-servers/netclaw-assistant-mcp/server.mjs';
 import { schemas } from '../../mcp-servers/netclaw-assistant-mcp/schemas.mjs';
 import {createRequire} from 'node:module';
+import {randomUUID} from 'node:crypto';
 const require=createRequire(new URL('../../mcp-servers/netclaw-assistant-mcp/package.json',import.meta.url));
 
 async function setup(t){
@@ -81,4 +82,30 @@ test('revocation while audit is awaited prevents creating a reviewable proposal'
   const saved=f.service.journal.record('grant',g.grantId,f.service.binding.principal);
   f.service.journal.put('grant',g.grantId,f.service.binding.principal,{...saved,revokedAt:Date.now(),generation:2},{replace:true});release();
   await assert.rejects(pending,{code:'DENIED'});assert.equal(f.service.journal.records('proposal',f.service.binding.principal).length,0);
+});
+
+test('grant preparation requires audit and a verified operator principal',async t=>{
+  const f=await setup(t),owner=f.service.binding.principal,input={nonce:nonce(),client:'codex',targets:[f.installationId],actions:['inspect'],disclosure:['summary'],expiresAt:Date.now()+3600000};
+  await assert.rejects(f.service.clients.prepare({...owner,principalId:'os:other'},input),{code:'DENIED'});
+  f.service.audit.available=false;await assert.rejects(f.service.clients.prepare(owner,input));
+  assert.equal(f.service.journal.records('client-proposal',owner).length,0);assert.equal(f.service.journal.byNonce(owner,input.nonce).state,'failed');
+});
+
+test('installation replacement during grant application is denied before credential creation',async t=>{
+  const f=await setup(t),owner=f.service.binding.principal;
+  const proposal=await f.service.clients.prepare(owner,{nonce:nonce(),client:'codex',targets:[f.installationId],actions:['inspect'],disclosure:['summary'],expiresAt:Date.now()+3600000});
+  const before=fs.readFileSync(path.join(f.home,'.env'));
+  f.service.audit.record=async()=>{fs.writeFileSync(path.join(f.statePath,'installation.json'),JSON.stringify({schemaVersion:1,installationId:randomUUID()}));};
+  const input={nonce:nonce(),proposalId:proposal.proposalId,expectedRevision:proposal.expectedRevision};
+  await assert.rejects(f.service.clients.apply(owner,input),{code:'IDENTITY_CHANGED'});
+  assert.deepEqual(fs.readFileSync(path.join(f.home,'.env')),before);assert.equal(f.service.journal.records('grant',owner).length,0);assert.equal(f.service.journal.byNonce(owner,input.nonce).state,'denied');
+});
+
+test('grant revocation is serialized and repeat revocation does not change its generation again',async t=>{
+  const f=await setup(t),g=await f.grant(),owner=f.service.binding.principal;
+  await f.service.clients.revoke(owner,{grantId:g.grantId,nonce:nonce()});
+  const generation=f.service.journal.record('grant',g.grantId,owner).generation;
+  await f.service.clients.revoke(owner,{grantId:g.grantId,nonce:nonce()});
+  assert.equal(f.service.journal.record('grant',g.grantId,owner).generation,generation);
+  await assert.rejects(assistantCall(f.service,g.credentialRef,'netclaw_status',{}),{code:'DENIED'});
 });

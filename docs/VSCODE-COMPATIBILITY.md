@@ -9,8 +9,8 @@ and the separate [WSL return](../specs/150-vscode-extension/evidence/wsl-accepta
 |---|---|
 | Extension candidate | NetClaw.netclaw 0.1.0; unpublished |
 | Minimum editor | VS Code 1.102.0, real Mac extension host and rendered views passed |
-| Installed current editor | VS Code 1.108.0; full release-current matrix still open |
-| Mac | arm64, Darwin 25.5.0; isolated synthetic installations and real process checks |
+| Release-current editor | VS Code 1.141.0; real Mac rendered and VSIX lifecycle checks passed. Owner editor 1.108.0 was not upgraded. |
+| Mac | macOS 26.5.2 (25F84), arm64, Darwin 25.5.0; isolated synthetic installations and real process checks |
 | Backend Node | Isolated 24.19.0; host Node 25 remains unsupported and unchanged |
 | OpenClaw | 2026.7.1-2 real process, controlled provider; exact owned model/low-effort and answer progress verified |
 | Hermes | v0.21.6 / 818c13be1dc4fd28987e1e881a9408224afd4535; Python 3.14.6, bridge 3.12.12 |

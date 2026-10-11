@@ -18,12 +18,17 @@ export function verifyBinding(profile:ConnectionProfile,identity:Identity):void 
   if((profile.installationId&&identity.installationId!==profile.installationId)||(profile.hostId&&identity.hostId!==profile.hostId)||(profile.principalId&&identity.principalId!==profile.principalId))throw Error('The installation, host or operator identity changed. Review a new connection.');
 }
 
-export function launchProfile(profile:ConnectionProfile):{command:string;args:string[];env:Record<string,string>} {
+export function launchProfile(profile:ConnectionProfile,platform=process.platform):{command:string;args:string[];env:Record<string,string>} {
   validateProfile(profile);
   const args=[profile.launcherPath,'--home',profile.home,'--runtime',profile.harness,...(profile.installationId?['--installation',profile.installationId]:[])];
   const env=Object.fromEntries(['HOME','USER','LOGNAME','PATH','SHELL','SystemRoot','WINDIR','TEMP','TMP','WSL_DISTRO_NAME'].flatMap(k=>process.env[k]===undefined?[]:[[k,process.env[k]!]]));
-  if(profile.transport==='ssh')return {command:'ssh',args:['-T','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes','-o','ForwardAgent=no','-o','ClearAllForwardings=yes','--',profile.sshAlias!,[profile.nodePath,...args].map(quotePosix).join(' ')],env};
-  if(process.platform==='win32')throw Error('Open the intended WSL distribution using “WSL: Connect to WSL using Distro”, or select an existing SSH profile.');
+  if(profile.transport==='ssh'){
+    // Authenticate with the owner's existing local SSH agent. The socket is
+    // never forwarded to the remote host or inherited by local backend MCPs.
+    if(process.env.SSH_AUTH_SOCK)env.SSH_AUTH_SOCK=process.env.SSH_AUTH_SOCK;
+    return {command:'ssh',args:['-T','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes','-o','ForwardAgent=no','-o','ClearAllForwardings=yes','--',profile.sshAlias!,[profile.nodePath,...args].map(quotePosix).join(' ')],env};
+  }
+  if(platform==='win32')throw Error('Open the intended WSL distribution using “WSL: Connect to WSL using Distro”, or select an existing SSH profile.');
   return {command:profile.nodePath,args,env};
 }
 

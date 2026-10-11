@@ -10,7 +10,7 @@ import { configurationAdapters,configurationSnapshot,managedSettingsSnapshot,env
 import { readOwned } from './files.js';
 import { fail,invariant } from './errors.js';
 import { authorize } from './policy.js';
-import { federationReader } from './federation.js';
+import { federationReader,projectFederation } from './federation.js';
 import { runtimeSettings,hermesRuntimeSettings } from '../hud-server/runtime-settings.js';
 import { runtimeInventory,readUsage } from '../hud-server/tokenomics.js';
 import { gatewayAgentId } from '../hud-server/gateway-agent.js';
@@ -68,12 +68,13 @@ export class ManagementService {
     }
     if(['member','peer','edge'].includes(input.kind)){
       const result=await this.readFederation(input.kind);
-      // Return typed source data, retaining actual server state rather than inventing health.
-      return this.envelope(result.value,result.source,[result.qualification]);
+      const projected=projectFederation(input.kind,result.value),query=input.filters?.query?.toLowerCase();
+      const rows=projected.items.filter(row=>(!query||row.id.toLowerCase().includes(query)||row.label.toLowerCase().includes(query))&&(!input.filters?.status||row.state===input.filters.status));
+      return this.envelope({...this.paginate(rows,input),sourceIdentity:projected.sourceIdentity,qualification:projected.qualification},result.source,[result.qualification]);
     }
     if(input.kind==='integration'){
-      const inventory=runtimeInventory(this.config()),servers=new Map(inventory.mcp_servers.map(s=>[s.name,s]));
-      const rows=Object.entries(ENV_MAP).map(([id,mapping])=>({id,notes:mapping.notes,configuration:mapping.env.map(key=>({key,isSet:Boolean(environment(this.binding)[key])})),
+      const inventory=runtimeInventory(this.config()),servers=new Map(inventory.mcp_servers.map(s=>[s.name,s])),env=environment(this.binding);
+      const rows=Object.entries(ENV_MAP).map(([id,mapping])=>({id,notes:mapping.notes,configuration:mapping.env.map(key=>({key,isSet:Boolean(env[key])})),
         registered:servers.has(id)||servers.has(`${id}-mcp`),discovered:null,reachable:null,executionVerified:null,source:'Static NetClaw catalog and selected runtime configuration'}));
       return this.envelope(this.paginate(rows,input),'Selected installation configuration');
     }

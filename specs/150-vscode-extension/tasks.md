@@ -46,11 +46,11 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 
 **Independent test**: Clean VSIX candidate connects two real reference targets and isolates state; Restricted Mode and missing prerequisites never dispatch.
 
-- [ ] T015 [P] [US1] Add connection/identity/SSH/WSL mismatch, no-folder/multi-root and Restricted Mode contract tests in `tests/vscode/connections.test.mjs`. (FR-004, FR-005, FR-006, FR-007, FR-008, FR-035, SC-005)
+- [X] T015 [P] [US1] Add connection/identity/SSH/WSL mismatch, no-folder/multi-root and Restricted Mode contract tests in `tests/vscode/connections.test.mjs`. (FR-004, FR-005, FR-006, FR-007, FR-008, FR-035, SC-005)
 - [X] T016 [P] [US1] Add multiwindow/profile storage, stale-response and mobile-logo manifest tests in `extensions/netclaw-vscode/test/profiles.test.mjs`. (FR-002, FR-003, FR-006, SC-005)
-- [ ] T017 [US1] Implement verified local/SSH transport and explicit WSL reopen flow in `extensions/netclaw-vscode/src/connection/connect.ts`; show backend compatibility/prerequisite guidance without installation. (FR-004, FR-005, FR-007, FR-008)
+- [X] T017 [US1] Implement verified local/SSH transport and explicit WSL reopen flow in `extensions/netclaw-vscode/src/connection/connect.ts`; show backend compatibility/prerequisite guidance without installation. (FR-004, FR-005, FR-007, FR-008)
 - [X] T018 [US1] Implement nonsecret host/principal/profile storage and immutable connection generations in `extensions/netclaw-vscode/src/state/profiles.ts`; never sync credentials or retarget running requests. (FR-004, FR-006, SC-005)
-- [ ] T019 [US1] Implement native explorer/status/output/commands and trust handlers in `extensions/netclaw-vscode/src/extension.ts` and `src/views/overview.ts`; typed resource identity and bounded partial failure. (FR-003, FR-014, FR-035, FR-037)
+- [X] T019 [US1] Implement native explorer/status/output/commands and trust handlers in `extensions/netclaw-vscode/src/extension.ts` and `src/views/overview.ts`; typed resource identity and bounded partial failure. (FR-003, FR-014, FR-035, FR-037)
 - [X] T020 [US1] Copy the actual mobile PNG and derive a theme-safe Activity Bar mark in `extensions/netclaw-vscode/resources/`; wire icon and walkthrough contributions in `package.json`. (FR-002, FR-003, FR-040, SC-010)
 - [ ] T021 [US1] Execute US1 minimum-editor/local/remote connection scenarios and capture measured onboarding/isolation in `specs/150-vscode-extension/evidence/connections.md`; do not count future WSL acceptance early. (FR-005, FR-008, FR-035, SC-001, SC-005)
 
@@ -80,7 +80,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 
 - [ ] T029 [P] [US3] Add internal/external capability, stale/legacy card and exact-action denial tests in `tests/operator/federation.test.mjs`. (FR-014, FR-015, FR-016, FR-017, SC-003, SC-006)
 - [ ] T030 [US3] Implement fixed member/peer inventory, existing-estate lifecycle/peering proposals and qualified delegation in `ui/netclaw-visual/src/management/federation.js`; enforce grants at existing NCFED brokers. (FR-014, FR-015, FR-016, FR-017, FR-043)
-- [ ] T031 [US3] Implement Border/member/edge/advisor tree and per-Claw inspectors in `extensions/netclaw-vscode/src/views/estate.ts`; distinguish advertisement, installation and verified tool execution. (FR-003, FR-014, FR-015, FR-017)
+- [X] T031 [US3] Implement Border/member/edge/advisor tree and per-Claw inspectors in `extensions/netclaw-vscode/src/views/estate.ts`; distinguish advertisement, installation and verified tool execution. (FR-003, FR-014, FR-015, FR-017)
 - [ ] T032 [US3] Implement external peer/trust/conversation/tool/skill workflows in `extensions/netclaw-vscode/src/views/peers.ts`, routing mutations through proposal review and preserving origin/evidence. (FR-016, FR-022, FR-024)
 - [ ] T033 [US3] Run all four internal runtime pairs and both-direction H/H,H/O external plus O/O regression in `tests/vscode/federation-acceptance.mjs`; record actual host/provider/tool qualification separately. (FR-016, FR-017, SC-003)
 - [ ] T034 [US3] Record reference estate results and outstanding per-host gates in `specs/150-vscode-extension/evidence/federation.md`; require Linux/WSL matrix and spec149 host-control dependency before release. (FR-008, FR-017, FR-040, SC-003)
@@ -98,7 +98,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 - [ ] T037 [US4] Implement typed configuration/budget/integration transactions in `ui/netclaw-visual/src/management/configuration.js`; preserve unmanaged bytes and normalize legacy credential references through reviewed shared launchers with recovery. (FR-018, FR-019, FR-020, FR-028, SC-008)
 - [ ] T038 [US4] Implement narrow installation-owned service controls and runtime/role changes in `ui/netclaw-visual/src/management/lifecycle.js` and `runtime.js`; no installer scripts, unit deletion or process-name killing. (FR-007, FR-018, FR-020, FR-021, SC-011)
 - [ ] T039 [US4] Implement settings/provider/harness/budget/mode forms and impact review in `extensions/netclaw-vscode/src/views/settings.ts`; selection alone never switches backend runtime. (FR-018, FR-020, FR-021)
-- [ ] T040 [US4] Implement environment inventory, explicit transient secret inputs and redacted revision-aware review in `extensions/netclaw-vscode/src/views/configuration.ts`; never persist secret drafts in editor state. (FR-019, FR-020, FR-036, SC-008)
+- [X] T040 [US4] Implement environment inventory, explicit transient secret inputs and redacted revision-aware review in `extensions/netclaw-vscode/src/views/configuration.ts`; never persist secret drafts in editor state. (FR-019, FR-020, FR-036, SC-008)
 - [ ] T041 [US4] Run settings/service transactions with real postcondition/rollback observations in controlled installs and record `specs/150-vscode-extension/evidence/configuration.md`; retain failures/unknowns. (FR-007, FR-018, FR-020, FR-021, SC-006, SC-008, SC-011)
 
 **Parallel example**: T035 and T036 can be authored together after the shared prerequisites; run their acceptance after the corresponding handlers exist.
@@ -112,7 +112,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 - [ ] T042 [P] [US5] Add exact Terminal Intent Local/Lab, read-only collector, GAIT root and guard/confinement enforcement cases in `tests/operator/security.test.mjs`. (FR-022, FR-023, FR-024, FR-025, FR-026, SC-006)
 - [ ] T043 [US5] Implement owned durable Terminal Intent adapter in `ui/netclaw-visual/src/management/intent.js`; preserve designated endpoints/API-created record/real artifacts/APPLY phase, never infer approval from questions. (FR-013, FR-022, FR-023, SC-006, SC-007)
 - [ ] T044 [US5] Implement security scans/rules/events and separate DefenseClaw/OpenShell/host-posture adapters in `ui/netclaw-visual/src/management/security.js`; permitted settings use narrow transactions, no installer wrappers. (FR-025, FR-026, FR-039)
-- [ ] T045 [US5] Implement Operations proposal/approval/verification view and append-only GAIT browser in `extensions/netclaw-vscode/src/views/operations.ts` and `gait.ts` with redacted export. (FR-022, FR-023, FR-024, FR-029, SC-006)
+- [X] T045 [US5] Implement Operations proposal/approval/verification view and append-only GAIT browser in `extensions/netclaw-vscode/src/views/operations.ts` and `gait.ts` with redacted export. (FR-022, FR-023, FR-024, FR-029, SC-006)
 - [ ] T046 [US5] Implement distinct effective/observe-only/degraded/disabled/unavailable security and OpenShell controls in `extensions/netclaw-vscode/src/views/security.ts` and `openshell.ts`. (FR-025, FR-026, FR-037)
 - [ ] T047 [US5] Run production-denial, authoritative approval withdrawal, lab-scope and rollback-failure qualification and record `specs/150-vscode-extension/evidence/security.md`; leave failed CRs unresolved and report escalation. (FR-022, FR-023, FR-024, FR-025, FR-026, SC-006)
 
@@ -143,7 +143,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 
 - [X] T056 [P] [US6] Add exact usage totals/gaps, source distinctions and bounded/redacted log tests in `tests/operator/observability.test.mjs`. (FR-027, FR-028, FR-029, FR-030, SC-008, SC-009)
 - [X] T057 [US6] Implement usage and diagnostic projections through `ui/netclaw-visual/src/management/observability.js` and `evidence.js`; expose local OpenClaw and owned Hermes scope without invented aggregation. (FR-027, FR-029, SC-009)
-- [ ] T058 [US6] Implement Tokenomics/integration inventory and supported configuration navigation in `extensions/netclaw-vscode/src/views/tokenomics.ts` and `integrations.ts`. (FR-015, FR-027, FR-028, SC-009)
+- [X] T058 [US6] Implement Tokenomics/integration inventory and supported configuration navigation in `extensions/netclaw-vscode/src/views/tokenomics.ts` and `integrations.ts`. (FR-015, FR-027, FR-028, SC-009)
 - [ ] T059 [US6] Implement logs/diagnostic preview/export and network/topology/intent entry in `extensions/netclaw-vscode/src/views/logs.ts` and `network.ts`; label configured/live/historical/simulated/federation sources. (FR-023, FR-029, FR-030, FR-038, SC-008)
 - [ ] T060 [US6] Run source/cost reconciliation, unavailable integration and topology provenance acceptance; record `specs/150-vscode-extension/evidence/observability.md`. (FR-027, FR-028, FR-029, FR-030, SC-009)
 
@@ -212,7 +212,7 @@ Deliver small story checkpoints with real behavioral evidence, preserve the exis
 
 ## Counts and traceability
 
-79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Twenty-eight tasks are complete; 51 remain unchecked. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
+79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Thirty-five tasks are complete; 44 remain unchecked. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
 
 | Group | Tasks |
 |---|---|

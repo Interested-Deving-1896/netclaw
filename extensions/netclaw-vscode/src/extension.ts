@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import { randomUUID } from 'node:crypto';
-import { Connection,boundCaller } from './connection/connect';
+import { Connection } from './connection/connect';
 import { Profiles,ConnectionProfile,hostContext } from './state/profiles';
 import { NavigationTree,connectionTree,Navigation } from './views/overview';
 import { openDataView } from './webview/bridge';
@@ -17,8 +16,12 @@ import {openDocumentation} from './views/documentation';
 import {openLogs} from './views/logs';
 import {openTokenomics} from './views/tokenomics';
 import {searchMemory} from './views/knowledge';
+import {prepareEnvironmentChange} from './views/configuration';
+import {openIntegrations} from './views/integrations';
+import {openOperations,reviewProposal} from './views/operations';
+import {openGait,exportGait} from './views/gait';
+import {EstateTree,inspectEstateResource} from './views/estate';
 
-const nonce=():string=>`${Date.now()}:${randomUUID()}`;
 type Domain={title:string;method:string;args:Record<string,unknown>;group:string;icon:string};
 const domains:Record<string,Domain>={
   overview:{title:'Overview',method:'operator_resources',args:{kind:'overview'},group:'estate',icon:'dashboard'},
@@ -43,7 +46,7 @@ const domains:Record<string,Domain>={
 export async function activate(context:vscode.ExtensionContext):Promise<{connection:Connection;profiles:Profiles}> {
   const output=vscode.window.createOutputChannel('NetClaw'),profiles=new Profiles(context.globalState,context.globalStorageUri.fsPath),connection=new Connection(output);
   const status=vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left,40);status.command='netclaw.selectConnection';status.name='NetClaw installation';
-  context.subscriptions.push(output,connection,status);const trees:NavigationTree[]=[];
+  context.subscriptions.push(output,connection,status);const trees:{refresh():void}[]=[];
   const assistants=new AssistantProvider(new LocalState(path.join(context.globalStorageUri.fsPath,'assistants')),connection,profiles);
   context.subscriptions.push(assistants,vscode.lm.registerMcpServerDefinitionProvider('netclaw.assistant',assistants));
   const refresh=()=>{for(const tree of trees)tree.refresh();status.text=connection.identity?`$(remote) ${connection.profile?.label} · ${connection.identity.harness.type}`:'$(remote) NetClaw: disconnected';status.tooltip=connection.identity?`${hostContext()}\n${connection.identity.installationId}\nManagement contract ${connection.identity.contract.major}`:'Select an existing installation';status.show();};
@@ -79,7 +82,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('disconnect',()=>connection.disconnect());
   register('removeConnection',async()=>{const item=await vscode.window.showQuickPick(profiles.list().map(p=>({label:p.label,profile:p})));if(!item)return;if(connection.profile?.id===item.profile.id)await connection.disconnect();await profiles.remove(item.profile.id);refresh();});
   register('openDomain',async key=>{if(typeof key!=='string'||!Object.hasOwn(domains,key))throw Error('Unknown NetClaw view.');const view=domains[key]!;openDataView(context,connection,{title:view.title,kind:key,load:()=>connection.call(view.method,view.args)});});
-  for(const [command,key] of Object.entries({openOverview:'overview',openSettings:'settings',openGait:'gait'}))register(command,()=>vscode.commands.executeCommand('netclaw.openDomain',key));
+  for(const [command,key] of Object.entries({openOverview:'overview',openSettings:'settings'}))register(command,()=>vscode.commands.executeCommand('netclaw.openDomain',key));
   register('openDocumentation',()=>openDocumentation(context,connection));
   register('openTokenomics',()=>openTokenomics(context,connection));
   register('openLogs',()=>openLogs(connection));
@@ -93,33 +96,16 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('addSelectedContext',()=>stageSelectedContext(connection));
   register('configureSettings',()=>configureSettings(connection));
   register('manageAssistants',()=>manageAssistant(connection,profiles,assistants));
-  register('prepareChange',async()=>{
-    const call=boundCaller(connection);
-    const snapshot=await call<{data:{revision:string;environment:{managedFields:{key:string;secret:boolean}[]}}}>('operator_snapshot',{domain:'settings'});
-    const field=await vscode.window.showQuickPick(snapshot.data.environment.managedFields.map(f=>({label:f.key,description:f.secret?'Secret · presence only':'Configuration value',field:f})),{title:'Choose a managed environment field'});if(!field)return;
-    const intent=await vscode.window.showQuickPick(['keep','replace','clear'],{title:`${field.label}: desired change`});if(!intent)return;
-    let value:string|undefined;if(!field.field.secret&&intent==='replace'){value=await vscode.window.showInputBox({title:`New ${field.label}`});if(value===undefined)return;}
-    const prepared=await call<{proposalId:string}>('operator_change_prepare',{nonce:nonce(),action:'integration.configure',targets:[connection.identity!.installationId],expectedRevision:snapshot.data.revision,patch:{fields:[{key:field.label,intent,...(value===undefined?{}:{value})}]}});
-    await vscode.commands.executeCommand('netclaw.reviewProposal',prepared.proposalId);
-  });
-  register('reviewProposal',async id=>{
-    const call=boundCaller(connection);
-    let proposalId=typeof id==='string'?id:undefined;
-    if(!proposalId){
-      const overview=await call<{data:{operations:{operationId:string;state:string;result?:{proposalId?:string}}[]}}>('operator_resources',{kind:'overview'});
-      const item=await vscode.window.showQuickPick(overview.data.operations.filter(o=>o.state==='waiting-approval'&&o.result?.proposalId).map(o=>({label:o.result!.proposalId!,description:o.state})),{title:'Pending managed proposals'});proposalId=item?.label;
-    }
-    if(!proposalId)return;
-    const response=await call<{data:{action:string;targets:string[];expectedRevision:string;impact:string;changeClass:string;patch:{fields?:{key:string;intent:string}[]}}}>('operator_evidence',{kind:'approval',id:proposalId});
-    const proposal=response.data;
-    const review=await vscode.window.showInformationMessage(`Review ${proposal.action}`,{modal:true,detail:`Installation: ${connection.identity?.installationId}\nTargets: ${proposal.targets.join(', ')}\n${proposal.impact}\n${JSON.stringify(proposal.patch,null,2)}`},'Apply reviewed change');if(review!=='Apply reviewed change')return;
-    const replacements:Record<string,string>={};
-    for(const field of proposal.patch.fields||[]){if(field.intent!=='replace'||!/KEY|TOKEN|PASSWORD|SECRET|AUTH|CREDENTIAL/i.test(field.key))continue;const value=await vscode.window.showInputBox({title:`Replace ${field.key}`,password:true,prompt:'Blank keeps the existing value. This input is sent only to the selected backend.'});if(value===undefined)return;replacements[field.key]=value;}
-    const approvalReference=proposal.changeClass==='production'?await vscode.window.showInputBox({title:'Independently approved ServiceNow change reference',prompt:'NetClaw verifies the live Implement state and exact approved scope. This field does not approve the change.'}):undefined;
-    if(proposal.changeClass==='production'&&!approvalReference)return;
-    const result=await call<{operationId:string}>('operator_change_apply',{proposalId,nonce:nonce(),expectedRevision:proposal.expectedRevision,replacements,...(approvalReference?{approvalReference}:{})});
-    openDataView(context,connection,{title:'Change outcome',kind:'change',load:()=>call('operator_operation_get',{operationId:result.operationId})});
-  });
+  register('prepareChange',()=>prepareEnvironmentChange(connection));
+  register('openIntegrations',()=>openIntegrations(context,connection));
+  register('openSkills',()=>openIntegrations(context,connection,'skill'));
+  register('reviewProposal',id=>reviewProposal(context,connection,typeof id==='string'?id:undefined));
+  register('openOperations',()=>openOperations(context,connection));
+  register('openGait',()=>openGait(context,connection));
+  register('exportGait',()=>exportGait(connection));
+  register('inspectEstateResource',node=>inspectEstateResource(context,connection,node));
+  register('openNetwork',()=>vscode.commands.executeCommand('netclaw.openDomain','network'));
+  register('openScience',()=>vscode.commands.executeCommand('netclaw.openDomain','science'));
   register('exportDiagnostics',async()=>{
     const result=await connection.call('operator_identity');const content=JSON.stringify({generatedAt:new Date().toISOString(),extensionVersion:'0.1.0',identity:result},null,2);
     const document=await vscode.workspace.openTextDocument({content,language:'json'});await vscode.window.showTextDocument(document);
@@ -127,15 +113,17 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
     const destination=await vscode.window.showSaveDialog({filters:{JSON:['json']},saveLabel:'Save reviewed diagnostics'});if(destination)await vscode.workspace.fs.writeFile(destination,Buffer.from(content));
   });
   const connections=connectionTree(connection,profiles);trees.push(connections);context.subscriptions.push(vscode.window.registerTreeDataProvider('netclaw.connections',connections));
-  for(const group of ['estate','operations','integrations','knowledge','security','help']){
+  const estate=new EstateTree(connection);trees.push(estate);context.subscriptions.push(estate,vscode.window.registerTreeDataProvider('netclaw.estate',estate));
+  for(const group of ['operations','integrations','knowledge','security','help']){
     const tree=new NavigationTree(()=>{
-      const items:Navigation[]=Object.entries(domains).filter(([,d])=>d.group===group).map(([key,d])=>({label:d.title,command:key==='documentation'?'netclaw.openDocumentation':key==='tokenomics'?'netclaw.openTokenomics':'netclaw.openDomain',args:[key],icon:d.icon}));
+      const items:Navigation[]=Object.entries(domains).filter(([,d])=>d.group===group).map(([key,d])=>({label:d.title,command:key==='operations'?'netclaw.openOperations':key==='gait'?'netclaw.openGait':key==='integrations'?'netclaw.openIntegrations':key==='skills'?'netclaw.openSkills':key==='documentation'?'netclaw.openDocumentation':key==='tokenomics'?'netclaw.openTokenomics':'netclaw.openDomain',args:[key],icon:d.icon}));
       if(group==='help')items.push({label:'Getting started',command:'netclaw.help',icon:'info'});
       if(group==='knowledge')items.unshift({label:'RAG knowledge base',command:'netclaw.openRag',icon:'search'});
       if(group==='knowledge')items.push({label:'Search recorded memory',command:'netclaw.searchMemory',icon:'history'});
       if(group==='integrations')items.unshift({label:'Configure provider, model and budget',command:'netclaw.configureSettings',icon:'settings-gear'});
       if(group==='integrations')items.push({label:'Copilot, Claude Code & Codex',command:'netclaw.manageAssistants',icon:'hubot'});
       if(group==='operations')items.unshift({label:'Chat',command:'netclaw.openChat',icon:'comment-discussion'});
+      if(group==='operations')items.push({label:'Export reviewed GAIT evidence',command:'netclaw.exportGait',icon:'export'});
       if(group==='operations')items.push({label:'Installation logs',command:'netclaw.openLogs',icon:'output'});
       if(group==='operations')items.push({label:'Avatar',command:'netclaw.openAvatar',icon:'person'});
       if(group==='operations')items.push({label:'Canvas',command:'netclaw.openCanvas',icon:'preview'});

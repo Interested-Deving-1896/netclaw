@@ -1,48 +1,44 @@
-# VSIX development evidence — 2026-10-10
+# Actual VSIX lifecycle — Mac
 
-This is a private development candidate, not a Marketplace release. T070 remains
-unchecked because its full platform and running-backend preservation gates are
-not closed by these Mac fixture checks.
+Status: passed for the artifact below on macOS 26.5.2 (25F84), Darwin 25.5.0,
+arm64. This is a candidate preservation result, not publication or full release
+qualification. No owner service/configuration or external provider was changed.
 
-## Artifact inspected
+- Candidate: `NetClaw.netclaw` 0.1.0, source
+  `cb3e1a4caaa26338d93017a86cddcf965efcba92`.
+- VSIX SHA-256:
+  `0a423b5d21e87f9c45354a1cc10a54d44e7cc0ef2f0559a2d10f675a4ed5400c`.
+- Size: 2,777,232 bytes. Package allowlist: 22 extension files plus two VSIX
+  metadata entries. No runtime trees, private state or synthetic secret markers.
+- Real desktop versions: VS Code 1.102.0 and 1.141.0, separate clean profile and
+  extension directory per run.
+- Real installed runtime: OpenClaw 2026.7.1-2, supported Node 24.19.0. Fresh
+  installation home and identity; controlled loopback-only synthetic provider.
 
-- Identity: `NetClaw.netclaw`, version `0.1.0`.
-- Source: `99fe7528eb68da3f3d67ae1c688fcc80d880f951`.
-- File: `extensions/netclaw-vscode/netclaw-0.1.0.vsix` (ignored build output).
-- Bytes: `2769087`.
-- SHA-256: `2235cbf13b5d1821f103dd95058625a99c55042c8fc9c2868178dc61a627db0b`.
-- ZIP: 24 entries (22 explicit extension files plus generated VSIX manifest and
-  content types). Source, backend implementation, dependencies, `.env`, private
-  state and test artifacts are excluded. README image/privacy URLs resolve to
-  the source commit's extension subdirectory.
+The harness installed a synthetic previous candidate 0.0.1, connected the
+packaged extension, staged explicit context, saved Canvas and completed an owned
+conversation. It then upgraded to the exact candidate VSIX, disabled it,
+uninstalled it, reinstalled the previous candidate and checked the retained
+profile. It observed the same gateway process and unchanged configuration/.env
+bytes after every phase. Completed request, saved Canvas and selected context
+survived upgrade and rollback. Provider request count remained exactly one.
+The 0.0.1 package is explicitly a fixture; no previous public release is claimed.
 
-`npm --prefix extensions/netclaw-vscode run test:package` checks the exact
-allowlist with planted synthetic secret/state files. It passed. The actual ZIP
-was also inspected for forbidden paths and source-pinned documentation links.
+Reproduction from a clean candidate build, using supported Node on PATH:
 
-## Actual editor lifecycle
+```sh
+NETCLAW_TEST_LIVE_GAIT=1 \
+NETCLAW_TEST_OPENCLAW_ENTRY=/absolute/installed/openclaw/openclaw.mjs \
+VSCODE_VERSION=1.102.0 node tests/vscode/package-acceptance.mjs
+# Repeat with VSCODE_VERSION=1.141.0.
+```
 
-`node tests/vscode/package-acceptance.mjs` uses the downloaded VS Code 1.102.0
-macOS arm64 executable with its own user-data/extensions directories and a
-separate test-driver extension. It asserts that NetClaw is loaded from the
-installed VSIX path, rather than the source development extension.
+Local raw reports (not portable release artifacts):
+`netclaw150-vsix-IPheDp/report.json` (minimum) and
+`netclaw150-vsix-I2bij5/report.json` (current) under the Mac temporary directory.
+The committed harness identifies the candidate source and digest in each report.
 
-The initial artifact at source `9b4a0ffcda18eaf750d3befa85f5e1387cd25616`, SHA-256
-`1fdc1e611c93342b0d1af7ad943f4f4688bdbb04a0d9981468590c9a91efda17`, passed clean
-installation, upgrade, disable, uninstall and rollback. The prior version 0.0.1
-is an explicitly constructed candidate fixture, not an invented published
-release. Its saved profile/installation binding survived upgrade and reinstall;
-the synthetic backend config and environment remained byte-identical.
-
-A later repeat hit an abort in the minimum editor CLI during uninstall. It is
-retained as a failed run. The separate sequential rerun passed all five phases
-for the exact artifact listed above, including retained profiles and unchanged
-backend configuration. No extension assertion failure was observed before that CLI failure.
-The cause of the native editor crash has not been established.
-
-## Limits
-
-These checks do not demonstrate real Windows/WSL, Remote SSH, a running owner
-installation or a public Marketplace install. The scripted Linux editor runner
-is not Windows desktop's WSL extension host. Keep those acceptance rows open.
-No publisher authentication or publication command was executed.
+The newer native-management source needs its own matching package checkpoint.
+T070 remains open until that new artifact is built and exercised. E1/E2/E3 and
+other platform/client rows, complete lifecycle management (service start/stop),
+full release regression and public Marketplace installation remain separate.
