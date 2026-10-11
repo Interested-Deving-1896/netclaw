@@ -32,9 +32,9 @@ Paths below are relative to the repository. All stories remain in scope.
 - [x] T018 [US4] Record named-client Mac checks in specs/150-vscode-extension/evidence/assistants.md.
 
 ## US5: qualification and release
-- [ ] T019 [US5] Complete real Mac editor/VSIX lifecycle tests and evidence in specs/150-vscode-extension/evidence/mac.md.
+- [x] T019 [US5] Complete real Mac editor/VSIX lifecycle tests and evidence in specs/150-vscode-extension/evidence/mac.md.
 - [x] T020 [US5] Finalize extension README/privacy/package documentation in extensions/netclaw-vscode/.
-- [ ] T021 [US5] Package committed source, push and provide final specs/150-vscode-extension/windows-wsl-handoff.md.
+- [x] T021 [US5] Package committed source, push and provide final specs/150-vscode-extension/windows-wsl-handoff.md.
 - [ ] T022 [US5] Receive real Windows/WSL results and resolve defects in specs/150-vscode-extension/evidence/wsl.md.
 - [ ] T023 [US5] Publish qualified VSIX and verify Marketplace installation in specs/150-vscode-extension/evidence/publication.md.
 

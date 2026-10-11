@@ -9,5 +9,6 @@ provider and approvals. Assistant setup is explicit and exposes only the adapter
 bounded tools. Do not replace existing assistant configuration.
 
 Build and verify from extensions/netclaw-vscode using npm ci, npm run check,
-npm test, npm run build. Packaging requires committed source. Exact Windows/WSL
-commands will be provided in windows-wsl-handoff.md once Mac validation passes.
+npm run build, npm test (unchanged HUD dependencies are required for integration
+tests). Packaging requires clean committed source. The exact candidate VSIX and
+Windows/WSL commands are in windows-wsl-handoff.md and artifacts/package.json.
