@@ -53,6 +53,7 @@ export class Workspace {
     this.journal.transition(operation.operationId,'running');
     try{
       await this.audit.record({operationId:operation.operationId,state:input.action});
+      this.binding.assertCurrent();
       const id=randomUUID(),bytes=input.action==='canvas-import'?JSON.stringify(value):value;
       const artifact=this.artifacts.write(principal,bytes,input.action==='canvas-import'?'canvas':'context');
       const record={name:(input.args.name||'Selected content').slice(0,200),artifactId:artifact.id,size:artifact.size,createdAt:new Date().toISOString(),source:'Explicit operator selection'};
@@ -76,6 +77,7 @@ export class Workspace {
       invariant(typeof collection==='string'&&/^[\w.-]{1,128}$/.test(collection)&&!collection.includes('..'));
       invariant(Number.isInteger(k)&&k>=1&&k<=20);
       const data=this.clean(await this.rag.call('rag_search',{query:args.query.trim(),collection,k}));
+      this.binding.assertCurrent();
       invariant(Array.isArray(data.results),'SOURCE_UNAVAILABLE');
       const searchId=randomUUID();this.journal.put('rag-search',searchId,principal,{...data,collection,observedAt:new Date().toISOString()});
       return {...data,searchId};
@@ -107,6 +109,7 @@ export class Workspace {
     this.journal.transition(op.operationId,'running');
     try{
       await this.audit.record({operationId:op.operationId,state:input.action});
+      this.binding.assertCurrent();
       const id=randomUUID(),artifact=this.artifacts.write(principal,bytes,input.action==='rag-upload'?'rag-upload':'context');
       this.journal.put(input.action==='rag-upload'?'rag-upload':'context',id,principal,{...record,artifactId:artifact.id,size:bytes.length,sha256:artifact.hash});
       result=input.action==='rag-upload'?{uploadId:id,name:record.name,size:bytes.length,sha256:artifact.hash,indexed:false}:{contextId:id,name:record.name,size:bytes.length,indexed:false};
@@ -126,6 +129,7 @@ export class Workspace {
       invariant(!heartbeatFailed,'UNKNOWN_OUTCOME');
       this.journal.event(operationId,'dispatch-intent',{source:'Existing rag_ingest integration'});dispatched=true;
       const result=await this.rag.call('rag_ingest',{file_path:file,title:upload.name,doc_type:upload.docType,source:`vscode:${upload.name}`,replace_existing:Boolean(input.args.expectedDocumentId),expected_document_id:input.args.expectedDocumentId||null});
+      this.binding.assertCurrent();
       invariant(!heartbeatFailed,'UNKNOWN_OUTCOME');
       this.journal.attachReference(operationId,lease,result.document_id);
       await this.audit.record({operationId,state:'rag-index-completed'});

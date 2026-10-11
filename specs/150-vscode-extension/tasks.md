@@ -94,8 +94,8 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 **Independent test**: Synthetic secret updates preserve unrelated data, conflict correctly, and show saved/effective/restart/rollback outcomes.
 
 - [X] T035 [P] [US4] Add env keep/replace/clear, concurrent revision, file ownership/symlink and legacy credential migration tests in `tests/operator/configuration.test.mjs`. (FR-018, FR-019, FR-020, FR-036, SC-008)
-- [ ] T036 [P] [US4] Add service ownership, active-work impact, stop/restart failure and extension-disconnect preservation tests in `tests/operator/lifecycle.test.mjs`. (FR-007, FR-021, SC-007, SC-011)
-- [ ] T037 [US4] Implement typed configuration/budget/integration transactions in `ui/netclaw-visual/src/management/configuration.js`; preserve unmanaged bytes and normalize legacy credential references through reviewed shared launchers with recovery. (FR-018, FR-019, FR-020, FR-028, SC-008)
+- [X] T036 [P] [US4] Add service ownership, active-work impact, stop/restart failure and extension-disconnect preservation tests in `tests/operator/lifecycle.test.mjs`. (FR-007, FR-021, SC-007, SC-011)
+- [X] T037 [US4] Implement typed configuration/budget/integration transactions in `ui/netclaw-visual/src/management/configuration.js`; preserve unmanaged bytes and normalize legacy credential references through reviewed shared launchers with recovery. (FR-018, FR-019, FR-020, FR-028, SC-008)
 - [ ] T038 [US4] Implement narrow installation-owned service controls and runtime/role changes in `ui/netclaw-visual/src/management/lifecycle.js` and `runtime.js`; no installer scripts, unit deletion or process-name killing. (FR-007, FR-018, FR-020, FR-021, SC-011)
 - [ ] T039 [US4] Implement settings/provider/harness/budget/mode forms and impact review in `extensions/netclaw-vscode/src/views/settings.ts`; selection alone never switches backend runtime. (FR-018, FR-020, FR-021)
 - [X] T040 [US4] Implement environment inventory, explicit transient secret inputs and redacted revision-aware review in `extensions/netclaw-vscode/src/views/configuration.ts`; never persist secret drafts in editor state. (FR-019, FR-020, FR-036, SC-008)
@@ -157,7 +157,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 
 - [ ] T061 [P] [US7] Add RAG selection/indexing, memory validity, Jev ownership and mobile consent/unsupported harness tests in `tests/operator/workspace.test.mjs`. (FR-012, FR-031, FR-032, FR-033, FR-034)
 - [ ] T062 [US7] Implement bounded RAG/memory/GCF/meeting/assessment/mobile adapters in `ui/netclaw-visual/src/management/workspace.js`; use existing qualified tools, no workspace ingest or new device/vendor execution. (FR-012, FR-031, FR-032, FR-033, FR-039)
-- [ ] T063 [US7] Implement RAG/knowledge collection/context views in `extensions/netclaw-vscode/src/views/rag.ts` and `knowledge.ts` with citations, progress/errors and recorded validity. (FR-012, FR-031)
+- [X] T063 [US7] Implement RAG/knowledge collection/context views in `extensions/netclaw-vscode/src/views/rag.ts` and `knowledge.ts` with citations, progress/errors and recorded validity. (FR-012, FR-031)
 - [ ] T064 [US7] Implement Science Officer and mobile/edge views in `extensions/netclaw-vscode/src/views/science.ts` and `mobile.ts`; advice-only ownership, budgets, enrollment versus connectivity and explicit consent. (FR-014, FR-032, FR-033)
 - [X] T065 [US7] Implement searchable local documentation and version/context help in `extensions/netclaw-vscode/src/views/documentation.ts`, including existing guides and validated external navigation. (FR-034, FR-036)
 - [ ] T066 [US7] Execute all supporting-domain positive/denial cases and record `specs/150-vscode-extension/evidence/workspace.md`; do not claim Hermes media or physical-device qualification from rendering a control. (FR-031, FR-032, FR-033, FR-034, SC-002)
@@ -212,7 +212,7 @@ Deliver small story checkpoints with real behavioral evidence, preserve the exis
 
 ## Counts and traceability
 
-79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Thirty-five tasks are complete; 44 remain unchecked. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
+79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Thirty-eight tasks are complete; 41 remain unchecked. T036 has isolated Mac launchd and controller fault evidence in evidence/services-mac.md; T037 and T063 have configuration/RAG behavioral and rendered-editor evidence. Full story/platform qualification remains separate. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
 
 | Group | Tasks |
 |---|---|

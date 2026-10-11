@@ -14,7 +14,7 @@ import { federationReader,projectFederation } from './federation.js';
 import { runtimeSettings,hermesRuntimeSettings } from '../hud-server/runtime-settings.js';
 import { runtimeInventory,readUsage } from '../hud-server/tokenomics.js';
 import { gatewayAgentId } from '../hud-server/gateway-agent.js';
-import { securitySettings } from '../hud-server/security-posture.js';
+import { securitySnapshot } from './security.js';
 import { ENV_MAP } from '../hud-server/integration-environment.js';
 import { documentContent } from '../hud-server/documentation.js';
 import { ClientGrants } from './clients.js';
@@ -26,20 +26,23 @@ import { RagClient } from './rag.js';
 import {installationLogs,ownedUsage,configuredNetwork} from './observability.js';
 import { parseOperatorInput } from '../../../../mcp-servers/netclaw-operator-mcp/schemas.mjs';
 import { validateOperatorOutput } from '../../../../mcp-servers/netclaw-operator-mcp/responses.mjs';
+import {OwnedServiceController} from './service-ownership.js';
+import {lifecycleAdapters} from './lifecycle.js';
 
 export class ManagementService {
   constructor({root,home,kind,expectedInstallationId,audit,adapters={},authority}) {
     this.root=root;this.binding=bindInstallation({home,kind,expectedInstallationId});
     this.journal=new Journal(path.join(this.binding.statePath,'management'),this.binding.installationId);
     this.audit=audit||new InstallationAudit(this.binding,root,this.journal);
-    this.adapters={...configurationAdapters(this.binding),...adapters};
+    this.runtime=createManagementRuntime(this.binding,root);
+    this.readFederation=federationReader(this.binding,()=>environment(this.binding));
+    this.services=new OwnedServiceController(this.binding,{ready:async id=>id==='federation'?Boolean((await this.readFederation('overview')).value):Boolean((await this.runtime.readiness()).ready)});
+    this.adapters={...configurationAdapters(this.binding),...lifecycleAdapters({binding:this.binding,journal:this.journal,controller:this.services}),...adapters};
     this.clients=new ClientGrants({binding:this.binding,journal:this.journal,audit:this.audit});
     this.proposals=new Proposals({binding:this.binding,journal:this.journal,audit:this.audit,adapters:this.adapters,authority,validatePrincipal:principal=>this.clients.validate(principal)});
-    this.runtime=createManagementRuntime(this.binding,root);
     this.workspace=new Workspace({binding:this.binding,journal:this.journal,audit:this.audit,clean:value=>this.clean(value),rag:new RagClient(this.binding,root),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.conversations=new Conversations({binding:this.binding,journal:this.journal,audit:this.audit,runtime:this.runtime,
       start:operationId=>startOwnedWorker({root,binding:this.binding,operationId}),clean:value=>this.clean(value)});
-    this.readFederation=federationReader(this.binding,()=>environment(this.binding));
     this.journal.reconcileExpired();
   }
   config(){const data=readOwned(this.binding.configPath,{limit:4*1024*1024}).toString();return this.binding.kind==='hermes'?yaml.load(data):JSON.parse(data);}
@@ -50,7 +53,7 @@ export class ManagementService {
     return this.clean({contract:{major:1,minor:0},installationId:this.binding.installationId,principalId:this.binding.principal.principalId,
       hostId:this.binding.hostId,sourceVersion:fs.readFileSync(path.join(this.root,'VERSION'),'utf8').trim(),harness:{type:this.binding.kind,version:null,versionSource:'Not probed'},
       role,configurationRevision:this.proposals.revision(),observedAt:new Date().toISOString(),
-      capabilities:{inspection:{supported:true,qualified:true},changes:Object.keys(this.adapters).map(action=>({action,supported:true,qualified:this.adapters[action].qualified===true})),
+      capabilities:{inspection:{supported:true,qualified:true},changes:Object.keys(this.adapters).map(action=>({action,supported:true,qualified:this.adapters[action].qualified===true&&!action.startsWith('service.'),...(action.startsWith('service.')?{qualification:'Requires an explicit service binding and current target preflight; platform release acceptance remains separate.'}:{})})),
         delegation:{supported:false,qualified:false,reason:'Runtime grant propagation and durable conversation adapters must be qualified before dispatch.'}},
       runtimeSettings:this.binding.kind==='hermes'?hermesRuntimeSettings(config,'Selected installation'):runtimeSettings(config,0,'Selected installation')});
   }
@@ -91,14 +94,14 @@ export class ManagementService {
     }
     fail('UNSUPPORTED');
   }
-  snapshot(principal,input){
+  async snapshot(principal,input){
     authorize(principal,'inspect',[]);
-    if(input.domain==='settings')return this.envelope({revision:this.proposals.revision(),runtime:this.identity().runtimeSettings,environment:configurationSnapshot(this.binding),managed:managedSettingsSnapshot(this.binding),conversation:conversationOptions(this.binding)},'Selected installation configuration');
+    if(input.domain==='settings')return this.envelope({revision:this.proposals.revision(),runtime:this.identity().runtimeSettings,environment:configurationSnapshot(this.binding),managed:managedSettingsSnapshot(this.binding),conversation:conversationOptions(this.binding),services:await this.services.inventory()},'Selected installation configuration and reviewed service bindings');
     if(input.domain==='usage'){
       const data=this.binding.kind==='hermes'?ownedUsage(this.journal,principal,input.window):readUsage(path.join(this.binding.home,'agents',gatewayAgentId(this.config()),'sessions'),{window:input.window});
       return this.envelope({...data,externalAssistantUsage:null,billingNote:'NetClaw usage excludes Copilot, Claude Code and Codex inference.'},'Selected runtime retained usage');
     }
-    if(input.domain==='security')return this.envelope({...securitySettings(environment(this.binding),null,null),effective:'unverified',hostConfinement:'unverified',openshell:'unverified',reason:'Stored mode is not evidence of runtime enforcement.'},'Selected installation environment');
+    if(input.domain==='security')return this.envelope(await securitySnapshot(this.binding,this.readFederation),'Selected installation configuration and federation observations');
     if(input.domain==='documentation'){
       const entries=JSON.parse(fs.readFileSync(path.join(this.root,'docs/reference/documents.json'),'utf8'));
       if(input.resourceId)return this.envelope(documentContent(this.root,entries,input.resourceId),'Bundled NetClaw documentation');
@@ -114,7 +117,9 @@ export class ManagementService {
     // authorization boundary for callers that invoke methods directly.
     invariant(principal?.surface==='operator' && principal.principalId===this.binding.principal.principalId && principal.installationId===this.binding.installationId,'DENIED');
     args=parseOperatorInput(name,args);
-    return validateOperatorOutput(name,args,this.clean(await this.dispatch(name,args,principal)));
+    const result=await this.dispatch(name,args,principal);
+    this.binding.assertCurrent();
+    return validateOperatorOutput(name,args,this.clean(result));
   }
   async dispatch(name,args,principal){
     invariant(principal?.surface==='operator' && principal.principalId===this.binding.principal.principalId && principal.installationId===this.binding.installationId,'DENIED');

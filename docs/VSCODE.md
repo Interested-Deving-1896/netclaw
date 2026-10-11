@@ -48,6 +48,21 @@ operator action. Saved configuration may require a restart and is never labeled
 effective merely because the file write succeeded. Concurrent edits refuse
 application. Legacy credential normalization is explicit and reviewable.
 
+**Manage Service** prepares start, stop or restart for an explicitly bound
+gateway, federation daemon or Hermes companion. Review impact on current work
+before applying. A changed unit, running process, configuration or set of active
+requests invalidates the review. Use the backend's
+[service binding procedure](VSCODE-SERVICES.md) first; an existing process name
+does not establish ownership. The Mac launchd gateway path has actual isolated
+process evidence; Linux systemd and other service kinds still need real-platform
+qualification.
+
+Security separates configured DefenseClaw policy, the selected federation
+daemon's reported controls, host confinement and OpenShell. A fresh daemon
+report is scoped evidence, not proof of every runtime tool hop. Missing or stale
+observations stay visible. OpenShell and full guardrail controls are still in
+development.
+
 Tokenomics distinguishes recorded usage, missing sources and external assistant
 billing. Logs are bounded installation-owned sources with a review before
 export. Configured network inventory is labeled configured, not live discovery.

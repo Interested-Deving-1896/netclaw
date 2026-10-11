@@ -312,6 +312,12 @@
     "category": "Guides"
   },
   {
+    "id": "688f88ae920f80bd",
+    "path": "docs/VSCODE-SERVICES.md",
+    "title": "Binding existing NetClaw services",
+    "category": "Guides"
+  },
+  {
     "id": "0fbbb348ed092aaf",
     "path": "docs/VSCODE.md",
     "title": "NetClaw for Visual Studio Code",

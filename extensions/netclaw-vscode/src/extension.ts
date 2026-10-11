@@ -21,6 +21,9 @@ import {openIntegrations} from './views/integrations';
 import {openOperations,reviewProposal} from './views/operations';
 import {openGait,exportGait} from './views/gait';
 import {EstateTree,inspectEstateResource} from './views/estate';
+import {openSecurity} from './views/security';
+import {openOpenShell} from './views/openshell';
+import {configureService} from './views/lifecycle';
 
 type Domain={title:string;method:string;args:Record<string,unknown>;group:string;icon:string};
 const domains:Record<string,Domain>={
@@ -106,6 +109,9 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('inspectEstateResource',node=>inspectEstateResource(context,connection,node));
   register('openNetwork',()=>vscode.commands.executeCommand('netclaw.openDomain','network'));
   register('openScience',()=>vscode.commands.executeCommand('netclaw.openDomain','science'));
+  register('openSecurity',()=>openSecurity(context,connection));
+  register('openOpenShell',()=>openOpenShell(context,connection));
+  register('configureService',()=>configureService(connection));
   register('exportDiagnostics',async()=>{
     const result=await connection.call('operator_identity');const content=JSON.stringify({generatedAt:new Date().toISOString(),extensionVersion:'0.1.0',identity:result},null,2);
     const document=await vscode.workspace.openTextDocument({content,language:'json'});await vscode.window.showTextDocument(document);
@@ -116,11 +122,12 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   const estate=new EstateTree(connection);trees.push(estate);context.subscriptions.push(estate,vscode.window.registerTreeDataProvider('netclaw.estate',estate));
   for(const group of ['operations','integrations','knowledge','security','help']){
     const tree=new NavigationTree(()=>{
-      const items:Navigation[]=Object.entries(domains).filter(([,d])=>d.group===group).map(([key,d])=>({label:d.title,command:key==='operations'?'netclaw.openOperations':key==='gait'?'netclaw.openGait':key==='integrations'?'netclaw.openIntegrations':key==='skills'?'netclaw.openSkills':key==='documentation'?'netclaw.openDocumentation':key==='tokenomics'?'netclaw.openTokenomics':'netclaw.openDomain',args:[key],icon:d.icon}));
+      const items:Navigation[]=Object.entries(domains).filter(([,d])=>d.group===group).map(([key,d])=>({label:d.title,command:key==='security'?'netclaw.openSecurity':key==='openshell'?'netclaw.openOpenShell':key==='operations'?'netclaw.openOperations':key==='gait'?'netclaw.openGait':key==='integrations'?'netclaw.openIntegrations':key==='skills'?'netclaw.openSkills':key==='documentation'?'netclaw.openDocumentation':key==='tokenomics'?'netclaw.openTokenomics':'netclaw.openDomain',args:[key],icon:d.icon}));
       if(group==='help')items.push({label:'Getting started',command:'netclaw.help',icon:'info'});
       if(group==='knowledge')items.unshift({label:'RAG knowledge base',command:'netclaw.openRag',icon:'search'});
       if(group==='knowledge')items.push({label:'Search recorded memory',command:'netclaw.searchMemory',icon:'history'});
       if(group==='integrations')items.unshift({label:'Configure provider, model and budget',command:'netclaw.configureSettings',icon:'settings-gear'});
+      if(group==='integrations')items.push({label:'Control a bound service',command:'netclaw.configureService',icon:'server-process'});
       if(group==='integrations')items.push({label:'Copilot, Claude Code & Codex',command:'netclaw.manageAssistants',icon:'hubot'});
       if(group==='operations')items.unshift({label:'Chat',command:'netclaw.openChat',icon:'comment-discussion'});
       if(group==='operations')items.push({label:'Export reviewed GAIT evidence',command:'netclaw.exportGait',icon:'export'});

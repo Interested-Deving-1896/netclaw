@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import fs from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { installationFixture,nonce,auditFixture } from './fixtures.mjs';
 import { bindInstallation } from '../../ui/netclaw-visual/src/management/identity.js';
@@ -31,4 +32,12 @@ test('Canvas rejects duplicate nodes, cycles, executable object keys and over-li
   for(const content of ['{"v":1,"nodes":[{"id":"x"},{"id":"x"}]}','{"v":1,"nodes":[{"id":"x","parentId":"x"}]}','{"v":1,"nodes":[],"__proto__":{}}'])
     await assert.rejects(f.workspace.call(f.binding.principal,{action:'canvas-import',nonce:nonce(),args:{content}}));
   await assert.rejects(f.workspace.call(f.binding.principal,{action:'rag-stage',nonce:nonce(),args:{name:'x',content:'a'.repeat(1024*1024+1)}}));
+});
+test('installation replacement during audit cannot stage context or uploaded bytes into another identity',async t=>{
+  for(const action of ['rag-stage','rag-upload']){
+    const f=fixture(t);f.workspace.audit={async record(){fs.writeFileSync(path.join(f.binding.statePath,'installation.json'),JSON.stringify({schemaVersion:1,installationId:randomUUID()}));}};
+    const args=action==='rag-upload'?{name:'fixture.md',content:Buffer.from('private selected bytes').toString('base64')}:{name:'Fixture',content:'private selected bytes'};
+    await assert.rejects(f.workspace.call(f.binding.principal,{action,nonce:nonce(),args}),{code:'IDENTITY_CHANGED'});
+    assert.equal(f.journal.records('context',f.binding.principal).length,0);assert.equal(f.journal.records('rag-upload',f.binding.principal).length,0);assert.equal(fs.readdirSync(f.workspace.artifacts.directory).length,0);
+  }
 });

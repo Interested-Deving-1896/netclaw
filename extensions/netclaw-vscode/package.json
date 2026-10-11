@@ -261,6 +261,24 @@
         "title": "Inspect Science Officer",
         "category": "NetClaw",
         "enablement": "isWorkspaceTrusted"
+      },
+      {
+        "command": "netclaw.openSecurity",
+        "title": "Inspect DefenseClaw Posture",
+        "category": "NetClaw",
+        "enablement": "isWorkspaceTrusted"
+      },
+      {
+        "command": "netclaw.openOpenShell",
+        "title": "Inspect OpenShell and Host Confinement",
+        "category": "NetClaw",
+        "enablement": "isWorkspaceTrusted"
+      },
+      {
+        "command": "netclaw.configureService",
+        "title": "Control a Bound Service",
+        "category": "NetClaw",
+        "enablement": "isWorkspaceTrusted"
       }
     ],
     "mcpServerDefinitionProviders": [

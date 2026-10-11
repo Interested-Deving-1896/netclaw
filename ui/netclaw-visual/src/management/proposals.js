@@ -6,12 +6,13 @@ import { canonical, digest } from './journal.js';
 import { authorize, verifyChangeApproval } from './policy.js';
 import { invariant, fail, safeError } from './errors.js';
 import {configurationFiles} from './configuration.js';
+import {serviceRegistryPath} from './service-ownership.js';
 
 export class Proposals {
   constructor({ binding, journal, audit, adapters, authority, validatePrincipal=()=>{} }) {
     Object.assign(this, { binding, journal, audit, adapters, authority,validatePrincipal }); this.artifacts = new ArtifactStore(journal);
   }
-  revision() { return this.journal.revision(configurationFiles(this.binding)); }
+  revision() { return this.journal.revision([...configurationFiles(this.binding),serviceRegistryPath(this.binding)]); }
   async prepare(principal, input) {
     this.binding.assertCurrent();this.validatePrincipal(principal);authorize(principal, 'propose', input.targets);
     if(this.journal.byNonce(principal,input.nonce)){
@@ -64,7 +65,7 @@ export class Proposals {
     this.binding.assertCurrent(); invariant(principal.surface === 'operator', 'DENIED');
     const proposal = this.journal.record('proposal', input.proposalId, principal);
     const adapter = this.adapters[proposal.action]; invariant(adapter?.qualified === true, 'UNQUALIFIED');
-    const lock = this.journal.lock(adapter.resource || 'configuration', proposal.proposalId);
+    const lock = this.journal.lock(adapter.resource || 'configuration', proposal.proposalId,adapter.lockMs||60000);
     let operation, dispatched = false;
     try {
       // Dedupe before expiry/revision checks: a lost successful response remains recoverable.
@@ -80,6 +81,8 @@ export class Proposals {
       // Audit/approval can take time; check the file revision again under the same lock.
       this.binding.assertCurrent(); invariant(this.revision() === proposal.expectedRevision, 'STALE_REVISION');
       await verifyChangeApproval(principal, proposal, input.approvalReference, this.authority);
+      await adapter.validate?.(proposal,{baseline});
+      this.binding.assertCurrent();invariant(this.revision()===proposal.expectedRevision,'STALE_REVISION');
       if(!lease)this.journal.transition(operation.operationId,'running');
       this.journal.put('proposal', proposal.proposalId, principal, { ...proposal, state:'executing' }, { replace:true });
       dispatched = true;
@@ -88,7 +91,7 @@ export class Proposals {
       invariant(verified?.verified === true, 'UNKNOWN_OUTCOME');
       await this.audit.record({ operationId: operation.operationId, proposalId: proposal.proposalId, action: proposal.action, state:'verified' });
       this.journal.put('proposal', proposal.proposalId, principal, { ...proposal, state:'verified' }, { replace:true });
-      const result={ verified:true, ...(verified.pendingRestart ? { pendingRestart:true } : {}), revision:this.revision() };
+      const result={ verified:true, ...(verified.pendingRestart ? { pendingRestart:true } : {}),...(verified.observedState?{observedState:verified.observedState}:{}), revision:this.revision() };
       return lease?this.journal.finish(operation.operationId,lease,'succeeded',result):this.journal.transition(operation.operationId,'succeeded',result);
     } catch (error) {
       if (operation && (operation.state === 'admitted'||lease)) {

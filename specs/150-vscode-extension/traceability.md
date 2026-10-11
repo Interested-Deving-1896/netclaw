@@ -1,6 +1,6 @@
 # Planned requirement-to-task index
 
-Generated from the explicit requirement references in [tasks.md](tasks.md). This is planned coverage, not implementation acceptance or a substitute for read-only semantic analysis. All tasks are unchecked. Every one of the 44 functional requirements and 13 success criteria has at least one planned implementation/qualification task.
+Generated from the explicit requirement references in [tasks.md](tasks.md). This is planned coverage, not implementation acceptance or a substitute for read-only semantic analysis. Current completion and evidence are recorded in tasks.md and evidence/. Every one of the 44 functional requirements and 13 success criteria has at least one planned implementation/qualification task.
 
 | Requirement | Planned tasks |
 |---|---|

@@ -924,7 +924,7 @@
           "declaration": "npm run publisher:verify \u2192 vsce verify-pat NetClaw"
         }
       ],
-      "sha256": "6054e0ff0ef746faa603902d373fe04ed6cf1d92f5fd2eb95499d93bfd9f0c0d",
+      "sha256": "1c722306562ffa2c0bf9184722f3ef55c9a84f94df09be954755a95b43e67e79",
       "coverage": "All package.json script commands. Arguments after -- are delegated to the underlying command."
     },
     {
@@ -6098,6 +6098,14 @@
       "flags": [],
       "declarations": [],
       "sha256": "00e2f424e7f932a12fd1da4e60dc00090ce3004cb55d218646b475d59c87d7c4",
+      "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
+    },
+    {
+      "path": "scripts/netclaw-bind-service.mjs",
+      "kind": "Node launcher",
+      "flags": [],
+      "declarations": [],
+      "sha256": "05dd37e5d6cda9b02f4533f96377087371662cbc9694f8a0f6cc9784fc1f84fa",
       "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
     },
     {
