@@ -33,6 +33,7 @@ import {AssistantRequests,ProtectedAssistantRuntime} from './assistant-requests.
 import {DefenseClawComponent} from './defenseclaw.js';
 import {OpenShellComponent} from './openshell.js';
 import {ScienceOfficer} from './science.js';
+import {MobileWorkspace} from './mobile.js';
 
 export class ManagementService {
   constructor({root,home,kind,expectedInstallationId,audit,adapters={},authority}) {
@@ -45,12 +46,13 @@ export class ManagementService {
     this.defenseclaw=new DefenseClawComponent(this.binding);
     this.openshell=new OpenShellComponent(this.binding);
     this.science=new ScienceOfficer({binding:this.binding,journal:this.journal,root,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
+    this.mobile=new MobileWorkspace({binding:this.binding,journal:this.journal,audit:this.audit,clean:value=>this.clean(value),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.adapters={...configurationAdapters(this.binding),'security.patch':this.defenseclaw.adapter(),...lifecycleAdapters({binding:this.binding,journal:this.journal,controller:this.services}),...adapters};
     this.clients=new ClientGrants({binding:this.binding,journal:this.journal,audit:this.audit});
     this.assistants=new AssistantRequests({binding:this.binding,journal:this.journal,audit:this.audit,clients:this.clients,runtime:new ProtectedAssistantRuntime(this.binding),
       start:operationId=>startOwnedWorker({root:this.root,binding:this.binding,operationId}),clean:value=>this.clean(value)});
     this.proposals=new Proposals({binding:this.binding,journal:this.journal,audit:this.audit,adapters:this.adapters,authority:authority||new ServiceNowAuthority(this.binding),validatePrincipal:principal=>this.clients.validate(principal)});
-    this.workspace=new Workspace({binding:this.binding,journal:this.journal,science:this.science,audit:this.audit,clean:value=>this.clean(value),rag:new RagClient(this.binding,root),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
+    this.workspace=new Workspace({binding:this.binding,journal:this.journal,science:this.science,mobile:this.mobile,audit:this.audit,clean:value=>this.clean(value),rag:new RagClient(this.binding,root),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.conversations=new Conversations({binding:this.binding,journal:this.journal,science:this.science,audit:this.audit,runtime:this.runtime,
       start:operationId=>startOwnedWorker({root,binding:this.binding,operationId}),clean:value=>this.clean(value)});
     this.journal.reconcileExpired();
@@ -153,11 +155,13 @@ export class ManagementService {
       if(value.state==='unknown'&&value.kind==='conversation-request')return this.clean(await this.conversations.reconcile(principal,args.operationId));
       if(value.state==='unknown'&&value.kind==='assistant-request')return this.clean(await this.assistants.reconcile(principal,args.operationId));
       if(value.state==='unknown'&&value.kind==='assessment-reconsider')return this.clean(await this.science.reconcile(principal,args.operationId));
+      if(value.state==='unknown'&&value.kind==='mobile-capture')return this.clean(await this.mobile.reconcile(principal,args.operationId));
       return this.clean(value);
     }
     if(name==='operator_request_submit')return this.clean(await this.conversations.submit(principal,args));
     if(name==='operator_cancel_request'){
       const value=this.journal.get(principal,args.operationId);
+      if(value.kind==='mobile-capture')return this.clean(await this.mobile.cancel(principal,args));
       return this.clean(value.kind==='assistant-request'?await this.assistants.cancel(principal,{nonce:args.nonce,requestId:args.operationId}):await this.conversations.cancel(principal,args));
     }
     if(name==='operator_events')return this.envelope({events:this.journal.events(principal,args.operationId,args.after,args.limit)},'Durable management events');

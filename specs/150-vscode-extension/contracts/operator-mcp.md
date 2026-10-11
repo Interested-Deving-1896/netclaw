@@ -32,7 +32,7 @@ Each row becomes fixed JSON schemas in `mcp-servers/netclaw-operator-mcp/schemas
 | `operator_change_prepare` | nonce, action enum, exact target IDs, expected revision, typed patch/intents | Observe and record real baseline/rollback, impact and redacted proposal. Preparation has no configuration effect. |
 | `operator_change_apply` | proposal ID, nonce, expected revision, authoritative approval reference where required, transient secret replacements | Revalidate identity, grant, revision, qualification, audit and independent approval; execute exact admitted change, verify and roll back on failure. No `approved` boolean or arbitrary shell. |
 | `operator_evidence` | kind gait/log/artifact/approval, owned ID or approved filters, cursor | Bounded redacted evidence; GAIT is inspect-only except backend-generated session/turn recording. |
-| `operator_workspace` | action rag-list/rag-search/rag-stage/rag-upload/rag-index/rag-context/memory-search/gcf-read/meeting-read/assessment-read/assessment-preview/assessment-reconsider/canvas-import/canvas-export/mobile-capture-request, typed arguments | Per-action permission and consent. Advice is never authority. Assessment preview accepts an owned ID and question; reconsideration also requires its immutable review ID and a nonce. Index/reconsider/capture are admitted owned operations with budget/consent. Capture accepts only qualified `camera.capture` or `audio.record`, an exact enrolled edge ID and current consent; preserve declined/cancelled/offline and Hermes unavailable states. No arbitrary file path or automatic notification. |
+| `operator_workspace` | action rag-list/rag-search/rag-stage/rag-upload/rag-index/rag-context/memory-search/gcf-read/meeting-read/assessment-read/assessment-preview/assessment-reconsider/canvas-import/canvas-export/mobile-inventory/mobile-capture-preview/mobile-capture-request/mobile-capture-content, typed arguments | Per-action permission and consent. Advice is never authority. Assessment preview accepts an owned ID and question; reconsideration also requires its immutable review ID and a nonce. Index/reconsider/capture are admitted owned operations with budget/consent. Capture accepts only qualified `camera.capture` or `audio.record`, an exact enrolled edge ID and current consent; preserve declined/cancelled/offline and Hermes unavailable states. No arbitrary file path or automatic notification. |
 
 RAG actions keep staging distinct from indexing. `rag-list` paginates the existing
 document/snapshot/replica store and returns actual indexing states. `rag-search`
@@ -116,3 +116,9 @@ Human apply checks that snapshot against current backend authority before and
 after asynchronous approval/audit steps and at execution checkpoints. Expiry,
 revocation or attenuation cannot be undone by opening a human review. Legacy
 assistant proposals without this snapshot require fresh preparation.
+
+Mobile capture review binds one enrolled device, capability and enrollment revision
+for five minutes. Capture admission requires its consent reference and nonce. The
+receiver independently validates the private operator record and live worker lease.
+Content reads require a completed owned capture and a byte offset; 32 KiB chunks
+retain total size, content type and SHA-256. They never add media to model context.

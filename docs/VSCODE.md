@@ -125,3 +125,6 @@ release. Current partial evidence does not satisfy those gates.
 
 Science Officer task ownership, budget review and durable reconsideration are
 documented in [VSCODE-SCIENCE.md](VSCODE-SCIENCE.md).
+
+Mobile enrollment, device consent, capture outcomes and explicit local media saves
+are documented in [VSCODE-MOBILE.md](VSCODE-MOBILE.md).

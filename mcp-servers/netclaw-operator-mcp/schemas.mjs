@@ -55,6 +55,9 @@ const workspaceActions = {
   'assessment-reconsider': [true,{id,query,reviewId:id}],
   'canvas-import': [true,{name:name.optional(),content}], 'canvas-export': [false,{id}],
   'mobile-capture-request': [true,{id,consentReference:id,capability:z.enum(['camera.capture','audio.record'])}],
+  'mobile-inventory': [false,{}],
+  'mobile-capture-preview': [false,{id,capability:z.enum(['camera.capture','audio.record'])}],
+  'mobile-capture-content': [false,{id,offset:z.number().int().min(0).max(6*1024*1024).default(0)}],
 };
 const workspaceSchema = z.discriminatedUnion('action',Object.entries(workspaceActions).map(([action,[mutates,args]])=>
   z.strictObject({action:z.literal(action),...(mutates?{nonce}:{}),args:z.strictObject(args),...page})));

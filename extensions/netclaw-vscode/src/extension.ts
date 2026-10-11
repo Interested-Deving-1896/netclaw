@@ -27,6 +27,7 @@ import {configureService} from './views/lifecycle';
 import {openNativeRuntime} from './views/native-runtime';
 import {openAvatar} from './views/avatar';
 import {openScience} from './views/science';
+import {openMobile} from './views/mobile';
 
 type Domain={title:string;method:string;args:Record<string,unknown>;group:string;icon:string};
 const domains:Record<string,Domain>={
@@ -113,6 +114,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('inspectEstateResource',node=>inspectEstateResource(context,connection,node));
   register('openNetwork',()=>vscode.commands.executeCommand('netclaw.openDomain','network'));
   register('openScience',()=>openScience(context,connection));
+  register('openMobile',()=>openMobile(context,connection));
   register('openSecurity',()=>openSecurity(context,connection));
   register('openOpenShell',()=>openOpenShell(context,connection));
   register('configureService',()=>configureService(connection));

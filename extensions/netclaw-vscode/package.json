@@ -263,6 +263,12 @@
         "enablement": "isWorkspaceTrusted"
       },
       {
+        "command": "netclaw.openMobile",
+        "title": "Inspect Mobile and Edge / Request Capture",
+        "category": "NetClaw",
+        "enablement": "isWorkspaceTrusted"
+      },
+      {
         "command": "netclaw.openSecurity",
         "title": "Inspect DefenseClaw Posture",
         "category": "NetClaw",

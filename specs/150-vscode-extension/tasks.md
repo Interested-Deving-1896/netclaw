@@ -155,10 +155,10 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 
 **Independent test**: Selected RAG upload retrieves citations, memory validity/advice ownership stay visible, mobile consent and help paths work.
 
-- [ ] T061 [P] [US7] Add RAG selection/indexing, memory validity, Jev ownership and mobile consent/unsupported harness tests in `tests/operator/workspace.test.mjs`. (FR-012, FR-031, FR-032, FR-033, FR-034)
+- [X] T061 [P] [US7] Add RAG selection/indexing, memory validity, Jev ownership and mobile consent/unsupported harness tests in `tests/operator/workspace.test.mjs` and its RAG/knowledge/science/mobile domain test files. (FR-012, FR-031, FR-032, FR-033, FR-034)
 - [ ] T062 [US7] Implement bounded RAG/memory/GCF/meeting/assessment/mobile adapters in `ui/netclaw-visual/src/management/workspace.js`; use existing qualified tools, no workspace ingest or new device/vendor execution. (FR-012, FR-031, FR-032, FR-033, FR-039)
 - [X] T063 [US7] Implement RAG/knowledge collection/context views in `extensions/netclaw-vscode/src/views/rag.ts` and `knowledge.ts` with citations, progress/errors and recorded validity. (FR-012, FR-031)
-- [ ] T064 [US7] Implement Science Officer and mobile/edge views in `extensions/netclaw-vscode/src/views/science.ts` and `mobile.ts`; advice-only ownership, budgets, enrollment versus connectivity and explicit consent. (FR-014, FR-032, FR-033)
+- [X] T064 [US7] Implement Science Officer and mobile/edge views in `extensions/netclaw-vscode/src/views/science.ts` and `mobile.ts`; advice-only ownership, budgets, enrollment versus connectivity and explicit consent. (FR-014, FR-032, FR-033)
 - [X] T065 [US7] Implement searchable local documentation and version/context help in `extensions/netclaw-vscode/src/views/documentation.ts`, including existing guides and validated external navigation. (FR-034, FR-036)
 - [ ] T066 [US7] Execute all supporting-domain positive/denial cases and record `specs/150-vscode-extension/evidence/workspace.md`; do not claim Hermes media or physical-device qualification from rendering a control. (FR-031, FR-032, FR-033, FR-034, SC-002)
 
@@ -212,7 +212,7 @@ Deliver small story checkpoints with real behavioral evidence, preserve the exis
 
 ## Counts and traceability
 
-79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Forty-two tasks are complete; 37 remain unchecked. T027 adds explicit native UI navigation to the already rendered Canvas/Avatar implementation; remote browser acceptance remains a platform gate. T049/T050/T053 have protected Hermes MCP/worker/runtime and native grant-review evidence in evidence/assistant-clients.md; broad federation, named-client and platform acceptance remain open. T036 has isolated Mac launchd and controller fault evidence in evidence/services-mac.md; T037 and T063 have configuration/RAG behavioral and rendered-editor evidence. Full story/platform qualification remains separate. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
+79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Forty-four tasks are complete; 35 remain unchecked. T027 adds explicit native UI navigation to the already rendered Canvas/Avatar implementation; remote browser acceptance remains a platform gate. T049/T050/T053 have protected Hermes MCP/worker/runtime and native grant-review evidence in evidence/assistant-clients.md; broad federation, named-client and platform acceptance remain open. T036 has isolated Mac launchd and controller fault evidence in evidence/services-mac.md; T037 and T063 have configuration/RAG behavioral and rendered-editor evidence. Full story/platform qualification remains separate. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
 
 | Group | Tasks |
 |---|---|
@@ -290,5 +290,8 @@ runtime proof registration, original/reconsidered relationships, exact task
 budget projections, native review, and durable reconsideration through the
 existing Jev MCP. Actual Jev/GAIT/worker and controlled-provider checks passed;
 the originating runtime proof in that process case is synthetic. GCF, meetings,
-mobile controls, protected Hermes proofs and full supporting-domain qualification
-remain incomplete. T061/T062/T064/T066 remain unchecked.
+protected Hermes proofs and full supporting-domain qualification remained
+incomplete at that checkpoint. The later mobile checkpoint adds exact reviewed
+capture through the existing federation channel, retained-media download and
+actual authenticated-simulator/worker/GAIT evidence. T061 and T064 are now checked;
+T062/T066 remain open. No physical-device or WSL pass is implied.

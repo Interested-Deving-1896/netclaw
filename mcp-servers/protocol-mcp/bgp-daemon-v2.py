@@ -211,6 +211,23 @@ async def handle_n2n(method, path, body):
     parts = path.strip("/").split("/")  # e.g. ["n2n","peers","as65007-7.7.7.7","inventory"]
 
     try:
+        if path == '/n2n/management/mobile' and method == 'GET':
+            from bgp.federation.management_mobile import ManagementMobile
+            return 200, ManagementMobile(fed).inventory()
+        if path == '/n2n/management/capture' and method == 'POST':
+            from bgp.federation.management_mobile import ManagementMobile
+            try:
+                if not isinstance(body,dict) or set(body)-{'action','operationId','lease','offset'}:
+                    raise ValueError('Invalid capture request')
+                bridge=ManagementMobile(fed); action=body.get('action'); request=body.get('operationId')
+                if action=='start':result=await bridge.start(request,body.get('lease'))
+                elif action=='status':result=bridge.status(request)
+                elif action=='cancel':result=bridge.cancel(request,body.get('lease'))
+                elif action=='content':result=bridge.content(request,body.get('offset',0))
+                else:raise ValueError('Invalid capture action')
+                return 200,result
+            except (ValueError,KeyError,TypeError,OSError):
+                return 409, {'error':'Capture request is unavailable or outside its current reviewed authority.'}
         if method == "GET" and path == "/n2n/status":
             peers = []
             for p in mgr.list_peers():

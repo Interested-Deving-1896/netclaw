@@ -61,9 +61,62 @@ Local logs: `/tmp/netclaw150-science-process.log`,
 `/tmp/netclaw150-science-backend.log`,
 `/tmp/netclaw150-science-extension.log`.
 
-Limits remain explicit: the process case's originating transcript proof is a
+Limits of the Science Officer checkpoint remain explicit: the process case's originating transcript proof is a
 fixture; it qualifies the real Jev boundary and detached worker, not a complete
 OpenClaw-to-Jev model/tool exchange. Protected Hermes assessment proofs, physical
 mobile capture, GCF and meeting adapters, and supporting-domain WSL/Remote SSH
-acceptance remain open. T061/T062/T064/T066 are not completed by this checkpoint.
+acceptance remain open. That checkpoint alone did not complete T061/T062/T064/T066.
 RAG and recorded memory results remain documented in the earlier Mac evidence.
+
+## Mobile implementation and authenticated simulator checkpoint
+
+The native mobile view now separates enrollment/connectivity and advertised
+capture capabilities. It requires an exact operator review before requesting
+the selected phone's consent, preserves declined/cancelled outcomes and reports
+Hermes capture as unsupported. An owned durable worker calls a fixed existing
+federation route. The receiver independently reconstructs the private journal
+admission and checks its worker lease, review expiry, pinned enrollment revision,
+live authenticated channel and exact capability before sending. No alternate
+phone, routing fallback, push, enrollment mutation or quarantine is used.
+
+Capture is retained in the private federation result store. Only type, size and
+SHA-256 appear in ordinary receipts; an explicit local save retrieves 32 KiB
+chunks and verifies the final digest before writing the selected destination.
+Lost receipts reconcile through the original operation ID and existing task;
+restarting the view never dispatches again. Cancellation after dispatch retains
+unknown rather than claiming the phone did not act.
+
+Evidence:
+
+- Six receiver tests: exact admission/replay; forged/expired lease; changed
+  capability/enrollment; unsupported Hermes; decline/cancel; disconnected but
+  enrolled; cancellation after dispatch. Related existing capture, enrollment,
+  shared liveness and control-route tests also pass: **29 total**.
+- Four Node management tests cover reviewed scope, durable ownership, audit
+  denial, nonce replay, decline, pre-dispatch cancellation, media access and
+  lost-receipt reconciliation.
+- Three native-view tests cover exact confirmation, connection replacement and
+  multi-chunk final integrity checks, including corruption refusing a write.
+- Actual federation control handler and HTTP transport, authenticated signed
+  enrollment/WebSocket channel, simulated phone, detached Node worker and real
+  installation GAIT: **passed**. The façade exited after admission. Exactly one
+  device capture request occurred; reconnect and nonce replay did not resend.
+  A 70,000-byte synthetic image was retrieved in three chunks with its original
+  SHA-256. The existing federation process remained alive.
+- Backend/assistant regression: **150 passed, 11 opt-in skipped**. Extension:
+  **49 passed**; TypeScript check and build pass. Actual process cases are run
+  separately and are not counted as ordinary skipped-test passes.
+
+```sh
+NETCLAW_TEST_LIVE_GAIT=1 \
+NETCLAW_TEST_FEDERATION_PYTHON=/absolute/isolated/federation-venv/bin/python \
+node --test tests/operator/mobile-process.test.mjs
+```
+
+Local logs: `/tmp/netclaw150-mobile-process.log`,
+`/tmp/netclaw150-mobile-federation.log`, `/tmp/netclaw150-mobile-backend.log`,
+`/tmp/netclaw150-mobile-extension.log`. The simulator is not a physical phone;
+native camera/microphone prompts, actual device cancellation, WSL and Remote SSH
+remain unverified. T061's supporting-domain behavioral coverage and T064's native
+views are now complete. T062/T066 remain open for the outstanding adapters and
+full supporting-domain acceptance.

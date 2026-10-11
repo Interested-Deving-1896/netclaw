@@ -29,6 +29,7 @@ const workspaceSchemas={
   'memory-search':envelopeSchema,'gcf-read':envelopeSchema,'meeting-read':envelopeSchema,'assessment-read':envelopeSchema,
   'assessment-reconsider':operationSchema,'mobile-capture-request':operationSchema,
   'assessment-preview':envelopeSchema,
+  'mobile-inventory':envelopeSchema,'mobile-capture-preview':envelopeSchema,'mobile-capture-content':envelopeSchema,
 };
 export const operatorOutputs=Object.freeze({operator_identity:identitySchema,
   operator_resources:envelopeSchema,operator_snapshot:envelopeSchema,operator_events:envelopeSchema,operator_evidence:envelopeSchema,
