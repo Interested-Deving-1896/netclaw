@@ -103,7 +103,7 @@ test("testbed drafts survive mode switches, never enter saved state and clear on
 test("MCP untouched blanks keep values, explicit replace/clear submit only intended keys and busy/invalidation fence controls", () => {
   const h = setup(
     "mcp",
-    '<div id="status"></div><div id="summary"></div><div id="source"></div><button id="setup"></button><button id="reload"></button><form id="mcp-form"><div id="fields"></div><button>Save</button></form>',
+    '<div id="status"></div><div id="summary"></div><div id="source"></div><button id="setup"></button><button id="environment" hidden></button><button id="reload"></button><form id="mcp-form"><div id="fields"></div><button id="save-fields">Save</button></form>',
   );
   try {
     const $ = (id) => h.w.document.getElementById(id);
@@ -148,6 +148,164 @@ test("MCP untouched blanks keep values, explicit replace/clear submit only inten
     h.receive({ type: "busy", busy: false });
     assert.equal($("fields").textContent, "");
     assert.equal($("setup").disabled, true);
+  } finally {
+    h.dom.window.close();
+  }
+});
+
+test("compatibility testbed displays searchable details, hides writes and enables editing only after a modern reload", () => {
+  const buttons = [
+    "add",
+    "import",
+    "export",
+    "recover",
+    "refresh",
+    "cards-mode",
+    "yaml-mode",
+    "previous",
+    "next",
+    "cancel-form",
+    "preview-yaml",
+    "save",
+    "cancel-review",
+  ];
+  const fields = [
+    "id",
+    "alias",
+    "os",
+    "type",
+    "platform",
+    "connection",
+    "protocol",
+    "host",
+    "port",
+  ];
+  const h = setup(
+    "testbed",
+    buttons.map((id) => `<button id="${id}"></button>`).join("") +
+      '<p id="status"></p><p id="target"></p><p id="note"></p><section id="cards-pane"><input id="filter"><p id="count"></p><div id="devices"></div></section><form id="device-form"><h2 id="form-title"></h2>' +
+      fields.map((id) => `<input id="device-${id}">`).join("") +
+      '<select id="connection-choice"></select></form><section id="yaml-pane"><textarea id="yaml"></textarea></section><section id="review"><div id="review-body"></div></section>',
+  );
+  try {
+    const $ = (id) => h.w.document.getElementById(id);
+    const devices = [
+      {
+        id: "fixture",
+        alias: "<Router>",
+        os: "iosxe",
+        platform: "iol",
+        connections: [
+          { name: "ssh", protocol: "ssh", host: "192.0.2.9", port: 2222 },
+        ],
+      },
+    ];
+    h.receive({
+      type: "snapshot",
+      snapshot: {
+        readOnly: true,
+        source: "HUD inventory",
+        observedAt: "fixture-time",
+        note: "Restart the updated HUD for editing.",
+        devices,
+      },
+    });
+    h.receive({ type: "busy", busy: false });
+    assert.match($("devices").textContent, /<Router>/);
+    assert.match($("devices").textContent, /192.0.2.9:2222/);
+    assert.equal($("devices").querySelectorAll("button").length, 0);
+    assert.equal($("devices").querySelectorAll("router").length, 0);
+    for (const id of [
+      "add",
+      "import",
+      "export",
+      "recover",
+      "yaml-mode",
+      "save",
+    ])
+      assert.equal($(id).disabled, true, id);
+    assert.equal($("refresh").disabled, false);
+    assert.equal($("filter").disabled, false);
+    $("filter").value = "absent";
+    $("filter").dispatchEvent(new h.w.Event("input"));
+    assert.match($("count").textContent, /No devices match/);
+    const before = h.messages.length;
+    $("device-form").dispatchEvent(
+      new h.w.Event("submit", { cancelable: true }),
+    );
+    assert.equal(h.messages.length, before);
+    $("refresh").click();
+    assert.equal(h.messages.at(-1).type, "refresh");
+    h.receive({ type: "loading" });
+    h.receive({ type: "error", message: "Read failed" });
+    h.receive({ type: "busy", busy: false });
+    assert.equal($("devices").textContent, "");
+    assert.equal($("add").disabled, true);
+    h.receive({
+      type: "snapshot",
+      snapshot: {
+        source: "/fixture",
+        revision: "123",
+        content: "devices: {}",
+        devices,
+        note: "Editable",
+      },
+    });
+    assert.equal($("add").disabled, false);
+    assert.equal($("status").className, "");
+  } finally {
+    h.dom.window.close();
+  }
+});
+
+test("MCP compatibility view exposes field presence and a separate environment review, never the unsupported form", () => {
+  const h = setup(
+    "mcp",
+    '<p id="status"></p><div id="summary"></div><p id="source"></p><button id="setup"></button><button id="environment" hidden></button><button id="reload"></button><form id="mcp-form"><div id="fields"></div><button id="save-fields">Save</button></form>',
+  );
+  try {
+    const $ = (id) => h.w.document.getElementById(id);
+    h.receive({
+      type: "configuration",
+      readOnly: true,
+      source: "fixture.env",
+      observedAt: "fixture-time",
+      descriptor: {
+        id: "netbox",
+        name: "NetBox",
+        notes: "Help",
+        setupNote: "Updated HUD needed for full forms",
+        fields: [
+          {
+            key: "NETBOX_TOKEN",
+            label: "Token",
+            isSet: true,
+            requirement: "unknown",
+          },
+        ],
+      },
+    });
+    h.receive({ type: "busy", busy: false });
+    assert.match($("fields").textContent, /NETBOX_TOKEN · Configured/);
+    assert.equal($("fields").querySelectorAll("input,select").length, 0);
+    assert.equal($("setup").disabled, true);
+    assert.equal($("save-fields").hidden, true);
+    assert.equal($("environment").hidden, false);
+    const before = h.messages.length;
+    $("mcp-form").dispatchEvent(new h.w.Event("submit", { cancelable: true }));
+    assert.equal(h.messages.length, before);
+    $("environment").click();
+    assert.equal(h.messages.at(-1).type, "environment");
+    h.receive({ type: "busy", busy: true });
+    assert.equal($("environment").disabled, true);
+    h.receive({
+      type: "error",
+      invalidated: true,
+      message: "Connection changed",
+    });
+    h.receive({ type: "busy", busy: false });
+    assert.equal($("environment").disabled, true);
+    assert.equal($("fields").textContent, "");
   } finally {
     h.dom.window.close();
   }

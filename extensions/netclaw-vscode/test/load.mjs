@@ -14,6 +14,9 @@ export async function load(entry) {
     bundle: true,
     platform: "node",
     format: "esm",
+    banner: {
+      js: "import { createRequire as __testCreateRequire } from 'node:module'; const require = __testCreateRequire(import.meta.url);",
+    },
     target: "node22",
     logLevel: "silent",
   });

@@ -47,7 +47,7 @@ Spec151 adds a shared card layout, persistent form labels and contextual help, w
 - **Integrations:** provider/harness, masked environment inventory, installed MCP
   integrations and skills. Review individual environment replacements and budget
   changes in native dialogs. Existing NetClaw validation and enforcement apply.
-- **Security:** DefenseClaw posture and OpenShell inspection from existing HUD APIs.
+- **Security:** native DefenseClaw tool rules, OpenShell network ACLs, permissions, redacted policy YAML and reviewed supported edits.
 - **Help:** installed documentation and CLI/API reference.
 
 Panels show their source and observation time. Missing or stopped optional services
@@ -78,9 +78,13 @@ The destination is the HUD-configured testbed, which may be shared with another 
 - Stale revisions and changed previews are refused. Saves retain private copies under `<testbed>.backups/`; **Recovery copies** previews a fresh reviewed restoration. Source limit256KiB; masked editor limit512KiB. Ambiguous alias edits are refused rather than modifying unrelated data.
 - Affected active terminals must disconnect before editing. A save revokes affected collection consent and cached logins; it never grants new access. A failure after revocation may require deliberate reauthorization after inspecting the file.
 
+Older running HUDs still show searchable device details from their inventory API. Full editing, import and export become available after the updated HUD is started and the page is reloaded. The extension never uses the legacy raw testbed writer.
+
 ## MCP configuration and setup
 
 Each known integration card opens **Configure & set up**. Fields are scoped to that integration and show presence, requirement/help and shared use. Existing values remain private. **Keep current value** is the default; Replace and Clear are explicit. Unknown metadata remains confidential with an honest requirement limitation. Saving checks the file revision and verifies submitted values privately; it does not imply loaded runtime settings or endpoint access.
+
+On older running HUDs, configuration cards show field presence and **Review an environment setting** opens the existing native review for one selected field. Full scoped forms and setup actions become available after starting the updated HUD.
 
 **Installation & service actions** verifies an explicitly selected checkout and existing runtime home against the connected installation. Native review shows the host, runtime, identity, files, command, interruption and recovery impact before execution:
 
@@ -97,16 +101,17 @@ Setup evidence and baselines stay under the selected home's `netclaw-hud/setup/`
 
 ## Security perimeter controls
 
-Open **Manage DefenseClaw Security** or **Manage OpenShell Security**. Choose the existing CLI and security profile on the extension host, plus the matching NetClaw runtime home. OpenShell also requires an explicit gateway, workspace and sandbox. The binding dialog explains that this security perimeter may protect other agents.
+Open **Manage DefenseClaw Security** or **Manage OpenShell Security**. Choose the existing CLI and security profile on the extension host, plus the matching NetClaw runtime home. The matching local runtime home and single configured gateway are suggested when verified. OpenShell lists existing sandboxes for selection; versions without workspace selection use the default workspace. The binding dialog explains that this security perimeter may protect other agents.
 
-- **DefenseClaw:** searchable allow/block tool rules, global fallback or an observed connector scope, guardrail action/observe mode and blocking severity. Uses the native revision-aware config writer; managed-device restrictions remain authoritative. Connector overrides can supersede global defaults.
+- **DefenseClaw:** searchable tool allow/block rules, connector and global scopes, asset permissions and redacted configuration YAML. Version 0.8.4 uses native `tool allow/block/unblock --connector` commands and verifies database-backed rules through CLI readback. Global fallback, audit-only source rows and enforcement defaults are view-only on that version. A CLI with revision-aware config writes can also edit the supported global defaults. Connector overrides can supersede global defaults.
 - **OpenShell:** named network-rule cards, a guided REST endpoint rule and advanced `network_policies` JSON for supported endpoint and layer7 allow/deny policies. Filesystem/process settings are preserved. A sandbox form cannot change a gateway-global policy. Removing one allow does not prove every route to a destination is blocked.
+- **Permissions and YAML:** inspect configured filesystem/process access, asset permissions and redacted policy YAML. YAML is an inspection copy; edits use the supported reviewed forms. Large structures may be shortened.
 - **Status and logs:** observed status, configured policy and bounded redacted alert/log snapshots with search. Refresh explicitly. Saved settings, a loaded policy and tested traffic enforcement are separate results.
 - **Review and recovery:** inspect a redacted before/after summary, provide a reason and confirm in a native dialog. Permission expansion or uncertain direction requires **Acknowledge weakening & apply**. Private originals and operation evidence remain in the editor's `security-operations` storage. Interrupted/unknown outcomes block another apply until the operator inspects and resolves that evidence; there is no automatic retry or rollback.
 
-Capability probes determine whether editing is available. DefenseClaw needs JSON config reads, `--expect-sha256` writes and a matching reported data directory. OpenShell needs full/base JSON policy reads and a sandbox-owned effective policy; network drafts are limited to128KiB. Unsupported/oversized policies remain read-only. The OpenShell CLI has no atomic revision precondition: this client checks immediately before applying and serializes its own shared-target operations, but an external writer can race. Coordinate policy changes with other operators.
+Capability probes determine whether editing is available. DefenseClaw requires a matching reported profile and either connector-scoped native tool commands or a revision-aware config writer. OpenShell 0.0.32 uses native YAML policy reads, explicitly checks for gateway-global policy and waits for an acknowledged policy revision after a change. Modern full/base JSON readers remain supported. Network drafts are limited to 128 KiB; unsupported or oversized policies remain view-only. Native tool and OpenShell policy commands have no atomic revision precondition: this client rechecks before applying, but another editor or external writer can race. Coordinate policy changes with other operators.
 
-These controls do not install, start, stop or disable a security service. Local Mac acceptance uses isolated CLI contract fixtures; live DefenseClaw/OpenShell enforcement and Linux/WSL/remote-host qualification have not been performed for Spec151. Upstream source references and versions are recorded in [security research](../../specs/151-extension-experience/research-security.md).
+These controls do not install, start, stop or disable a security service. WSL qualification includes real DefenseClaw 0.8.4 connector rule changes in an isolated profile and OpenShell 0.0.32 policy changes with denied/allowed/denied traffic in a temporary Docker-backed sandbox. Your other security targets are not changed by those tests. See [production readiness](../../specs/151-extension-experience/production-readiness.md) for evidence and remaining release gates; this does not certify every connector or network path.
 
 ## Copilot, Claude Code and Codex
 
@@ -161,11 +166,8 @@ storage behavior. See [Privacy](PRIVACY.md).
 
 From this directory, use `npm ci`, `npm run check`, `npm run build`, `npm test`.
 Backend integration tests require the HUD dependencies
-(`npm --prefix ../../ui/netclaw-visual ci`). Spec151 adds bounded testbed and configuration routes to the existing HUD. Older HUDs retain existing functions and show clear guidance when these new editing routes are unavailable; there is no fallback to the legacy raw testbed writer.
+(`npm --prefix ../../ui/netclaw-visual ci`). Spec151 adds bounded testbed and configuration routes to the existing HUD. Older HUDs retain device/configuration inventory and a reviewed native environment-setting flow when the new editing routes are unavailable; there is no fallback to the legacy raw testbed writer.
 `npm run test:editor` launches an isolated desktop extension test. RAG and named
 assistant live checks are explicit opt-ins documented in Spec150 evidence.
 
-`npm run package` requires a clean committed checkout and records the source and
-VSIX digest in `out/package.json`. Windows/WSL acceptance and Marketplace publication
-are separate release gates. Publication is currently on hold by the owner; this
-is an unpublished candidate. The prior exact-artifact qualification remains in Spec150. Spec151 is a local source build only; its [verification](../../specs/151-extension-experience/verification.md) records Mac evidence and unexecuted platform checks. Packaging, push, deployment and Marketplace publication remain explicitly held.
+`npm run package` requires a clean committed checkout, checks that every runtime bundle and license notice is included, and records source and VSIX digest in `out/package.json`. Version 0.1.1 is [available on the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw). The exact WSL-tested VSIX passed native Mac acceptance and was published unchanged; Microsoft completed validation on October 11, 2026. See [production readiness](../../specs/151-extension-experience/production-readiness.md) for qualification, artifact verification and platform limits. Earlier [Spec151 verification](../../specs/151-extension-experience/verification.md) records the original Mac source checkpoint.

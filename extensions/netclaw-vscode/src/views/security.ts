@@ -6,6 +6,27 @@ import { Connection } from "../connection/connect";
 import { hostContext } from "../state/profiles";
 import { panel } from "../webview/panel";
 import { SecurityClient, SecurityTarget } from "../client/security";
+function matchingRuntimeHome(connection: Connection) {
+  const kind = connection.identity?.kind;
+  const candidates = [
+    kind === "hermes" ? process.env.HERMES_HOME : process.env.OPENCLAW_HOME,
+    path.join(os.homedir(), kind === "hermes" ? ".hermes" : ".openclaw"),
+  ];
+  return candidates.find((candidate) => {
+    if (!candidate) return false;
+    try {
+      const identity = JSON.parse(
+        fs.readFileSync(
+          path.join(candidate, "netclaw-hud/installation.json"),
+          "utf8",
+        ),
+      );
+      return identity.installationId === connection.identity?.installationId;
+    } catch {
+      return false;
+    }
+  });
+}
 export function openSecurity(
   context: vscode.ExtensionContext,
   connection: Connection,
@@ -18,7 +39,8 @@ export function openSecurity(
     kind,
     product === "defenseclaw" ? "DefenseClaw controls" : "OpenShell controls",
     `
-  <div class="toolbar"><button id="bind">Choose security target</button><button id="refresh" class="secondary">Refresh status & logs</button></div>
+  <div class="toolbar"><button id="bind">Inspect local rules & policies</button><button id="refresh" class="secondary">Refresh status & logs</button></div>
+  <p class="hint">Inspect the installed security profile to see its tool permissions, network ACLs and redacted policy YAML. Changes require a separate preview and confirmation.</p>
   <p id="status" role="status" aria-live="polite">Loading security posture…</p><p id="security-target" class="provenance"></p><p id="security-note" class="hint"></p>
   <section id="security-controls"><h2>Security posture</h2><div id="posture" class="card-grid"></div></section>
   <section id="policy-section" hidden><h2>Perimeter rules</h2><p id="policy-help" class="hint"></p><label for="rule-filter">Find a rule</label><input id="rule-filter" type="search" placeholder="Search by rule, tool, scope or endpoint"><div id="rules" class="card-grid"></div><p id="rule-count" class="hint"></p><div class="toolbar"><button id="previous" class="secondary">Previous</button><button id="next" class="secondary">Next</button></div>
@@ -28,6 +50,8 @@ export function openSecurity(
   <section id="network-editor" hidden><h3>Advanced network policy</h3><label for="network-json">Native network_policies JSON</label><textarea id="network-json" class="editor-code" spellcheck="false" maxlength="131072"></textarea><p class="hint">Only this network section changes. Filesystem/process rules stay intact. Protected keep tokens must remain in place. Overlapping rules or provider policies can still permit a destination.</p><button id="preview-network">Preview network policy</button></section>
   <label for="security-reason">Reason for this change</label><input id="security-reason" maxlength="500" placeholder="Explain the intended protection or approved access">
   </section><section id="security-review" hidden><h2>Review security change</h2><p id="review-summary" class="notice"></p><p id="review-impact" class="hint"></p><pre id="review-difference" class="log-snapshot" tabindex="0" aria-label="Redacted policy changes"></pre><div class="toolbar"><button id="apply-security">Review & apply</button><button id="cancel-security" class="secondary">Cancel review</button></div></section>
+  <section id="permissions-section" hidden><h2>Permissions & access</h2><p class="hint">Observed filesystem, process and asset permissions. These describe configuration; they do not prove enforcement.</p><pre id="permissions" class="log-snapshot" tabindex="0" aria-label="Redacted configured permissions"></pre></section>
+  <section id="policy-document-section" hidden><h2>Policy YAML</h2><p id="policy-location" class="provenance"></p><p class="hint">Redacted inspection copy; sensitive values are hidden and large structures may be shortened. Use the reviewed forms for supported changes.</p><details><summary>Show redacted YAML</summary><pre id="policy-yaml" class="log-snapshot" tabindex="0" aria-label="Redacted policy YAML"></pre></details></section>
   <section><h2>Security logs & alerts</h2><label for="log-filter">Filter this snapshot</label><input id="log-filter" type="search" placeholder="Search a message, action, level or target"><p id="logs-note" class="hint">Logs load after choosing a native security target.</p><pre id="security-logs" class="log-snapshot" tabindex="0" aria-label="Redacted security log snapshot"></pre></section>`,
     ["resources/security.js"],
   );
@@ -95,7 +119,7 @@ export function openSecurity(
           const runtimeHome = await input(
             "Existing runtime home",
             "The folder containing netclaw-hud/installation.json for this selected connection.",
-            target?.runtimeHome,
+            target?.runtimeHome || matchingRuntimeHome(connection),
           );
           if (!runtimeHome) return;
           const found = (process.env.PATH || "")
@@ -124,10 +148,26 @@ export function openSecurity(
           if (!securityHome) return;
           let gateway, workspace, sandbox;
           if (product === "openshell") {
+            let gateways: string[] = [];
+            try {
+              gateways = fs
+                .readdirSync(path.join(securityHome, "openshell/gateways"), {
+                  withFileTypes: true,
+                })
+                .filter(
+                  (d) =>
+                    d.isDirectory() &&
+                    /^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$/.test(d.name),
+                )
+                .map((d) => d.name);
+            } catch {
+              /* Native validation explains missing gateway metadata. */
+            }
             gateway = await input(
               "OpenShell gateway",
               "Use an explicit existing gateway name.",
-              target?.gateway,
+              target?.gateway ||
+                (gateways.length === 1 ? gateways[0] : undefined),
             );
             if (!gateway) return;
             workspace = await input(
@@ -136,11 +176,38 @@ export function openSecurity(
               target?.workspace || "default",
             );
             if (!workspace) return;
-            sandbox = await input(
-              "OpenShell sandbox",
-              "The existing sandbox whose network rules you want to manage.",
-              target?.sandbox,
-            );
+            let sandboxes: string[] = [];
+            try {
+              const discovery = new SecurityClient(
+                {
+                  product,
+                  runtimeHome,
+                  executable,
+                  securityHome,
+                  gateway,
+                  workspace,
+                  sandbox: "discovery",
+                  installationId: connection.identity!.installationId,
+                  kind: connection.identity!.kind,
+                },
+                context.globalStorageUri.fsPath,
+              );
+              sandboxes = await p.bound.run(() => discovery.sandboxes());
+            } catch {
+              /* An explicit name remains available if discovery is unsupported. */
+            }
+            p.bound.current();
+            sandbox = sandboxes.length
+              ? await vscode.window.showQuickPick(sandboxes, {
+                  title: "OpenShell sandbox",
+                  placeHolder: "Select the existing sandbox to inspect",
+                })
+              : await input(
+                  "OpenShell sandbox",
+                  "The existing sandbox whose network rules you want to manage.",
+                  target?.sandbox,
+                );
+            p.bound.current();
             if (!sandbox) return;
           }
           const candidate: SecurityTarget = {
@@ -192,7 +259,9 @@ export function openSecurity(
             impact:
               product === "openshell"
                 ? "The native policy command has no atomic revision precondition. This client rechecks immediately, but an external writer can still race. A private original is retained; no automatic rollback or retry occurs."
-                : "The native writer checks the reviewed file revision and validates the policy. A private original is retained. Runtime loading remains a separate state.",
+                : prepared.nativeOperation
+                  ? "The native CLI updates one connector's tool rule. This client rechecks immediately, but external writers can race. A private configuration and rule snapshot is retained; no automatic rollback or retry occurs."
+                  : "The native writer checks the reviewed file revision and validates the policy. A private original is retained. Runtime loading remains a separate state.",
           });
         }
         if (m.type === "apply") {

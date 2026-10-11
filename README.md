@@ -8,11 +8,11 @@ A CCIE-level AI network engineering coworker that runs on [OpenClaw](https://git
 
 Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one NetClaw, or build [a risk of specialist NetClaws](#a-risk-of-netclaws-in2n) behind a single Border.
 
-**Start here:** [Choose a runtime](#hermes-or-openclaw) · [Install](#quick-install) · [Capabilities](#what-it-does) · [RAG](#rag--answers-grounded-in-your-documents) · [GCF](#gcf--compact-network-evidence) · [Mobile](#netclaw-mobile--your-network-in-your-pocket) · [Zoom](#zoom--network-investigations-in-the-meeting) · [HUD](#visual-hud) · [Jev](#optional-jev-science-officer)
+**Start here:** [Choose a runtime](#hermes-or-openclaw) · [Install](#quick-install) · [Capabilities](#what-it-does) · [RAG](#rag--answers-grounded-in-your-documents) · [GCF](#gcf--compact-network-evidence) · [Mobile](#netclaw-mobile--your-network-in-your-pocket) · [Zoom](#zoom--network-investigations-in-the-meeting) · [VS Code](#vs-code-extension) · [HUD](#visual-hud) · [Jev](#optional-jev-science-officer)
 
 **Project:** [Source version 1.9.0 — unpublished](VERSION) · [Release notes](docs/releases/1.9.0.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 
-**VS Code:** [NetClaw extension](extensions/netclaw-vscode/README.md) for an existing installation: observation panels, Chat, Canvas, Avatar, RAG and optional Copilot/Claude Code/Codex access. Implementation and final validation are complete for the [documented scope](specs/150-vscode-extension/closure.md); Marketplace publication is on hold. The exact packaged RAG fix passed its [final Windows/WSL confirmation](specs/150-vscode-extension/evidence/wsl-final.md). Spec151 adds theme-aware cards, clearer connection setup, reviewed testbed YAML/JSON/CSV management, per-MCP fields/setup, a sourced 3D BGP view and reviewed DefenseClaw/OpenShell security controls; see the [local source workflow and limits](specs/151-extension-experience/verification.md). Spec151 repository commit/PR/merge is authorized; packaging, deployment and release/Marketplace publication remain held.
+**VS Code:** [Install NetClaw 0.1.1](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw) or [explore the VS Code Extension](#vs-code-extension): a native workbench for your existing NetClaw, with Chat, Canvas, RAG, Testbed management, per-MCP configuration and reviewed security controls.
 
 **Reference:** [Architecture](#architecture) · [MCP servers](#mcp-servers-176) · [Skills](#skills-237) · [Workflows](#standard-workflows) · [Safety](#safety)
 
@@ -94,6 +94,36 @@ reported LLMs, Jev assessments, RAG uploads and retrieval, Tokenomics, service L
 masked Configuration, Security mode/enforcement panels, and Documentation. Basic/Advanced presentation and optional
 Three.js views keep evidence accessible. See the [HUD guide](docs/HUD-FUNCTION-FIRST.md).
 The service remains local to the host; the new UI does not change its access controls.
+
+## VS Code Extension
+
+Bring your existing NetClaw into **Visual Studio Code**. The [NetClaw extension](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw) gives you a themed operations workbench alongside your code, configuration and documentation. It connects to the NetClaw you already run on OpenClaw or Hermes; available actions follow that runtime's capabilities.
+
+**Install:** search Extensions for **NetClaw** by publisher **NetClaw**, or use:
+
+```bash
+code --install-extension NetClaw.netclaw
+```
+
+Use VS Code **1.102 or later** on macOS or Linux. On Windows, open your intended WSL distribution and install the extension **in WSL**. Existing Remote SSH workspaces are supported; loopback addresses refer to the extension host. Browser VS Code and native Windows runtime hosting are not supported.
+
+Start your NetClaw HUD, open the NetClaw Activity Bar, and choose **Add existing NetClaw**. Give the connection a friendly nickname such as `My Mac lab`, enter its HUD **API** address—normally `http://127.0.0.1:3001`—and review the returned installation identity. Start the updated HUD to enable full Testbed and scoped MCP editing; updating the extension alone cannot add those API routes.
+
+| Work in the editor | What you can do |
+| --- | --- |
+| **Chat, Canvas and Avatar** | Talk to the selected runtime, branch investigations and use bundled local characters beside the same Chat. Select file/context content explicitly. |
+| **RAG knowledge** | Browse collections, upload selected documents and search cited passages with source and staleness context. |
+| **Testbed inventory** | Add, edit and remove devices through cards or advanced YAML. Import YAML, JSON or basic CSV, preview changes, review saves, export and inspect recovery copies. |
+| **MCP configuration** | Open integration-specific fields, keep/replace/clear values, inspect shared settings and review supported setup actions. Existing secret values stay private. |
+| **DefenseClaw and OpenShell** | Inspect status, permissions, redacted policy YAML and logs. Review supported connector tool rules or sandbox network-policy changes, with explicit acknowledgment when protection may weaken. |
+| **Operations and federation** | Inspect reported Risk/peer state, BGP relationships, tokenomics, logs, audit evidence, mobile/edge and Science Officer observations. |
+| **Copilot, Claude Code and Codex** | Opt into the scoped assistant interface for inspection/proposals and separately enable delegated NetClaw requests. Existing runtime authorization still applies. |
+
+Cards, labeled forms, search and filters follow light, dark and high-contrast editor themes. The interactive 3D BGP view uses reported sessions and includes an accessible list. It does not infer physical cabling or health.
+
+Changes retain their review boundaries: Testbed saves do not connect devices, saved MCP configuration does not prove endpoint access, and stored security policy does not prove traffic enforcement. Supported actions depend on the installed runtime and native CLI capabilities.
+
+[Extension guide and setup](extensions/netclaw-vscode/README.md) · [Privacy](extensions/netclaw-vscode/PRIVACY.md) · [Exact 0.1.1 qualification and platform scope](specs/151-extension-experience/production-readiness.md)
 
 ## Resources
 

@@ -31,6 +31,11 @@
     ))
       node.disabled = busy || invalid || !snapshot?.editable;
     $("apply-security").disabled = busy || invalid || !snapshot?.editable;
+    if (snapshot?.editableSettings === false)
+      for (const node of $("enforcement").querySelectorAll(
+        "button,input,select",
+      ))
+        node.disabled = true;
     for (const id of ["rule-filter", "previous", "next"])
       if ($(id)) $(id).disabled = busy || invalid;
   }
@@ -87,7 +92,7 @@
           ...r,
           list,
           title: r.name,
-          description: `${list === "allowed" ? "Allow" : "Block"} · ${r.connector || "All connectors"} · ${r.reason || "No reason recorded"}`,
+          description: `${list === "allowed" ? "Allow" : "Block"} · ${r.scope === "source" ? "Source record (audit only)" : r.connector || "All connectors · global fallback"} · ${r.reason || "No reason recorded"}`,
         })),
       );
     let network = snapshot?.network || {};
@@ -136,7 +141,10 @@
       );
       el("h3", row.title, card);
       el("p", row.description.slice(0, 700), card, "hint");
-      if (snapshot.editable) {
+      if (
+        snapshot.editable &&
+        (!snapshot.nativeTools || row.scope === "connector")
+      ) {
         const edit = el(
           "button",
           snapshot.product === "defenseclaw" ? "Edit rule" : "Edit policy",
@@ -200,6 +208,15 @@
     }
     const current = snapshot?.settings?.[key];
     if (values.includes(current)) $("setting-value").value = current;
+  }
+  function documents(data = {}) {
+    $("permissions-section").hidden = !data.permissions;
+    $("permissions").textContent = data.permissions
+      ? JSON.stringify(data.permissions, null, 2)
+      : "";
+    $("policy-document-section").hidden = !data.policyYaml;
+    $("policy-yaml").textContent = data.policyYaml || "";
+    $("policy-location").textContent = data.policyLocation || "";
   }
   $("bind").onclick = () => post("bind", { dirty });
   $("refresh").onclick = () => post("refresh", { dirty });
@@ -309,6 +326,7 @@
     }
     if (m.type === "unbound") {
       snapshot = undefined;
+      documents();
       dirty = false;
       $("policy-section").hidden = true;
       $("status").textContent =
@@ -322,6 +340,7 @@
     }
     if (m.type === "security") {
       snapshot = m.snapshot;
+      documents(snapshot);
       dirty = false;
       page = 0;
       $("security-review").hidden = true;
@@ -333,11 +352,18 @@
       $("status").textContent = snapshot.editable
         ? "Security policy loaded. Review changes before applying."
         : snapshot.reason;
-      posture(
-        snapshot.status.available
+      posture({
+        ...(snapshot.status.available
           ? snapshot.status.data
-          : { status: snapshot.status.message },
-      );
+          : { status: snapshot.status.message }),
+        ...(t.product === "openshell"
+          ? {
+              policy_source: snapshot.policySource,
+              policy_revision: snapshot.policyVersion,
+              active_policy_revision: snapshot.activePolicyVersion,
+            }
+          : {}),
+      });
       $("policy-section").hidden = !snapshot.rules && !snapshot.network;
       $("tool-rule").hidden = $("enforcement").hidden =
         t.product !== "defenseclaw";
@@ -345,7 +371,10 @@
         t.product !== "openshell";
       $("policy-help").textContent =
         t.product === "defenseclaw"
-          ? "Allow rules can bypass some checks; block rules deny matched tools. Connector overrides and native policy precedence still apply."
+          ? "Allow rules can bypass some checks; block rules deny matched tools. Connector overrides and native policy precedence still apply." +
+            (snapshot.nativeTools
+              ? " This version supports connector tool edits; global fallback, source records and enforcement defaults are view-only."
+              : "")
           : "Sandbox-owned base network rules. Effective provider/global policy is a separate scope. Native layer7 allow/deny rules are not a universal host blacklist.";
       $("tool-connector").replaceChildren();
       const global = el(
@@ -354,10 +383,13 @@
         $("tool-connector"),
       );
       global.value = "";
+      global.disabled = Boolean(snapshot.nativeTools);
       for (const name of snapshot.connectors || []) {
         const o = el("option", name, $("tool-connector"));
         o.value = name;
       }
+      if (snapshot.nativeTools)
+        $("tool-connector").value = snapshot.connectors?.[0] || "";
       $("network-json").value = JSON.stringify(snapshot.network || {}, null, 2);
       values();
       rules();
@@ -382,6 +414,7 @@
     if (m.invalidated) {
       invalid = true;
       snapshot = undefined;
+      documents();
       logs = "";
       $("network-json").value = "";
       $("security-reason").value = "";

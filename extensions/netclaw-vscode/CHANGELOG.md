@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.1 — release candidate
+
+- Restore testbed details and MCP configuration access with older running HUDs. Safe editing uses the updated HUD; legacy environment changes retain native review.
+- Show native security ACLs, tool scopes, filesystem/process permissions and redacted YAML. Support actual DefenseClaw 0.8.4 connector commands and OpenShell 0.0.32 YAML policy commands.
+- Preserve policy fields, refuse stale or unknown outcomes, and qualify native changes against isolated real targets.
+- Include the topology renderer and its license notice in the VSIX; packaging now checks every emitted runtime asset.
+
+
 ## 0.1.0 — release candidate
 
 Initial extension client for existing NetClaw: host-bound profiles, HUD observations,

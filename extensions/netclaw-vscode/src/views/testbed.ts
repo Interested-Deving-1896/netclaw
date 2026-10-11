@@ -2,7 +2,8 @@ import * as vscode from "vscode";
 import fs from "node:fs";
 import path from "node:path";
 import { Connection } from "../connection/connect";
-import { Json, HudError } from "../client/hud";
+import { Json } from "../client/hud";
+import { loadTestbed, requireEditableInventory } from "../client/inventory";
 import { panel } from "../webview/panel";
 import { writePrivateExport } from "../client/export";
 export function openTestbed(
@@ -42,19 +43,11 @@ export function openTestbed(
     busy = false;
   const client = p.bound.client;
   const load = async () => {
-    try {
-      snapshot = await p.bound.run(() =>
-        client.request("GET", "/api/testbed/document"),
-      );
-      prepared = undefined;
-      await p.post({ type: "snapshot", snapshot });
-    } catch (error) {
-      if (error instanceof HudError && error.status === 404)
-        throw Error(
-          "This HUD does not support safe testbed editing yet. Use a local Spec151 HUD source build, or inspect inventory from an existing HUD. The legacy raw writer will not be used.",
-        );
-      throw error;
-    }
+    prepared = undefined;
+    snapshot = undefined as unknown as Json;
+    await p.post({ type: "loading" });
+    snapshot = await p.bound.run(() => loadTestbed(client));
+    await p.post({ type: "snapshot", snapshot });
   };
   const preview = async (operation: Json) => {
     prepared = undefined;
@@ -92,6 +85,8 @@ export function openTestbed(
       busy = true;
       await p.post({ type: "busy", busy: true });
       try {
+        if (!["ready", "refresh"].includes(m.type))
+          requireEditableInventory(snapshot);
         if (m.type === "ready") await load();
         if (m.type === "invalidate") prepared = undefined;
         if (

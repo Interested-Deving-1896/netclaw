@@ -12,9 +12,11 @@ const liveUrl = process.env.NETCLAW_TEST_LIVE_HUD_URL;
 const nativeFixture =
   process.env.NETCLAW_TEST_NATIVE_REVIEW === "1" && !liveUrl;
 const suite =
-  process.env.NETCLAW_TEST_SUITE === "experience"
-    ? "editor-experience.cjs"
-    : "editor.cjs";
+  process.env.NETCLAW_TEST_SUITE === "compatibility"
+    ? "editor-compatibility.cjs"
+    : process.env.NETCLAW_TEST_SUITE === "experience"
+      ? "editor-experience.cjs"
+      : "editor.cjs";
 if (liveUrl && !process.env.NETCLAW_TEST_LIVE_ID)
   throw Error("A live HUD check requires its observed installation identity.");
 const fixture = liveUrl
@@ -217,7 +219,9 @@ exports.activate=()=>{setImmediate(async()=>{
         [
           ...options.launchArgs,
           "--extensionDevelopmentPath=" + developmentPath,
-          ...(nativeFixture ? ["--extensionDevelopmentPath=" + extension] : []),
+          ...(nativeFixture && !candidate
+            ? ["--extensionDevelopmentPath=" + extension]
+            : []),
         ],
         {
           env: {

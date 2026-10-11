@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 const cwd = fileURLToPath(new URL("../", import.meta.url)),
   root = path.resolve(cwd, "../..");
 const require = createRequire(new URL("../package.json", import.meta.url));
-const { createVSIX } = require("@vscode/vsce");
+const { createVSIX, listFiles } = require("@vscode/vsce");
 const source = execFileSync("git", ["rev-parse", "HEAD"], {
   cwd: root,
   encoding: "utf8",
@@ -34,6 +34,14 @@ await createVSIX({
   baseContentUrl: `https://github.com/automateyournetwork/netclaw/blob/${source}/extensions/netclaw-vscode`,
   baseImagesUrl: `https://raw.githubusercontent.com/automateyournetwork/netclaw/${source}/extensions/netclaw-vscode`,
 });
+const packaged = new Set(await listFiles({ cwd, dependencies: false }));
+// Every emitted runtime bundle and its third-party notices must ship together.
+// This catches allowlist omissions such as a working source topology view whose
+// renderer was absent from the installable artifact.
+for (const name of fs.readdirSync(path.join(cwd, "dist"))) {
+  if (/\.(?:cjs|mjs|js|txt)$/.test(name) && !packaged.has("dist/" + name))
+    throw Error(`Required runtime asset missing from VSIX: dist/${name}`);
+}
 const bytes = fs.readFileSync(packagePath),
   sha256 = createHash("sha256").update(bytes).digest("hex");
 fs.mkdirSync(path.join(cwd, "out"), { recursive: true });
@@ -49,7 +57,7 @@ fs.writeFileSync(
       bytes: bytes.length,
       artifact: path.basename(packagePath),
       qualification:
-        "Development candidate; see Spec150 evidence. Publication not performed.",
+        "Release candidate; see specs/151-extension-experience/production-readiness.md. Publication not performed.",
     },
     null,
     2,
