@@ -1195,27 +1195,27 @@
       ],
       "declarations": [
         {
-          "line": 135,
+          "line": 140,
           "declaration": "argparse.ArgumentParser()"
         },
         {
-          "line": 135,
+          "line": 140,
           "declaration": "parser.add_argument('--home',required=True)"
         },
         {
-          "line": 135,
+          "line": 140,
           "declaration": "parser.add_argument('--source',required=True)"
         },
         {
-          "line": 135,
+          "line": 140,
           "declaration": "parser.add_argument('--installation',required=True)"
         },
         {
-          "line": 135,
+          "line": 140,
           "declaration": "parser.add_argument('--port',type=int,default=8643)"
         }
       ],
-      "sha256": "83eddd75dca6ccf275a66ad0a5b5adf3e112f61abba054bc00b7c1d42abf4be9",
+      "sha256": "a05d5a2f0ab2f7c861fde719b5de5d30e95a12acdd24cc29fac513422da2a933",
       "coverage": "Static source declarations; lexical flags may include delegated commands. No execution performed."
     },
     {
@@ -7358,7 +7358,7 @@
         "--global"
       ],
       "declarations": [],
-      "sha256": "4c4a8f0e8e6f16dfd41a78275b45932147093ec98a61902adb9b2e71e9263421",
+      "sha256": "aedccee7a895a1a47d553a2170a222e2b42d753ef062674ace5beb1f1e19ddf4",
       "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
     },
     {
@@ -11308,7 +11308,7 @@
           "operationId": "post_api_chat_usage",
           "summary": "POST /api/chat/usage",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:33",
+          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:35",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11340,7 +11340,7 @@
           "operationId": "get_api_chat_models",
           "summary": "GET /api/chat/models",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:30",
+          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:32",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11361,7 +11361,7 @@
           "operationId": "post_api_chat",
           "summary": "POST /api/chat",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:92",
+          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:94",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11388,7 +11388,7 @@
           "operationId": "get_api_chat_history",
           "summary": "GET /api/chat/history",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:108",
+          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:110",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11696,7 +11696,7 @@
           "operationId": "get_api_chat_conversations",
           "summary": "GET /api/chat/conversations",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:34",
+          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:36",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11715,7 +11715,7 @@
           "operationId": "post_api_chat_conversations",
           "summary": "POST /api/chat/conversations",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:17",
+          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:19",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11747,7 +11747,7 @@
           "operationId": "post_api_chat_conversations_id_open",
           "summary": "POST /api/chat/conversations/{id}/open",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:38",
+          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:40",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -12185,7 +12185,7 @@
           "operationId": "get_api_terminal_intent_runs_id",
           "summary": "GET /api/terminal/intent/runs/{id}",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/src/hud-server/runtime/intent.js:34",
+          "x-source": "ui/netclaw-visual/src/hud-server/runtime/intent.js:39",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -12211,7 +12211,7 @@
           "operationId": "get_api_chat_requests",
           "summary": "GET /api/chat/requests",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:9",
+          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:11",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -12230,7 +12230,7 @@
           "operationId": "post_api_chat_requests",
           "summary": "POST /api/chat/requests",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:93",
+          "x-source": "ui/netclaw-visual/src/hud-server/runtime/routes.js:95",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
