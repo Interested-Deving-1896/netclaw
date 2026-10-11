@@ -42,3 +42,10 @@ test('actual bundled chat script renders hostile text literally and never sends 
   assert.match(dom.window.document.getElementById('transcript').textContent,/<script>/);
   assert.equal(dom.window.document.getElementById('prompt').value,'saved draft');assert.deepEqual(calls.map(c=>c.type),['ready']);dom.window.close();
 });
+test('partial public answers and tool milestones are rendered inertly without resubmission',()=>{
+  const calls=[],dom=new JSDOM('<body data-view-id="view"><button id="refresh"></button><button id="new"></button><button id="cancel"></button><p id="status"></p><section id="transcript"></section><form id="composer"><textarea id="prompt"></textarea><input id="retain"><div id="contexts"></div><button id="send"></button></form></body>',{runScripts:'outside-only'});
+  dom.window.acquireVsCodeApi=()=>({postMessage:value=>calls.push(value)});dom.window.eval(fs.readFileSync(new URL('../resources/chat.js',import.meta.url),'utf8'));
+  dom.window.dispatchEvent(new dom.window.MessageEvent('message',{data:{viewId:'view',type:'state',saved:{},contexts:[],requests:[{operationId:'owned',state:'unknown',prompt:'question',progress:{kind:'tool',output:'<img src=x onerror=evil()>',tool:'<script>tool</script>',state:'completed',source:'Actual runtime',eventLimitReached:true}}]}}));
+  assert.equal(dom.window.document.querySelectorAll('img,script').length,0);assert.match(dom.window.document.getElementById('transcript').textContent,/partial response/);assert.match(dom.window.document.getElementById('transcript').textContent,/bounded/);
+  assert.equal(dom.window.document.getElementById('send').disabled,true);assert.deepEqual(calls.map(c=>c.type),['ready']);dom.window.close();
+});

@@ -1,8 +1,8 @@
-export type ChatMessage={viewId:string;requestId:string;type:'ready'|'refresh'|'cancel'|'new'|'send'|'draft';payload?:{text:string;retain?:boolean;contextIds?:string[]}};
+export type ChatMessage={viewId:string;requestId:string;type:'ready'|'refresh'|'cancel'|'new'|'settings'|'send'|'draft';payload?:{text:string;retain?:boolean;contextIds?:string[]}};
 export function chatMessage(value:unknown,viewId:string):ChatMessage|undefined {
   if(!value||typeof value!=='object'||Array.isArray(value))return;
   const m=value as Record<string,unknown>;
-  if(Object.keys(m).some(k=>!['viewId','requestId','type','payload'].includes(k))||m.viewId!==viewId||typeof m.requestId!=='string'||m.requestId.length>100||typeof m.type!=='string'||!['ready','refresh','cancel','new','send','draft'].includes(m.type))return;
+  if(Object.keys(m).some(k=>!['viewId','requestId','type','payload'].includes(k))||m.viewId!==viewId||typeof m.requestId!=='string'||m.requestId.length>100||typeof m.type!=='string'||!['ready','refresh','cancel','new','settings','send','draft'].includes(m.type))return;
   if(['send','draft'].includes(m.type)){
     if(!m.payload||typeof m.payload!=='object'||Array.isArray(m.payload))return;
     const p=m.payload as Record<string,unknown>;

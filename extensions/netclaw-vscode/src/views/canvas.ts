@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import {randomUUID,randomBytes} from 'node:crypto';
-import {Connection} from '../connection/connect';
+import {Connection,boundCaller} from '../connection/connect';
 import {LocalState} from '../state/local';
 import path from 'node:path';
 
@@ -10,6 +10,7 @@ type Binding={conversationId:string;operationId?:string;pendingNonce?:string};
 const nonce=()=>`${Date.now()}:${randomUUID()}`;
 export function openCanvas(context:vscode.ExtensionContext,connection:Connection):vscode.WebviewPanel{
   if(!connection.ready||!connection.identity)throw Error('Connect to an existing installation first.');
+  const call=boundCaller(connection);
   const generation=connection.generation,identity=connection.identity,viewId=randomUUID();
   const key=`canvas.v1.${identity.hostId}.${identity.installationId}.${identity.principalId}`;
   const local=new LocalState(path.join(context.storageUri?.fsPath||context.globalStorageUri.fsPath,'conversations'));
@@ -21,21 +22,21 @@ export function openCanvas(context:vscode.ExtensionContext,connection:Connection
   const persist=async()=>{valid();await local.update(key,saved);};
   const post=async(data:object)=>{valid();await panel.webview.postMessage({viewId,...data});};
   const load=async()=>{
-    const inventory=await connection.call<{data:{contexts:{id:string;name:string;size:number}[]}}>('operator_snapshot',{domain:'knowledge'});
+    const inventory=await call<{data:{contexts:{id:string;name:string;size:number}[]}}>('operator_snapshot',{domain:'knowledge'});
     await post({type:'contexts',contexts:inventory.data.contexts});
     const requests:Record<string,unknown>={};
     for(const [nodeId,binding] of Object.entries(saved.bindings)){
-      if(binding.pendingNonce&&!binding.operationId){const result=await connection.call<{data:{operation?:{operationId:string}}}>('operator_resources',{kind:'overview',filters:{query:binding.pendingNonce}});if(result.data.operation){binding.operationId=result.data.operation.operationId;await persist();}}
+      if(binding.pendingNonce&&!binding.operationId){const result=await call<{data:{operation?:{operationId:string}}}>('operator_resources',{kind:'overview',filters:{query:binding.pendingNonce}});if(result.data.operation){binding.operationId=result.data.operation.operationId;await persist();}}
       if(binding.operationId){
-        const operation=await connection.call('operator_operation_get',{operationId:binding.operationId});
-        const history=await connection.call<{data:{requests:{operationId:string;prompt:string}[]}}>('operator_snapshot',{domain:'knowledge',resourceId:binding.conversationId});
+        const operation=await call('operator_operation_get',{operationId:binding.operationId});
+        const history=await call<{data:{requests:{operationId:string;prompt:string}[]}}>('operator_snapshot',{domain:'knowledge',resourceId:binding.conversationId});
         requests[nodeId]={...operation,prompt:history.data.requests.find(r=>r.operationId===binding.operationId)?.prompt};
       }
     }
     await post({type:'requests',requests});
   };
   const save=async()=>{
-    const value=await connection.call<{id:string}>('operator_workspace',{action:'canvas-import',nonce:nonce(),args:{name:'VS Code investigation',content:JSON.stringify(document)}});
+    const value=await call<{id:string}>('operator_workspace',{action:'canvas-import',nonce:nonce(),args:{name:'VS Code investigation',content:JSON.stringify(document)}});
     saved={...saved,id:value.id};await persist();return value.id;
   };
   panel.webview.onDidReceiveMessage(async(raw:unknown)=>{
@@ -44,22 +45,22 @@ export function openCanvas(context:vscode.ExtensionContext,connection:Connection
     if(m.document){if(typeof m.document!=='object'||JSON.stringify(m.document).length>10*1024*1024)return;const value=m.document as Canvas;if(value.v!==1||!Array.isArray(value.nodes)||value.nodes.length>500)return;document=value;}
     try{
       valid();if(m.type==='state')return;if(busy)return;busy=true;
-      if(m.type==='ready'&&saved.id){const value=await connection.call<{content:Canvas}>('operator_workspace',{action:'canvas-export',args:{id:saved.id}});document=value.content;}
+      if(m.type==='ready'&&saved.id){const value=await call<{content:Canvas}>('operator_workspace',{action:'canvas-export',args:{id:saved.id}});document=value.content;}
       if(m.type==='import'){
         const files=await vscode.window.showOpenDialog({canSelectMany:false,filters:{'HUD Canvas':['json']}});if(!files?.[0])return;
         const stat=await vscode.workspace.fs.stat(files[0]);if(stat.size>10*1024*1024)throw Error('Canvas import exceeds 10 MiB.');
         const bytes=await vscode.workspace.fs.readFile(files[0]);valid();
-        const value=await connection.call<{id:string}>('operator_workspace',{action:'canvas-import',nonce:nonce(),args:{name:'Imported HUD investigation',content:Buffer.from(bytes).toString('utf8')}});
-        const result=await connection.call<{content:Canvas}>('operator_workspace',{action:'canvas-export',args:{id:value.id}});document=result.content;saved={id:value.id,bindings:{}};await persist();
+        const value=await call<{id:string}>('operator_workspace',{action:'canvas-import',nonce:nonce(),args:{name:'Imported HUD investigation',content:Buffer.from(bytes).toString('utf8')}});
+        const result=await call<{content:Canvas}>('operator_workspace',{action:'canvas-export',args:{id:value.id}});document=result.content;saved={id:value.id,bindings:{}};await persist();
       }
       if(m.type==='open'){
-        const inventory=await connection.call<{data:{artifacts:{id:string;name:string;createdAt:string}[]}}>('operator_snapshot',{domain:'knowledge'});
+        const inventory=await call<{data:{artifacts:{id:string;name:string;createdAt:string}[]}}>('operator_snapshot',{domain:'knowledge'});
         const item=await vscode.window.showQuickPick(inventory.data.artifacts.map(a=>({label:a.name,description:a.createdAt,id:a.id})));if(!item)return;
-        const result=await connection.call<{content:Canvas}>('operator_workspace',{action:'canvas-export',args:{id:item.id}});document=result.content;saved={id:item.id,bindings:{}};await persist();
+        const result=await call<{content:Canvas}>('operator_workspace',{action:'canvas-export',args:{id:item.id}});document=result.content;saved={id:item.id,bindings:{}};await persist();
       }
       if(m.type==='save')await save();
       if(m.type==='export'){
-        const id=await save(),result=await connection.call<{content:Canvas}>('operator_workspace',{action:'canvas-export',args:{id}});
+        const id=await save(),result=await call<{content:Canvas}>('operator_workspace',{action:'canvas-export',args:{id}});
         const preview=await vscode.workspace.openTextDocument({content:JSON.stringify(result.content,null,2),language:'json'});await vscode.window.showTextDocument(preview,{preview:true});
         const destination=await vscode.window.showSaveDialog({filters:{'Canvas JSON':['json']},saveLabel:'Save reviewed Canvas'});if(destination)await vscode.workspace.fs.writeFile(destination,Buffer.from(preview.getText()));
       }
@@ -67,17 +68,17 @@ export function openCanvas(context:vscode.ExtensionContext,connection:Connection
         if(typeof m.nodeId!=='string'||typeof m.text!=='string'||Buffer.byteLength(m.text)>65536||!m.text.trim())throw Error('Invalid Canvas message.');
         const node=document.nodes.find(n=>n.id===m.nodeId);if(!node||!['chat',undefined].includes(node.kind))throw Error('This imported lane is retained as a reference and cannot dispatch from this candidate.');
         let binding=saved.bindings[m.nodeId];
-        if(binding?.pendingNonce){if(!binding.operationId)throw Error('Admission is unconfirmed. Check requests before sending.');const op=await connection.call<{state:string}>('operator_operation_get',{operationId:binding.operationId});if(!['succeeded','failed','cancelled','denied','expired'].includes(op.state))throw Error('This lane has an unresolved request. Check it before sending more work.');}
+        if(binding?.pendingNonce){if(!binding.operationId)throw Error('Admission is unconfirmed. Check requests before sending.');const op=await call<{state:string}>('operator_operation_get',{operationId:binding.operationId});if(!['succeeded','failed','cancelled','denied','expired'].includes(op.state))throw Error('This lane has an unresolved request. Check it before sending more work.');}
         if(m.contextIds!==undefined&&(!Array.isArray(m.contextIds)||m.contextIds.length>19||!m.contextIds.every(v=>typeof v==='string'&&v.length<=200)))throw Error('Select at most 19 staged contexts.');
         const contextIds:string[]=Array.isArray(m.contextIds)?m.contextIds as string[]:[];
         if(!binding){
           const seed=[...(node.seedContext||[]),...(node.messages||[])].map(value=>({role:value.role,content:value.content}));
-          if(seed.length){const value=await connection.call<{contextId:string}>('operator_workspace',{action:'rag-stage',nonce:nonce(),args:{name:'Selected Canvas ancestor context',content:JSON.stringify(seed)}});contextIds.push(value.contextId);}
-          const opened=await connection.call<{conversationId:string}>('operator_conversation_open',{nonce:nonce(),view:'canvas'});binding={conversationId:opened.conversationId};
+          if(seed.length){const value=await call<{contextId:string}>('operator_workspace',{action:'rag-stage',nonce:nonce(),args:{name:'Selected Canvas ancestor context',content:JSON.stringify(seed)}});contextIds.push(value.contextId);}
+          const opened=await call<{conversationId:string}>('operator_conversation_open',{nonce:nonce(),view:'canvas'});binding={conversationId:opened.conversationId};
         }
         await save(); // The explicit send preserves its graph/context before admission.
         binding={...binding,pendingNonce:nonce(),operationId:undefined};saved.bindings[m.nodeId]=binding;await persist();
-        const op=await connection.call<{operationId:string}>('operator_request_submit',{nonce:binding.pendingNonce,conversationId:binding.conversationId,prompt:m.text,contextIds});binding.operationId=op.operationId;await persist();
+        const op=await call<{operationId:string}>('operator_request_submit',{nonce:binding.pendingNonce,conversationId:binding.conversationId,prompt:m.text,contextIds});binding.operationId=op.operationId;await persist();
         await post({type:'admitted',nodeId:m.nodeId,prompt:m.text,operationId:op.operationId});
       }
       if(['ready','open','import'].includes(m.type))await post({type:'document',document});

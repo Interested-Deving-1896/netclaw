@@ -12,7 +12,7 @@ and the separate [WSL return](../specs/150-vscode-extension/evidence/wsl-accepta
 | Installed current editor | VS Code 1.108.0; full release-current matrix still open |
 | Mac | arm64, Darwin 25.5.0; isolated synthetic installations and real process checks |
 | Backend Node | Isolated 24.19.0; host Node 25 remains unsupported and unchanged |
-| OpenClaw | 2026.7.1-2 real process, controlled provider |
+| OpenClaw | 2026.7.1-2 real process, controlled provider; exact owned model/low-effort and answer progress verified |
 | Hermes | v0.21.6 / 818c13be1dc4fd28987e1e881a9408224afd4535; Python 3.14.6, bridge 3.12.12 |
 | MCP | Official Node SDK 2.3.1; stdio only |
 | Claude Code | 2.1.286; actual hosted-provider inspection/proposal and Hermes refusal passed |

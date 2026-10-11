@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import {randomUUID,randomBytes,createHash} from 'node:crypto';
 import path from 'node:path';
-import {Connection} from '../connection/connect';
+import {Connection,boundCaller} from '../connection/connect';
 import {LocalState} from '../state/local';
 
 const nonce=()=>`${Date.now()}:${randomUUID()}`;
@@ -12,6 +12,7 @@ const escape=(text:string)=>text.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;',
 
 export function openRag(context:vscode.ExtensionContext,connection:Connection):vscode.WebviewPanel{
   if(!connection.ready||!connection.identity)throw Error('Connect to an existing installation first.');
+  const call=boundCaller(connection);
   const identity=connection.identity,generation=connection.generation,viewId=randomUUID();
   const panel=vscode.window.createWebviewPanel('netclaw.rag','NetClaw RAG',vscode.ViewColumn.One,{enableScripts:true,localResourceRoots:[vscode.Uri.joinPath(context.extensionUri,'resources')]});
   const scriptNonce=randomBytes(24).toString('base64'),css=panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri,'resources/workbench.css')),script=panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri,'resources/rag.js'));
@@ -23,15 +24,15 @@ export function openRag(context:vscode.ExtensionContext,connection:Connection):v
   const post=async(data:object)=>{valid();await panel.webview.postMessage({viewId,...data});};
   const operations=async()=>{
     if(pending.nonce&&!pending.operationId){
-      const result=await connection.call<{data:{operation?:Operation}}>('operator_resources',{kind:'overview',filters:{query:pending.nonce}});
+      const result=await call<{data:{operation?:Operation}}>('operator_resources',{kind:'overview',filters:{query:pending.nonce}});
       if(result.data.operation){pending.operationId=result.data.operation.operationId;await local.update(key,pending);}
     }
-    const result=await connection.call<{data:{operations:Operation[]}}>('operator_resources',{kind:'overview'});
+    const result=await call<{data:{operations:Operation[]}}>('operator_resources',{kind:'overview'});
     await post({type:'operations',operations:result.data.operations.filter(o=>o.kind==='rag-index'),unconfirmed:Boolean(pending.nonce&&!pending.operationId)});
   };
   const load=async(more=false)=>{
     await operations();
-    const value=await connection.call<Listing>('operator_workspace',{action:'rag-list',args:{},limit:100,...(more&&listing?.nextCursor?{cursor:listing.nextCursor}:{})});
+    const value=await call<Listing>('operator_workspace',{action:'rag-list',args:{},limit:100,...(more&&listing?.nextCursor?{cursor:listing.nextCursor}:{})});
     listing={...value,documents:[...(more?listing?.documents||[]:[]),...value.documents]};await post({type:'listing',...listing});
   };
   panel.webview.onDidReceiveMessage(async(raw:unknown)=>{
@@ -43,14 +44,14 @@ export function openRag(context:vscode.ExtensionContext,connection:Connection):v
       if(['ready','refresh','more'].includes(String(m.type)))await load(m.type==='more');
       if(m.type==='search'){
         if(typeof m.query!=='string'||!m.query.trim()||m.query.length>4000||typeof m.collection!=='string'||!/^[\w.-]{1,128}$/.test(m.collection))throw Error('Enter a query and collection.');
-        search=await connection.call<Search>('operator_workspace',{action:'rag-search',args:{query:m.query,collection:m.collection,k:10}});await post({type:'results',...search});
+        search=await call<Search>('operator_workspace',{action:'rag-search',args:{query:m.query,collection:m.collection,k:10}});await post({type:'results',...search});
       }
       if(m.type==='stage'){
         if(!search||!Array.isArray(m.indices)||!m.indices.length||m.indices.length>20||!m.indices.every(i=>Number.isInteger(i)&&i>=0&&i<search!.results.length))throw Error('Select one or more current results.');
         const content=m.indices.map(i=>search!.results[i]!).map(r=>[r.citation,r.low_confidence?'Low confidence retrieval.':'',r.staleness_notice,r.chunk_text].filter(Boolean).join('\n')).join('\n\n');
         const preview=await vscode.workspace.openTextDocument({content,language:'plaintext'});await vscode.window.showTextDocument(preview,{preview:true,preserveFocus:true,viewColumn:vscode.ViewColumn.Beside});
         if(await vscode.window.showInformationMessage('Add these reviewed RAG results to NetClaw context?',{modal:true,detail:`Destination: ${identity.installationId}. They are sent to the configured model only when selected in a submitted request.`},'Add selected context')!=='Add selected context')return;valid();
-        await connection.call('operator_workspace',{action:'rag-context',nonce:nonce(),args:{id:search.searchId,indices:m.indices}});await post({type:'notice',message:'Selected citations are available in Chat and Canvas. Choose them before sending a message.'});
+        await call('operator_workspace',{action:'rag-context',nonce:nonce(),args:{id:search.searchId,indices:m.indices}});await post({type:'notice',message:'Selected citations are available in Chat and Canvas. Choose them before sending a message.'});
       }
       if(m.type==='upload'){
         if(pending.nonce&&!pending.operationId)throw Error('A prior indexing admission is unconfirmed. Refresh to reconcile it before uploading again.');
@@ -62,9 +63,9 @@ export function openRag(context:vscode.ExtensionContext,connection:Connection):v
         await load();const previous=listing?.documents.find(d=>d.title===name);
         const review=`File: ${file.toString(true)}\nSize: ${bytes.length} bytes\nSHA-256: ${sha256}\nDestination: ${connection.profile?.label} / ${identity.installationId} / documents\n${previous?'This replaces the reviewed document '+previous.id+'.':'The selected file will be retained and indexed in the backend knowledge base.'}`;
         if(await vscode.window.showInformationMessage(`Upload and index ${name}?`,{modal:true,detail:review},'Upload and index')!=='Upload and index')return;valid();
-        const upload=await connection.call<{uploadId:string}>('operator_workspace',{action:'rag-upload',nonce:nonce(),args:{name,docType:type,content:bytes.toString('base64')}});
+        const upload=await call<{uploadId:string}>('operator_workspace',{action:'rag-upload',nonce:nonce(),args:{name,docType:type,content:bytes.toString('base64')}});
         pending={nonce:nonce()};await local.update(key,pending);
-        const admitted=await connection.call<Operation>('operator_workspace',{action:'rag-index',nonce:pending.nonce,args:{id:upload.uploadId,...(previous?{expectedDocumentId:previous.id}:{})}});
+        const admitted=await call<Operation>('operator_workspace',{action:'rag-index',nonce:pending.nonce,args:{id:upload.uploadId,...(previous?{expectedDocumentId:previous.id}:{})}});
         pending.operationId=admitted.operationId;await local.update(key,pending);await operations();await post({type:'notice',message:'Indexing admitted. You can close this view; the backend owns the operation. Refresh collections after it completes.'});
       }
     }catch(error){await post({type:'notice',message:error instanceof Error?error.message:'RAG is unavailable.'}).catch(()=>{});}

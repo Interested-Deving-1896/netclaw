@@ -141,7 +141,7 @@ export class Workspace {
       const conversation=this.journal.record('conversation',conversationId,principal);
       const requests=this.journal.conversationOperations(principal,conversationId).reverse().slice(-100).map(operation=>{
         const input=JSON.parse(this.journal._row(operation.operationId).input);
-        return {...operation,prompt:input.prompt,contextIds:input.contextIds};
+        return {...operation,prompt:input.prompt,contextIds:input.contextIds,progress:['running','cancellation-requested','unknown'].includes(operation.state)?this.journal.latestProgress(principal,operation.operationId):null};
       });return this.clean({conversationId,...conversation,requests});
     }
     return this.clean({artifacts:this.journal.records('canvas',principal),contexts:this.journal.records('context',principal),conversations:this.journal.records('conversation',principal),contextPolicy:'Only explicitly selected content is staged. Staging is separate from RAG indexing.'});

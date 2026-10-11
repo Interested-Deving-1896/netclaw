@@ -3,7 +3,7 @@ import {randomUUID} from 'node:crypto';
 import {Connection,boundCaller} from '../connection/connect';
 import {Profiles} from '../state/profiles';
 import {AssistantProvider} from './provider';
-import {ClientGrant,Registration,terminalPreview} from './registration';
+import {ClientGrant,Registration,terminalPreview,probeClientVersion} from './registration';
 const nonce=()=>`${Date.now()}:${randomUUID()}`;
 
 export async function manageAssistant(connection:Connection,profiles:Profiles,provider:AssistantProvider):Promise<void>{
@@ -24,6 +24,7 @@ export async function manageAssistant(connection:Connection,profiles:Profiles,pr
     return;
   }
   const client=await vscode.window.showQuickPick(['copilot','claude-code','codex'] as const,{title:'Assistant client'});if(!client)return;
+  if(client==='claude-code'||client==='codex')await probeClientVersion(client);
   const permission=await vscode.window.showQuickPick([
     {label:'Inspect and propose changes',actions:['inspect','propose','evidence'],description:'Human review is required to apply any proposal'},
     {label:'Inspect only',actions:['inspect','evidence'],description:'Inventory, status and scoped evidence'},
@@ -47,6 +48,7 @@ async function registrationPreview(registration:Registration,provider:AssistantP
     await provider.remember(registration);await provider.refresh();
     void vscode.window.showInformationMessage('NetClaw is now available in VS Code MCP server discovery. Inspect its tool list and start it in the MCP interface.');return;
   }
-  const content=terminalPreview(registration),document=await vscode.workspace.openTextDocument({content,language:'shellscript'});
+  const version=await probeClientVersion(registration.grant.client);
+  const content=terminalPreview(registration,version),document=await vscode.workspace.openTextDocument({content,language:'shellscript'});
   await vscode.window.showTextDocument(document,{preview:false});
 }

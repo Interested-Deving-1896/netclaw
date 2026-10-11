@@ -62,11 +62,11 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 
 **Independent test**: Qualified requests work on both harnesses, explicit context and view switches behave correctly, reload resumes without resend.
 
-- [ ] T022 [P] [US2] Add owned chat/context/stream/cancel/uncertainty tests in `tests/operator/conversations.test.mjs` using both runtime adapters. (FR-009, FR-010, FR-012, FR-013, FR-017, SC-007)
-- [ ] T023 [P] [US2] Add hostile webview and versioned Canvas preservation tests in `extensions/netclaw-vscode/test/rich-views.test.ts`. (FR-011, FR-012, FR-036, SC-008, SC-011)
+- [X] T022 [P] [US2] Add owned chat/context/stream/cancel/uncertainty tests in `tests/operator/conversations.test.mjs` using both runtime adapters. (FR-009, FR-010, FR-012, FR-013, FR-017, SC-007)
+- [X] T023 [P] [US2] Add hostile webview and versioned Canvas preservation tests in `extensions/netclaw-vscode/test/rich-views.test.mjs`. (FR-011, FR-012, FR-036, SC-008, SC-011)
 - [ ] T024 [US2] Implement owned conversations and durable OpenClaw admission/recovery in `ui/netclaw-visual/src/management/conversations.js`; preserve Hermes ledger, enforced grant propagation and qualified model/effort limits. (FR-009, FR-010, FR-013, FR-017, FR-043, SC-007)
-- [ ] T025 [US2] Implement CSP-restricted typed webview bridge in `extensions/netclaw-vscode/src/webview/bridge.ts`; bind every message to view and installation generation, validate links and deny direct HUD networking. (FR-036, FR-038, SC-008)
-- [ ] T026 [US2] Implement chat/draft/selected-context review and sourced events in `extensions/netclaw-vscode/src/views/chat.ts` and `src/commands/context.ts`; core chat works without Copilot. (FR-009, FR-010, FR-012, FR-013)
+- [X] T025 [US2] Implement CSP-restricted typed webview bridge in `extensions/netclaw-vscode/src/webview/bridge.ts`; bind every message to view and installation generation, validate links and deny direct HUD networking. (FR-036, FR-038, SC-008)
+- [X] T026 [US2] Implement chat/draft/selected-context review and sourced events in `extensions/netclaw-vscode/src/views/chat.ts` and `src/commands/context.ts`; core chat works without Copilot. (FR-009, FR-010, FR-012, FR-013)
 - [ ] T027 [US2] Adapt existing Canvas and Avatar into `extensions/netclaw-vscode/webview/` with explicit versioned import/export and native harness navigation; implement `src/views/canvas.ts` and `avatar.ts` without implicit sends. (FR-011, FR-012, FR-017, SC-011)
 - [ ] T028 [US2] Run real qualified OpenClaw/Hermes read-only conversations, editor reload and saved-work preservation; record provider mode and results in `specs/150-vscode-extension/evidence/conversations.md`. (FR-009, FR-010, FR-011, FR-013, SC-003, SC-007, SC-011)
 
@@ -128,10 +128,10 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 - [ ] T049 [US9] Implement assistant-only façade and fixed launcher in `mcp-servers/netclaw-assistant-mcp/server.mjs` and `scripts/netclaw-assistant.mjs`; expose only the seven tools and enforce grant on every call. (FR-042, FR-043, FR-044, SC-013)
 - [ ] T050 [US9] Implement reviewed client grants, backend .env credential references, bounded disclosure/expiry/revocation and in-flight handling in `ui/netclaw-visual/src/management/clients.js`; no plaintext credential journal/config. (FR-038, FR-041, FR-042, FR-043, FR-044, SC-005, SC-008)
 - [X] T051 [US9] Implement opt-in stable Copilot MCP provider in `extensions/netclaw-vscode/src/assistants/provider.ts`; immutable installation+grant definitions, side-effect-free discovery, resolve-time checks and client policy errors. (FR-035, FR-041, FR-044, SC-013)
-- [ ] T052 [US9] Implement reviewed version-aware Claude Code/Codex stdio setup/export in `extensions/netclaw-vscode/src/assistants/registration.ts`; preserve unrelated config, explicit host paths and editor-independent operation. (FR-042, FR-044, SC-013)
+- [X] T052 [US9] Implement reviewed version-aware Claude Code/Codex stdio setup/export in `extensions/netclaw-vscode/src/assistants/registration.ts`; preserve unrelated config, explicit host paths and editor-independent operation. (FR-042, FR-044, SC-013)
 - [ ] T053 [US9] Implement client grant/disclosure review and proposal status in `extensions/netclaw-vscode/src/assistants/setup.ts`; distinguish external assistant and NetClaw inference/costs, deny self-approval. (FR-041, FR-042, FR-043, FR-044)
 - [ ] T054 [US9] Run actual Copilot, Claude Code and Codex inventory/delegation/proposal/denial/revocation/lost-response tests in `tests/assistant-clients/acceptance.mjs` on both harnesses, including real WSL and Remote SSH. (FR-008, FR-041, FR-042, FR-043, FR-044, SC-013)
-- [ ] T055 [US9] Document exact verified client commands, versions, grants, disclosure and same-UID limitations in `docs/VSCODE-ASSISTANTS.md` and evidence in `specs/150-vscode-extension/evidence/assistant-clients.md`. (FR-034, FR-038, FR-041, FR-042, FR-043, FR-044, SC-013)
+- [X] T055 [US9] Document exact verified client commands, versions, grants, disclosure and same-UID limitations in `docs/VSCODE-ASSISTANTS.md` and evidence in `specs/150-vscode-extension/evidence/assistant-clients.md`. (FR-034, FR-038, FR-041, FR-042, FR-043, FR-044, SC-013)
 
 **Parallel example**: Keep this phase sequential because its tasks share adapters, manifests or acceptance dependencies; fixture drafting may be prepared independently but does not close a task.
 
@@ -141,8 +141,8 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 
 **Independent test**: Known fixtures reconcile exactly while stale/missing/malformed sources remain explicit.
 
-- [ ] T056 [P] [US6] Add exact usage totals/gaps, source distinctions and bounded/redacted log tests in `tests/operator/observability.test.mjs`. (FR-027, FR-028, FR-029, FR-030, SC-008, SC-009)
-- [ ] T057 [US6] Implement usage and diagnostic projections through `ui/netclaw-visual/src/management/evidence.js`; expose local OpenClaw and owned Hermes scope without invented aggregation. (FR-027, FR-029, SC-009)
+- [X] T056 [P] [US6] Add exact usage totals/gaps, source distinctions and bounded/redacted log tests in `tests/operator/observability.test.mjs`. (FR-027, FR-028, FR-029, FR-030, SC-008, SC-009)
+- [X] T057 [US6] Implement usage and diagnostic projections through `ui/netclaw-visual/src/management/observability.js` and `evidence.js`; expose local OpenClaw and owned Hermes scope without invented aggregation. (FR-027, FR-029, SC-009)
 - [ ] T058 [US6] Implement Tokenomics/integration inventory and supported configuration navigation in `extensions/netclaw-vscode/src/views/tokenomics.ts` and `integrations.ts`. (FR-015, FR-027, FR-028, SC-009)
 - [ ] T059 [US6] Implement logs/diagnostic preview/export and network/topology/intent entry in `extensions/netclaw-vscode/src/views/logs.ts` and `network.ts`; label configured/live/historical/simulated/federation sources. (FR-023, FR-029, FR-030, FR-038, SC-008)
 - [ ] T060 [US6] Run source/cost reconciliation, unavailable integration and topology provenance acceptance; record `specs/150-vscode-extension/evidence/observability.md`. (FR-027, FR-028, FR-029, FR-030, SC-009)
@@ -171,8 +171,8 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 **Independent test**: Clean candidate installation/update/preservation and package inspection pass before authorized publication.
 
 - [ ] T067 [US8] Confirm authorized publisher/extension ID and select release/backend versions in `extensions/netclaw-vscode/package.json` and `docs/VSCODE-COMPATIBILITY.md`; record actual API/OS/client/harness contract support. (FR-001, FR-008, FR-040, SC-003, SC-012)
-- [ ] T068 [US8] Create Marketplace README/changelog/license/privacy/screenshots/walkthrough and explicit package allowlist in `extensions/netclaw-vscode/README.md`, `CHANGELOG.md`, `LICENSE` and `.vscodeignore`. (FR-001, FR-002, FR-034, FR-038, FR-040, SC-012)
-- [ ] T069 [US8] Add packaging/release artifact and synthetic-secret inspection automation in `tests/vscode/package.test.mjs` and `.github/workflows/vscode-extension.yml`; do not auto-publish from an unapproved branch push. (FR-001, FR-036, FR-038, FR-040, SC-008, SC-012)
+- [X] T068 [US8] Create Marketplace README/changelog/license/privacy/screenshots/walkthrough and explicit package allowlist in `extensions/netclaw-vscode/README.md`, `CHANGELOG.md`, `LICENSE` and `.vscodeignore`. (FR-001, FR-002, FR-034, FR-038, FR-040, SC-012)
+- [X] T069 [US8] Add packaging/release artifact and synthetic-secret inspection automation in `tests/vscode/package.test.mjs` and `.github/workflows/vscode-extension.yml`; do not auto-publish from an unapproved branch push. (FR-001, FR-036, FR-038, FR-040, SC-008, SC-012)
 - [ ] T070 [US8] Build matching VSIX and run clean install/previous-candidate upgrade/disable/uninstall/rollback, retaining backend processes/data; record `specs/150-vscode-extension/evidence/package.md`. (FR-001, FR-007, FR-040, SC-001, SC-008, SC-011, SC-012)
 
 **Parallel example**: Keep this phase sequential because its tasks share adapters, manifests or acceptance dependencies; fixture drafting may be prepared independently but does not close a task.
@@ -184,7 +184,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 **Independent test**: All required rows pass with exact evidence; otherwise release remains incomplete.
 
 - [X] T071 Add private operator/assistant components to `scripts/lib/catalog.sh`, `scripts/lib/install-steps.sh` and `scripts/verify-catalog-coverage.py`; owner installs through normal NetClaw updates, never the extension. Keep private operator out of `config/openclaw.json` and document registration applicability. (FR-007, FR-039, FR-040)
-- [ ] T072 Complete HUD integration visibility and architecture/count/setup updates in `ui/netclaw-visual/src/dashboard/model.js`, `README.md`, `SOUL.md`, `TOOLS.md`, `.env.example`, both new MCP READMEs and `workspace/skills/netclaw-operator/SKILL.md`; document secret-free private setup and operations. (FR-003, FR-028, FR-034, FR-039, FR-040)
+- [X] T072 Complete HUD integration visibility and architecture/count/setup updates in `ui/netclaw-visual/src/dashboard/model.js`, `README.md`, `SOUL.md`, `TOOLS.md`, `.env.example`, both new MCP READMEs and `workspace/skills/netclaw-operator/SKILL.md`; document secret-free private setup and operations. (FR-003, FR-028, FR-034, FR-039, FR-040)
 - [ ] T073 Run 23-domain coverage, keyboard/theme, hostile-content and measured inventory p95 acceptance in `tests/vscode/workbench-acceptance.mjs`; summarize exact SC-004/010 results in `specs/150-vscode-extension/evidence/workbench.md`. (FR-003, FR-036, FR-037, SC-002, SC-004, SC-008, SC-010)
 - [ ] T074 Run applicable existing HUD/Canvas/mobile/CLI/federation/runtime suites and catalog/spec artifact checks in declared isolated environments; record commands/counts/limits in `specs/150-vscode-extension/evidence/regression.md`. (FR-039, FR-040, SC-003, SC-011)
 - [ ] T075 Execute owner-machine read-only WSL baseline and, after implementation/authorized test scope, real E3/E8 and WSL runtime/client/fault gates per `specs/150-vscode-extension/windows-wsl-handoff.md`; record separate `evidence/wsl-baseline.md` and `evidence/wsl-acceptance.md`, resolving spec149 Linux/WSL dependencies. (FR-008, FR-040, FR-041, FR-042, FR-043, FR-044, SC-001, SC-003, SC-005, SC-006, SC-007, SC-008, SC-011, SC-013)
@@ -212,7 +212,7 @@ Deliver small story checkpoints with real behavioral evidence, preserve the exis
 
 ## Counts and traceability
 
-79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Seventeen tasks are complete; 62 remain unchecked. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
+79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Twenty-eight tasks are complete; 51 remain unchecked. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
 
 | Group | Tasks |
 |---|---|
@@ -255,3 +255,19 @@ and documentation evidence in [Mac release development](evidence/mac-release-dev
 This does not close whole stories, runtime grant propagation, actual Copilot inference,
 platform acceptance or publication. The current code is not ready for the final
 validation-only WSL handoff.
+
+## Durable conversation and artifact checkpoint
+
+T022/T023 cover owned conversation, context, stream, cancellation, uncertainty,
+hostile views and Canvas preservation behavior. T025/T026 complete typed rich-view
+binding and Chat/context/progress implementation, including generation checks
+across every asynchronous native dialog. These do not close US2 runtime-grant or
+all-platform acceptance. Real Mac OpenClaw verified explicit model/effort and
+retained answer events; real Hermes contextual turns still pass.
+
+T052/T055 complete version-checked terminal registration export and current
+client setup/evidence documentation; actual named-client matrix T054 stays open.
+T056/T057 complete the measured usage/gap/log projections and behavior tests.
+T068/T069 cover candidate listing/package materials and no-publish CI automation;
+T072 covers current artifact coherence, HUD documentation visibility and counts.
+Actual release lifecycle, platform gates and Marketplace publication remain open.

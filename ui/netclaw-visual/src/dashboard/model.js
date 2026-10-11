@@ -16,6 +16,7 @@ export const GUIDES = {
     ['Zoom meeting context', 'Meeting evidence retains its owner, source and retrieval time.', 'Find available Zoom meeting context relevant to this investigation, with source and date.', 'zoom'],
   ],
   operations: [
+    ['VS Code management', 'Connect the development extension to an existing installation, with separate scoped assistant access.', 'Explain the existing-installation VS Code workflow from the netclaw-operator skill and current VSCODE-COMPATIBILITY guide. Identify supported workflows and remaining qualification.', 'netclaw-operator'],
     ['Incidents & changes', 'Review impact, approval, baseline and verification before execution.', 'Review open incidents and changes in scope. Show approval and verification state. Do not create or modify tickets.', 'servicenow'],
     ['Security & posture', 'Missing controls stay visible. Advisory confidence is not device health.', 'Review available security and enforcement evidence; distinguish enforced, audit-only and missing controls.', 'security'],
     ['Telemetry & events', 'Identify the collector, observation window and missing sources.', 'Review scoped telemetry and recent events, showing collectors, times and collection gaps.', 'telemetry'],

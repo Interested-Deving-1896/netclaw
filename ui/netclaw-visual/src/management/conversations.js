@@ -17,14 +17,25 @@ export class Conversations {
     invariant(principal.surface==='operator','UNQUALIFIED');
   }
   async open(principal,input) {
-    this.authority(principal);invariant(!input.model&&!input.effort,'UNQUALIFIED');
-    if(input.conversationId)this.journal.record('conversation',input.conversationId,principal);
+    this.authority(principal);
+    if(this.journal.byNonce(principal,input.nonce)){
+      const previous=this.journal.admit(principal,input.nonce,'conversation-open',input);
+      invariant(previous.state==='succeeded'&&previous.result?.conversationId,'UNKNOWN_OUTCOME');return previous.result;
+    }
+    const selection=this.runtime.validateSelection?.(input)||{};
+    if(input.model||input.effort)invariant(this.runtime.validateSelection,'UNQUALIFIED');
+    if(input.conversationId){
+      const existing=this.journal.record('conversation',input.conversationId,principal);
+      invariant((!input.model&&!input.effort)||JSON.stringify(existing.selection||{})===JSON.stringify(selection),'DENIED');
+    }
     const op=this.journal.admit(principal,input.nonce,'conversation-open',input);
-    if(op.result)return op.result;
     const conversationId=input.conversationId||randomUUID();
-    if(!input.conversationId)this.journal.put('conversation',conversationId,principal,{runtime:this.binding.kind,createdAt:new Date().toISOString(),view:input.view});
-    this.journal.transition(op.operationId,'running');this.journal.transition(op.operationId,'succeeded',{conversationId});
-    return {conversationId};
+    this.journal.transition(op.operationId,'running');
+    try{
+      await this.audit.record({operationId:op.operationId,state:'conversation-open'});this.authority(principal);
+      if(!input.conversationId)this.journal.put('conversation',conversationId,principal,{runtime:this.binding.kind,createdAt:new Date().toISOString(),view:input.view,selection});
+      this.journal.transition(op.operationId,'succeeded',{conversationId});return {conversationId};
+    }catch(error){this.journal.transition(op.operationId,'failed',safeError(error));throw error;}
   }
   async submit(principal,input) {
     this.authority(principal);const conversation=this.journal.record('conversation',input.conversationId,principal);
@@ -70,13 +81,32 @@ export class Conversations {
     this.journal._owned(principal,row);
     const lease=this.journal.claim(operationId,{pid:process.pid,start:new Date().toISOString()});
     if(!lease)return this.journal.get(principal,operationId);
-    let dispatched=false,heartbeatError=false;
+    let dispatched=false,heartbeatError=false,progressCount=0,lastProgress=0,pendingProgress;
+    const flushProgress=()=>{
+      if(!pendingProgress||progressCount>=1000)return;
+      this.authority(principal);invariant(!heartbeatError,'UNKNOWN_OUTCOME');
+      const value=this.clean(pendingProgress);
+      if(Buffer.byteLength(JSON.stringify(value))>60000)return;
+      this.journal.event(operationId,'runtime-progress',{...value,...(progressCount===999?{eventLimitReached:true}:{})});
+      progressCount++;lastProgress=Date.now();pendingProgress=undefined;
+    };
+    const onProgress=event=>{
+      // A stream callback must not throw through the websocket event loop.
+      // Failure disables new observations and leaves the operation uncertain.
+      try{
+        // Preserve the last buffered answer before a tool/lifecycle milestone
+        // replaces it, including a complete response shorter than the throttle.
+        if(pendingProgress&&pendingProgress.kind!==event.kind)flushProgress();
+        pendingProgress=event;if(event.kind!=='answer'||Date.now()-lastProgress>=200)flushProgress();
+      }catch{heartbeatError=true;}
+    };
     const timer=setInterval(()=>{try{this.journal.renew(operationId,lease);}catch{heartbeatError=true;}},5000);timer.unref();
     try {
       const input=this.journal.input(operationId,lease),text=this.context(principal,input);
-      this.journal.record('conversation',input.conversationId,principal);
+      const conversation=this.journal.record('conversation',input.conversationId,principal);
       await this.audit.record({operationId,state:'before-dispatch'});this.authority(principal);
-      await this.runtime.open({conversationId:input.conversationId});
+      const selected=await this.runtime.open({conversationId:input.conversationId,selection:conversation.selection||{}});
+      if(selected)this.journal.event(operationId,'runtime-selection',this.clean(selected));
       this.authority(principal);invariant(!heartbeatError,'UNKNOWN_OUTCOME');
       if(this.journal.get(principal,operationId).state==='cancellation-requested'){
         await this.audit.record({operationId,state:'cancelled-before-dispatch'});
@@ -85,12 +115,15 @@ export class Conversations {
       // The stable request ID is also the runtime's idempotency/correlation key.
       this.journal.attachReference(operationId,lease,operationId);
       this.journal.event(operationId,'dispatch-intent',{runtime:this.binding.kind});dispatched=true;
-      await this.runtime.submit({conversationId:input.conversationId,requestId:operationId,nonce:row.nonce,text});
+      await this.runtime.submit({conversationId:input.conversationId,requestId:operationId,nonce:row.nonce,text,onProgress});
+      flushProgress();
       const deadline=Date.now()+900000;
       while(Date.now()<deadline){
         this.authority(principal);invariant(!heartbeatError,'UNKNOWN_OUTCOME');
         const observed=await this.runtime.observe({conversationId:input.conversationId,requestId:operationId});
         this.authority(principal);
+        for(const event of await this.runtime.progress?.({conversationId:input.conversationId,requestId:operationId})||[])onProgress(event);
+        flushProgress();
         const result=this.clean({runtime:this.binding.kind,source:observed.source||'Owned runtime request',...observed});
         if(finished.has(observed.state)){
           this.journal.event(operationId,'runtime-observation',{state:observed.state,source:result.source});

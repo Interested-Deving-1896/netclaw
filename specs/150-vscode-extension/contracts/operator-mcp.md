@@ -81,3 +81,22 @@ runtime verification. All responses carry validated output shapes and bounded
 JSON; any content truncation is visible. Usage windows are recorded-time filters,
 not account quota resets. Memory search is a bounded lexical read of the selected
 installation database and retains recorded temporal validity.
+
+### Owned conversation settings and progress
+
+Opening/resuming a conversation is audited and never sends inference. Explicit
+model/effort choices are stored immutably for that conversation; changed choices
+require a new one. OpenClaw restricts them to configured models and declared
+reasoning capabilities, then verifies the exact live gateway resolution before
+Send dispatch. Upstream requires `operator.admin` for `sessions.patch`: only
+this fixed owned-session settings operation opens a short-lived connection with
+that scope. Ordinary inference retains read/write scope. There is no general
+admin method exposed, and the assistant surface cannot enter this adapter.
+Hermes per-conversation overrides remain unsupported.
+
+Public OpenClaw answer events and tool milestones are filtered by owned run ID;
+private reasoning, tool arguments and other runs are excluded. Hermes contributes
+its owned tool-ledger events. Progress is redacted and bounded to 1,000 retained
+updates per operation, with answer coalescing and explicit truncation markers.
+Journal sequence and runtime source sequence remain distinct. Unknown operations
+retain partial evidence; neither reopening a view nor checking status resends them.

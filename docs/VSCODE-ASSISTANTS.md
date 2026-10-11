@@ -43,8 +43,10 @@ An SSH profile uses the existing SSH alias with strict known-host checks and
 agent forwarding disabled. The launcher works without VS Code running.
 
 The generated command grammar was checked against installed **Codex 0.162.1**
-and **Claude Code 2.1.286** on Mac. Check the version printed by the preview
-before using a different client version. The extension does not silently edit
+and **Claude Code 2.1.286** on Mac. Before creating/exporting terminal access,
+the extension runs the fixed client's `--version` on the extension host with a
+five-second deadline and bounded output. Unknown or changed versions stop export
+pending compatibility review. The extension does not silently edit
 user or workspace configuration. Review a new grant for a changed destination.
 
 Codex's documented registration uses `codex mcp add NAME -- COMMAND ARGS`;

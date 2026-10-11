@@ -6,9 +6,35 @@ import { invariant, fail } from './errors.js';
 import { createHermesRuntime } from '../hud-server/runtime/hermes.js';
 import { gatewayAgentId } from '../hud-server/gateway-agent.js';
 
+/** Only public answer text and tool milestones from this exact run cross into
+ * management evidence. Thinking, prompts, tool arguments and other runs do not. */
+export function projectGatewayEvent(frame,requestId){
+  const value=frame?.payload;
+  if(frame?.type!=='event'||frame.event!=='agent'||value?.runId!==requestId||!Number.isSafeInteger(value.seq)||value.seq<0)return null;
+  const base={runtime:'openclaw',source:'Authenticated OpenClaw agent event',sourceSequence:value.seq};
+  if(value.stream==='assistant'&&typeof value.data?.text==='string')return {...base,kind:'answer',output:value.data.text.slice(0,30000),partial:true,truncated:value.data.text.length>30000};
+  if(value.stream==='tool'&&typeof value.data?.name==='string'&&['start','update','result','end'].includes(value.data?.phase))return {...base,kind:'tool',tool:value.data.name.slice(0,200),state:value.data.phase};
+  if(value.stream==='lifecycle'&&['start','end','error'].includes(value.data?.phase))return {...base,kind:'lifecycle',state:value.data.phase};
+  return null;
+}
+export function conversationOptions(binding){
+  if(binding.kind!=='openclaw')return {models:[],reason:'Hermes companion uses its configured model; per-conversation overrides are not qualified.'};
+  const config=JSON.parse(readOwned(binding.configPath,{limit:4*1024*1024}));
+  return {models:Object.entries(config.models?.providers||{}).flatMap(([provider,value])=>(value.models||[])
+    .filter(model=>typeof model.id==='string').map(model=>({id:`${provider}/${model.id}`,efforts:model.reasoning===true?['low','medium','high']:[]}))).slice(0,1000),
+    source:'Configured OpenClaw models; live gateway must verify the exact selection before inference.'};
+}
+export function validateConversationSelection(binding,input){
+  if(input.model===undefined&&input.effort===undefined)return {};
+  const options=conversationOptions(binding),model=options.models.find(model=>model.id===input.model);
+  invariant(model,'UNQUALIFIED');
+  if(input.effort!==undefined)invariant(model.efforts.includes(input.effort),'UNQUALIFIED');
+  return {model:input.model,...(input.effort?{effort:input.effort}:{})};
+}
+
 /** Fixed loopback gateway transport. Payloads and credentials never enter argv. */
 export class ManagementGateway {
-  constructor(binding){this.binding=binding;this.pending=new Map();}
+  constructor(binding,{sessionSettings=false}={}){this.binding=binding;this.sessionSettings=sessionSettings;this.pending=new Map();this.listeners=new Set();}
   async connect(){
     if(this.socket?.readyState===WebSocket.OPEN&&this.connected)return;
     this.binding.assertCurrent();
@@ -28,6 +54,7 @@ export class ManagementGateway {
     });
     ws.on('message',bytes=>{
       let frame;try{frame=JSON.parse(bytes.toString());}catch{ws.terminate();return;}
+      if(frame.type==='event'){for(const listener of this.listeners)listener(frame);return;}
       if(frame.type!=='res')return;
       const pending=this.pending.get(frame.id);if(!pending)return;
       if(pending.final&&frame.ok&&frame.payload?.status==='accepted')return;
@@ -38,7 +65,7 @@ export class ManagementGateway {
     ws.on('error',()=>{});
     try {
       await challenge;
-      await this.send('connect',{minProtocol:3,maxProtocol:4,client:{id:'gateway-client',version:'150',platform:process.platform,mode:'backend'},role:'operator',scopes:['operator.read','operator.write'],auth:{[mode==='password'?'password':'token']:credential}},10000);
+      await this.send('connect',{minProtocol:3,maxProtocol:4,client:{id:'gateway-client',version:'150',platform:process.platform,mode:'backend'},role:'operator',scopes:this.sessionSettings?['operator.admin']:['operator.read','operator.write'],auth:{[mode==='password'?'password':'token']:credential}},10000);
       this.connected=true;
     }catch{ws.terminate();fail('SOURCE_UNAVAILABLE');}
   }
@@ -52,15 +79,16 @@ export class ManagementGateway {
     });
   }
   async call(method,params,timeout,final){
-    invariant(['health','agent','agent.wait','chat.abort','chat.history','models.list','sessions.patch'].includes(method),'DENIED');
+    invariant((this.sessionSettings?['sessions.patch']:['health','agent','agent.wait','chat.abort','chat.history','models.list','sessions.messages.subscribe','sessions.messages.unsubscribe']).includes(method),'DENIED');
     await this.connect();return this.send(method,params,timeout,final);
   }
+  subscribe(listener){this.listeners.add(listener);return ()=>this.listeners.delete(listener);}
   async close(){this.socket?.close();}
 }
 
 export function createManagementRuntime(binding,root){
   if(binding.kind==='hermes'){
-    let runtime;
+    let runtime;const cursors=new Map();
     const call=(operation,args)=>{
       // New management use requires the reviewed .env normalization path. The
       // shared HUD retains its legacy migration behavior; we never borrow an
@@ -72,10 +100,21 @@ export function createManagementRuntime(binding,root){
     };
     const conversationId=id=>`management-${id}`;
     return {kind:'hermes',
+      validateSelection:input=>validateConversationSelection(binding,input),
       async readiness(){const value=await call('status');invariant(value.installationId===binding.installationId&&value.protected===true,'IDENTITY_CHANGED');return {ready:value.ready===true,grantEnforced:false,source:'Protected Hermes companion',version:value.release};},
       open:input=>call('conversation_open',{conversationId:conversationId(input.conversationId)}),
       async submit(input){const value=await call('submit',{conversationId:conversationId(input.conversationId),requestId:input.requestId,clientNonce:input.nonce,text:input.text,deadlineMs:900000});invariant(value.state!=='unknown','UNKNOWN_OUTCOME');return {reference:input.requestId};},
       async observe(input){const value=await call('request_status',{conversationId:conversationId(input.conversationId),requestId:input.requestId});return {...value,state:({completed:'succeeded',interrupted:'unknown',waiting_approval:'running',queued:'running',stopping:'cancellation-requested'})[value.state]||value.state,source:'Protected Hermes request ledger'};},
+      async progress(input){
+        const cursor=cursors.get(input.requestId)||0,value=await call('events',{conversationId:conversationId(input.conversationId),requestId:input.requestId,cursor});
+        invariant(Array.isArray(value.events)&&value.events.length<=20,'SOURCE_UNAVAILABLE');
+        let after=cursor;
+        const events=value.events.map(event=>{
+          invariant(Number.isSafeInteger(event.sequence)&&event.sequence>after&&typeof event.tool==='string'&&typeof event.state==='string','SOURCE_UNAVAILABLE');after=event.sequence;
+          return {runtime:'hermes',source:'Protected Hermes tool evidence ledger',sourceSequence:event.sequence,kind:'tool',tool:event.tool.slice(0,200),state:event.state.slice(0,100),recordedAt:event.created};
+        });
+        cursors.set(input.requestId,after);return events;
+      },
       cancel:input=>call('stop',{conversationId:conversationId(input.conversationId),requestId:input.requestId}),
       close:async()=>{await runtime?.close();runtime=undefined;},
     };
@@ -84,10 +123,31 @@ export function createManagementRuntime(binding,root){
   const config=JSON.parse(readOwned(binding.configPath)),agentId=gatewayAgentId(config);
   const sessionKey=id=>`agent:${agentId}:netclaw-management:${id}`;
   return {kind:'openclaw',
+    validateSelection:input=>validateConversationSelection(binding,input),
     async readiness(){await gateway.call('health',{});return {ready:true,grantEnforced:false,source:'Authenticated local OpenClaw gateway'};},
-    async open(){},
+    async open(input){
+      const selected=validateConversationSelection(binding,input.selection||{});
+      if(!selected.model)return {selectionVerified:false,source:'Uses configured runtime defaults'};
+      // Upstream requires operator.admin for model/effort session settings. Use
+      // a short-lived, fixed-method connection only for this explicit owned
+      // selection. Ordinary requests retain read/write scope; assistants cannot
+      // enter the operator runtime adapter.
+      const settings=new ManagementGateway(binding,{sessionSettings:true});let result;
+      try{result=await settings.call('sessions.patch',{key:sessionKey(input.conversationId),agentId,model:selected.model,...(selected.effort?{thinkingLevel:selected.effort}:{})});}finally{await settings.close();}
+      invariant(result.ok===true&&result.key===sessionKey(input.conversationId)&&`${result.resolved?.modelProvider}/${result.resolved?.model}`===selected.model,'UNQUALIFIED');
+      if(selected.effort)invariant(result.resolved?.thinkingLevel===selected.effort,'UNQUALIFIED');
+      return {selectionVerified:true,...selected,source:'OpenClaw sessions.patch resolved model and effort'};
+    },
     async submit(input){
-      const result=await gateway.call('agent',{message:input.text,agentId,sessionKey:sessionKey(input.conversationId),deliver:false,timeout:900,idempotencyKey:input.requestId},930000,true);
+      let last=-1;
+      const subscribed=await gateway.call('sessions.messages.subscribe',{key:sessionKey(input.conversationId),agentId});
+      invariant(subscribed.subscribed===true&&subscribed.key===sessionKey(input.conversationId),'UNQUALIFIED');
+      const unsubscribe=gateway.subscribe(frame=>{
+        const event=projectGatewayEvent(frame,input.requestId);
+        if(event&&event.sourceSequence>last){last=event.sourceSequence;input.onProgress?.(event);}
+      });
+      let result;
+      try{result=await gateway.call('agent',{message:input.text,agentId,sessionKey:sessionKey(input.conversationId),deliver:false,timeout:900,idempotencyKey:input.requestId},930000,true);}finally{unsubscribe();await gateway.call('sessions.messages.unsubscribe',{key:sessionKey(input.conversationId),agentId}).catch(()=>{});}
       invariant(result.status==='ok','UNKNOWN_OUTCOME');
       const payload=result.result||result;
       const output=(payload.payloads||[]).filter(p=>typeof p.text==='string').map(p=>p.text).join('\n');

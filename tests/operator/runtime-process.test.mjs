@@ -25,7 +25,7 @@ test('real isolated OpenClaw, controlled provider and detached management worker
   const {url}=JSON.parse((await iterator.next()).value);
   const probe=net.createServer();await new Promise(resolve=>probe.listen(0,'127.0.0.1',resolve));const port=probe.address().port;await new Promise(resolve=>probe.close(resolve));
   const workspace=path.join(fixture.home,'workspace');fs.mkdirSync(workspace,{mode:0o700});
-  fs.writeFileSync(fixture.configPath,JSON.stringify({models:{providers:{fixture:{baseUrl:url,apiKey:'${OPENAI_API_KEY}',api:'openai-completions',models:[{id:'hud-fixture',name:'hud-fixture',contextWindow:64000,maxTokens:4096}]}}},agents:{defaults:{model:{primary:'fixture/hud-fixture'},workspace}},tools:{deny:['*']},gateway:{mode:'local',port,auth:{mode:'token',token:'${OPENCLAW_GATEWAY_TOKEN}'}}}),{mode:0o600});
+  fs.writeFileSync(fixture.configPath,JSON.stringify({models:{providers:{fixture:{baseUrl:url,apiKey:'${OPENAI_API_KEY}',api:'openai-completions',models:[{id:'hud-fixture',name:'hud-fixture',contextWindow:64000,maxTokens:4096,reasoning:true}]}}},agents:{defaults:{model:{primary:'fixture/hud-fixture'},workspace}},tools:{deny:['*']},gateway:{mode:'local',port,auth:{mode:'token',token:'${OPENCLAW_GATEWAY_TOKEN}'}}}),{mode:0o600});
   fs.writeFileSync(path.join(fixture.home,'.env'),'OPENCLAW_GATEWAY_TOKEN=fixture-private-token-150\nOPENAI_API_KEY=fixture-only\n',{mode:0o600});
   const log=fs.openSync(path.join(fixture.root,'gateway.log'),'wx',0o600);
   const gateway=spawn(process.execPath,[process.env.NETCLAW_TEST_OPENCLAW_ENTRY,'gateway','run','--port',String(port),'--bind','loopback'],{env:{PATH:`${path.dirname(process.execPath)}:${process.env.PATH}`,HOME:fixture.home,OPENCLAW_STATE_DIR:fixture.home,OPENCLAW_CONFIG_PATH:fixture.configPath,OPENCLAW_GATEWAY_TOKEN:'fixture-private-token-150',OPENAI_API_KEY:'fixture-only'},stdio:['ignore',log,log]});fs.closeSync(log);children.push(gateway);
@@ -37,7 +37,7 @@ test('real isolated OpenClaw, controlled provider and detached management worker
     await delay(300);
   }
   assert.equal(ready,true,'real gateway ready');
-  const conversation=await service.call('operator_conversation_open',{nonce:nonce(),view:'chat'});
+  const conversation=await service.call('operator_conversation_open',{nonce:nonce(),view:'chat',model:'fixture/hud-fixture',effort:'low'});
   for(const prompt of ['remember violet','what colour?']){
     const input={nonce:nonce(),conversationId:conversation.conversationId,prompt,contextIds:[]};
     const admitted=await service.call('operator_request_submit',input);
@@ -50,6 +50,9 @@ test('real isolated OpenClaw, controlled provider and detached management worker
       await service.close();service=null;
     }
     assert.equal(result?.state,'succeeded',JSON.stringify(result));assert.match(result.result.output,/violet/i);
+    const events=service.journal.events(service.binding.principal,admitted.operationId);
+    assert.ok(events.some(event=>event.type==='runtime-selection'&&event.data.selectionVerified===true&&event.data.effort==='low'),'exact model/effort verified by the real gateway');
+    assert.ok(events.some(event=>event.type==='runtime-progress'&&event.data.kind==='answer'&&event.data.output),'real answer progress retained');
     assert.equal((await service.call('operator_request_submit',input)).operationId,admitted.operationId);
     const worker=JSON.parse(service.journal._row(admitted.operationId).worker);
     for(let attempt=0;attempt<100;attempt++){try{process.kill(worker.pid,0);await delay(50);}catch{break;}}

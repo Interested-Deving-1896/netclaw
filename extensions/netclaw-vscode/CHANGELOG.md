@@ -21,3 +21,6 @@ named-assistant workflows and remaining domain acceptance must pass before publi
 - Require explicit rebinding of earlier ambiguous WSL profiles; retained files are not deleted.
 - Keep reviewed secret changes bound to their original connection across dialogs.
 - Deny assistant principals at the private operator dispatcher and wait for concurrent GAIT turns during disconnect.
+
+- Added owned OpenClaw model/effort selection, verified before inference; durable public answer/tool progress, bounded and redacted.
+- Bound every rich-view call across asynchronous dialogs to its original connection generation. Terminal registration now checks the installed client version.

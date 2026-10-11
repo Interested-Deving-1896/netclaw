@@ -34,7 +34,11 @@ folder. Overview reports the selected installation and supported capabilities.
 
 Chat, Canvas and Avatar share owned conversations. Adding selected context
 requires review; opening a view, editing a draft or branching a Canvas does not
-send a provider request. RAG searches the selected local corpus and preserves
+send a provider request. **New with model settings** creates an owned conversation
+with a configured OpenClaw model and its declared effort choices. At explicit
+Send, the gateway must verify that exact model/effort before inference. Hermes
+uses its configured companion model. Answer progress and tool milestones retain
+their runtime source; partial or bounded evidence is labeled. RAG searches the selected local corpus and preserves
 citations. RAG retrieval and recorded Memory search are separate operations.
 
 Settings expose reviewed provider/model, OpenClaw budget and environment

@@ -117,6 +117,14 @@ export class Journal {
     return this.db.prepare('SELECT * FROM events WHERE operation=? AND sequence>? ORDER BY sequence LIMIT ?').all(id, after, Math.min(limit, 500))
       .map(row => ({ sequence: row.sequence, type: row.type, data: JSON.parse(row.data), observedAt: new Date(row.observed).toISOString() }));
   }
+  latestProgress(owner,id){
+    this._owned(owner,this._row(id));
+    const row=this.db.prepare("SELECT sequence,data,observed FROM events WHERE operation=? AND type='runtime-progress' ORDER BY sequence DESC LIMIT 1").get(id);
+    if(!row)return null;
+    const answer=this.db.prepare("SELECT data,observed FROM events WHERE operation=? AND type='runtime-progress' AND json_extract(data,'$.kind')='answer' ORDER BY sequence DESC LIMIT 1").get(id);
+    const text=answer?JSON.parse(answer.data):null;
+    return {sequence:row.sequence,...JSON.parse(row.data),...(text?{output:text.output,partial:true,truncated:text.truncated===true,answerObservedAt:new Date(answer.observed).toISOString()}:{}),observedAt:new Date(row.observed).toISOString()};
+  }
   transition(id, state, data = {}) {
     return this.transaction(() => {
       const row = this._row(id); invariant(transitions[row.state]?.includes(state), 'UNKNOWN_OUTCOME');

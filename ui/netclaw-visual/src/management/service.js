@@ -20,7 +20,7 @@ import { documentContent } from '../hud-server/documentation.js';
 import { ClientGrants } from './clients.js';
 import { startOwnedWorker } from './worker.js';
 import { Conversations } from './conversations.js';
-import { createManagementRuntime } from './chat-runtime.js';
+import { createManagementRuntime,conversationOptions } from './chat-runtime.js';
 import { Workspace } from './workspace.js';
 import { RagClient } from './rag.js';
 import {installationLogs,ownedUsage,configuredNetwork} from './observability.js';
@@ -92,7 +92,7 @@ export class ManagementService {
   }
   snapshot(principal,input){
     authorize(principal,'inspect',[]);
-    if(input.domain==='settings')return this.envelope({revision:this.proposals.revision(),runtime:this.identity().runtimeSettings,environment:configurationSnapshot(this.binding),managed:managedSettingsSnapshot(this.binding)},'Selected installation configuration');
+    if(input.domain==='settings')return this.envelope({revision:this.proposals.revision(),runtime:this.identity().runtimeSettings,environment:configurationSnapshot(this.binding),managed:managedSettingsSnapshot(this.binding),conversation:conversationOptions(this.binding)},'Selected installation configuration');
     if(input.domain==='usage'){
       const data=this.binding.kind==='hermes'?ownedUsage(this.journal,principal,input.window):readUsage(path.join(this.binding.home,'agents',gatewayAgentId(this.config()),'sessions'),{window:input.window});
       return this.envelope({...data,externalAssistantUsage:null,billingNote:'NetClaw usage excludes Copilot, Claude Code and Codex inference.'},'Selected runtime retained usage');

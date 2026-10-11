@@ -20,8 +20,17 @@ test('assistant launcher is fixed, grant-bound and secret-free, including hostil
   const ssh=assistantLaunch({...profile,transport:'ssh',sshAlias:'existing'},grant);assert.equal(ssh.command,'ssh');assert.ok(ssh.args.includes('StrictHostKeyChecking=yes'));
   assert.ok(!ssh.args.at(-1).includes('netclaw-operator.mjs'));
   for(const client of ['codex','claude-code']){
-    const preview=terminalPreview({profile,grant:{...grant,client},enabled:true});assert.match(preview,/mcp.*add/);assert.match(preview,/mcp.*remove/);assert.ok(preview.includes(grant.credentialRef));assert.ok(!preview.includes('--env'));
+    const version={client,version:client==='codex'?'0.162.1':'2.1.286',verified:true,host:profile.context};
+    const preview=terminalPreview({profile,grant:{...grant,client},enabled:true},version);assert.match(preview,/mcp.*add/);assert.match(preview,/mcp.*remove/);assert.ok(preview.includes(grant.credentialRef));assert.ok(!preview.includes('--env'));
+    for(const wrong of [{...version,version:'0.0.0'},{...version,host:'other'},{...version,verified:false}])assert.throws(()=>terminalPreview({profile,grant:{...grant,client},enabled:true},wrong));
   }
+});
+test('terminal export rejects unknown, injected and mismatched CLI version output',async()=>{
+  const {parseClientVersion}=await sourceModule('assistants/registration.ts',api);
+  assert.equal(parseClientVersion('codex','codex-cli 0.162.1\n').verified,true);
+  assert.equal(parseClientVersion('claude-code','2.1.286 (Claude Code)\n').verified,true);
+  assert.equal(parseClientVersion('codex','codex-cli 0.163.0').verified,false);
+  for(const output of ['codex-cli 0.162.1\nextra command','2.1.286 (Claude Code)','codex-cli 0.162.1; echo injected',''])assert.throws(()=>parseClientVersion('codex',output));
 });
 test('Copilot discovery is opt-in and side-effect-free; resolve rechecks revocation and immutable binding',async()=>{
   const {profile,grant}=await fixture(),{AssistantProvider}=await sourceModule('assistants/provider.ts',api);

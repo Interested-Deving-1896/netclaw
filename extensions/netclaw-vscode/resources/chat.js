@@ -3,7 +3,7 @@
   let sequence=0,selected=new Set(),sending=false;
   const el=id=>document.getElementById(id);
   const post=(type,payload)=>api.postMessage({viewId,requestId:String(++sequence),type,...(payload?{payload}:{})});
-  for(const id of ['refresh','new','cancel'])el(id).addEventListener('click',()=>post(id));
+  for(const id of ['refresh','new','settings','cancel'])el(id)?.addEventListener('click',()=>post(id));
   const draft=()=>post('draft',{text:el('prompt').value,retain:el('retain').checked});
   let timer;
   el('prompt').addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(draft,350);});
@@ -21,7 +21,15 @@
     if(data.type!=='state')return;
     if(data.initial){el('prompt').value=data.saved.draft||'';el('retain').checked=data.saved.retain===true;}
     el('transcript').replaceChildren();
-    for(const request of data.requests){message('You',request.prompt);if(request.result?.output)message('NetClaw',request.result.output);message('Request status',`${request.state} · ${request.operationId}`);}
+    for(const request of data.requests){
+      message('You',request.prompt);
+      if(request.result?.output)message('NetClaw',request.result.output);
+      else if(request.progress?.output)message('NetClaw · partial response',request.progress.output);
+      if(request.result?.source||request.progress?.source)message('Response source',request.result?.source||request.progress.source);
+      if(request.progress?.kind==='tool')message('Tool evidence',`${request.progress.tool} · ${request.progress.state} · ${request.progress.source}`);
+      if(request.progress?.truncated||request.progress?.eventLimitReached)message('Evidence limit','Partial progress was bounded. Check the final result and retained operation evidence.');
+      message('Request status',`${request.state} · ${request.operationId}`);
+    }
     const active=data.requests.find(r=>!['succeeded','failed','cancelled','denied','expired'].includes(r.state));
     const lost=data.saved.pendingNonce&&!data.saved.operationId;
     el('send').disabled=Boolean(active||lost||sending);el('cancel').disabled=!active||active.state==='unknown';
