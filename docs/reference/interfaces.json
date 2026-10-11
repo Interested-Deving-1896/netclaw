@@ -924,7 +924,7 @@
           "declaration": "npm run publisher:verify \u2192 vsce verify-pat NetClaw"
         }
       ],
-      "sha256": "59c5769890af9834cc4444fc1d97b7934bdb4112abbac3b86752f59fcab2d205",
+      "sha256": "7df6da30b85df4b718fd2c1611dcbdfdec5c6faa1bdf470d8299c9f41cd57cfd",
       "coverage": "All package.json script commands. Arguments after -- are delegated to the underlying command."
     },
     {

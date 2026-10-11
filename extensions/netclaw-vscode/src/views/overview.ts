@@ -17,5 +17,6 @@ export function connectionTree(connection:Connection,profiles:Profiles):Navigati
   return new NavigationTree(()=>[
     ...profiles.list().map(profile=>({label:profile.label,description:connection.profile?.id===profile.id?'Connected':`${profile.harness} · ${profile.transport}`,command:'netclaw.selectConnection',args:[profile.id],icon:'remote'})),
     {label:'Add an existing installation',command:'netclaw.addConnection',icon:'add'},
+    {label:'Rename a connection',command:'netclaw.renameConnection',icon:'edit'},
   ]);
 }

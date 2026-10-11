@@ -52,17 +52,30 @@ export class Profiles {
     const item=validateProfile({...profile,id:profile.id||randomUUID(),context:profile.context||hostContext()} as ConnectionProfile);
     await this.write(item.id,item);return item;
   }
-  private async write(id:string,value:ConnectionProfile|{deleted:true}):Promise<void>{
-    if(!this.directory){await this.state.update(`netclaw.profile.v2.${id}`,value);return;}
+  async rename(expected:ConnectionProfile,label:string):Promise<ConnectionProfile>{
+    if(!label.trim()||label.length>100||/[\r\n\0]/.test(label))throw Error('Enter a single-line label of 1–100 characters.');
+    let renamed:ConnectionProfile|undefined;
+    await this.write(expected.id,()=>{
+      const current=this.list().find(profile=>profile.id===expected.id);
+      if(!current||JSON.stringify(current)!==JSON.stringify(expected))throw Error('This profile changed or was removed. Select it again before renaming.');
+      renamed=validateProfile({...current,label:label.trim()});return renamed;
+    });
+    return renamed!;
+  }
+  private async write(id:string,input:ConnectionProfile|{deleted:true}|(()=>ConnectionProfile)):Promise<void>{
+    if(!this.directory){await this.state.update(`netclaw.profile.v2.${id}`,typeof input==='function'?input():input);return;}
     if(!/^[a-f\d-]{36}$/.test(id))throw Error('Invalid profile identity.');
     const directory=path.join(this.directory,'profiles');fs.mkdirSync(directory,{recursive:true,mode:0o700});
     if(fs.lstatSync(directory).isSymbolicLink())throw Error('Invalid local profile storage.');
-    const temporary=path.join(directory,`${id}.${randomUUID()}.tmp`),target=path.join(directory,`${id}.json`);
+    const temporary=path.join(directory,`${id}.${randomUUID()}.tmp`),target=path.join(directory,`${id}.json`),lock=path.join(directory,`${id}.lock`);
+    try{fs.mkdirSync(lock,{mode:0o700});}catch{throw Error('This profile is being updated. Retry after the other window finishes; an abandoned lock requires local review.');}
     // VS Code 1.102 echoes whole Memento snapshots asynchronously. Separate
     // atomic files preserve unrelated writes across windows and stale echoes.
-    const fd=fs.openSync(temporary,'wx',0o600);
-    try{fs.writeFileSync(fd,JSON.stringify(value));fs.fsyncSync(fd);}finally{fs.closeSync(fd);}
-    try{fs.renameSync(temporary,target);}finally{if(fs.existsSync(temporary))fs.unlinkSync(temporary);}
+    try{
+      const value=typeof input==='function'?input():input,fd=fs.openSync(temporary,'wx',0o600);
+      try{fs.writeFileSync(fd,JSON.stringify(value));fs.fsyncSync(fd);}finally{fs.closeSync(fd);}
+      fs.renameSync(temporary,target);
+    }finally{if(fs.existsSync(temporary))fs.unlinkSync(temporary);fs.rmdirSync(lock);}
   }
   async remove(id:string):Promise<void>{await this.write(id,{deleted:true});}
 }

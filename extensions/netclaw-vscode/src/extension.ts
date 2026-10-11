@@ -7,6 +7,7 @@ import { openChat } from './views/chat';
 import { openCanvas } from './views/canvas';
 import { openRag } from './views/rag';
 import { stageSelectedContext } from './commands/context';
+import {renameConnection} from './commands/profiles';
 import {configureSettings} from './views/settings';
 import {AssistantProvider} from './assistants/provider';
 import {manageAssistant} from './assistants/setup';
@@ -90,6 +91,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
     if(profile)await connectProfile(profile);else if(!items.length)await vscode.commands.executeCommand('netclaw.addConnection');
   });
   register('disconnect',()=>connection.disconnect());
+  register('renameConnection',()=>renameConnection(profiles,connection));
   register('removeConnection',async()=>{const item=await vscode.window.showQuickPick(profiles.list().map(p=>({label:p.label,profile:p})));if(!item)return;if(connection.profile?.id===item.profile.id)await connection.disconnect();await profiles.remove(item.profile.id);refresh();});
   register('openDomain',async key=>{if(typeof key!=='string'||!Object.hasOwn(domains,key))throw Error('Unknown NetClaw view.');const view=domains[key]!;openDataView(context,connection,{title:view.title,kind:key,load:()=>connection.call(view.method,view.args)});});
   for(const [command,key] of Object.entries({openOverview:'overview',openSettings:'settings'}))register(command,()=>vscode.commands.executeCommand('netclaw.openDomain',key));

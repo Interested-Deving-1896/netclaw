@@ -126,6 +126,11 @@
         "category": "NetClaw"
       },
       {
+        "command": "netclaw.renameConnection",
+        "title": "Rename Connection",
+        "category": "NetClaw"
+      },
+      {
         "command": "netclaw.removeConnection",
         "title": "Remove Connection",
         "category": "NetClaw"

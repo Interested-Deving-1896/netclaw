@@ -93,3 +93,17 @@ No WSL, native Linux, Remote SSH, second-distribution, actual Copilot/Claude Cod
 Codex or public Marketplace acceptance is claimed here. The owner WSL baseline's
 unsupported Node, absent live stable identity/management components and Spec149
 Linux/WSL qualification remain dependencies. See the separate WSL evidence.
+
+## Profile rename and requirement ledger — 2026-10-11
+
+A complete [verification ledger](../verification.md) now maps all 44 FRs and 13 SCs
+to evidence and open gates. It found the missing native rename command, now
+implemented in the Connections tree/Command Palette. Renaming only changes the
+editor label, preserving connection identity/generation and all backend state.
+Cancellation, stale/deleted profiles and per-profile lock contention cannot
+overwrite or resurrect another window's state. All 67 extension tests and
+TypeScript checking passed, including the two new native/storage boundary cases.
+This does not complete remote profile or full keyboard/theme qualification.
+
+GAIT checkpoint: `deb9a568`. The current packaged f95a322 candidate predates this
+rename implementation and needs rebuilding at the next package checkpoint.

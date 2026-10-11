@@ -6,6 +6,11 @@ acceptance. No owner NetClaw was selected by these tests.
 
 ## Actual installed clients
 
+Publisher status update, 2026-10-11: the owner completed `vsce login NetClaw`
+and independent `publisher:verify` succeeded. The earlier TF400813 result below
+is historical and resolved. No further publisher login is required. No extension
+has been published; implementation and qualification gates remain open.
+
 - Codex CLI 0.162.1: local authentication status reports logged in.
 - Claude Code 2.1.286: local authentication reports logged in using claude.ai.
 - VS Code 1.108.0 is installed. The isolated extension-host check used the

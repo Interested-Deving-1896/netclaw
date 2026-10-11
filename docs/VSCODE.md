@@ -156,3 +156,11 @@ interrupted operation’s journal and baseline for recovery. Manual or upstream
 configuration changes still invalidate prepared revisions and must be reviewed
 again. Credential normalization is supported by both management and the normal
 Hermes HUD launch/status workflow.
+
+### Rename a saved connection
+
+Use **NetClaw: Rename Connection** from the Connections tree or Command Palette.
+This edits only the local label; it does not reconnect or change the installation,
+operator, credentials or active requests. A profile changed or removed while the
+dialog was open must be selected again. Profile writes are serialized per ID; an
+abandoned local lock is not silently taken over.
