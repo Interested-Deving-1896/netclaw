@@ -31,7 +31,7 @@ provider credentials must never be copied into editor or assistant configuration
 | Tool | Inputs / authority |
 |---|---|
 | `netclaw_status` | No arguments; scoped inspection |
-| `netclaw_inventory` | `kind` overview/integration/skill, bounded paging |
+| `netclaw_inventory` | `kind` overview/integration/skill/member/peer/edge, bounded paging; estate detail uses exact `resourceId` and requires evidence disclosure |
 | `netclaw_evidence` | `kind`, optional ID, paging; explicit disclosure required |
 | `netclaw_request` | **Execution request**, nonce, prompt, optional owned conversation; local protected Hermes only, external context IDs currently refused |
 | `netclaw_request_status` | Exactly one request ID or nonce; owned status only |

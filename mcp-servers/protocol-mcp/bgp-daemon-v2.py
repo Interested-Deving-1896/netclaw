@@ -211,6 +211,12 @@ async def handle_n2n(method, path, body):
     parts = path.strip("/").split("/")  # e.g. ["n2n","peers","as65007-7.7.7.7","inventory"]
 
     try:
+        if path == '/n2n/management/estate' and method == 'POST':
+            from bgp.federation.management_estate import ManagementEstate
+            try:
+                return 200, ManagementEstate(fed).read(body)
+            except (ValueError, KeyError, TypeError, OSError):
+                return 409, {'error': 'Estate inventory is unavailable or the selection is invalid.'}
         if path == '/n2n/management/meetings' and method == 'POST':
             from bgp.federation.zoom_channel import read_management_context
             if not isinstance(body, dict) or set(body)-{'id'}:

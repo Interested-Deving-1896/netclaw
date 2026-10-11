@@ -88,16 +88,16 @@ export class ManagementService {
   }
   async resources(principal,input){
     authorize(principal,'inspect',[]);
+    invariant(!input.resourceId||['member','peer','edge'].includes(input.kind),'INVALID_INPUT');
     if(input.kind==='client')return this.envelope(this.paginate(this.clients.list(principal),input),'Private operator client grant registry');
     if(input.kind==='overview'){
       if(input.filters?.query&&/^\d{13}:[a-f\d-]{36}$/.test(input.filters.query))return this.envelope({operation:this.journal.byNonce(principal,input.filters.query)},'Durable admission lookup; no dispatch');
       return this.envelope({identity:this.identity(),operations:this.journal.list(principal)},'Selected installation and durable management journal');
     }
     if(['member','peer','edge'].includes(input.kind)){
-      const result=await this.readFederation(input.kind);
-      const projected=projectFederation(input.kind,result.value),query=input.filters?.query?.toLowerCase();
-      const rows=projected.items.filter(row=>(!query||row.id.toLowerCase().includes(query)||row.label.toLowerCase().includes(query))&&(!input.filters?.status||row.state===input.filters.status));
-      return this.envelope({...this.paginate(rows,input),sourceIdentity:projected.sourceIdentity,qualification:projected.qualification},result.source,[result.qualification]);
+      authorize(principal,'inspect',[this.binding.installationId]);
+      const result=await this.readFederation(input.kind,input),projected=projectFederation(input.kind,result.value);
+      return this.envelope({items:projected.items,total:result.value.total,...(result.value.nextCursor?{nextCursor:result.value.nextCursor}:{}),sourceIdentity:projected.sourceIdentity,qualification:projected.qualification},result.source,[result.qualification]);
     }
     if(input.kind==='integration'){
       const inventory=runtimeInventory(this.config()),servers=new Map(inventory.mcp_servers.map(s=>[s.name,s])),env=environment(this.binding);

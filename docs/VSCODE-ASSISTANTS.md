@@ -28,6 +28,12 @@ chat-completions transport is qualified; other transports refuse dispatch.
 OpenClaw assistant execution and broader federation delegation remain unavailable.
 The extension does not launch or configure a companion to make this option appear.
 
+Estate inspection through `netclaw_inventory` also supports `member`, `peer` and
+`edge`. Summary disclosure exposes observed identifiers/harnesses/models/counts;
+exact `resourceId` capability detail additionally requires evidence disclosure.
+See [federation inspection](VSCODE-FEDERATION.md). No remote execution authority
+is derived from advertised tools or model labels.
+
 ## Copilot
 
 The opt-in provider uses the stable VS Code 1.102 MCP API. Discovery performs no

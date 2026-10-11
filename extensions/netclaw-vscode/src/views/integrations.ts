@@ -3,7 +3,7 @@ import {Connection,boundCaller} from '../connection/connect';
 import {openDataView} from '../webview/bridge';
 import {prepareEnvironmentChange} from './configuration';
 
-export type Resource={id:string;label?:string;state?:string;harness?:{type:string;version:string|null};notes?:string;registered?:boolean;installed?:boolean;reachable?:boolean|null;executionVerified?:boolean|null;configuration?:{key:string;isSet:boolean}[];source:string};
+export type Resource={id:string;label?:string;state?:string;harness?:{type:string;version:string|null};stale?:boolean|null;inventory?:{available:boolean;detail:boolean;truncated:boolean;error?:string|null};notes?:string;registered?:boolean;installed?:boolean;reachable?:boolean|null;executionVerified?:boolean|null;configuration?:{key:string;isSet:boolean}[];source:string};
 type Page={data:{items:Resource[];total:number;nextCursor?:string};source:string;observedAt:string;warnings:string[]};
 export async function readResourcePages(connection:Connection,kind:'integration'|'skill'|'member'|'peer'|'edge'){
   const call=boundCaller(connection),items:Resource[]=[],seen=new Set<string>(),ids=new Set<string>();let cursor:string|undefined,last:Page|undefined,pages=0;

@@ -30,7 +30,19 @@ async function dispatchAssistant(service,credentialRef,name,raw){
   }
   if(name==='netclaw_inventory'){
     authorize(grant,'inspect',[]);
-    invariant(['overview','integration','skill'].includes(input.kind),'DENIED');
+    invariant(['overview','integration','skill','member','peer','edge'].includes(input.kind),'DENIED');
+    if(['member','peer','edge'].includes(input.kind)){
+      authorize(grant,'inspect',[service.binding.installationId]);
+      invariant(grant.disclosure.includes('summary'),'DENIED');
+      // Details expose capability names only under the separately reviewed
+      // evidence scope; summary grants disclose identity/harness/model/counts.
+      if(input.resourceId)invariant(grant.disclosure.includes('evidence'),'DENIED');
+      const result=await service.resources(grant,input);
+      return {...result,data:{items:result.data.items.map(row=>({id:row.id,kind:row.kind,state:row.state,harness:row.harness,model:row.model,
+        stale:row.stale,receivedAt:row.receivedAt,inventory:row.inventory,executionVerified:null,
+        ...(input.resourceId?{capabilities:row.capabilities,skills:row.skills,knowledge:row.knowledge}:{} )})),total:result.data.total,
+        ...(result.data.nextCursor?{nextCursor:result.data.nextCursor}:{}),qualification:result.data.qualification}};
+    }
     const result=await service.resources(grant,input);
     if(input.kind==='overview')return {installationId:service.binding.installationId,harness:service.binding.kind,operations:service.journal.list(grant).map(value=>disclosedOperation(grant,value))};
     // Minimal disclosure does not expose configured file paths, variable names or arbitrary descriptions.

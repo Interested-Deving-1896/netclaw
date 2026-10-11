@@ -30,6 +30,11 @@ qualification remain required. Assistant natural-language delegation and remaini
 federation/security/service controls are still in development; unsupported actions
 are refused by the backend.
 
+Estate cards show received harness/model and capability counts. Selecting a Claw
+reads its exact cached tool/skill/knowledge inventory, with stale, unavailable and
+truncated results explicit. Assistant estate summaries use the reviewed inspect
+grant; detailed capability names additionally require evidence disclosure.
+
 ## Connect
 
 1. Open a trusted desktop VS Code window. For Windows/WSL, first open the intended

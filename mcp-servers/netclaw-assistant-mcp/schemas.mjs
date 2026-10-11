@@ -3,7 +3,7 @@ import { id, nonce, page, changeSchema,changeInput } from '../netclaw-operator-m
 import { fail } from '../../ui/netclaw-visual/src/management/errors.js';
 export const schemas = Object.freeze({
   netclaw_status: z.strictObject({}),
-  netclaw_inventory: z.strictObject({ kind: z.enum(['overview','integration','skill']), ...page }),
+  netclaw_inventory: z.strictObject({ kind: z.enum(['overview','integration','skill','member','peer','edge']), resourceId:id.optional(), ...page }),
   netclaw_evidence: z.strictObject({ kind: z.enum(['gait','usage','network','diagnostic']), id: id.optional(), ...page }),
   netclaw_request: z.strictObject({ nonce, prompt: z.string().max(65536).refine(v => Buffer.byteLength(v) <= 65536), conversationId: id.optional(), contextIds: z.array(id).max(20).default([]) }),
   netclaw_request_status: z.strictObject({ requestId: id.optional(), nonce: nonce.optional(), after: z.number().int().min(0).default(0) }).refine(v => Boolean(v.requestId) !== Boolean(v.nonce)),

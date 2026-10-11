@@ -322,3 +322,13 @@ T043 adds durable operator-only Terminal Intent around the existing scoped engin
 real OpenClaw HTTP/worker/GAIT crash and lease-expiry evidence confirms no replay.
 Synthetic lab artifacts do not qualify real device configuration or rollback.
 See evidence/configuration.md and evidence/security.md.
+
+## Received estate checkpoint
+
+[Federation evidence](evidence/federation.md) records paged cached member/peer
+summaries, exact native capability inspection and scoped assistant estate reads.
+It fixes the missing external harness/model inventory path. Actual daemon/SQLite
+and loopback process checks passed on both selected harnesses with synthetic
+100-member/100-peer estates and zero peer contacts or federation writes. It does
+not close T029/T030/T032/T033/T034 or qualify runtime execution, named-client
+inference, editor performance, WSL or native Linux.

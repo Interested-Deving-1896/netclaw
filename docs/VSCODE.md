@@ -93,6 +93,8 @@ Tokenomics distinguishes recorded usage, missing sources and external assistant
 billing. Logs are bounded installation-owned sources with a review before
 export. Configured network inventory is labeled configured, not live discovery.
 Documentation is read from the connected backend's indexed repository.
+The [federation guide](VSCODE-FEDERATION.md) describes paged estate cards,
+exact cached capability inspection, freshness and scoped assistant summaries.
 
 [Copilot, Claude Code and Codex setup](VSCODE-ASSISTANTS.md) uses a separate,
 scoped assistant interface. Its current supported access is inspection and

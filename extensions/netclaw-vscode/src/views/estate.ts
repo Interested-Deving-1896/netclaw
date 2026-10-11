@@ -4,7 +4,7 @@ import {openDataView} from '../webview/bridge';
 import {readResourcePages,Resource} from './integrations';
 
 type Group='member'|'peer'|'edge'|'advisor';
-type Node={label:string;generation:number;group?:Group;resource?:Resource;observedAt?:string;source?:string;description?:string;error?:string;command?:string};
+type Node={label:string;generation:number;group?:Group;resourceKind?:'member'|'peer'|'edge';resource?:Resource;observedAt?:string;source?:string;description?:string;error?:string;command?:string};
 /** Lazy native inventory: one unavailable federation source never hides the
  * local installation or independently available member/advisor branches. */
 export class EstateTree implements vscode.TreeDataProvider<Node>,vscode.Disposable{
@@ -40,7 +40,8 @@ export class EstateTree implements vscode.TreeDataProvider<Node>,vscode.Disposab
       }
       const result=await readResourcePages(this.connection,node.group);
       if(generation!==this.connection.generation)return [];
-      const rows:Node[]=result.items.map(resource=>({label:resource.label||resource.id,generation,resource,observedAt:result.observedAt,source:result.source,description:`${resource.harness?.type||'unknown harness'} · ${resource.state||'unknown state'}`}));
+      const rows:Node[]=result.items.map(resource=>({label:resource.label||resource.id,generation,resource,resourceKind:node.group as 'member'|'peer'|'edge',observedAt:result.observedAt,source:result.source,
+        description:`${resource.harness?.type||'unknown harness'} · ${resource.state||'unknown state'}${resource.inventory?.error?' · inventory unavailable':resource.stale?' · stale inventory':''}`}));
       if(result.partial)rows.push({label:`Showing ${rows.length} of ${result.total}; bounded result`,generation});
       if(!rows.length)rows.push({label:'No entries reported by this source',generation});
       return rows;
@@ -52,6 +53,13 @@ export function inspectEstateResource(context:vscode.ExtensionContext,connection
   if(!node||typeof node!=='object')throw Error('Select a Claw from the native estate tree.');
   const selected=node as Node;
   if(selected.generation!==connection.generation||!selected.resource)throw Error('Connection changed. Refresh the estate before inspecting this Claw.');
-  openDataView(context,connection,{title:selected.label,kind:'claw',load:async()=>({resource:selected.resource,observedAt:selected.observedAt,source:selected.source,
-    qualification:'This is the inventory captured when the branch expanded. Refresh the tree to obtain a new observation. Advertised tools and skills do not grant permission or prove execution.'})});
+  if(!selected.resourceKind)throw Error('Refresh the estate before inspecting this Claw.');
+  const call=boundCaller(connection),resourceId=selected.resource.id,kind=selected.resourceKind;
+  openDataView(context,connection,{title:selected.label,kind:'claw',load:async()=>{
+    const result=await call<{data:{items:Resource[]};source:string;observedAt:string;warnings:string[]}>('operator_resources',{kind,resourceId,limit:1});
+    const resource=result.data.items[0];
+    if(result.data.items.length!==1||!resource||resource.id!==resourceId)throw Error('This Claw is no longer present in the selected estate. Refresh the tree.');
+    return {resource,observedAt:result.observedAt,source:result.source,warnings:result.warnings,
+      qualification:'Fresh read of the received inventory cache; the peer is not contacted. Counts include omitted entries when detail is bounded. Advertisements, assigned specialties and verified execution are distinct. No capability here grants authority.'};
+  }});
 }

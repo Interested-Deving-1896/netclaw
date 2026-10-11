@@ -23,7 +23,7 @@ Each row becomes fixed JSON schemas in `mcp-servers/netclaw-operator-mcp/schemas
 | Tool | Inputs | Result / restrictions |
 |---|---|---|
 | `operator_identity` | none | Verified handshake; no secret values. |
-| `operator_resources` | kind overview/member/peer/edge/advisor/integration/skill/network, filters, cursor, limit | Scoped observations and explicit supported actions. |
+| `operator_resources` | kind overview/member/peer/edge/advisor/integration/skill/network, filters, cursor, limit; exact `resourceId` only for member/peer/edge | Scoped observations and explicit supported actions. Estate lists contain paged summaries; exact IDs read bounded cached capabilities with counts/truncation and receipt time. No remote refresh or execution. |
 | `operator_snapshot` | domain settings/security/usage/knowledge/documentation, resource ID, optional window/cursor | Typed domain snapshot; separate configured/effective and measured/estimated state. |
 | `operator_conversation_open` | nonce, optional owned conversation ID, selected view and qualified model/effort | Opens/resumes owned session; opening/switching view does not send a prompt. |
 | `operator_request_submit` | nonce, conversation ID, prompt, reviewed context IDs | Durable request and runtime policy binding; downstream authorization and audit enforced. |

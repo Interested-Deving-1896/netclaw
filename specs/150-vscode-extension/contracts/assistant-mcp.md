@@ -15,7 +15,7 @@ Client labels, `clientInfo`, origin strings, environment mode flags and method n
 | Tool | Input | Behavior |
 |---|---|---|
 | `netclaw_status` | none | Returns bound installation/harness/role, effective grant/disclosure summary and capability limits. |
-| `netclaw_inventory` | resource kind, permitted filters/cursor | Scoped estate/tool/skill inventory; advertised capability is not permission. |
+| `netclaw_inventory` | kind overview/integration/skill/member/peer/edge, cursor/limit; optional exact estate `resourceId` | Scoped estate/tool/skill inventory; advertised capability is not permission. Estate summaries require installation inspect and summary disclosure; exact bounded capability names additionally require evidence disclosure. |
 | `netclaw_evidence` | allowed evidence kind and scoped reference/window/cursor | Redacted authorized GAIT/usage/network/diagnostic summaries; no arbitrary paths or secrets. |
 | `netclaw_request` | nonce, prompt, optional owned conversation ID and explicitly staged context references | Creates an owned natural-language request with immutable grant and runtime binding. Delegation is attenuated at every tool/federation hop. |
 | `netclaw_request_status` | owned request ID or own admission nonce, event cursor | Reports outcome, waiting approval, evidence and measured NetClaw usage. Different grant's request returns denial without disclosing existence. |

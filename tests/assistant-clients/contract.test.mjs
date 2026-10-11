@@ -24,6 +24,20 @@ test('exact seven-tool assistant surface; direct private-method and spoofed role
   const status=await assistantCall(f.service,g.credentialRef,'netclaw_status',{});assert.equal(status.installationId,f.installationId);
   assert.ok(!JSON.stringify(status).includes('credentialHash'));assert.ok(!JSON.stringify(status).includes(g.credentialRef));
 });
+test('assistant estate summaries expose observed harnesses within the installation grant; exact capability details require evidence disclosure',async t=>{
+  const f=await setup(t),g=await f.grant();let reads=0;
+  f.service.readFederation=async()=>{reads++;return {source:'synthetic cached peer',qualification:'Advertisement only',value:{format:1,total:1,peers:[{identity:'peer',display_name:'private label',state:'federated',stale:true,
+    inventory:{harness:{type:'hermes'},llm:{primary_model:'fixture/model'},counts:{servers:1,tools:1,skills:0,knowledge:0},mcp_servers:[{name:'subnet',tools:['calculate']}],command:'SECRET'}}]}};};
+  const summary=await assistantCall(f.service,g.credentialRef,'netclaw_inventory',{kind:'peer'});
+  assert.equal(summary.data.items[0].harness.type,'hermes');assert.equal(summary.data.items[0].model.primary,'fixture/model');assert.equal(summary.data.items[0].executionVerified,null);
+  assert.ok(!JSON.stringify(summary).includes('private label'));assert.ok(!JSON.stringify(summary).includes('calculate'));assert.ok(!JSON.stringify(summary).includes('SECRET'));
+  await assert.rejects(assistantCall(f.service,g.credentialRef,'netclaw_inventory',{kind:'peer',resourceId:'peer'}),{code:'DENIED'});assert.equal(reads,1);
+  const saved=f.service.journal.record('grant',g.grantId,f.service.binding.principal);
+  f.service.journal.put('grant',g.grantId,f.service.binding.principal,{...saved,disclosure:['summary','evidence']},{replace:true});
+  const detailed=await assistantCall(f.service,g.credentialRef,'netclaw_inventory',{kind:'peer',resourceId:'peer'});assert.equal(detailed.data.items[0].capabilities[0].tools[0],'calculate');
+  f.service.journal.put('grant',g.grantId,f.service.binding.principal,{...saved,targets:['other-installation']},{replace:true});
+  await assert.rejects(assistantCall(f.service,g.credentialRef,'netclaw_inventory',{kind:'peer'}),{code:'DENIED'});assert.equal(reads,2);
+});
 test('proposal discovery has root object properties for named-client compatibility',()=>{
   const {z}=require('zod'),wire=z.toJSONSchema(schemas.netclaw_propose_change);
   assert.equal(wire.type,'object');assert.ok(wire.properties.action);assert.ok(wire.properties.patch);assert.equal(wire.oneOf,undefined);assert.equal(wire.additionalProperties,false);

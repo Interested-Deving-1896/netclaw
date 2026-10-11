@@ -67,7 +67,7 @@ const workspaceSchema = z.discriminatedUnion('action',Object.entries(workspaceAc
   z.strictObject({action:z.literal(action),...(mutates?{nonce}:{}),args:z.strictObject(args),...page})));
 export const schemas = Object.freeze({
   operator_identity: z.strictObject({}),
-  operator_resources: z.strictObject({ kind: kinds, filters: z.strictObject({ query: z.string().max(256).optional(), status: z.enum(['active','inactive','unknown']).optional() }).optional(), ...page }),
+  operator_resources: z.strictObject({ kind: kinds, resourceId:id.optional(), filters: z.strictObject({ query: z.string().max(256).optional(), status: z.enum(['active','inactive','unknown']).optional() }).optional(), ...page }),
   operator_snapshot: z.strictObject({ domain: z.enum(['settings','security','usage','knowledge','documentation']), resourceId: id.optional(), window: z.enum(['day','week','month']).optional(), ...page }),
   operator_conversation_open: z.strictObject({ nonce, conversationId: id.optional(), view: z.enum(['chat','canvas','avatar']).default('chat'), model: z.string().max(200).optional(), effort: z.enum(['low','medium','high','max']).optional() }),
   operator_request_submit: z.strictObject({ nonce, conversationId: id, prompt: z.string().max(65536).refine(v => Buffer.byteLength(v) <= 65536), contextIds: z.array(id).max(20).default([]) }),

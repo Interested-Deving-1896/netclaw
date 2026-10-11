@@ -312,6 +312,12 @@
     "category": "Guides"
   },
   {
+    "id": "1d1e20a30f6a5ab8",
+    "path": "docs/VSCODE-FEDERATION.md",
+    "title": "Federation in VS Code",
+    "category": "Guides"
+  },
+  {
     "id": "d2333ba91901edb0",
     "path": "docs/VSCODE-INTENT.md",
     "title": "Terminal Intent in VS Code",
