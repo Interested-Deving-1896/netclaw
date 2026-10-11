@@ -47,3 +47,6 @@ Packaged lifecycle and artifact digest are recorded in package.md after packagin
 Real Windows/WSL, Remote SSH/native Linux observations, real installation/provider
 checks and interactive Copilot/Codex consent remain distinct from these Mac fixture
 results. See windows-wsl-handoff.md. No synthetic result is production acceptance.
+
+Portable sanitized editor, named-client and VSIX lifecycle reports are committed
+beside this file. Selected actual fixture screenshots are in screenshots/.
