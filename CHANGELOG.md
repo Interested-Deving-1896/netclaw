@@ -2,6 +2,14 @@
 
 NetClaw source releases use `1.x.y`. Feature specs increment the minor version and reset the patch; fixes, documentation and maintenance increment the patch. Every release records its numbered specs. Component and mobile distribution versions are independent.
 
+## [1.9.0] - 2026-10-11
+
+- Prepare the unpublished NetClaw VS Code extension for existing installations, with integrated Chat, Canvas, Avatar, RAG, observation panels, reviewed controls and opt-in assistant access.
+- Keep runtime execution, federation, authorization and audit in the existing NetClaw; no base runtime or installer changes.
+- Record exact Mac and Windows/WSL evidence and retain the final RAG-delta WSL confirmation as outstanding. Marketplace and source-release publication remain on hold.
+
+Spec [150-vscode-extension](specs/150-vscode-extension/spec.md). See [release notes](docs/releases/1.9.0.md).
+
 ## [1.8.0] - 2026-10-10
 
 - Add selected-installation Hermes NCFED Border/member execution, protected operator delegation, contextual peer chat and bounded qualified subnet work.
