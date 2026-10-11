@@ -1,88 +1,110 @@
-# Mac return — HUD repaired; WSL qualification still open
+# Mac return — Windows/WSL qualified; replacement review required
 
 Return branch: `150-vscode-extension-wsl-followup-20261011`.
-Evidence commit: `940a90ccdd3ea10ee6cc0fba2b874bb25161d2ed`.
-The following return-document commit changes only this file; its exact branch-tip
-commit is supplied in the handoff message. No merge or publication occurred.
+Evidence commit: `f2661e22f76a436c3dfca1b86fc9fac1c7e98af7`.
+The following commit updates only this return document. Its exact branch-tip
+commit is supplied in the handoff message. No merge or publication occurred on WSL.
 
-Incoming Mac review: `4e3cd2627ac80b7d160af7b135d30dec6580f202` on
-`150-vscode-extension-wsl-review-20261011`. The prior `1aaaafa` return remains an
-ancestor, and [its evidence](evidence/wsl.md) is preserved unchanged.
+Final candidate: `NetClaw.netclaw@0.1.0`.
 
-VSIX: `specs/150-vscode-extension/artifacts/netclaw-0.1.0.vsix`.
-SHA-256: `71694842db407dbb28ed695a31ca583a892d2c2bc0903c04829514b123fec005`.
-It is unchanged. No extension or NetClaw source code was changed in this follow-up.
+```text
+specs/150-vscode-extension/artifacts/netclaw-0.1.0-wsl-fixes.vsix
+SHA256 f75b73bdeaf524bf647ad4920ea5b5c85979ee1c20cba62d9cd6a20f6f79af45
+2349236 bytes
+Source 7b4ebee3cf819aeab86622606eb9afc729a7748b
+```
 
-Actual results are in [evidence/wsl-followup.md](evidence/wsl-followup.md) and the
-[sanitized report](evidence/wsl-followup-checks.json):
+Use this exact committed VSIX. The original `netclaw-0.1.0.vsix` and intermediate
+`netclaw-0.1.0-wsl-webview-fix.vsix` are preserved for history and comparison.
+Two actual extension defects were fixed: hidden webviews lost their message
+sequence and stopped accepting requests; Windows-local Add Connection ignored
+its WSL command filter. Replay/identity/trust and approval checks were retained.
 
-- The explicitly authorized HUD repair succeeded. Restored already-locked
-  dependencies with retained rollback backups and selected the existing Node
-  24.19 for the HUD alone. Its API reports the preserved OpenClaw identity and
-  readiness; gateway status reports online/reachable/chat enabled. Actual provider
-  execution remains unverified.
-- All 12 protected file observations stayed unchanged. Owner source, credentials,
-  native identity, selection descriptor, testbed edits and core gateway/federation
-  service identities are preserved. The HUD was intentionally restarted; scheduled
-  DDNS and already-restarting Zoom RTMS identities also varied independently.
-- The single isolated Windows editor attempt exited 255 before logging or running
-  the observer. Read-only inspection found live updater processes and the
-  `vscode-updating` mutex still present. The owner must finish the update normally.
-  No owner window/updater was terminated. The temporary editor isolation hook was
-  restored to its original absence.
-- Exact VSIX installation into prepared private WSL storage passed, as did payload
-  comparisons of that install and the preserved owner install. Actual launched-host
-  storage isolation and upgrade/disable/re-enable/uninstall remain unqualified.
-- Fifteen of 17 real API GET probes returned HTTP 200. RAG stats/documents returned
-  HTTP 500 because its existing Python launcher sees FastMCP 2.14.7 / MCP 1.28.1,
-  while source requires FastMCP/tasks 4.0.11 / MCP 2.3.0. The missing import is
-  `fastmcp.utilities.async_utils`. No Python repair was performed; it falls outside
-  the approved HUD repair scope and needs a separately reviewed correction.
-- Actual editor connection/panels, Chat/provider, Canvas/Avatar, RAG retrieval,
-  settings cancellation, trust/reconnect and interactive Copilot/Claude Code/Codex
-  remain pending. No assistant registrations or provider requests were submitted.
+The [final WSL matrix](evidence/wsl-followup.md) and
+[structured report](evidence/wsl-followup-checks.json) record the results:
 
-**T022 and T023 remain open. This checkpoint is not release acceptance.**
-The prior Mac publisher authentication stays on Mac; no additional publisher
-account, token transfer or WSL publication is needed.
+- Real Windows VS Code 1.141.0 with WSL extension/storage isolation; live binding,
+  reconnect, 22 observation panels, provider Chat, selected editor/RAG context,
+  ready indexed upload/citation, Canvas and local Avatar checks.
+- Actual interactive Copilot, Claude Code and Codex inspection, inert drafts,
+  harmless delegated answers/status and disabled-registration refusals. Their
+  adapter payload is byte-identical in the original and final VSIX. Copilot's
+  observed Allow all deviation, restoration and fresh Default permissions check
+  with human Allow Once result consent remain explicit limitations for review.
+- Native settings Apply and preservation against an isolated unchanged HUD
+  fixture; real-owner reviews cancelled. Pending-disconnect and identity mismatch
+  were tested using that isolated fixture. Actual Restricted Mode and Windows-local
+  host boundaries passed. No owner configuration or external peer work was sent.
+- Installed synthetic older-version upgrade, native disable/re-enable/uninstall,
+  exact reinstall and reconnect passed. All 20 extension state files survived
+  uninstall byte-for-byte; owner extension payload still matches the original VSIX.
+- Source check/build and 18 tests passed, with one optional RAG fixture skipped.
+  Real owner RAG was exercised separately. Actual Windows/WSL UI covered the new
+  tab-switch regression; the standalone test:editor runner remains for Mac.
 
-## Prompt for the Mac continuation
+The explicitly authorized HUD Node and isolated RAG repairs succeeded. Preserve
+those running repairs and their rollback backups. The isolated RAG runtime and
+its dispatcher are active HUD service dependencies, not disposable test cache.
+Owner source/testbed edits, observed credential files, native identity and core
+services were preserved. Across the whole interactive phase, `.claude.json` changed
+with signed-in CLI use and approved private-folder trust; exact old field diff is
+unavailable. All 12 protected observations stayed unchanged across final management
+and lifecycle checks. Global Codex configuration stayed unchanged.
+
+Assistant registrations were disabled, Copilot's original tool selection and
+Default permissions restored, owned clients/windows closed, and the temporary
+editor hook restored to its original absence. Raw evidence remains private on
+WSL. The harmless RAG fixture `spec150-wsl-rag-20261011-b7a3d92e.md` is retained as
+`doc_0e84d3b40932`, one ready chunk; no corpus deletion/reindex occurred.
+
+**T022 is complete for the documented existing OpenClaw Windows/WSL scope.
+T019 is reopened for the exact replacement on Mac. T023 remains open.**
+No live Hermes, WSL restart, second distro/SSH, device changes, external peer work
+or physical mobile qualification is implied. Optional source observations include
+stale Science, unreachable mobile and unavailable OpenShell gateway status.
+The [milestone blog draft](wsl-milestone-blog-draft.md) is local and unpublished.
+The pyATS MCP testbed-management request is a separate follow-up, not part of this
+extension change.
+
+## Prompt for Mac
 
 ```text
 Continue NetClaw Spec150 from origin/150-vscode-extension-wsl-followup-20261011.
-Use the exact returned branch tip supplied in the handoff; require evidence commit
-940a90ccdd3ea10ee6cc0fba2b874bb25161d2ed as an ancestor. The following commit only
-updates mac-return.md. Preserve work and services and use an isolated checkout.
-Read AGENTS.md, startup files, daily memory, constitution, Spec150 spec/plan/tasks,
-scope-recovery.md, windows-wsl-handoff.md, wsl-prerequisite-recovery.md,
-evidence/wsl.md, evidence/wsl-followup.md and evidence/wsl-followup-checks.json.
-Follow GAIT startup, recording and session-end requirements.
+Fetch the branch, pin the exact returned tip supplied in the handoff message, and
+require f2661e22f76a436c3dfca1b86fc9fac1c7e98af7 as an ancestor.
+Preserve existing work/services and use an isolated checkout. Read AGENTS.md,
+startup files, daily memory, constitution, Spec150 spec/plan/tasks/scope-recovery,
+contracts/existing-interfaces.md, mac-return.md, evidence/wsl-followup.md,
+evidence/wsl-followup-checks.json and the retained Mac/assistant evidence.
+Follow GAIT branch AND checkout, recording, daily-memory and session-end log rules.
 
-Exact unchanged NetClaw.netclaw@0.1.0 VSIX SHA256:
-71694842db407dbb28ed695a31ca583a892d2c2bc0903c04829514b123fec005.
+Final exact NetClaw.netclaw@0.1.0 artifact:
+specs/150-vscode-extension/artifacts/netclaw-0.1.0-wsl-fixes.vsix
+SHA256 f75b73bdeaf524bf647ad4920ea5b5c85979ee1c20cba62d9cd6a20f6f79af45
+Packaged from source 7b4ebee3cf819aeab86622606eb9afc729a7748b.
+Do not substitute the original or intermediate VSIX, or rebuild merely to resume.
 
-The owner-approved bounded HUD repair is DONE on WSL: locked dependencies with
-rollback backups, existing Node 24.19 for HUD only, preserved source/credentials/
-identity/core services. Do not repeat or roll back that successful repair merely
-to resume. The old dependency tree is retained locally and intentionally untracked.
+WSL qualification is complete for the recorded existing OpenClaw scope (T022).
+Review its limitations, especially the Copilot permission deviation and fresh
+Default permissions/Allow Once check. The two extension fixes require exact
+replacement Mac qualification (T019): install the committed artifact in an
+isolated Mac profile; exercise hidden/revealed Chat, Canvas, RAG and observation
+views, actual provider/context workflows and installed lifecycle. Run the updated
+editor regression and appropriate source checks using isolated dependencies.
+Original Mac results do not by themselves qualify the replacement. Address any
+remaining client/platform gate identified by review with actual evidence and
+normal human consent; do not weaken permissions or infer untested acceptance.
 
-This is a partial checkpoint. The Windows editor update still needs normal owner
-completion; do not kill owner windows/updater or bypass its mutex. RAG has a separate
-reproduced Python/FastMCP dependency mismatch. Review a concrete bounded runtime
-correction separately before applying it; do not silently extend the HUD approval
-into Python upgrades, backend source changes, policy changes or broader restarts.
+WSL's approved HUD Node/RAG repairs, backups and owner installation are preserved;
+no further backend repair or upgrade is required by this return. Keep extension
+fixes confined to reproduced defects. No testbed-management/backend expansion.
+If package inputs change again, preserve this VSIX and qualify the exact new one
+on the required hosts before release.
 
-Complete the remaining checks on real Windows VS Code with its host running in WSL
-once prerequisites permit. Verify actual separate WSL storage before lifecycle
-mutations. Use the exact candidate, live provider and RAG, and each signed-in
-interactive Copilot/Claude Code/Codex with normal consent. Preserve the owner install
-and unrelated MCP registrations. Do not substitute API observations, CLI presence,
-source fixtures or Mac tests for WSL UI and assistant acceptance. Fix only reproduced
-extension defects; preserve and requalify an exact replacement if package inputs change.
-
-T022/T023 remain open. Do not merge or publish until actual acceptance and Mac review
-permit release. Then use existing Mac-local publisher authentication to publish the
-qualified exact VSIX and verify Marketplace listing/install in an isolated profile.
-Do not export credentials or weaken approvals. Follow the constitution's milestone/
-blog-draft requirement; external blog/message publication needs its separate review.
+After review and Mac qualification pass, publish the qualified exact VSIX using
+existing Mac-local publisher authentication and verify Marketplace listing and
+installation in an isolated profile (T023). No new publisher account/token or
+credential transfer is needed. Record actual publication evidence and update
+mac.md/tasks.md. Keep the milestone blog draft for John's review before external
+publication. Report the final release/artifact and remaining scope honestly.
 ```
