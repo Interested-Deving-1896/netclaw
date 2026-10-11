@@ -8,12 +8,13 @@ import { invariant, fail, safeError } from './errors.js';
 import {configurationFiles} from './configuration.js';
 import {serviceRegistryPath} from './service-ownership.js';
 import {authorityBindingPath} from './change-authority.js';
+import {DefenseClawComponent} from './defenseclaw.js';
 
 export class Proposals {
   constructor({ binding, journal, audit, adapters, authority, validatePrincipal=()=>{} }) {
     Object.assign(this, { binding, journal, audit, adapters, authority,validatePrincipal }); this.artifacts = new ArtifactStore(journal);
   }
-  revision() { return this.journal.revision([...configurationFiles(this.binding),serviceRegistryPath(this.binding),authorityBindingPath(this.binding)]); }
+  revision() { return this.journal.revision([...configurationFiles(this.binding),serviceRegistryPath(this.binding),authorityBindingPath(this.binding),...new DefenseClawComponent(this.binding).files()]); }
   validateOrigin(proposal) {
     // Older operator proposals retain their original OS owner. Older assistant
     // proposals without an authority snapshot must be prepared again.

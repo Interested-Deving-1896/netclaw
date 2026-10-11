@@ -5,7 +5,12 @@ import { safeError,fail,invariant } from '../../ui/netclaw-visual/src/management
 import { authorize } from '../../ui/netclaw-visual/src/management/policy.js';
 import { assistantOutputs,validateAssistantOutput } from '../netclaw-operator-mcp/responses.mjs';
 
-const disclosedOperation=(grant,result)=>({...result,...(!grant.disclosure.includes('conversation')?{result:result.result?{...(grant.disclosure.includes('usage')?{usage:result.result.usage??null}:{}),code:result.result.code,summary:'Owned result available for human review.'}:undefined}:{})});
+function disclosedOperation(grant,operation){
+  if(!operation.result)return operation;
+  const {usage,...answer}=operation.result;
+  return {...operation,result:{...(grant.disclosure.includes('conversation')?answer:{code:answer.code,summary:'Owned result available for human review.'}),
+    ...(grant.disclosure.includes('usage')?{usage:usage??null}:{})}};
+}
 
 export async function assistantCall(service,credentialRef,name,raw){
   const input=parseAssistantInput(name,raw),principal=service.clients.resolve(credentialRef);

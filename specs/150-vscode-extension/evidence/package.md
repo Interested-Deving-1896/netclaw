@@ -5,10 +5,10 @@ arm64. This is a candidate preservation result, not publication or full release
 qualification. No owner service/configuration or external provider was changed.
 
 - Candidate: `NetClaw.netclaw` 0.1.0, source
-  `be83eb22f590e14c2885a516c5f203d646401724`.
+  `8aae44cbb34c40904d3a6e10b1f450e583a11447`.
 - VSIX SHA-256:
-  `c6058861b790f541af21f8bf890def503842026ba2970dd557e386abc5eb77b2`.
-- Size: 2,780,297 bytes. Package allowlist: 22 extension files plus two VSIX
+  `d5f192d54070e871f92058ce702ce42a0a6151c51ec32b4420f493956574f5e6`.
+- Size: 2,782,500 bytes. Package allowlist: 22 extension files plus two VSIX
   metadata entries. No runtime trees, private state or synthetic secret markers.
 - Real desktop versions: VS Code 1.102.0 and 1.141.0, separate clean profile and
   extension directory per run.
@@ -34,11 +34,13 @@ VSCODE_VERSION=1.102.0 node tests/vscode/package-acceptance.mjs
 ```
 
 Local raw reports (not portable release artifacts):
-`netclaw150-vsix-M2O2o9/report.json` (minimum) and
-`netclaw150-vsix-jkqs7r/report.json` (current) under the Mac temporary directory.
+`netclaw150-vsix-DAIBcW/report.json` (minimum) and
+`netclaw150-vsix-aUpK52/report.json` (current) under the Mac temporary directory.
 The committed harness identifies the candidate source and digest in each report.
 
-The newer security/service-management source needs its own matching package checkpoint.
+This checkpoint includes the service/security posture, protected assistant and native
+runtime navigation work. Later DefenseClaw component controls need a new matching
+package checkpoint.
 T070 remains open until that new artifact is built and exercised. E1/E2/E3 and
 other platform/client rows, complete lifecycle management (service start/stop),
 full release regression and public Marketplace installation remain separate.

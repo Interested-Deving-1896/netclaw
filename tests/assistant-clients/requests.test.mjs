@@ -57,6 +57,18 @@ test('the human operator can cancel an assistant request after its grant is revo
   const result=await f.service.call('operator_cancel_request',{nonce:nonce(),operationId:op.operationId});assert.equal(result.state,'cancelled');
   await assert.rejects(assistantCall(f.service,f.g.credentialRef,'netclaw_cancel',{nonce:nonce(),requestId:op.operationId}),{code:'DENIED'});
 });
+test('answer disclosure alone does not disclose usage through any operation retrieval',async t=>{
+  const f=await setup(t,['summary','conversation']),n=nonce(),op=await f.request({nonce:n});
+  f.service.assistants.runtime.observe=async()=>({state:'succeeded',output:'permitted answer',usage:{cost:17,tokens:921}});
+  await f.service.assistants.run(op.operationId);
+  for(const value of [await f.request({nonce:n}),await assistantCall(f.service,f.g.credentialRef,'netclaw_request_status',{requestId:op.operationId}),
+    await assistantCall(f.service,f.g.credentialRef,'netclaw_cancel',{nonce:nonce(),requestId:op.operationId})]){
+    assert.equal(value.result.output,'permitted answer');assert.equal(value.result.usage,undefined);
+  }
+  const inventory=await assistantCall(f.service,f.g.credentialRef,'netclaw_inventory',{kind:'overview'});
+  assert.ok(inventory.operations.every(value=>value.result?.usage===undefined));
+  assert.deepEqual(f.service.journal.get(f.owner,op.operationId).result.usage,{cost:17,tokens:921});
+});
 test('revocation before worker dispatch prevents any runtime submission',async t=>{
   const f=await setup(t),op=await f.request();await f.service.clients.revoke(f.owner,{grantId:f.g.grantId,nonce:nonce()});
   await f.service.assistants.run(op.operationId);assert.equal(f.service.journal.get(f.owner,op.operationId).state,'failed');assert.equal(f.calls.filter(([name])=>name==='submit').length,0);
