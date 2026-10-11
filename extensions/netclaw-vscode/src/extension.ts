@@ -15,7 +15,7 @@ import path from 'node:path';
 import {openDocumentation} from './views/documentation';
 import {openLogs} from './views/logs';
 import {openTokenomics} from './views/tokenomics';
-import {searchMemory} from './views/knowledge';
+import {searchMemory,analyzeSelectedContext,openMeetings} from './views/knowledge';
 import {prepareEnvironmentChange} from './views/configuration';
 import {openIntegrations} from './views/integrations';
 import {openOperations,reviewProposal} from './views/operations';
@@ -94,6 +94,8 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('openTokenomics',()=>openTokenomics(context,connection));
   register('openLogs',()=>openLogs(connection));
   register('searchMemory',()=>searchMemory(context,connection));
+  register('analyzeContext',()=>analyzeSelectedContext(context,connection));
+  register('openMeetings',()=>openMeetings(context,connection));
   register('help',async()=>{const document=await vscode.workspace.openTextDocument(vscode.Uri.joinPath(context.extensionUri,'README.md'));await vscode.window.showTextDocument(document);});
   register('refresh',refresh);
   register('openChat',()=>openChat(context,connection));
@@ -131,7 +133,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
       const items:Navigation[]=Object.entries(domains).filter(([,d])=>d.group===group).map(([key,d])=>({label:d.title,command:key==='science'?'netclaw.openScience':key==='security'?'netclaw.openSecurity':key==='openshell'?'netclaw.openOpenShell':key==='operations'?'netclaw.openOperations':key==='gait'?'netclaw.openGait':key==='integrations'?'netclaw.openIntegrations':key==='skills'?'netclaw.openSkills':key==='documentation'?'netclaw.openDocumentation':key==='tokenomics'?'netclaw.openTokenomics':'netclaw.openDomain',args:[key],icon:d.icon}));
       if(group==='help')items.push({label:'Getting started',command:'netclaw.help',icon:'info'});
       if(group==='knowledge')items.unshift({label:'RAG knowledge base',command:'netclaw.openRag',icon:'search'});
-      if(group==='knowledge')items.push({label:'Search recorded memory',command:'netclaw.searchMemory',icon:'history'});
+      if(group==='knowledge')items.push({label:'Search recorded memory',command:'netclaw.searchMemory',icon:'history'},{label:'Analyze selected context with GCF',command:'netclaw.analyzeContext',icon:'graph'},{label:'Live meeting context',command:'netclaw.openMeetings',icon:'comment-discussion'});
       if(group==='integrations')items.unshift({label:'Configure provider, model and budget',command:'netclaw.configureSettings',icon:'settings-gear'});
       if(group==='integrations')items.push({label:'Control a bound service',command:'netclaw.configureService',icon:'server-process'});
       if(group==='integrations')items.push({label:'Copilot, Claude Code & Codex',command:'netclaw.manageAssistants',icon:'hubot'});

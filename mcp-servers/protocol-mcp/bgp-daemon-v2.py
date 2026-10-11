@@ -211,6 +211,14 @@ async def handle_n2n(method, path, body):
     parts = path.strip("/").split("/")  # e.g. ["n2n","peers","as65007-7.7.7.7","inventory"]
 
     try:
+        if path == '/n2n/management/meetings' and method == 'POST':
+            from bgp.federation.zoom_channel import read_management_context
+            if not isinstance(body, dict) or set(body)-{'id'}:
+                return 400, {'error': 'Invalid meeting selection'}
+            try:
+                return 200, await read_management_context(fed, body.get('id'))
+            except ValueError:
+                return 400, {'error': 'Invalid meeting selection'}
         if path == '/n2n/management/mobile' and method == 'GET':
             from bgp.federation.management_mobile import ManagementMobile
             return 200, ManagementMobile(fed).inventory()

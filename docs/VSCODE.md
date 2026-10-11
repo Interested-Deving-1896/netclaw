@@ -44,6 +44,8 @@ Send, the gateway must verify that exact model/effort before inference. Hermes
 uses its configured companion model. Answer progress and tool milestones retain
 their runtime source; partial or bounded evidence is labeled. RAG searches the selected local corpus and preserves
 citations. RAG retrieval and recorded Memory search are separate operations.
+[Selected knowledge workflows](VSCODE-KNOWLEDGE.md) add local GCF measurements
+and live meeting excerpts with explicit review and provenance.
 
 **Open Native Harness UI** opens the selected OpenClaw Control UI in your
 browser after destination review. Its own authentication remains in place;

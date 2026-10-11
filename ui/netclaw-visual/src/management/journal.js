@@ -199,6 +199,13 @@ export class Journal {
     const row = this.db.prepare('SELECT * FROM records WHERE kind=? AND id=?').get(kind, id);
     this._owned(owner, row); return JSON.parse(row.value);
   }
+  recordPage(kind,owner,{cursor,limit=100}={}){
+    invariant(Number.isInteger(limit)&&limit>0&&limit<=500);
+    const before=cursor===undefined?Number.MAX_SAFE_INTEGER:Number(cursor);invariant(Number.isSafeInteger(before)&&before>0);
+    const rows=this.db.prepare('SELECT rowid,id,value FROM records WHERE kind=? AND (? OR owner=?) AND rowid<? ORDER BY rowid DESC LIMIT ?').all(kind,owner.surface==='operator'?1:0,ownerKey(owner),before,limit+1);
+    const items=rows.slice(0,limit).map(row=>({id:row.id,...JSON.parse(row.value)}));
+    return {items,...(rows.length>limit?{nextCursor:String(rows[limit-1].rowid)}:{})};
+  }
   records(kind, owner) {
     return this.db.prepare('SELECT * FROM records WHERE kind=?').all(kind).filter(row => row.owner === ownerKey(owner) || owner.surface === 'operator').map(row => ({ id: row.id, ...JSON.parse(row.value) }));
   }

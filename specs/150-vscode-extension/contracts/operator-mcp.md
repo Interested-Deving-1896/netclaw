@@ -122,3 +122,24 @@ for five minutes. Capture admission requires its consent reference and nonce. Th
 receiver independently validates the private operator record and live worker lease.
 Content reads require a completed owned capture and a byte offset; 32 KiB chunks
 retain total size, content type and SHA-256. They never add media to model context.
+
+### Selected GCF and meeting context
+
+`gcf-read` without `id` returns a bounded page of retained, explicitly selected
+contexts (`cursor`/`limit`, default 100, maximum 500). With an owned context ID it
+returns local serializer measurements and separately labeled token estimates,
+actual fallback/profile and analysis settings. No provider usage, historical
+savings or session/delta state is inferred.
+
+`meeting-read` reads one uniquely bound existing live Zoom process. The fixed
+backend route is `POST /n2n/management/meetings` with only optional `id`. Absence
+is an explicit `available:false` envelope with `freshness:unknown`. A selected
+meeting returns bounded source/citation-bearing excerpts, never execution
+permission. The existing Zoom channel adds `n2n/zoom/context` and a two-step
+`hello` proof: HMAC-SHA256 over the compact JSON tuple
+`["netclaw-management-context-v1", installationId, clientNonce, serverNonce, role]`.
+The server nonce is fresh per connection challenge, expires after ten seconds
+and is consumed once. Client/server roles differ. Neither proof carries the key;
+legacy secret-only hello remains investigation-only. The client verifies the
+server proof before sending its proof or providing context. Private installation
+identity is rechecked when context is read. No recording/listener is started.

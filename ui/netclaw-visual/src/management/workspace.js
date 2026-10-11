@@ -8,6 +8,7 @@ import { unbindImportedSession } from '../canvas-chat/assessment-link.js';
 import {ownedDirectory,atomicPrivate} from './files.js';
 import {RagToolError} from './rag.js';
 import {searchMemory} from './knowledge.js';
+import {analyzeGcf} from './gcf.js';
 
 const formats=new Set(['.pdf','.md','.markdown','.html','.htm','.txt','.docx','.xlsx','.pptx','.vsdx','.doc','.xls','.ppt','.vsd']);
 const digest=value=>createHash('sha256').update(value).digest('hex');
@@ -34,10 +35,28 @@ export function importedCanvas(text){
 }
 
 export class Workspace {
-  constructor({binding,journal,audit,clean,rag,start,science,mobile}){Object.assign(this,{binding,journal,audit,clean,rag,start,science,mobile});this.artifacts=new ArtifactStore(journal);}
+  constructor({binding,journal,audit,clean,rag,start,science,mobile,root}){Object.assign(this,{binding,journal,audit,clean,rag,start,science,mobile,root});this.artifacts=new ArtifactStore(journal);}
   async call(principal,input){
     this.binding.assertCurrent();authorize(principal,'inspect',[this.binding.installationId]);
     invariant(principal.surface==='operator','DENIED');
+    if(input.action==='meeting-read'){
+      const data=await this.mobile.client.call('meetings',input.args);
+      this.binding.assertCurrent();invariant(data.installationId===this.binding.installationId,'IDENTITY_CHANGED');
+      return this.clean({contractVersion:1,installationId:this.binding.installationId,source:'Existing authenticated live Zoom process',observedAt:new Date().toISOString(),freshness:data.available?'observed':'unknown',warnings:data.available?[]:['Live meeting context is unavailable; inspect the stated reason.'],data});
+    }
+    if(input.action==='gcf-read'){
+      let data;
+      if(input.args.id){
+        const context=this.journal.record('context',input.args.id,principal);invariant(context.reviewed===true&&context.mediaType==='text/plain','DENIED');
+        data={contextId:input.args.id,name:context.name,contextSource:context.source||'Explicitly selected context',createdAt:context.createdAt,
+          ...await analyzeGcf(this.binding,this.root,this.artifacts.read(principal,context.artifactId).toString('utf8'))};
+      }else{
+        const page=this.journal.recordPage('context',principal,{cursor:input.cursor,limit:input.limit});
+        data={contexts:page.items.map(({id,name,size,createdAt,source})=>({id,name,size,createdAt,source:source||'Explicit operator selection'})),nextCursor:page.nextCursor,
+          scope:'Select one retained context for local GCF analysis. No global compression totals are inferred.'};
+      }
+      return this.clean({contractVersion:1,installationId:this.binding.installationId,source:'Existing NetClaw GCF serializer; explicit local analysis',observedAt:new Date().toISOString(),freshness:'observed',warnings:[],data});
+    }
     if(input.action==='assessment-read')return this.clean({contractVersion:1,installationId:this.binding.installationId,source:'Owned Jev assessment',observedAt:new Date().toISOString(),freshness:'observed',warnings:[],data:this.science.read(principal,input.args.id)});
     if(input.action==='assessment-preview')return this.clean({contractVersion:1,installationId:this.binding.installationId,source:'Existing Jev disclosure and cost preparation; no provider dispatch',observedAt:new Date().toISOString(),freshness:'observed',warnings:[],data:await this.science.preview(principal,input.args)});
     if(input.action==='assessment-reconsider')return this.science.reconsider(principal,input);

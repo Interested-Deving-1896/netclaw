@@ -12,6 +12,7 @@ qualification is in progress; it is not a published or production-qualified rele
 - **Chat** resumes owned conversations and tracks submitted requests independently of the editor window.
 - **Canvas** branches investigations, selects context per lane and imports or exports the existing HUD Canvas format.
 - **Avatar** uses the existing local John and lobster assets alongside the same text conversation.
+- **Selected knowledge** measures retained context with GCF, clearly separating measured sizes from estimated tokens. Live meeting excerpts preserve source and time; retaining selected excerpts requires review.
 - **RAG knowledge base** browses backend collections, uploads reviewed documents up to 10 MiB, tracks indexing and retrieves cited passages. Selected results become optional Chat or Canvas context. Snapshot age and low-confidence results remain visible.
 - **Operations and configuration** expose retained request outcomes, GAIT records and reviewed environment changes.
 - **Settings** review configured provider/model, OpenClaw session-budget and legacy credential normalization changes. Saved settings show that runtime verification or restart is still needed.

@@ -2572,6 +2572,15 @@ Flags mentioned: none
 ```text
 ```
 
+## scripts/netclaw-gcf-review.py
+
+Static source declarations; lexical flags may include delegated commands. No execution performed.
+
+Flags mentioned: none
+
+```text
+```
+
 ## scripts/netclaw-management-worker.mjs
 
 Node entry point; argument/source references only. npm wrapper commands are indexed separately.

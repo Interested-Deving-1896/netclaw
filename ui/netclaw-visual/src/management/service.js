@@ -52,7 +52,7 @@ export class ManagementService {
     this.assistants=new AssistantRequests({binding:this.binding,journal:this.journal,audit:this.audit,clients:this.clients,runtime:new ProtectedAssistantRuntime(this.binding),
       start:operationId=>startOwnedWorker({root:this.root,binding:this.binding,operationId}),clean:value=>this.clean(value)});
     this.proposals=new Proposals({binding:this.binding,journal:this.journal,audit:this.audit,adapters:this.adapters,authority:authority||new ServiceNowAuthority(this.binding),validatePrincipal:principal=>this.clients.validate(principal)});
-    this.workspace=new Workspace({binding:this.binding,journal:this.journal,science:this.science,mobile:this.mobile,audit:this.audit,clean:value=>this.clean(value),rag:new RagClient(this.binding,root),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
+    this.workspace=new Workspace({root,binding:this.binding,journal:this.journal,science:this.science,mobile:this.mobile,audit:this.audit,clean:value=>this.clean(value),rag:new RagClient(this.binding,root),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.conversations=new Conversations({binding:this.binding,journal:this.journal,science:this.science,audit:this.audit,runtime:this.runtime,
       start:operationId=>startOwnedWorker({root,binding:this.binding,operationId}),clean:value=>this.clean(value)});
     this.journal.reconcileExpired();

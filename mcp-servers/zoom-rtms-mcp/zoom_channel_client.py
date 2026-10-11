@@ -6,6 +6,11 @@ into this process's MeetingSession state.
 """
 
 import asyncio
+import hashlib
+import hmac
+import secrets
+import re
+from context_read import installation_identity, read_context
 import json
 import logging
 import os
@@ -39,6 +44,7 @@ class ZoomChannelClient:
         self._pending: dict = {}
         self._read_task: Optional[asyncio.Task] = None
         self.connected = False
+        self.management_installation = None
 
     async def connect(self):
         if not BORDER_PORT:
@@ -61,11 +67,30 @@ class ZoomChannelClient:
             return False
         self._read_task = asyncio.create_task(self._read_loop())
         try:
-            resp = await self.call("n2n/zoom/hello", {"secret": SHARED_SECRET})
-            self.connected = bool(resp.get("trusted"))
+            installation = installation_identity()
+            if installation:
+                nonce = secrets.token_hex(32)
+                params = {"managementContext": 1, "installationId": installation, "clientNonce": nonce}
+                challenge = await self.call("n2n/zoom/hello", params, timeout=5)
+                server_nonce, proof = challenge.get("serverNonce"), challenge.get("serverProof")
+                if (not SHARED_SECRET or challenge.get("installationId") != installation
+                        or not isinstance(server_nonce, str) or not re.fullmatch(r"[a-f0-9]{64}", server_nonce)
+                        or not isinstance(proof, str) or not re.fullmatch(r"[a-f0-9]{64}", proof) or not hmac.compare_digest(proof,
+                        context_proof(SHARED_SECRET, installation, nonce, server_nonce, "server"))):
+                    raise ValueError("Border management identity proof failed")
+                resp = await self.call("n2n/zoom/hello", {**params, "clientProof": context_proof(SHARED_SECRET, installation, nonce, server_nonce, "client")}, timeout=5)
+                self.connected = resp.get("trusted") is True and resp.get("installationId") == installation
+                self.management_installation = installation if self.connected else None
+            else:
+                resp = await self.call("n2n/zoom/hello", {"secret": SHARED_SECRET}, timeout=5)
+                self.connected = bool(resp.get("trusted"))
         except Exception as e:
             logger.warning("Zoom channel handshake failed: %s", e)
             self.connected = False
+        if not self.connected:
+            self.writer.close()
+            await self.writer.wait_closed()
+            self._read_task.cancel()
         return self.connected
 
     async def _read_loop(self):
@@ -83,6 +108,7 @@ class ZoomChannelClient:
             logger.info("Zoom channel client read loop ended: %s", e)
         finally:
             self.connected = False
+            self.management_installation = None
 
     async def _dispatch(self, raw: bytes):
         msg = json.loads(raw)
@@ -97,7 +123,16 @@ class ZoomChannelClient:
         method = msg.get("method")
         req_id = msg.get("id")
         params = msg.get("params") or {}
-        if method == "n2n/zoom/investigate_result":
+        if method == "n2n/zoom/context":
+            if (not self.management_installation or not self.connected
+                    or params.get("installationId") != self.management_installation
+                    or installation_identity() != self.management_installation):
+                result = {"available": False}
+            else:
+                result = read_context(self.management_installation, params.get("id"))
+            if req_id is not None:
+                await self._send({"jsonrpc": "2.0", "id": req_id, "result": result})
+        elif method == "n2n/zoom/investigate_result":
             if on_investigate_result:
                 try:
                     on_investigate_result(params)
@@ -158,3 +193,8 @@ async def notify_session_closed(meeting_uuid: str):
     client = await get_client()
     if client.connected:
         await client.notify("n2n/zoom/session_closed", {"meeting_uuid": meeting_uuid})
+
+
+def context_proof(secret, installation, client_nonce, server_nonce, role):
+    payload = json.dumps(["netclaw-management-context-v1", installation, client_nonce, server_nonce, role], separators=(",", ":")).encode()
+    return hmac.new(secret.encode(), payload, hashlib.sha256).hexdigest()

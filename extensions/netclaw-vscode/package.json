@@ -290,6 +290,16 @@
         "command": "netclaw.openNativeRuntime",
         "title": "Open Native Harness UI",
         "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.analyzeContext",
+        "title": "Analyze Selected Context with GCF",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.openMeetings",
+        "title": "Review Live Meeting Context",
+        "category": "NetClaw"
       }
     ],
     "mcpServerDefinitionProviders": [

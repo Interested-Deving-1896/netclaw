@@ -312,6 +312,12 @@
     "category": "Guides"
   },
   {
+    "id": "0b4fcc68b3818d7f",
+    "path": "docs/VSCODE-KNOWLEDGE.md",
+    "title": "Selected context, GCF and live meetings",
+    "category": "Guides"
+  },
+  {
     "id": "572943ea41a17622",
     "path": "docs/VSCODE-MOBILE.md",
     "title": "Mobile and edge in VS Code",

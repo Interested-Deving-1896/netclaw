@@ -13,10 +13,10 @@ export class MobileClient{
     return JSON.parse(Buffer.concat(chunks));
   }
   async call(action,args={}){
-    invariant(['inventory','start','status','cancel','content'].includes(action),'DENIED');this.binding.assertCurrent();
+    invariant(['inventory','start','status','cancel','content','meetings'].includes(action),'DENIED');this.binding.assertCurrent();
     const endpoint=federationEndpoint(environment(this.binding));
     const verify=async()=>{const status=await this.request(endpoint,'/status');this.binding.assertCurrent();invariant(status.installation_id===this.binding.installationId&&status.harness_type===this.binding.kind,'IDENTITY_CHANGED');invariant(status.federation_ready===true,'SOURCE_UNAVAILABLE');};
-    await verify();const result=await this.request(endpoint,action==='inventory'?'/n2n/management/mobile':'/n2n/management/capture',action==='inventory'?undefined:{action,...args});await verify();return result;
+    await verify();const result=await this.request(endpoint,action==='inventory'?'/n2n/management/mobile':action==='meetings'?'/n2n/management/meetings':'/n2n/management/capture',action==='inventory'?undefined:action==='meetings'?args:{action,...args});await verify();return result;
   }
 }
 

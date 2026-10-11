@@ -120,3 +120,51 @@ native camera/microphone prompts, actual device cancellation, WSL and Remote SSH
 remain unverified. T061's supporting-domain behavioral coverage and T064's native
 views are now complete. T062/T066 remain open for the outstanding adapters and
 full supporting-domain acceptance.
+
+## GCF and live meeting adapters — Mac 2026-10-11
+
+T062's bounded supporting adapters are now implemented. GCF analyzes one owned,
+explicitly retained context, invoking the existing serializer in an isolated
+bounded child. It reports actual character/byte counts and separately labeled
+character-based token estimates. It creates no model request, runtime setting
+change, shared serializer session or inferred aggregate savings. Context lists
+use bounded stable pages. The native command selects an exact retained ID.
+
+Live meeting context uses the already-running Zoom process's registry over its
+existing loopback channel. A fresh server challenge and role-separated HMAC
+proofs bind both ends to the selected private installation UUID without sending
+the shared key in the management handshake. Challenges are single-use; legacy,
+missing and ambiguous bindings cannot supply context. The receiver verifies its
+private installation identity before and after reading. No new MCP/listener,
+recording, ingestion or inference starts. Meeting expiry remains unavailable;
+historical search remains unsupported. Native excerpt selection preserves source,
+time, citations, truncation and reference-only status. Retention requires review;
+sharing with a provider still requires selecting context in a submitted request.
+
+Validation:
+
+- **34 Python tests passed**: five new meeting cases plus existing Zoom channel
+  limits, webhook/panel authorization, extraction and migration regressions.
+  The new positive case uses real loopback TCP framing and both actual channel
+  implementations against a synthetic in-memory transcript. Denials include
+  replay, an impersonated server, legacy/ambiguous ownership and expired context.
+  This is not an actual Zoom account/RTMS session.
+- **21 existing GCF serializer tests passed** with repository-pinned
+  `gcf-python==2.2.1` in `/private/tmp/netclaw150-gcf-venv`. The actual management
+  helper compressed selected interface JSON using the generic profile, with
+  positive estimated savings, no fallback and identical repeated measurements.
+  The interpreter was selected only in the temporary test installation.
+- Targeted Node/native checks passed: selected ownership, JSON fallback,
+  compression, bounded pagination, fixed meeting route and identity replacement,
+  reviewed excerpt retention and a connection switch during confirmation.
+- Extension **52 passed**, with TypeScript check/build passing. Operator suite
+  **131 passed, 11 opt-in skipped**; the real compression case was run explicitly
+  and passed rather than borrowing its default skip as evidence.
+
+Logs: `/tmp/netclaw150-knowledge-targeted.log`,
+`/tmp/netclaw150-zoom-regression.log`, `/tmp/netclaw150-gcf-regression.log`,
+`/tmp/netclaw150-knowledge-backend.log`, `/tmp/netclaw150-knowledge-extension.log`.
+T066 remains open for full supporting-domain acceptance, including protected
+Hermes assessment provenance, physical media and real platform checks. The
+new source requires a newly built/qualified VSIX; earlier package digests do not
+include these controls.

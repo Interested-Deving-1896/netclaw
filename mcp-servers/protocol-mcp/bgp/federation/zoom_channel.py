@@ -18,6 +18,9 @@ Contract: specs/118-zoom-meeting-intelligence/contracts/zoom-channel-internal.md
 import asyncio
 import json
 import hmac
+import hashlib
+import secrets
+import re
 import logging
 import os
 import struct
@@ -37,6 +40,7 @@ _MAX_FRAME = 1 * 1024 * 1024  # 1 MB — generous for this feature's message siz
 # (contracts/zoom-channel-internal.md) — mirrors EDGE_METHODS' explicit-
 # allowlist shape (feature 066 precedent).
 ZOOM_METHODS = (
+    "n2n/zoom/context",            # Border -> current live process; read-only
     "n2n/zoom/hello",              # handshake: shared-secret possession proof
     "n2n/zoom/investigate",        # zoom-rtms-mcp -> Border, request
     "n2n/zoom/investigate_result",  # Border -> zoom-rtms-mcp, push (best-effort)
@@ -72,10 +76,14 @@ class ZoomChannel:
     """One TCP connection from the local zoom-rtms-mcp process."""
 
     def __init__(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter,
-                 handlers: dict = None):
+                 handlers: dict = None, *, installation_id=None, on_close=None):
         self.reader = reader
         self.writer = writer
         self.trusted = False
+        self.installation_id = installation_id
+        self.management_installation = None
+        self._challenge = None
+        self._on_close = on_close
         self._next_id = 0
         self._pending: dict = {}
         self._closed = False
@@ -95,6 +103,8 @@ class ZoomChannel:
         if self._closed:
             return
         self._closed = True
+        if self._on_close:
+            self._on_close(self)
         if self._read_task:
             self._read_task.cancel()
         try:
@@ -144,11 +154,37 @@ class ZoomChannel:
         params = msg.get("params") or {}
         if method == "n2n/zoom/hello":
             secret = os.environ.get("N2N_ZOOM_CHANNEL_SECRET", "")
-            provided = params.get("secret", "")
-            self.trusted = bool(secret) and isinstance(provided, str) and hmac.compare_digest(provided.encode(), secret.encode())
+            self.trusted = False
+            self.management_installation = None
+            result = {"trusted": False}
+            if params.get("managementContext") == 1:
+                # Two-step proof: neither endpoint discloses the shared secret.
+                # Each connection has a fresh, single-use server challenge.
+                installation = params.get("installationId")
+                nonce = params.get("clientNonce")
+                if (secret and installation == self.installation_id and isinstance(installation, str)
+                        and isinstance(nonce, str) and re.fullmatch(r"[a-f0-9]{64}", nonce)):
+                    if "clientProof" not in params:
+                        server_nonce = secrets.token_hex(32)
+                        self._challenge = (nonce, server_nonce, time.monotonic())
+                        result.update(installationId=installation, serverNonce=server_nonce,
+                                      serverProof=context_proof(secret, installation, nonce, server_nonce, "server"))
+                    else:
+                        challenge, self._challenge = self._challenge, None
+                        supplied = params.get("clientProof")
+                        if (challenge and challenge[0] == nonce and time.monotonic()-challenge[2] < 10
+                                and isinstance(supplied, str) and re.fullmatch(r"[a-f0-9]{64}", supplied) and hmac.compare_digest(supplied,
+                                context_proof(secret, installation, nonce, challenge[1], "client"))):
+                            self.trusted = True
+                            self.management_installation = installation
+                            result.update(trusted=True, installationId=installation)
+            else:
+                self._challenge = None
+                provided = params.get("secret", "")
+                self.trusted = bool(secret) and isinstance(provided, str) and hmac.compare_digest(provided.encode(), secret.encode())
+                result["trusted"] = self.trusted
             if req_id is not None:
-                await self._send({"jsonrpc": "2.0", "id": req_id,
-                                   "result": {"trusted": self.trusted}})
+                await self._send({"jsonrpc": "2.0", "id": req_id, "result": result})
             return
         if not self.trusted:
             if req_id is not None:
@@ -351,14 +387,49 @@ async def start_server(service, port: int) -> asyncio.AbstractServer:
     the FederationService is constructed, mirroring _start_edge()'s shape in
     bgp-daemon-v2.py."""
     manager = ZoomInvestigationManager(service)
+    channels = service._zoom_management_channels = set()
 
     async def _on_conn(reader, writer):
         channel = ZoomChannel(reader, writer, handlers={
             "n2n/zoom/investigate": manager.handle_investigate,
             "n2n/zoom/session_closed": manager.handle_session_closed,
-        })
+        }, installation_id=getattr(getattr(service, "runtime", None), "installation", None), on_close=channels.discard)
+        channels.add(channel)
         await channel.start()
 
     server = await asyncio.start_server(_on_conn, "127.0.0.1", port)
     logger.info("Zoom channel listening on 127.0.0.1:%d", port)
     return server
+
+
+def context_proof(secret, installation, client_nonce, server_nonce, role):
+    payload = json.dumps(["netclaw-management-context-v1", installation, client_nonce, server_nonce, role], separators=(",", ":")).encode()
+    return hmac.new(secret.encode(), payload, hashlib.sha256).hexdigest()
+
+
+async def read_management_context(service, meeting_id):
+    installation = getattr(getattr(service, "runtime", None), "installation", None)
+    unavailable = {"installationId": installation, "available": False, "meetings": [],
+                   "reason": "Exactly one live Zoom process bound to this installation is required.",
+                   "networkObservation": False, "historicalSearchAvailable": False}
+    if meeting_id is not None and (not isinstance(meeting_id, str) or not meeting_id or len(meeting_id) > 256):
+        raise ValueError("Invalid meeting selection")
+    channels = [c for c in getattr(service, "_zoom_management_channels", ())
+                if installation and c.trusted and not c._closed and c.management_installation == installation]
+    if len(channels) != 1:
+        return unavailable
+    try:
+        from .runtime import read_private
+        def current():
+            identity = read_private(service.runtime.home / 'netclaw-hud/installation.json')
+            if identity.get('schemaVersion') != 1 or identity.get('installationId') != installation:
+                raise ValueError('Installation identity changed')
+        current()
+        result = await channels[0].call("n2n/zoom/context", {"installationId": installation, "id": meeting_id}, timeout=5)
+        current()
+        if (not isinstance(result, dict) or result.get("installationId") != installation
+                or channels[0]._closed or channels[0].management_installation != installation):
+            return unavailable
+        return result
+    except (RpcError, OSError, ValueError, AttributeError):
+        return unavailable
