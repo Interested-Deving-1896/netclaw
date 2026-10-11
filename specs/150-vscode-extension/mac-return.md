@@ -1,74 +1,88 @@
-# Mac return — partial WSL validation, release still blocked
+# Mac return — HUD repaired; WSL qualification still open
 
-Mac reviewed this return in `150-vscode-extension-wsl-review-20261011`.
-See [the review](evidence/mac-wsl-return-review.md) and
-[bounded WSL prerequisite recovery](wsl-prerequisite-recovery.md).
-The original return and its limitations below remain valid. No repair or
-acceptance is implied by preparing that plan.
+Return branch: `150-vscode-extension-wsl-followup-20261011`.
+Evidence commit: `940a90ccdd3ea10ee6cc0fba2b874bb25161d2ed`.
+The following return-document commit changes only this file; its exact branch-tip
+commit is supplied in the handoff message. No merge or publication occurred.
 
-Return branch: `150-vscode-extension-wsl-20261011`.
-Evidence commit: `5983cc37e192ba4954ff50fa65d502a5fa385d8f`.
-The following return-document commit changes only this file; the final branch-tip
-commit is supplied with the handoff message. No merge or publication occurred.
-
-Incoming candidate: `c21b4f802ee7909bfb9ee1e258b0e5c668702f0d` on
-`150-vscode-extension-only`, implementation source
-`8db2c2144e169f4c2ab832d3d62c40f1b1c6a807`.
+Incoming Mac review: `4e3cd2627ac80b7d160af7b135d30dec6580f202` on
+`150-vscode-extension-wsl-review-20261011`. The prior `1aaaafa` return remains an
+ancestor, and [its evidence](evidence/wsl.md) is preserved unchanged.
 
 VSIX: `specs/150-vscode-extension/artifacts/netclaw-0.1.0.vsix`.
 SHA-256: `71694842db407dbb28ed695a31ca583a892d2c2bc0903c04829514b123fec005`.
-It is unchanged. No extension code or backend code was changed in WSL.
+It is unchanged. No extension or NetClaw source code was changed in this follow-up.
 
-Actual results are in [evidence/wsl.md](evidence/wsl.md) and the sanitized
-[check report](evidence/wsl-checks.json):
+Actual results are in [evidence/wsl-followup.md](evidence/wsl-followup.md) and the
+[sanitized report](evidence/wsl-followup-checks.json):
 
-- Exact VSIX installed and activated in the real Windows VS Code 1.140 / WSL host;
-  installed payload bytes match. TypeScript/build passed; 16 tests passed and one
-  optional local RAG test was skipped.
-- Existing owner HUD API is unavailable: startup fails on missing installed
-  `@modelcontextprotocol/client`, using unsupported owner Node 25.1.0. The owner
-  explicitly selected this installation and requested blocked-live reporting.
-- Live identity, panels, Chat/provider, RAG and interactive Copilot/Claude Code/Codex
-  remain blocked. An isolated Windows editor launch failed on the existing
-  `vscode-updating` mutex, so full installed lifecycle is also unqualified.
-- Owner configuration/testbed/assistant configuration hashes were preserved. A WSL
-  interruption changed service identities during the session; no restart command
-  was issued by the validation. Continuous uptime preservation is not claimed.
+- The explicitly authorized HUD repair succeeded. Restored already-locked
+  dependencies with retained rollback backups and selected the existing Node
+  24.19 for the HUD alone. Its API reports the preserved OpenClaw identity and
+  readiness; gateway status reports online/reachable/chat enabled. Actual provider
+  execution remains unverified.
+- All 12 protected file observations stayed unchanged. Owner source, credentials,
+  native identity, selection descriptor, testbed edits and core gateway/federation
+  service identities are preserved. The HUD was intentionally restarted; scheduled
+  DDNS and already-restarting Zoom RTMS identities also varied independently.
+- The single isolated Windows editor attempt exited 255 before logging or running
+  the observer. Read-only inspection found live updater processes and the
+  `vscode-updating` mutex still present. The owner must finish the update normally.
+  No owner window/updater was terminated. The temporary editor isolation hook was
+  restored to its original absence.
+- Exact VSIX installation into prepared private WSL storage passed, as did payload
+  comparisons of that install and the preserved owner install. Actual launched-host
+  storage isolation and upgrade/disable/re-enable/uninstall remain unqualified.
+- Fifteen of 17 real API GET probes returned HTTP 200. RAG stats/documents returned
+  HTTP 500 because its existing Python launcher sees FastMCP 2.14.7 / MCP 1.28.1,
+  while source requires FastMCP/tasks 4.0.11 / MCP 2.3.0. The missing import is
+  `fastmcp.utilities.async_utils`. No Python repair was performed; it falls outside
+  the approved HUD repair scope and needs a separately reviewed correction.
+- Actual editor connection/panels, Chat/provider, Canvas/Avatar, RAG retrieval,
+  settings cancellation, trust/reconnect and interactive Copilot/Claude Code/Codex
+  remain pending. No assistant registrations or provider requests were submitted.
 
-**T022 and T023 remain open. This return is not permission to skip acceptance.**
+**T022 and T023 remain open. This checkpoint is not release acceptance.**
+The prior Mac publisher authentication stays on Mac; no additional publisher
+account, token transfer or WSL publication is needed.
 
 ## Prompt for the Mac continuation
 
 ```text
-Continue NetClaw Spec150 from origin/150-vscode-extension-wsl-20261011.
-Read evidence commit 5983cc37e192ba4954ff50fa65d502a5fa385d8f and the following
-mac-return.md commit; use the exact returned branch tip supplied in the handoff.
-Preserve existing work and services. Use an isolated checkout. Read AGENTS.md,
-startup files, the constitution, and Spec150 spec/plan/tasks, scope-recovery.md,
-windows-wsl-handoff.md, evidence/wsl.md and evidence/wsl-checks.json.
+Continue NetClaw Spec150 from origin/150-vscode-extension-wsl-followup-20261011.
+Use the exact returned branch tip supplied in the handoff; require evidence commit
+940a90ccdd3ea10ee6cc0fba2b874bb25161d2ed as an ancestor. The following commit only
+updates mac-return.md. Preserve work and services and use an isolated checkout.
+Read AGENTS.md, startup files, daily memory, constitution, Spec150 spec/plan/tasks,
+scope-recovery.md, windows-wsl-handoff.md, wsl-prerequisite-recovery.md,
+evidence/wsl.md, evidence/wsl-followup.md and evidence/wsl-followup-checks.json.
 Follow GAIT startup, recording and session-end requirements.
 
-The incoming VSIX is unchanged, SHA256:
+Exact unchanged NetClaw.netclaw@0.1.0 VSIX SHA256:
 71694842db407dbb28ed695a31ca583a892d2c2bc0903c04829514b123fec005.
-The WSL return is partial and blocked, not release acceptance. T022/T023 are open.
-Review the observed missing HUD dependency/unsupported owner Node prerequisite
-and Windows editor update-lock failure. Any existing-installation correction
-requires its own concrete review; do not fold backend work into this extension.
-Do not repair/upgrade/restart the owner installation under this validation scope.
 
-Once prerequisites are separately resolved, complete the real Windows/WSL matrix,
-including the actual signed-in interactive Copilot, Claude Code and Codex workflows,
-live provider/RAG checks, isolated installed lifecycle and preservation evidence.
-Do not substitute Mac fixtures, assistant CLI presence or package activation for
-those checks. Fix confirmed extension defects only. Preserve the incoming VSIX;
-if code changes, build from a clean commit and qualify the new artifact digest.
+The owner-approved bounded HUD repair is DONE on WSL: locked dependencies with
+rollback backups, existing Node 24.19 for HUD only, preserved source/credentials/
+identity/core services. Do not repeat or roll back that successful repair merely
+to resume. The old dependency tree is retained locally and intentionally untracked.
 
-Do not merge or publish until review and actual acceptance permit release.
-The previous Mac publisher authentication remains a Mac-local prerequisite;
-no publisher token was transferred to WSL. When actual acceptance is complete,
-follow the existing owner authorization to publish the qualified exact VSIX,
-verify its Marketplace listing/install in an isolated profile and record the
-evidence. Never request/export credentials or weaken assistant approvals.
-Follow the constitution's release milestone/blog draft requirement; external
-blog/message publication still needs its separate review.
+This is a partial checkpoint. The Windows editor update still needs normal owner
+completion; do not kill owner windows/updater or bypass its mutex. RAG has a separate
+reproduced Python/FastMCP dependency mismatch. Review a concrete bounded runtime
+correction separately before applying it; do not silently extend the HUD approval
+into Python upgrades, backend source changes, policy changes or broader restarts.
+
+Complete the remaining checks on real Windows VS Code with its host running in WSL
+once prerequisites permit. Verify actual separate WSL storage before lifecycle
+mutations. Use the exact candidate, live provider and RAG, and each signed-in
+interactive Copilot/Claude Code/Codex with normal consent. Preserve the owner install
+and unrelated MCP registrations. Do not substitute API observations, CLI presence,
+source fixtures or Mac tests for WSL UI and assistant acceptance. Fix only reproduced
+extension defects; preserve and requalify an exact replacement if package inputs change.
+
+T022/T023 remain open. Do not merge or publish until actual acceptance and Mac review
+permit release. Then use existing Mac-local publisher authentication to publish the
+qualified exact VSIX and verify Marketplace listing/install in an isolated profile.
+Do not export credentials or weaken approvals. Follow the constitution's milestone/
+blog-draft requirement; external blog/message publication needs its separate review.
 ```
