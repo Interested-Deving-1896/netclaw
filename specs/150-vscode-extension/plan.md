@@ -40,6 +40,11 @@ specs/150-vscode-extension/{spec.md,plan.md,tasks.md,research.md,data-model.md,c
 Editor/platform harnesses remain inside the extension; none modifies base tests.
 
 ## Validation
+The owner explicitly held publication after the final WSL return on 2026-10-11.
+Finish implementation and Mac qualification; retain exact-artifact/platform
+evidence and any remaining release checks without publishing. Advanced enhancement
+and aesthetic work is future Spec151 scope.
+
 Transport tests cover identity changes, cross-target callbacks, redirect/URL
 refusal, session separation, timeouts and bounded responses. Test user flows,
 assistant denied tools, package contents and unchanged backend paths. Use real

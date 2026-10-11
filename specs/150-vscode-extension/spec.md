@@ -3,6 +3,12 @@
 Branch: `150-vscode-extension-only`. Updated 2026-10-11.
 Status: owner-authorized recovery implementation ("alright do 1 - 5").
 
+Owner direction, 2026-10-11 after the qualified WSL return: finish implementation
+and Mac qualification of the replacement, **do not publish**. T023/SC-005 public
+release are held pending new explicit authorization and excluded from the current
+implementation-completion milestone. Advanced enhancements and aesthetics belong
+to a future Spec151; no backend or testbed-management expansion is added here.
+
 ## Scope and clarification
 
 Install a published VS Code extension and connect it to an existing NetClaw or

@@ -40,9 +40,19 @@ export function openRag(
   p.onMessage(
     ["ready", "refresh", "search", "stage", "upload", "chat", "canvas"],
     async (m) => {
-      if (busy) return;
+      if (busy) {
+        await p.post({ type: "busy", busy: true });
+        if (m.type !== "ready")
+          await p.post({
+            type: "notice",
+            message:
+              "A knowledge operation is already in progress. Wait for it to finish before trying again.",
+          });
+        return;
+      }
       busy = true;
       try {
+        await p.post({ type: "busy", busy: true });
         if (["ready", "refresh"].includes(m.type)) await load();
         if (m.type === "chat" || m.type === "canvas")
           await vscode.commands.executeCommand(
@@ -175,6 +185,7 @@ export function openRag(
         }
       } finally {
         busy = false;
+        await p.post({ type: "busy", busy: false });
       }
     },
   );

@@ -2,7 +2,25 @@
   const api = acquireVsCodeApi(),
     viewId = document.body.dataset.viewId,
     $ = (id) => document.getElementById(id);
-  const post = window.netclawPost(api, viewId);
+  const send = window.netclawPost(api, viewId);
+  let busy = false,
+    invalidated = false;
+  const controls = () => {
+    for (const element of document.querySelectorAll("button, input, select"))
+      element.disabled = busy || invalidated;
+    $("stage").disabled =
+      busy || invalidated || !$("results").querySelector("input:checked");
+  };
+  const post = (type, fields) => {
+    if (busy || invalidated) return;
+    busy = true;
+    controls();
+    $("status").textContent =
+      type === "search"
+        ? "Searching backend knowledge…"
+        : "Waiting for the knowledge operation…";
+    send(type, fields);
+  };
   const text = (tag, value, parent) => {
     const node = document.createElement(tag);
     node.textContent = String(value ?? "");
@@ -29,11 +47,21 @@
   window.addEventListener("message", (event) => {
     const m = event.data;
     if (m.viewId !== viewId) return;
+    if (m.type === "busy") {
+      busy = m.busy;
+      if (
+        !busy &&
+        $("status").textContent === "Waiting for the knowledge operation…"
+      )
+        $("status").textContent = "Ready for an explicit knowledge operation.";
+      controls();
+    }
     if (m.type === "notice" || m.type === "error")
       $("status").textContent = m.message;
-    if (m.invalidated)
-      for (const button of document.querySelectorAll("button"))
-        button.disabled = true;
+    if (m.invalidated) {
+      invalidated = true;
+      controls();
+    }
     if (m.type === "listing") {
       const selected = $("collection").value;
       $("collection").replaceChildren();
@@ -89,6 +117,7 @@
         );
       $("more").hidden = !m.nextCursor;
       $("status").textContent = "Collections refreshed.";
+      controls();
     }
     if (m.type === "results") {
       $("results").replaceChildren();
@@ -106,7 +135,7 @@
         );
         row.append(label);
         input.addEventListener("change", () => {
-          $("stage").disabled = !$("results").querySelector("input:checked");
+          controls();
         });
         text("p", result.citation, row);
         if (result.low_confidence) text("p", "Low confidence retrieval", row);
@@ -117,6 +146,7 @@
       $("status").textContent = m.results.length
         ? `${m.results.length} cited passages. Select the results you want to review.`
         : m.message || "No matching passages.";
+      controls();
     }
   });
   post("ready");

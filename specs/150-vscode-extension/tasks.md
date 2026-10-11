@@ -3,6 +3,11 @@
 This list supersedes the expanded branch's 79 tasks. No old checkmark transfers.
 Paths below are relative to the repository. All stories remain in scope.
 
+Current owner instruction (2026-10-11): complete implementation/functionality and
+Mac qualification, then stop before publication. Implementation completion is
+T001–T022. T023 is a separately held release action, never a completed task.
+Advanced enhancements/aesthetics are future Spec151 scope.
+
 ## Foundation
 - [x] T001 Record source audit and preserved branches in specs/150-vscode-extension/scope-recovery.md.
 - [x] T002 Correct spec, plan, research and contracts in specs/150-vscode-extension/.
@@ -36,7 +41,7 @@ Paths below are relative to the repository. All stories remain in scope.
 - [x] T020 [US5] Finalize extension README/privacy/package documentation in extensions/netclaw-vscode/.
 - [x] T021 [US5] Package committed source, push and provide final specs/150-vscode-extension/windows-wsl-handoff.md.
 - [x] T022 [US5] Receive real Windows/WSL results and resolve confirmed extension defects; preserve evidence/wsl.md and record final scope/limitations in evidence/wsl-followup.md.
-- [ ] T023 [US5] Publish qualified VSIX and verify Marketplace installation in specs/150-vscode-extension/evidence/publication.md.
+- [ ] T023 [US5] **HELD BY OWNER — DO NOT PUBLISH:** publish qualified VSIX and verify Marketplace installation only after new explicit authorization; record in specs/150-vscode-extension/evidence/publication.md.
 
 Dependencies: foundation -> US1 -> US2/US3 -> US4 -> US5. Domain mapping and
 read-only research can run independently; implementation changes are sequential.

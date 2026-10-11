@@ -1,5 +1,11 @@
 # Mac return — Windows/WSL qualified; replacement review required
 
+**Owner override, 2026-10-11: DO NOT PUBLISH.** Finish Spec150 implementation,
+features, functionality and replacement Mac qualification. Publication is on hold
+until a new explicit owner instruction. Advanced extension enhancements and
+aesthetics belong to a future Spec151. This override supersedes the older release
+authorization in historical handoffs and evidence; do not run publishing commands.
+
 Return branch: `150-vscode-extension-wsl-followup-20261011`.
 Evidence commit: `f2661e22f76a436c3dfca1b86fc9fac1c7e98af7`.
 The following commit updates only this return document. Its exact branch-tip
@@ -101,10 +107,10 @@ fixes confined to reproduced defects. No testbed-management/backend expansion.
 If package inputs change again, preserve this VSIX and qualify the exact new one
 on the required hosts before release.
 
-After review and Mac qualification pass, publish the qualified exact VSIX using
-existing Mac-local publisher authentication and verify Marketplace listing and
-installation in an isolated profile (T023). No new publisher account/token or
-credential transfer is needed. Record actual publication evidence and update
-mac.md/tasks.md. Keep the milestone blog draft for John's review before external
-publication. Report the final release/artifact and remaining scope honestly.
+After review and Mac qualification pass, record implementation completion and
+the exact qualified artifact in mac.md/tasks.md and closure.md. DO NOT PUBLISH.
+T023 is explicitly held by the owner, not a completed release. Do not use publisher
+credentials or merge to main. Keep the milestone blog draft for John's review.
+Advanced enhancements and aesthetics belong to a future Spec151; do not expand
+this implementation. Push the completed work and report the actual scope honestly.
 ```

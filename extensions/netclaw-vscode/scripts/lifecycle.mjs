@@ -20,7 +20,9 @@ const f = await realHud(),
   user = path.join(root, "user"),
   installed = path.join(root, "extensions"),
   driver = path.join(root, "driver"),
-  candidate = path.join(extension, "netclaw-0.1.0.vsix"),
+  candidate = process.env.NETCLAW_TEST_VSIX
+    ? path.resolve(process.env.NETCLAW_TEST_VSIX)
+    : path.join(extension, "netclaw-0.1.0.vsix"),
   older = path.join(root, "netclaw-0.0.0.vsix");
 fs.mkdirSync(driver);
 fs.writeFileSync(

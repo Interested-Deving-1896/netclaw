@@ -36,6 +36,8 @@ Windows runtime hosting and virtual workspaces are unsupported.
   notices, reviewed context selection and selected-file uploads up to 10 MiB.
   Upload acceptance is pending, not proof of indexing. Refresh to verify the result.
   An upload uses its filename as the title and may replace an existing same-title document.
+  Controls wait for an active knowledge operation or review to finish; submissions
+  are never queued or replayed automatically.
 - **Operations:** tokenomics, budget, federation GAIT audit, logs and Terminal Intent.
 - **Risk and federation:** existing standalone/Risk, iN2N, eN2N peers, BGP topology,
   configured devices, mobile/edge and Science Officer observations.
@@ -118,4 +120,5 @@ assistant live checks are explicit opt-ins documented in Spec150 evidence.
 
 `npm run package` requires a clean committed checkout and records the source and
 VSIX digest in `out/package.json`. Windows/WSL acceptance and Marketplace publication
-are separate release gates. This source tree is a candidate until those gates pass.
+are separate release gates. Publication is currently on hold by the owner; this
+is an unpublished candidate. Qualification and exact-artifact limits are in Spec150.

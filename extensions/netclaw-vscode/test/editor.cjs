@@ -5,6 +5,34 @@ const vscode = require("vscode"),
 exports.run = async () => {
   const extension = vscode.extensions.getExtension("NetClaw.netclaw");
   assert.ok(extension);
+  if (process.env.NETCLAW_TEST_INSTALLED_ROOT) {
+    assert.ok(
+      extension.extensionPath.startsWith(
+        process.env.NETCLAW_TEST_INSTALLED_ROOT + path.sep,
+      ),
+    );
+    require("node:child_process").execFileSync("python3", [
+      "-c",
+      `
+import zipfile,json,pathlib,sys
+with zipfile.ZipFile(sys.argv[1]) as archive:
+ for name in archive.namelist():
+  if not name.startswith('extension/') or name.endswith('/'): continue
+  actual=(pathlib.Path(sys.argv[2])/name.removeprefix('extension/')).read_bytes()
+  expected=archive.read(name)
+  if name=='extension/package.json':
+   value=json.loads(actual);value.pop('__metadata',None)
+   assert value==json.loads(expected), name
+  else: assert actual==expected, name
+`,
+      process.env.NETCLAW_TEST_VSIX,
+      extension.extensionPath,
+    ]);
+  }
+  const liveProvider = process.env.NETCLAW_TEST_LIVE_PROVIDER === "1";
+  const expectedReply = liveProvider
+    ? "SPEC150_MAC_FINAL_OK MAC_CONTEXT_20261011"
+    : "Synthetic gateway reply";
   const api = await extension.activate();
   assert.ok(extension.isActive);
   const profile = await api.profiles.save({
@@ -31,6 +59,10 @@ exports.run = async () => {
     "mismatched identity rejected",
   ];
 
+  const mark = (...values) => {
+    checks.push(...values);
+    console.log("SPEC150 check: " + values.join("; "));
+  };
   const registration = api.assistants.file("copilot");
   fs.mkdirSync(api.assistants.directory, { recursive: true, mode: 0o700 });
   const reg = {
@@ -81,7 +113,7 @@ exports.run = async () => {
     await mcp.close();
   }
   assert.deepEqual(api.assistants.provideMcpServerDefinitions(), []);
-  checks.push(
+  mark(
     "actual VS Code MCP definition launches bundled adapter with Electron; cached disable enforced (not Copilot inference)",
   );
   const screenshots = [];
@@ -96,6 +128,7 @@ exports.run = async () => {
         .flatMap((c) => c.pages())
         .find((p) => p.url().includes("workbench"));
       assert.ok(page);
+      page.setDefaultTimeout(30000);
       const frameFor = async (selector) => {
         const until = Date.now() + 20000;
         while (Date.now() < until) {
@@ -139,7 +172,7 @@ exports.run = async () => {
         await overview.locator("#refresh").click();
         await shot(theme.replaceAll(" ", "-"));
       }
-      checks.push("actual overview rendering in dark/light/high contrast");
+      mark("actual overview rendering in dark/light/high contrast");
       await vscode.workspace
         .getConfiguration("workbench")
         .update(
@@ -147,17 +180,50 @@ exports.run = async () => {
           "Default Dark Modern",
           vscode.ConfigurationTarget.Global,
         );
+      if (liveProvider) {
+        const document = await vscode.workspace.openTextDocument({
+          content:
+            "Harmless extension acceptance fixture. The acceptance context marker is MAC_CONTEXT_20261011.",
+          language: "plaintext",
+        });
+        const editor = await vscode.window.showTextDocument(document);
+        editor.selection = new vscode.Selection(
+          document.positionAt(0),
+          document.positionAt(document.getText().length),
+        );
+        const staging = vscode.commands.executeCommand(
+          "netclaw.addSelectedContext",
+        );
+        await page
+          .getByRole("button", { name: "Stage selected text", exact: true })
+          .click();
+        await staging;
+        assert.equal(api.connection.contexts.size, 1);
+        mark(
+          "native selected-editor-text review stages only harmless context locally",
+        );
+      }
       await vscode.commands.executeCommand("netclaw.openChat");
       const chat = await frameFor("#composer");
-      await chat.locator("#prompt").fill("Synthetic fixture greeting");
+      if (liveProvider)
+        await chat.locator('#contexts input[type="checkbox"]').check();
+      await chat
+        .locator("#prompt")
+        .fill(
+          liveProvider
+            ? "This is a harmless extension acceptance check. Do not use tools or change anything. Reply with exactly SPEC150_MAC_FINAL_OK followed by one space and the acceptance context marker from the selected context. No other text."
+            : "Synthetic fixture greeting",
+        );
       await chat.locator("#send").click();
       await chat
         .locator("#transcript")
-        .getByText("Synthetic gateway reply", { exact: true })
-        .waitFor({ timeout: 20000 });
+        .getByText(expectedReply, { exact: true })
+        .waitFor({ timeout: liveProvider ? 180000 : 20000 });
       await shot("chat");
-      checks.push(
-        "actual composer -> unchanged HUD -> synthetic gateway -> rendered reply",
+      mark(
+        liveProvider
+          ? "actual composer -> unchanged HUD -> existing configured provider -> rendered reply"
+          : "actual composer -> unchanged HUD -> synthetic gateway -> rendered reply",
       );
       overviewPanel.reveal();
       const revealedOverview = await frameFor(".data-view");
@@ -180,26 +246,32 @@ exports.run = async () => {
       await revealedChat.locator("#refresh").click();
       await revealedChat
         .locator("#transcript")
-        .getByText("Synthetic gateway reply", { exact: true })
+        .getByText(expectedReply, { exact: true })
         .waitFor();
-      checks.push(
+      mark(
         "hidden Overview and Chat restore and accept refresh without resending work",
       );
-      await vscode.commands.executeCommand("netclaw.openCanvas");
+      const canvasPanel =
+        await vscode.commands.executeCommand("netclaw.openCanvas");
       const canvas = await frameFor(".canvas-lane");
       await canvas
         .getByRole("button", { name: "Branch this conversation" })
         .first()
         .click();
       await canvas.locator(".canvas-lane").nth(1).waitFor();
+      await canvas.locator("#save").click();
+      await canvas
+        .locator("#status")
+        .filter({ hasText: /Investigation saved/ })
+        .waitFor();
       await shot("canvas");
-      checks.push("Canvas branch without dispatch");
-      await vscode.commands.executeCommand("netclaw.openRag");
+      mark("Canvas branch without dispatch");
+      const ragPanel = await vscode.commands.executeCommand("netclaw.openRag");
       const rag = await frameFor("#rag-search");
       if (process.env.NETCLAW_TEST_RAG_READY === "1") {
         await rag
           .locator("#status")
-          .getByText("Collections refreshed.")
+          .filter({ hasText: "Collections refreshed." })
           .waitFor({ timeout: 90000 });
         await rag.locator("#query").fill("When is the maintenance window?");
         await rag.getByRole("button", { name: "Search knowledge" }).click();
@@ -208,26 +280,65 @@ exports.run = async () => {
           await rag.locator("#results").textContent(),
           /violet Thursday/,
         );
-        checks.push("actual integrated RAG search and rendered citation");
+        mark("actual integrated RAG search and rendered citation");
       }
       await shot("rag");
       assert.match(await rag.locator("h1").textContent(), /RAG/);
-      checks.push(
-        "integrated RAG panel; backend may be unavailable in fixture",
-      );
+      mark("integrated RAG panel; backend may be unavailable in fixture");
+      canvasPanel.reveal();
+      const restoredCanvas = await frameFor(".canvas-lane");
+      await restoredCanvas.locator(".canvas-lane").nth(1).waitFor();
+      await restoredCanvas.locator("#save").click();
+      await restoredCanvas
+        .locator("#status")
+        .filter({ hasText: /Investigation saved/ })
+        .waitFor();
+      await restoredCanvas.locator("#open").click();
+      await restoredCanvas
+        .locator("#status")
+        .filter({ hasText: /Save investigation/ })
+        .waitFor();
+      await restoredCanvas.locator(".canvas-lane").nth(1).waitFor();
+      mark("hidden Canvas restores both lanes and accepts save/open");
+      ragPanel.reveal();
+      const restoredRag = await frameFor("#rag-search");
+      if (process.env.NETCLAW_TEST_RAG_READY === "1") {
+        await restoredRag
+          .locator("#status")
+          .filter({ hasText: "Collections refreshed." })
+          .waitFor({ timeout: 90000 });
+        await restoredRag.locator("#refresh").click();
+        await restoredRag
+          .locator("#query")
+          .fill("When is the maintenance window?");
+        await restoredRag
+          .getByRole("button", { name: "Search knowledge" })
+          .click();
+        await restoredRag
+          .locator("#results pre")
+          .first()
+          .waitFor({ timeout: 90000 });
+        assert.match(
+          await restoredRag.locator("#results").textContent(),
+          /violet Thursday/,
+        );
+        mark(
+          "hidden RAG restores inventory and accepts refresh/search with cited retrieval",
+        );
+      }
       await vscode.commands.executeCommand("workbench.action.closeAllEditors");
       await vscode.commands.executeCommand("netclaw.openAvatar");
       const avatar = await frameFor("#avatar-character");
       await avatar.locator("#avatar-character").selectOption("lobster");
       await shot("avatar");
-      checks.push("bundled local Avatar");
+      mark("bundled local Avatar");
       api.connection.disconnect();
       await avatar
         .locator("#status")
-        .getByText(/Connection changed/)
+        .filter({ hasText: /Connection changed/ })
         .waitFor();
       assert.equal(await avatar.locator("#send").isDisabled(), true);
-      checks.push("target switch invalidates webview");
+      mark("target switch invalidates webview");
     } finally {
       await browser.close();
     }
@@ -239,10 +350,14 @@ exports.run = async () => {
     JSON.stringify(
       {
         editor: vscode.version,
+        packageMode: process.env.NETCLAW_TEST_VSIX
+          ? "exact installed VSIX; all payload bytes verified"
+          : "development extension",
         checks,
         screenshots,
-        scope:
-          "Actual desktop extension against unchanged HUD with synthetic local gateway; no real provider/device/WSL claim.",
+        scope: liveProvider
+          ? "Actual desktop extension against unchanged HUD and existing configured OpenClaw provider; only harmless acceptance text, no device/WSL claim."
+          : "Actual desktop extension against unchanged HUD with synthetic local gateway; no real provider/device/WSL claim.",
       },
       null,
       2,
