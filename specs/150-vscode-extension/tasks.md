@@ -57,3 +57,12 @@ unavailable; the owner requested blocked-live reporting. An isolated Windows edi
 launch also failed on an existing VS Code update mutex. Live workflows, interactive
 Copilot/Claude Code/Codex and full installed lifecycle remain unqualified. T022 and
 T023 remain open; see evidence/wsl.md and mac-return.md.
+
+WSL follow-up, 2026-10-11: the owner explicitly approved the bounded prerequisite
+repair. Locked HUD dependencies were restored with rollback backups and the HUD
+alone restarted under existing Node 24.19. Its real identity/readiness and gateway
+status now respond. A fresh isolated Windows launch still did not start; the
+updater and its mutex remain present. RAG GETs also reveal a separate existing
+Python/FastMCP mismatch, left unchanged outside the approved repair scope. No
+extension defect is established. T022/T023 remain open; see evidence/wsl-followup.md
+and evidence/wsl-followup-checks.json. The original partial evidence is preserved.

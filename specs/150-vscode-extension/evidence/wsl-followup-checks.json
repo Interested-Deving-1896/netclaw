@@ -1,0 +1,448 @@
+{
+  "observedOn": "2026-10-11",
+  "status": "partial-blocked",
+  "incomingCommit": "4e3cd2627ac80b7d160af7b135d30dec6580f202",
+  "validationBranch": "150-vscode-extension-wsl-followup-20261011",
+  "ownerSourceCommit": "aa2795313b487e00ccbe85d53f6a78db07b10a94",
+  "artifact": {
+    "extensionId": "NetClaw.netclaw",
+    "version": "0.1.0",
+    "sha256": "71694842db407dbb28ed695a31ca583a892d2c2bc0903c04829514b123fec005",
+    "bytes": 2220783,
+    "rebuilt": false,
+    "ownerPayloadFilesExact": 21,
+    "isolatedPayloadFilesExact": 21,
+    "manifestMatchesExceptEditorMetadata": true
+  },
+  "hudRepair": {
+    "explicitOwnerAuthorization": true,
+    "status": "applied-and-verified",
+    "node": "24.19.0",
+    "lockedDependenciesStaged": true,
+    "installScriptsEnabled": false,
+    "devDependenciesIncluded": true,
+    "lockfileUnchanged": true,
+    "oldDependencyTreeRetained": true,
+    "originalUnitBackupRetained": true,
+    "rollbackPrepared": true,
+    "rollbackUsed": false,
+    "unitDropIn": "50-spec150-supported-node.conf",
+    "unitsStoppedOrStartedBySession": [
+      "netclaw-hud.service"
+    ],
+    "globalRuntimeChanged": false,
+    "openclawExecutablePreserved": true,
+    "apiAndViteChildNodeVerified": true,
+    "nativeInstallationIdentityPreserved": true,
+    "selectionDescriptorPreserved": true
+  },
+  "liveInstallation": {
+    "kind": "openclaw",
+    "readiness": {
+      "ready": true,
+      "executionVerified": false
+    },
+    "gateway": {
+      "online": true,
+      "reachable": true,
+      "chatCompletionsEnabled": true
+    },
+    "apiProbes": [
+      {
+        "route": "/api/runtime",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.01,
+        "topLevelFields": [
+          "kind",
+          "installationId",
+          "label",
+          "readiness",
+          "capabilities"
+        ],
+        "arrayCounts": {},
+        "availability": {}
+      },
+      {
+        "route": "/api/gateway/status",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.07,
+        "topLevelFields": [
+          "online",
+          "reachable",
+          "chatCompletionsEnabled",
+          "port",
+          "reason"
+        ],
+        "arrayCounts": {},
+        "availability": {
+          "online": true
+        }
+      },
+      {
+        "route": "/api/n2n",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.65,
+        "topLevelFields": [
+          "available",
+          "identity",
+          "peers",
+          "approvals",
+          "risk",
+          "members",
+          "advisors",
+          "posture",
+          "gait",
+          "replicationJobs",
+          "edgeNodes",
+          "recentPushes",
+          "generatedAt"
+        ],
+        "arrayCounts": {
+          "peers": 7,
+          "approvals": 0,
+          "members": 28,
+          "advisors": 1,
+          "gait": 25,
+          "replicationJobs": 0,
+          "edgeNodes": 1,
+          "recentPushes": 0
+        },
+        "availability": {
+          "available": true
+        }
+      },
+      {
+        "route": "/api/graph",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.05,
+        "topLevelFields": [
+          "identity",
+          "config",
+          "settings",
+          "integrations",
+          "skills",
+          "devices",
+          "categories",
+          "stats",
+          "generatedAt"
+        ],
+        "arrayCounts": {
+          "settings": 10,
+          "integrations": 76,
+          "skills": 233,
+          "devices": 5,
+          "categories": 23
+        },
+        "availability": {}
+      },
+      {
+        "route": "/api/bgp",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.02,
+        "topLevelFields": [
+          "available",
+          "local",
+          "peers",
+          "rib",
+          "ribCount",
+          "injected",
+          "kernelRoutes",
+          "generatedAt"
+        ],
+        "arrayCounts": {
+          "peers": 0,
+          "kernelRoutes": 0
+        },
+        "availability": {
+          "available": true
+        }
+      },
+      {
+        "route": "/api/hud/runtime",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.01,
+        "topLevelFields": [
+          "available",
+          "llm",
+          "source",
+          "mcp_servers",
+          "controlUi",
+          "generatedAt"
+        ],
+        "arrayCounts": {
+          "mcp_servers": 14
+        },
+        "availability": {
+          "available": true
+        }
+      },
+      {
+        "route": "/api/hud/configuration",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.01,
+        "topLevelFields": [
+          "environmentFile",
+          "integrations"
+        ],
+        "arrayCounts": {
+          "integrations": 88
+        },
+        "availability": {}
+      },
+      {
+        "route": "/api/hud/tokenomics",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.5,
+        "topLevelFields": [
+          "available",
+          "groups",
+          "records",
+          "missingUsage",
+          "malformed",
+          "skippedFiles",
+          "scope",
+          "generatedAt"
+        ],
+        "arrayCounts": {
+          "groups": 5
+        },
+        "availability": {
+          "available": true
+        }
+      },
+      {
+        "route": "/api/budget/config",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.5,
+        "topLevelFields": [
+          "budget",
+          "interfaceDefaults"
+        ],
+        "arrayCounts": {},
+        "availability": {}
+      },
+      {
+        "route": "/api/hud/security",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.01,
+        "topLevelFields": [
+          "labMode",
+          "labExplicit",
+          "riskMode",
+          "riskExplicit",
+          "strictAll",
+          "defenseMode",
+          "guardMode",
+          "guardPort",
+          "source",
+          "generatedAt"
+        ],
+        "arrayCounts": {},
+        "availability": {}
+      },
+      {
+        "route": "/api/hud/openshell",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.08,
+        "topLevelFields": [
+          "commands",
+          "generatedAt"
+        ],
+        "arrayCounts": {
+          "commands": 2
+        },
+        "availability": {}
+      },
+      {
+        "route": "/api/rag/stats",
+        "method": "GET",
+        "status": 500,
+        "seconds": 1.26,
+        "errorRecordedPrivately": true
+      },
+      {
+        "route": "/api/rag/documents",
+        "method": "GET",
+        "status": 500,
+        "seconds": 1.22,
+        "errorRecordedPrivately": true
+      },
+      {
+        "route": "/api/hud/documentation",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.0,
+        "topLevelFields": [
+          "documents"
+        ],
+        "arrayCounts": {
+          "documents": 338
+        },
+        "availability": {}
+      },
+      {
+        "route": "/api/hud/reference",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.01,
+        "topLevelFields": [
+          "scope",
+          "cli",
+          "mcps",
+          "http",
+          "daemon"
+        ],
+        "arrayCounts": {
+          "cli": 197,
+          "mcps": 125
+        },
+        "availability": {}
+      },
+      {
+        "route": "/api/hud/logs",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.0,
+        "topLevelFields": [
+          "sources"
+        ],
+        "arrayCounts": {
+          "sources": 9
+        },
+        "availability": {}
+      },
+      {
+        "route": "/api/terminal/devices",
+        "method": "GET",
+        "status": 200,
+        "seconds": 0.0,
+        "topLevelFields": [
+          "devices"
+        ],
+        "arrayCounts": {
+          "devices": 5
+        },
+        "availability": {}
+      }
+    ],
+    "providerRequestsSubmitted": 0,
+    "ragUploadsSubmitted": 0,
+    "ragSearchesSubmitted": 0,
+    "ragReindexOrDeletionSubmitted": 0,
+    "pythonRepairPerformed": false,
+    "approvalChangesPerformed": false
+  },
+  "ragFailure": {
+    "routes": [
+      "/api/rag/stats",
+      "/api/rag/documents"
+    ],
+    "httpStatus": 500,
+    "error": "ModuleNotFoundError: No module named 'fastmcp.utilities.async_utils'",
+    "python": "3.14.4",
+    "installedFastmcp": "2.14.7",
+    "installedMcp": "1.28.1",
+    "declaredFastmcp": "4.0.11",
+    "declaredFastmcpTasks": "4.0.11",
+    "declaredMcp": "2.3.0",
+    "managedComponentMatch": false,
+    "scope": "Existing installation prerequisite; no extension defect established; broader repair not performed"
+  },
+  "windows": {
+    "build": "26300.9550",
+    "vscodeExecutableVersion": "1.140.0",
+    "remoteWsl": "0.104.3",
+    "isolatedLaunchAttempts": 1,
+    "isolatedLaunchExit": 255,
+    "sessionLogCreated": false,
+    "updaterProcessesPresent": true,
+    "updatingMutexPresent": true,
+    "exactSilentExitCauseProven": false,
+    "ownerAskedToCompleteUpdateNormally": true,
+    "ownerWindowsTerminated": false,
+    "updaterTerminated": false,
+    "updateLockBypassed": false
+  },
+  "wsl": {
+    "version": "3.0.1.0",
+    "distributionOs": "Ubuntu 26.04 LTS",
+    "kernel": "6.18.40.1-microsoft-standard-WSL2"
+  },
+  "isolatedEditor": {
+    "vsixInstallExit": 0,
+    "remoteStoragePrepared": true,
+    "launchedHostStorageIsolationVerified": false,
+    "observerRan": false,
+    "temporaryConditionalEnvironmentHookRestored": true,
+    "ownerInstallPreserved": true,
+    "upgradeDisableReenableUninstall": "blocked"
+  },
+  "acceptance": {
+    "connectionUi": "not-run",
+    "populatedPanelsUi": "not-run",
+    "realProviderChat": "not-run",
+    "canvasAvatar": "not-run",
+    "rag": "blocked",
+    "settingsCancel": "not-run",
+    "serviceStaging": "not-run",
+    "otherHarness": "not-evaluated",
+    "copilotInteractive": "not-run",
+    "claudeCodeInteractive": "not-run",
+    "codexInteractive": "not-run",
+    "assistantRegistrationsCreated": 0,
+    "trustIdentityReconnectUi": "not-run",
+    "lifecycle": "blocked",
+    "newSourceTestRuns": 0
+  },
+  "preservation": {
+    "protectedFileObservations": 12,
+    "unchangedFileObservations": 12,
+    "sampledServices": 15,
+    "unchangedServices": 11,
+    "sameBoot": true,
+    "coreGatewayMeshMembersSecurityPreserved": true,
+    "changedServices": [
+      "netclaw-hud.service",
+      "netclaw-ddns.service",
+      "netclaw-ddns-zoom.service",
+      "netclaw-zoom-rtms-mcp.service"
+    ],
+    "auxiliaryChanges": "Two scheduled DDNS units and an already-restarting Zoom RTMS unit varied independently; HUD restart intentional",
+    "originalOwnerEditsPreserved": true,
+    "addedOwnerUntrackedPath": "ui/netclaw-visual/node_modules.spec150-backup-20261011-0805/",
+    "sourceOrCredentialsChanged": false
+  },
+  "gait": {
+    "branch": "spec150-wsl-hud-repair-acceptance-20261011",
+    "startupRecord": "a55e3a31",
+    "milestoneRecords": [
+      "8ea7cb80",
+      "c909efc7",
+      "82d8b900"
+    ],
+    "rawTrail": "owner-private audit"
+  },
+  "startupInventory": {
+    "tool": "pyats_list_devices",
+    "status": "completed",
+    "entryCount": 5,
+    "deviceHealthVerified": false
+  },
+  "release": {
+    "T022": "open",
+    "T023": "open",
+    "merged": false,
+    "published": false
+  }
+}
