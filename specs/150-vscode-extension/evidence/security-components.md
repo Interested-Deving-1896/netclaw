@@ -52,8 +52,54 @@ OpenShell research uses tag `v0.1.3`, source
 `e1f3c82caa3ed3b65de22889ae7ef32a774878ef`. Its actual arm64 Darwin CLI reports
 `openshell 0.1.3`; archive SHA-256
 `2eda3676aa85ff60551b403847090942e119c89f37c84d1635ac166c6b879826`
-matches the official release manifest. Only isolated version inspection has run
-so far. No gateway, sandbox or owner configuration was changed.
+matches the official release manifest. The official gateway archive digest is
+`a0cff0699f4a608a644805dbbf898c42caa59856274ff3cc2cdd6b3af4bacabe`.
+
+The OpenShell ownership/read adapter is now implemented. Five behavioral tests
+cover exact gateway/workspace/sandbox/installation selection, certificate and
+executable changes, replacement sandbox IDs, HTTP-only health and unsupported
+bearer auto-refresh/plaintext modes. The native panel shows the observed component
+alongside separate host confinement evidence. No gateway/sandbox mutation is
+advertised as qualified: upstream 0.1.3 start/stop messages lack identity/revision
+preconditions and its CLI leaves the durable request ID empty.
+
+The actual CLI and gateway ran in a fresh private Mac test home with generated
+test mTLS, telemetry disabled, a unique Docker driver label and image pulls set
+to `never`. Existing local Docker 29.7.2 supplied the 0.1.3 runtime/supervisor
+images and `python:3.11` arm64 workload image
+`sha256:e33bce801053f329b16f5cf139453277cd23ab68f75478b4eeff102a4654aed7`.
+The workload only slept as numeric UID/GID 65534, with an empty network policy;
+no provider, imported credential or owner mount was requested. The real sandbox
+reached Ready with accepted configuration. The adapter and operator snapshot
+returned its exact ID and reported-active state while original metadata and mTLS
+bytes remained identical. After the test stopped that sandbox, the adapter
+reported Stopped/degraded and the gateway remained running. The test's own
+gateway was then stopped. Backend registration used actual installation-specific
+GAIT in the final run. No owner gateway, sandbox or configuration changed.
+
+```sh
+NETCLAW_TEST_LIVE_GAIT=1 \
+NETCLAW_TEST_OPENSHELL_GATEWAY=/absolute/openshell-gateway \
+NETCLAW_TEST_OPENSHELL_CLI=/absolute/openshell \
+NETCLAW_TEST_DOCKER_SOCKET=/absolute/docker.sock \
+  node --test tests/operator/openshell-process.test.mjs
+```
+
+Local raw log: `/tmp/netclaw150-openshell-process.log`. The Mac-only harness uses
+Docker Desktop's `host.docker.internal` callback and separate loopback gateway
+port; this does not qualify WSL/native Linux callbacks. Initial manual trials
+retained honest failures: a runtime-only image lacks `/etc/passwd`; a Docker
+supervisor cannot use the Mac host's loopback as its own callback. A fresh
+workload image and the documented host callback passed. Failed sandbox records
+were not relabelled as success. No inference or network/device change occurred.
+
+After both component adapters, backend/assistant regression reports **138 passed,
+nine opt-in skipped**; actual OpenShell/GAIT and DefenseClaw process cases were
+run separately. All **44 extension tests**, TypeScript checking and the extension
+build pass. The assistant disclosure check also covers nested retained cancel
+receipts returned through overview inventory. Local logs:
+`/tmp/netclaw150-openshell-regression.log` and
+`/tmp/netclaw150-openshell-extension.log`.
 
 Primary sources: [DefenseClaw release](https://github.com/cisco-ai-defense/defenseclaw/releases/tag/0.8.10),
 [OpenShell release](https://github.com/NVIDIA/OpenShell/releases/tag/v0.1.3).

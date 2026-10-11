@@ -8,6 +8,9 @@ import { assistantOutputs,validateAssistantOutput } from '../netclaw-operator-mc
 function disclosedOperation(grant,operation){
   if(!operation.result)return operation;
   const {usage,...answer}=operation.result;
+  // A retained cancel receipt contains the original operation as its result.
+  // Apply the same disclosure to that nested receipt, not only the outer row.
+  if(answer.result&&typeof answer.result==='object'&&typeof answer.operationId==='string')answer.result=disclosedOperation(grant,answer).result;
   return {...operation,result:{...(grant.disclosure.includes('conversation')?answer:{code:answer.code,summary:'Owned result available for human review.'}),
     ...(grant.disclosure.includes('usage')?{usage:usage??null}:{})}};
 }

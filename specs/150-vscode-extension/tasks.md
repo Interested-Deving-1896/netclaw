@@ -271,3 +271,14 @@ T056/T057 complete the measured usage/gap/log projections and behavior tests.
 T068/T069 cover candidate listing/package materials and no-publish CI automation;
 T072 covers current artifact coherence, HUD documentation visibility and counts.
 Actual release lifecycle, platform gates and Marketplace publication remain open.
+
+## Security component checkpoint
+
+The [component evidence](evidence/security-components.md) records implemented
+DefenseClaw v8 ownership, retained scans/rules/events and reviewed saved-mode
+transactions, plus OpenShell 0.1.3 mTLS gateway/sandbox/policy observation. Actual
+upstream DefenseClaw storage and actual OpenShell CLI/gateway/Docker/GAIT cases
+passed on Mac. T044/T046 remain unchecked because scanner execution and qualified
+OpenShell managed writes still need implementation. The upstream CLI's missing
+durable request IDs and expected identity/revision preconditions are explicit
+adapter dependencies; rendering unavailable actions is not task completion.

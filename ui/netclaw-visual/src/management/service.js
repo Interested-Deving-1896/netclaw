@@ -31,6 +31,7 @@ import {lifecycleAdapters} from './lifecycle.js';
 import {ServiceNowAuthority} from './change-authority.js';
 import {AssistantRequests,ProtectedAssistantRuntime} from './assistant-requests.js';
 import {DefenseClawComponent} from './defenseclaw.js';
+import {OpenShellComponent} from './openshell.js';
 
 export class ManagementService {
   constructor({root,home,kind,expectedInstallationId,audit,adapters={},authority}) {
@@ -41,6 +42,7 @@ export class ManagementService {
     this.readFederation=federationReader(this.binding,()=>environment(this.binding));
     this.services=new OwnedServiceController(this.binding,{ready:async id=>id==='federation'?Boolean((await this.readFederation('overview')).value):Boolean((await this.runtime.readiness()).ready)});
     this.defenseclaw=new DefenseClawComponent(this.binding);
+    this.openshell=new OpenShellComponent(this.binding);
     this.adapters={...configurationAdapters(this.binding),'security.patch':this.defenseclaw.adapter(),...lifecycleAdapters({binding:this.binding,journal:this.journal,controller:this.services}),...adapters};
     this.clients=new ClientGrants({binding:this.binding,journal:this.journal,audit:this.audit});
     this.assistants=new AssistantRequests({binding:this.binding,journal:this.journal,audit:this.audit,clients:this.clients,runtime:new ProtectedAssistantRuntime(this.binding),
@@ -113,8 +115,8 @@ export class ManagementService {
       return this.envelope({...data,externalAssistantUsage:null,billingNote:'NetClaw usage excludes Copilot, Claude Code and Codex inference.'},'Selected runtime retained usage');
     }
     if(input.domain==='security'){
-      const posture=await securitySnapshot(this.binding,this.readFederation),defenseclaw=this.defenseclaw.snapshot();
-      return this.envelope({...posture,revision:this.proposals.revision(),defenseclaw,controls:{...posture.controls,settings:defenseclaw.settings||{supported:false,reason:defenseclaw.reason},scans:defenseclaw.scans||posture.controls.scans}},'Selected installation configuration, explicitly bound components and federation observations');
+      const posture=await securitySnapshot(this.binding,this.readFederation),defenseclaw=this.defenseclaw.snapshot(),openshell=await this.openshell.snapshot();
+      return this.envelope({...posture,revision:this.proposals.revision(),defenseclaw,openshell,controls:{...posture.controls,settings:defenseclaw.settings||{supported:false,reason:defenseclaw.reason},scans:defenseclaw.scans||posture.controls.scans,openshell:openshell.actions||{supported:false,reason:openshell.reason}}},'Selected installation configuration, explicitly bound components and federation observations');
     }
     if(input.domain==='documentation'){
       const entries=JSON.parse(fs.readFileSync(path.join(this.root,'docs/reference/documents.json'),'utf8'));

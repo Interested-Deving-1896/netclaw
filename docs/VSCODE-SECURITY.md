@@ -38,6 +38,40 @@ verified rollback apply. Saving is reported as pending restart; no hooks or
 processes are changed. Re-enabling a disabled guard uses its normal backend setup,
 because hook installation may modify additional runtime files.
 
-Scanner execution, component rule mutations and OpenShell gateway/sandbox actions
-are still under implementation. Current controls do not invoke broad installer,
-upgrade, quarantine or ambient gateway commands.
+## OpenShell
+
+The OpenShell panel observes an explicitly bound existing gateway and sandbox.
+It supports the official CLI/gateway 0.1.3 contract with existing mTLS credentials.
+The sandbox must already carry the label `netclaw.installation-id` equal to the
+selected installation UUID. Normal backend setup owns that label; the extension
+never assigns itself ownership of an unlabelled sandbox.
+
+```sh
+node scripts/netclaw-bind-openshell.mjs \
+  --home /absolute/netclaw/home --runtime openclaw \
+  --installation INSTALLATION_UUID \
+  --executable /absolute/openshell \
+  --config-home /absolute/xdg-config-home \
+  --gateway GATEWAY --workspace WORKSPACE --sandbox SANDBOX
+```
+
+Review the exact destination and sandbox ID, then repeat with `--record`. The
+binding pins the executable, metadata and certificate bytes. A certificate
+rotation or binary update requires another review. Credentials remain on the
+backend host; the CLI receives a temporary private copy and has telemetry
+disabled. There is no fallback to an active gateway, last-used sandbox, insecure
+TLS, bearer-token refresh or another user's registry.
+
+The panel distinguishes authenticated gRPC access from HTTP health, observed
+sandbox phase, configured policy revision, runtime-reported revision and policy
+admission. A stopped, failed or pending sandbox remains degraded. A gateway may
+materialize an existing policy revision while servicing its own read API; the
+extension does not submit a new policy. A reported active policy is not proof
+that every denial path has been tested. Private annotations and middleware
+credential configuration are excluded from the projection.
+
+Scanner execution, component rule mutations and OpenShell gateway/sandbox writes
+are still under implementation. The upstream 0.1.3 CLI's start/stop calls omit
+request IDs and do not accept an expected sandbox identity/revision. Those calls
+are not exposed as qualified managed writes. Current controls do not invoke broad
+installer, upgrade, quarantine or ambient gateway commands.

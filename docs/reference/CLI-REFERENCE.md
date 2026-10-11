@@ -2544,6 +2544,24 @@ Flags mentioned: none
 ```text
 ```
 
+## scripts/netclaw-bind-defenseclaw.mjs
+
+Node entry point; argument/source references only. npm wrapper commands are indexed separately.
+
+Flags mentioned: none
+
+```text
+```
+
+## scripts/netclaw-bind-openshell.mjs
+
+Node entry point; argument/source references only. npm wrapper commands are indexed separately.
+
+Flags mentioned: none
+
+```text
+```
+
 ## scripts/netclaw-bind-service.mjs
 
 Node entry point; argument/source references only. npm wrapper commands are indexed separately.

@@ -67,6 +67,7 @@ test('answer disclosure alone does not disclose usage through any operation retr
   }
   const inventory=await assistantCall(f.service,f.g.credentialRef,'netclaw_inventory',{kind:'overview'});
   assert.ok(inventory.operations.every(value=>value.result?.usage===undefined));
+  assert.ok(!JSON.stringify(inventory).includes('"usage"'));
   assert.deepEqual(f.service.journal.get(f.owner,op.operationId).result.usage,{cost:17,tokens:921});
 });
 test('revocation before worker dispatch prevents any runtime submission',async t=>{
