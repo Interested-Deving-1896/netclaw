@@ -110,7 +110,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 **Independent test**: Unapproved production and out-of-scope lab work is denied; supported synthetic approved actions retain complete evidence.
 
 - [ ] T042 [P] [US5] Add exact Terminal Intent Local/Lab, read-only collector, GAIT root and guard/confinement enforcement cases in `tests/operator/security.test.mjs`. (FR-022, FR-023, FR-024, FR-025, FR-026, SC-006)
-- [ ] T043 [US5] Implement owned durable Terminal Intent adapter in `ui/netclaw-visual/src/management/intent.js`; preserve designated endpoints/API-created record/real artifacts/APPLY phase, never infer approval from questions. (FR-013, FR-022, FR-023, SC-006, SC-007)
+- [X] T043 [US5] Implement owned durable Terminal Intent adapter in `ui/netclaw-visual/src/management/intent.js`; preserve designated endpoints/API-created record/real artifacts/APPLY phase, never infer approval from questions. (FR-013, FR-022, FR-023, SC-006, SC-007)
 - [ ] T044 [US5] Implement security scans/rules/events and separate DefenseClaw/OpenShell/host-posture adapters in `ui/netclaw-visual/src/management/security.js`; permitted settings use narrow transactions, no installer wrappers. (FR-025, FR-026, FR-039)
 - [X] T045 [US5] Implement Operations proposal/approval/verification view and append-only GAIT browser in `extensions/netclaw-vscode/src/views/operations.ts` and `gait.ts` with redacted export. (FR-022, FR-023, FR-024, FR-029, SC-006)
 - [ ] T046 [US5] Implement distinct effective/observe-only/degraded/disabled/unavailable security and OpenShell controls in `extensions/netclaw-vscode/src/views/security.ts` and `openshell.ts`. (FR-025, FR-026, FR-037)
@@ -212,7 +212,7 @@ Deliver small story checkpoints with real behavioral evidence, preserve the exis
 
 ## Counts and traceability
 
-79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Forty-six tasks are complete; 33 remain unchecked. T027 adds explicit native UI navigation to the already rendered Canvas/Avatar implementation; remote browser acceptance remains a platform gate. T049/T050/T053 have protected Hermes MCP/worker/runtime and native grant-review evidence in evidence/assistant-clients.md; broad federation, named-client and platform acceptance remain open. T036 has isolated Mac launchd and controller fault evidence in evidence/services-mac.md; T037 and T063 have configuration/RAG behavioral and rendered-editor evidence. Full story/platform qualification remains separate. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
+79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Forty-nine tasks are complete; 30 remain unchecked. T027 adds explicit native UI navigation to the already rendered Canvas/Avatar implementation; remote browser acceptance remains a platform gate. T049/T050/T053 have protected Hermes MCP/worker/runtime and native grant-review evidence in evidence/assistant-clients.md; broad federation, named-client and platform acceptance remain open. T036 has isolated Mac launchd and controller fault evidence in evidence/services-mac.md; T037 and T063 have configuration/RAG behavioral and rendered-editor evidence. Full story/platform qualification remains separate. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
 
 | Group | Tasks |
 |---|---|
@@ -311,3 +311,14 @@ non-listening domains and NetClaw configuration writers. It also records the
 Hermes normalized-credential launcher fix and actual read-only status check.
 The owner completed local publisher authentication, independently verified;
 publication and broader runtime/role/platform tasks remain open.
+
+## Runtime and Intent checkpoint
+
+T038/T039 implement explicit existing-runtime defaults and pending-restart Risk
+roles with native impact review. Real Mac OpenClaw/Hermes selection preserved
+processes/configuration with zero provider requests; the actual Risk API/startup
+sync fixture preserved all metadata. T041 and platform qualification remain open.
+T043 adds durable operator-only Terminal Intent around the existing scoped engine;
+real OpenClaw HTTP/worker/GAIT crash and lease-expiry evidence confirms no replay.
+Synthetic lab artifacts do not qualify real device configuration or rollback.
+See evidence/configuration.md and evidence/security.md.

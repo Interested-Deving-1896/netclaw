@@ -924,7 +924,7 @@
           "declaration": "npm run publisher:verify \u2192 vsce verify-pat NetClaw"
         }
       ],
-      "sha256": "7651624dbe9e0ddbf6804fae0ff3519bcc59092cec1217083d13fad670be4d23",
+      "sha256": "bf2150a768a3bec579ee1b146eb948b5e7ed1f94d68cb28a1a9260299a55a0a4",
       "coverage": "All package.json script commands. Arguments after -- are delegated to the underlying command."
     },
     {
@@ -6150,7 +6150,7 @@
       "kind": "Node launcher",
       "flags": [],
       "declarations": [],
-      "sha256": "e937ac0952972811c13fa384d45c239bbdcf8ecb922c6707bc9a72481af3be35",
+      "sha256": "b4500f418e573c43a08c4b0cdcd3d2b8469c84193c557a2fcdefcd43e95f1922",
       "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
     },
     {
@@ -7560,7 +7560,7 @@
       "kind": "Node launcher",
       "flags": [],
       "declarations": [],
-      "sha256": "2e8597388e730f465659760311379ddef16bf6b04a6736c8d9658d3a350e34b9",
+      "sha256": "0568b98ba2d8bad19296c9f6d9fb2f7d380a6d789adfeddce34ee940243bbbd9",
       "coverage": "Node entry point; argument/source references only. npm wrapper commands are indexed separately."
     },
     {
@@ -10727,7 +10727,7 @@
           "operationId": "get_api_hud_runtime",
           "summary": "GET /api/hud/runtime",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:689",
+          "x-source": "ui/netclaw-visual/server.js:678",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10743,7 +10743,7 @@
           "operationId": "get_api_gateway_status",
           "summary": "GET /api/gateway/status",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:921",
+          "x-source": "ui/netclaw-visual/server.js:910",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10759,7 +10759,7 @@
           "operationId": "get_api_hud_tokenomics",
           "summary": "GET /api/hud/tokenomics",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:681",
+          "x-source": "ui/netclaw-visual/server.js:670",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10791,7 +10791,7 @@
           "operationId": "get_api_hud_security",
           "summary": "GET /api/hud/security",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:661",
+          "x-source": "ui/netclaw-visual/server.js:650",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10807,7 +10807,7 @@
           "operationId": "get_api_hud_configuration",
           "summary": "GET /api/hud/configuration",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1136",
+          "x-source": "ui/netclaw-visual/server.js:1125",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10823,7 +10823,7 @@
           "operationId": "get_api_hud_openshell",
           "summary": "GET /api/hud/openshell",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:669",
+          "x-source": "ui/netclaw-visual/server.js:658",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10839,7 +10839,7 @@
           "operationId": "get_api_health",
           "summary": "GET /api/health",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:697",
+          "x-source": "ui/netclaw-visual/server.js:686",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10855,7 +10855,7 @@
           "operationId": "get_api_graph",
           "summary": "GET /api/graph",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:701",
+          "x-source": "ui/netclaw-visual/server.js:690",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10871,7 +10871,7 @@
           "operationId": "get_api_bgp",
           "summary": "GET /api/bgp",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:784",
+          "x-source": "ui/netclaw-visual/server.js:773",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10887,7 +10887,7 @@
           "operationId": "get_api_n2n",
           "summary": "GET /api/n2n",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:900",
+          "x-source": "ui/netclaw-visual/server.js:889",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10903,7 +10903,7 @@
           "operationId": "post_api_n2n_chat",
           "summary": "POST /api/n2n/chat",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:905",
+          "x-source": "ui/netclaw-visual/server.js:894",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10930,7 +10930,7 @@
           "operationId": "get_api_terminal_devices",
           "summary": "GET /api/terminal/devices",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:957",
+          "x-source": "ui/netclaw-visual/server.js:946",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10944,7 +10944,7 @@
           "operationId": "post_api_terminal_devices",
           "summary": "POST /api/terminal/devices",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1061",
+          "x-source": "ui/netclaw-visual/server.js:1050",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10971,7 +10971,7 @@
           "operationId": "get_api_topology_status",
           "summary": "GET /api/topology/status",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:996",
+          "x-source": "ui/netclaw-visual/server.js:985",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -10987,7 +10987,7 @@
           "operationId": "post_api_topology_authorize",
           "summary": "POST /api/topology/authorize",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1003",
+          "x-source": "ui/netclaw-visual/server.js:992",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11014,7 +11014,7 @@
           "operationId": "post_api_topology_login",
           "summary": "POST /api/topology/login",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1007",
+          "x-source": "ui/netclaw-visual/server.js:996",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11041,7 +11041,7 @@
           "operationId": "post_api_topology_revoke",
           "summary": "POST /api/topology/revoke",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1015",
+          "x-source": "ui/netclaw-visual/server.js:1004",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11068,7 +11068,7 @@
           "operationId": "post_api_topology_lookup",
           "summary": "POST /api/topology/lookup",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1020",
+          "x-source": "ui/netclaw-visual/server.js:1009",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11095,7 +11095,7 @@
           "operationId": "post_api_terminal_enrich",
           "summary": "POST /api/terminal/enrich",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1027",
+          "x-source": "ui/netclaw-visual/server.js:1016",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11122,7 +11122,7 @@
           "operationId": "get_api_terminal_enrichment_aliases",
           "summary": "GET /api/terminal/enrichment/aliases",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1040",
+          "x-source": "ui/netclaw-visual/server.js:1029",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11136,7 +11136,7 @@
           "operationId": "put_api_terminal_enrichment_aliases",
           "summary": "PUT /api/terminal/enrichment/aliases",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1045",
+          "x-source": "ui/netclaw-visual/server.js:1034",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11163,7 +11163,7 @@
           "operationId": "put_api_terminal_devices_deviceId",
           "summary": "PUT /api/terminal/devices/{deviceId}",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1108",
+          "x-source": "ui/netclaw-visual/server.js:1097",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11198,7 +11198,7 @@
           "operationId": "delete_api_terminal_devices_deviceId",
           "summary": "DELETE /api/terminal/devices/{deviceId}",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1109",
+          "x-source": "ui/netclaw-visual/server.js:1098",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11224,7 +11224,7 @@
           "operationId": "delete_api_terminal_devices_deviceId_host_key",
           "summary": "DELETE /api/terminal/devices/{deviceId}/host-key",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1113",
+          "x-source": "ui/netclaw-visual/server.js:1102",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11250,7 +11250,7 @@
           "operationId": "get_api_skill_skillId",
           "summary": "GET /api/skill/{skillId}",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1129",
+          "x-source": "ui/netclaw-visual/server.js:1118",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11276,7 +11276,7 @@
           "operationId": "get_api_env_integrationId",
           "summary": "GET /api/env/{integrationId}",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1144",
+          "x-source": "ui/netclaw-visual/server.js:1133",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11302,7 +11302,7 @@
           "operationId": "put_api_env",
           "summary": "PUT /api/env",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1168",
+          "x-source": "ui/netclaw-visual/server.js:1157",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11329,7 +11329,7 @@
           "operationId": "get_api_budget_status",
           "summary": "GET /api/budget/status",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1190",
+          "x-source": "ui/netclaw-visual/server.js:1179",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11345,7 +11345,7 @@
           "operationId": "get_api_budget_config",
           "summary": "GET /api/budget/config",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1228",
+          "x-source": "ui/netclaw-visual/server.js:1217",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11359,7 +11359,7 @@
           "operationId": "put_api_budget_config",
           "summary": "PUT /api/budget/config",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1248",
+          "x-source": "ui/netclaw-visual/server.js:1237",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11386,7 +11386,7 @@
           "operationId": "get_api_testbed_raw",
           "summary": "GET /api/testbed/raw",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1312",
+          "x-source": "ui/netclaw-visual/server.js:1301",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11400,7 +11400,7 @@
           "operationId": "put_api_testbed_raw",
           "summary": "PUT /api/testbed/raw",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1384",
+          "x-source": "ui/netclaw-visual/server.js:1373",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11427,7 +11427,7 @@
           "operationId": "get_api_layout",
           "summary": "GET /api/layout",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1333",
+          "x-source": "ui/netclaw-visual/server.js:1322",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11441,7 +11441,7 @@
           "operationId": "put_api_layout",
           "summary": "PUT /api/layout",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1352",
+          "x-source": "ui/netclaw-visual/server.js:1341",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11466,7 +11466,7 @@
           "operationId": "delete_api_layout",
           "summary": "DELETE /api/layout",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1373",
+          "x-source": "ui/netclaw-visual/server.js:1362",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11482,7 +11482,7 @@
           "operationId": "get_api_terminal_terra_status",
           "summary": "GET /api/terminal/terra/status",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1459",
+          "x-source": "ui/netclaw-visual/server.js:1448",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11498,7 +11498,7 @@
           "operationId": "put_api_terminal_terra_config",
           "summary": "PUT /api/terminal/terra/config",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1467",
+          "x-source": "ui/netclaw-visual/server.js:1456",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11525,7 +11525,7 @@
           "operationId": "post_api_terminal_terra",
           "summary": "POST /api/terminal/terra",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1484",
+          "x-source": "ui/netclaw-visual/server.js:1473",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11653,7 +11653,7 @@
           "operationId": "post_api_rag_search",
           "summary": "POST /api/rag/search",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1907",
+          "x-source": "ui/netclaw-visual/server.js:1896",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11701,7 +11701,7 @@
           "operationId": "get_api_rag_documents",
           "summary": "GET /api/rag/documents",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1909",
+          "x-source": "ui/netclaw-visual/server.js:1898",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11717,7 +11717,7 @@
           "operationId": "get_api_rag_stats",
           "summary": "GET /api/rag/stats",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1919",
+          "x-source": "ui/netclaw-visual/server.js:1908",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11733,7 +11733,7 @@
           "operationId": "post_api_rag_upload",
           "summary": "POST /api/rag/upload",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1931",
+          "x-source": "ui/netclaw-visual/server.js:1920",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11784,7 +11784,7 @@
           "operationId": "delete_api_rag_documents_id",
           "summary": "DELETE /api/rag/documents/{id}",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:1993",
+          "x-source": "ui/netclaw-visual/server.js:1982",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -11810,7 +11810,7 @@
           "operationId": "post_api_rag_documents_id_reindex",
           "summary": "POST /api/rag/documents/{id}/reindex",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/server.js:2010",
+          "x-source": "ui/netclaw-visual/server.js:1999",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."

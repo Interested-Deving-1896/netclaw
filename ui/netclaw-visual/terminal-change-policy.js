@@ -112,6 +112,7 @@ export function createLocalChangePolicy({ directory, listDevices }) {
       }));
       const record = { ...scope, id, devices, phase: 'prepare', status: 'running', createdAt: new Date().toISOString(),
         request: activityText(input.request, 4000), requestHash: hash(input.request),
+        ...(input.requestKind?{requestKind:input.requestKind}:{}),
         authorization: 'Explicit operator request through Local/Lab Intent; only the stated task on selected lab endpoints. Questions authorize no writes.',
       };
       atomicJson(recordFile(id), record);
@@ -121,6 +122,7 @@ export function createLocalChangePolicy({ directory, listDevices }) {
     validate,
     prepared(change, report) {
       validate(change);
+      if(readRecord(change.id)?.requestKind==='read-only')throw fail('An explicitly read-only request cannot authorize an APPLY phase.',403);
       const artifacts = [];
       for (const device of change.devices) {
         for (const field of ['baseline', 'rollback']) {

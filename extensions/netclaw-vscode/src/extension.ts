@@ -14,6 +14,7 @@ import {LocalState} from './state/local';
 import path from 'node:path';
 import {openDocumentation} from './views/documentation';
 import {openLogs} from './views/logs';
+import {openIntent} from './views/intent';
 import {openTokenomics} from './views/tokenomics';
 import {searchMemory,analyzeSelectedContext,openMeetings} from './views/knowledge';
 import {prepareEnvironmentChange} from './views/configuration';
@@ -115,6 +116,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('exportGait',()=>exportGait(connection));
   register('inspectEstateResource',node=>inspectEstateResource(context,connection,node));
   register('openNetwork',()=>vscode.commands.executeCommand('netclaw.openDomain','network'));
+  register('openIntent',()=>openIntent(context,connection));
   register('openScience',()=>openScience(context,connection));
   register('openMobile',()=>openMobile(context,connection));
   register('openSecurity',()=>openSecurity(context,connection));
@@ -140,6 +142,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
       if(group==='operations')items.unshift({label:'Chat',command:'netclaw.openChat',icon:'comment-discussion'});
       if(group==='operations')items.push({label:'Export reviewed GAIT evidence',command:'netclaw.exportGait',icon:'export'});
       if(group==='operations')items.push({label:'Installation logs',command:'netclaw.openLogs',icon:'output'});
+      if(group==='operations')items.push({label:'Terminal Intent',command:'netclaw.openIntent',icon:'terminal'});
       if(group==='operations')items.push({label:'Avatar',command:'netclaw.openAvatar',icon:'person'});
       if(group==='operations')items.push({label:'Canvas',command:'netclaw.openCanvas',icon:'preview'});
       if(group==='operations')items.push({label:'Native harness UI',command:'netclaw.openNativeRuntime',icon:'link-external'});

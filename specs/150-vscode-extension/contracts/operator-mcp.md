@@ -81,6 +81,20 @@ proposal, never inferred from saving the role.
 
 Terminal Intent is a separate scoped path, not an estate-wide lab mode. Only designated endpoints, API-created local record, explicit configuration intent, real baseline/rollback and the API's APPLY phase permit local execution; question/delegation text alone does not create that approval. Collector grants stay read-only.
 
+The operator workspace adds `intent-state`, `intent-preview`, `intent-submit`
+and `intent-read`. Submit accepts a nonce, explicit request kind and change mode,
+exact testbed IDs, opaque configuration/testbed revision and, where applicable,
+the existing Local/Lab policy revision or authoritative production CR reference.
+Preview returns scope and the matching production action digest without gateway
+dispatch. Admission creates a `terminal-intent` operation for the independent
+worker; operation/events/cancel use their normal owned interfaces. A cancelled
+in-flight segment is not claimed to have stopped its gateway tools. Unknown
+work blocks new Intent admission and is never auto-reconciled from model text.
+Records identify reports separately from actual transcript activity and set
+`verifiedNetworkOutcome:false`. These operator methods are not exposed through
+assistant discovery or dispatch. The adapter reuses the existing OpenClaw engine;
+protected Hermes Intent remains explicitly unqualified.
+
 ## Durability and GAIT
 
 Persist canonical admission/ownership before effects, then dispatch to an existing durable runtime or installation-owned worker. Worker startup uses only the admitted operation ID, not user command text, and rechecks authority. Lost receipts resolve through nonce lookup. Do not retry uncertain writes; reattach/read authoritative state instead. WSL shutdown can interrupt services; restart reads journal and preserves unknown outcomes.

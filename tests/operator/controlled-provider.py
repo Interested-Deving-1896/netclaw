@@ -9,6 +9,7 @@ spec = importlib.util.spec_from_file_location('provider150', source)
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 provider = module.Provider()
+provider.intent_report = '--intent-report' in sys.argv
 try:
     print(json.dumps({'url': provider.start()}), flush=True)
     for line in sys.stdin:

@@ -52,6 +52,8 @@ class Provider:
                 content=None if tool_calls else ('CANARY '+str(tool_results[-1]['content']) if tool_results else 'HERMES FIXTURE '+ ('violet' if any('violet' in str(m.get('content')) for m in messages) else str(latest)))
                 if not tool_calls and 'CANVAS_' in str(latest):
                     content='HERMES FIXTURE violet '+str(latest).splitlines()[0]
+                if getattr(owner,'intent_report',False):
+                    content=json.dumps({'status':'completed','requestKind':'read-only','outcome':'answered','summary':'Controlled provider report; no network device or configuration tool was invoked.','actions':[],'verification':[]})
                 message={'role':'assistant','content':content}
                 if tool_calls:message['tool_calls']=tool_calls
                 output={'id':'fixture-response','object':'chat.completion','created':1,'model':'hud-fixture','choices':[{'index':0,'message':message,'finish_reason':'tool_calls' if tool_calls else 'stop'}],'usage':{'prompt_tokens':12,'completion_tokens':8,'total_tokens':20}}

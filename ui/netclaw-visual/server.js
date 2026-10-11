@@ -14,7 +14,7 @@ import { createChatRuntime } from './src/hud-server/chat-runtime.js';
 import { publicChatModels, resolveChatModel, resolveChatEffort } from './src/hud-server/chat-models.js';
 import { chatTimeouts, postGatewayChat } from './src/hud-server/chat-transport.js';
 import { gatewayAgentId } from './src/hud-server/gateway-agent.js';
-import { createTerminalProfiles, cleanConfiguredValue, validateTerminalProfileInput } from './terminal-profiles.js';
+import { createTerminalProfiles, cleanConfiguredValue, validateTerminalProfileInput, pickDeviceConnection } from './terminal-profiles.js';
 import { createTerminalHostStore, terminalHostFingerprint, terminalHostKeyType } from './terminal-host-store.js';
 import { controlUiLocation } from './src/hud-server/control-ui.js';
 import { securitySettings, openshellStatus } from './src/hud-server/security-posture.js';
@@ -564,17 +564,6 @@ function parseTestbed() {
   const source = readText(TESTBED_FILE);
   if (!source) return {};
   return yaml.load(source) || {};
-}
-
-function pickDeviceConnection(device) {
-  const connections = device?.connections || {};
-  const candidates = Object.entries(connections)
-    .filter(([name, value]) => name !== 'defaults' && value && typeof value === 'object');
-  const preferred = candidates.find(([name]) => name === 'cli')
-    || candidates.find(([name]) => name === 'ssh')
-    || candidates.find(([, value]) => String(value.protocol || '').toLowerCase() === 'ssh')
-    || candidates[0];
-  return preferred ? { name: preferred[0], connection: preferred[1] } : null;
 }
 
 function parseConfig() {

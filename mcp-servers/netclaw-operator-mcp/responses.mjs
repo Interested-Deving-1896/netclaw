@@ -19,6 +19,7 @@ const clientProposal=object({client:z.enum(['copilot','claude-code','codex']),ta
   disclosure:z.array(z.enum(['summary','usage','evidence','conversation'])),expiresAt:z.number().int(),proposalId:z.string().uuid(),state:z.literal('pending-review'),expectedRevision:z.string().uuid(),disclosureNotice:z.string()});
 const staged=object({contextId:z.string().uuid(),name:z.string(),size:z.number().int().nonnegative(),indexed:z.literal(false),reason:z.string().optional()});
 const workspaceSchemas={
+  'intent-state':envelopeSchema,'intent-read':envelopeSchema,'intent-preview':envelopeSchema,'intent-submit':operationSchema,
   'rag-list':object({documents:z.array(json).max(500),total:z.number().int().nonnegative(),nextCursor:z.string().optional(),stats:json,uploads:z.array(json).max(500),operations:z.array(json).max(500),source:z.string()}),
   'rag-search':object({results:z.array(json).max(20),searchId:z.string().uuid(),corpus_empty:z.boolean(),collection:z.string().optional(),latency_ms:z.number().nonnegative().optional(),message:z.string().optional()}),
   'rag-stage':staged,'rag-context':staged,

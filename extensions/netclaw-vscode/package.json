@@ -212,7 +212,12 @@
       },
       {
         "command": "netclaw.configureSettings",
-        "title": "Configure Provider, Model and Budget",
+        "title": "Configure Provider, Harness, Risk and Budget",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.openIntent",
+        "title": "Open Terminal Intent",
         "category": "NetClaw"
       },
       {

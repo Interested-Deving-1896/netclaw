@@ -36,6 +36,7 @@ import {ScienceOfficer} from './science.js';
 import {MobileWorkspace} from './mobile.js';
 import {RiskConfiguration} from './runtime.js';
 import {RuntimeSelection} from './runtime-selection.js';
+import {TerminalIntent} from './intent.js';
 
 export class ManagementService {
   constructor({root,home,kind,expectedInstallationId,audit,adapters={},authority}) {
@@ -55,7 +56,9 @@ export class ManagementService {
     this.clients=new ClientGrants({binding:this.binding,journal:this.journal,audit:this.audit});
     this.assistants=new AssistantRequests({binding:this.binding,journal:this.journal,audit:this.audit,clients:this.clients,runtime:new ProtectedAssistantRuntime(this.binding),
       start:operationId=>startOwnedWorker({root:this.root,binding:this.binding,operationId}),clean:value=>this.clean(value)});
-    this.proposals=new Proposals({binding:this.binding,journal:this.journal,audit:this.audit,adapters:this.adapters,authority:authority||new ServiceNowAuthority(this.binding),validatePrincipal:principal=>this.clients.validate(principal)});
+    this.authority=authority||new ServiceNowAuthority(this.binding);
+    this.proposals=new Proposals({binding:this.binding,journal:this.journal,audit:this.audit,adapters:this.adapters,authority:this.authority,validatePrincipal:principal=>this.clients.validate(principal)});
+    this.intent=new TerminalIntent({binding:this.binding,journal:this.journal,audit:this.audit,runtime:this.runtime,authority:this.authority,start:operationId=>startOwnedWorker({root,binding:this.binding,operationId}),clean:value=>this.clean(value)});
     this.workspace=new Workspace({root,binding:this.binding,journal:this.journal,science:this.science,mobile:this.mobile,audit:this.audit,clean:value=>this.clean(value),rag:new RagClient(this.binding,root),start:operationId=>startOwnedWorker({root,binding:this.binding,operationId})});
     this.conversations=new Conversations({binding:this.binding,journal:this.journal,science:this.science,audit:this.audit,runtime:this.runtime,
       start:operationId=>startOwnedWorker({root,binding:this.binding,operationId}),clean:value=>this.clean(value)});
@@ -153,7 +156,13 @@ export class ManagementService {
     }
     if(name==='operator_resources')return this.resources(principal,args);
     if(name==='operator_snapshot')return this.snapshot(principal,args);
-    if(name==='operator_workspace')return this.workspace.call(principal,args);
+    if(name==='operator_workspace'){
+      if(args.action==='intent-state')return this.envelope(this.intent.state(principal),'Existing Terminal Intent configuration and durable requests');
+      if(args.action==='intent-read')return this.envelope(this.intent.read(principal,args.args.id),'Owned durable Terminal Intent evidence');
+      if(args.action==='intent-preview')return this.envelope(this.intent.preview(principal,args.args),'Explicit Terminal Intent scope and approval digest; no dispatch');
+      if(args.action==='intent-submit')return this.intent.submit(principal,{...args.args,nonce:args.nonce});
+      return this.workspace.call(principal,args);
+    }
     if(name==='operator_operation_get'){
       const value=this.journal.get(principal,args.operationId);
       if(value.state==='unknown'&&value.kind==='conversation-request')return this.clean(await this.conversations.reconcile(principal,args.operationId));
@@ -166,6 +175,7 @@ export class ManagementService {
     if(name==='operator_cancel_request'){
       const value=this.journal.get(principal,args.operationId);
       if(value.kind==='mobile-capture')return this.clean(await this.mobile.cancel(principal,args));
+      if(value.kind==='terminal-intent')return this.clean(await this.intent.cancel(principal,args));
       return this.clean(value.kind==='assistant-request'?await this.assistants.cancel(principal,{nonce:args.nonce,requestId:args.operationId}):await this.conversations.cancel(principal,args));
     }
     if(name==='operator_events')return this.envelope({events:this.journal.events(principal,args.operationId,args.after,args.limit)},'Durable management events');

@@ -69,6 +69,11 @@ harness installations and saved standalone/Border/member roles. The
 [harness and Risk workflow](VSCODE-RUNTIMES.md) explains registration, active-work
 review and pending restart. Selecting a connection itself changes neither.
 
+**Open Terminal Intent** reviews exact endpoints and the production or existing
+Local/Lab scope, then follows the owned request independently of the editor.
+[Terminal Intent guidance](VSCODE-INTENT.md) covers prerequisites, approval,
+preparation artifacts, cancellation and retained unknown outcomes.
+
 **Manage Service** prepares start, stop or restart for an explicitly bound
 gateway, federation daemon or Hermes companion. Review impact on current work
 before applying. A changed unit, running process, configuration or set of active

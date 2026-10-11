@@ -42,7 +42,11 @@ export const changeSchema = z.discriminatedUnion('action',Object.entries(patches
 const query = z.string().min(1).max(4000).refine(value=>value.trim().length>0);
 const content = z.string().max(14*1024*1024);
 const name = z.string().min(1).max(200);
+const intentInput={request:z.string().min(1).max(4000).refine(value=>value.trim().length>0),requestKind:z.enum(['read-only','change']),changeMode:z.enum(['production','local-lab']),targetDeviceIds:z.array(id).min(1).max(100).refine(ids=>new Set(ids).size===ids.length),expectedRevision:z.string().uuid(),policyRevision:z.string().uuid().optional()};
 const workspaceActions = {
+  'intent-state':[false,{}], 'intent-read':[false,{id}],
+  'intent-preview':[false,intentInput],
+  'intent-submit':[true,{...intentInput,approvalReference:id.optional()}],
   'rag-list': [false,{}],
   'rag-search': [false,{query,collection:z.string().regex(/^[\w.-]{1,128}$/).refine(v=>!v.includes('..')).optional(),k:z.number().int().min(1).max(20).optional()}],
   'rag-stage': [true,{name:name.optional(),content}],

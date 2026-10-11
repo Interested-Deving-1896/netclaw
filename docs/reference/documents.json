@@ -312,6 +312,12 @@
     "category": "Guides"
   },
   {
+    "id": "d2333ba91901edb0",
+    "path": "docs/VSCODE-INTENT.md",
+    "title": "Terminal Intent in VS Code",
+    "category": "Guides"
+  },
+  {
     "id": "0b4fcc68b3818d7f",
     "path": "docs/VSCODE-KNOWLEDGE.md",
     "title": "Selected context, GCF and live meetings",

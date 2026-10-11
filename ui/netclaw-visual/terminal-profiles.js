@@ -7,6 +7,12 @@ import net from 'node:net';
 import yaml from 'js-yaml';
 import { testbedRevision } from './testbed-editor.js';
 
+export function pickDeviceConnection(device) {
+  const candidates=Object.entries(device?.connections||{}).filter(([name,value])=>name!=='defaults'&&value&&typeof value==='object');
+  const preferred=candidates.find(([name])=>name==='cli')||candidates.find(([name])=>name==='ssh')||candidates.find(([,value])=>String(value.protocol||'').toLowerCase()==='ssh')||candidates[0];
+  return preferred?{name:preferred[0],connection:preferred[1]}:null;
+}
+
 function cleanConfiguredValue(value) {
   if (value == null) return '';
   const text = String(value).trim();
