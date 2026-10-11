@@ -24,6 +24,7 @@ import { createManagementRuntime,conversationOptions,nativeHarnessUi } from './c
 import { Workspace } from './workspace.js';
 import { RagClient } from './rag.js';
 import {installationLogs,ownedUsage,configuredNetwork} from './observability.js';
+import {retainedTopology} from './topology.js';
 import { parseOperatorInput } from '../../../../mcp-servers/netclaw-operator-mcp/schemas.mjs';
 import { validateOperatorOutput } from '../../../../mcp-servers/netclaw-operator-mcp/responses.mjs';
 import {OwnedServiceController} from './service-ownership.js';
@@ -92,6 +93,7 @@ export class ManagementService {
   async resources(principal,input){
     authorize(principal,'inspect',[]);
     invariant(!input.resourceId||['member','peer','edge'].includes(input.kind),'INVALID_INPUT');
+    invariant(!input.sourceKind||input.kind==='network','INVALID_INPUT');
     if(input.kind==='client')return this.envelope(this.paginate(this.clients.list(principal),input),'Private operator client grant registry');
     if(input.kind==='overview'){
       if(input.filters?.query&&/^\d{13}:[a-f\d-]{36}$/.test(input.filters.query))return this.envelope({operation:this.journal.byNonce(principal,input.filters.query)},'Durable admission lookup; no dispatch');
@@ -116,6 +118,10 @@ export class ManagementService {
     }
     if(input.kind==='advisor')return this.envelope(this.science.list(principal),'Selected installation settings and owned assessments');
     if(input.kind==='network'){
+      if(input.sourceKind==='historical'){
+        invariant(!input.filters&&!input.cursor,'INVALID_INPUT');
+        return this.envelope(retainedTopology(this.binding),'Retained authorized collector observations; liveness unknown');
+      }
       const result=configuredNetwork(this.binding);
       return this.envelope({...result,...(result.devices?{...this.paginate(result.devices,input),devices:undefined}:{})},'Selected installation configured inventory');
     }

@@ -144,8 +144,8 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 - [X] T056 [P] [US6] Add exact usage totals/gaps, source distinctions and bounded/redacted log tests in `tests/operator/observability.test.mjs`. (FR-027, FR-028, FR-029, FR-030, SC-008, SC-009)
 - [X] T057 [US6] Implement usage and diagnostic projections through `ui/netclaw-visual/src/management/observability.js` and `evidence.js`; expose local OpenClaw and owned Hermes scope without invented aggregation. (FR-027, FR-029, SC-009)
 - [X] T058 [US6] Implement Tokenomics/integration inventory and supported configuration navigation in `extensions/netclaw-vscode/src/views/tokenomics.ts` and `integrations.ts`. (FR-015, FR-027, FR-028, SC-009)
-- [ ] T059 [US6] Implement logs/diagnostic preview/export and network/topology/intent entry in `extensions/netclaw-vscode/src/views/logs.ts` and `network.ts`; label configured/live/historical/simulated/federation sources. (FR-023, FR-029, FR-030, FR-038, SC-008)
-- [ ] T060 [US6] Run source/cost reconciliation, unavailable integration and topology provenance acceptance; record `specs/150-vscode-extension/evidence/observability.md`. (FR-027, FR-028, FR-029, FR-030, SC-009)
+- [X] T059 [US6] Implement logs/diagnostic preview/export and network/topology/intent entry in `extensions/netclaw-vscode/src/views/logs.ts` and `network.ts`; label configured/live/historical/simulated/federation sources. (FR-023, FR-029, FR-030, FR-038, SC-008)
+- [X] T060 [US6] Run source/cost reconciliation, unavailable integration and topology provenance acceptance; record `specs/150-vscode-extension/evidence/observability.md`. (FR-027, FR-028, FR-029, FR-030, SC-009)
 
 **Parallel example**: Keep this phase sequential because its tasks share adapters, manifests or acceptance dependencies; fixture drafting may be prepared independently but does not close a task.
 
@@ -345,3 +345,10 @@ Bounded time-filtered logs and editable local diagnostic export are implemented.
 [Observability evidence](evidence/observability.md) records secret-query, multiline
 redaction, descriptor identity and native cancellation/binding tests. T059/T060
 remain open for network/topology implementation and provenance acceptance.
+
+## Network provenance checkpoint
+
+T059/T060 now complete with native Network layers, reviewed logs/export and
+source/cost provenance acceptance. See [observability evidence](evidence/observability.md)
+for actual HUD/SSH-loopback and minimum/current editor checks. These do not
+qualify physical device changes, WSL/Remote SSH or the full release UI matrix.

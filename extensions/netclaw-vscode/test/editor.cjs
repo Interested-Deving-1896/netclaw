@@ -53,6 +53,18 @@ exports.run=async()=>{
         rendered.push('RAG collection and cited retrieval through real cached local embeddings');
       }else rendered.push('RAG panel entry point; backend retrieval not exercised');
       await page.screenshot({path:path.join(process.env.NETCLAW_TEST_SCREENSHOTS,'rag.png')});
+      await vscode.commands.executeCommand('workbench.action.closeAuxiliaryBar');
+      await vscode.commands.executeCommand('notifications.clearAll');
+      await vscode.commands.executeCommand('netclaw.openNetwork');
+      const network=await frameFor('#network-graph');await network.locator('#nodes').getByRole('heading',{name:'LAB-R1',exact:true}).waitFor();
+      assert.match(await network.locator('#nodes').textContent(),/Live state unknown/);
+      await network.locator('#layer').selectOption('historical');await network.locator('#edges').getByRole('heading',{name:'LAB-R1 → LAB-R2',exact:true}).waitFor();
+      assert.match(await network.locator('#status').textContent(),/HISTORICAL/);assert.match(await network.locator('#nodes').textContent(),/STALE/);
+      await network.locator('#network-graph').scrollIntoViewIfNeeded();
+      await page.screenshot({path:path.join(process.env.NETCLAW_TEST_SCREENSHOTS,'network.png')});
+      await network.locator('#layer').selectOption('simulated');await network.locator('#removed').waitFor({state:'visible'});
+      await network.locator('#removed').selectOption({label:'LAB-R1'});assert.match(await network.locator('#counts').textContent(),/1 incident relationships/);assert.equal(await network.locator('#network-graph line').count(),0);
+      rendered.push('Network configured/historical provenance and local graph simulation with synthetic observations');count++;
       const operations=await api.connection.call('operator_resources',{kind:'overview'});assert.equal(operations.data.operations.length,initialOperations);rendered.push('No backend dispatch from opening views, draft text, branching or retrieval');count+=5;
     }finally{await browser.close();}
   }

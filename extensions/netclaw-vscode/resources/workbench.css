@@ -36,4 +36,15 @@ h2 {font-size:14px;font-weight:600}
 #rag-search input,#rag-search select {padding:9px;min-width:0}
 #rag-search button {justify-self:start}
 #documents h3 {font-size:14px;margin:0}
+.network-view header {margin-bottom:12px;padding-bottom:12px}
+.network-view header p {margin:6px 0}
+.network-view .toolbar {margin:12px 0}
+.network-view #counts {font-size:12px;color:var(--vscode-descriptionForeground)}
+#network-graph {display:block;width:100%;height:clamp(180px,32vh,360px);border:1px solid var(--vscode-panel-border);margin:12px 0}
+#network-graph[hidden] {display:none}
+#network-graph text {font-size:22px;fill:var(--vscode-foreground)}
+.network-edge {stroke:var(--vscode-descriptionForeground);stroke-width:1;opacity:.6}
+.network-node {fill:var(--vscode-charts-blue,var(--vscode-foreground))}
+.network-node.stale {fill:var(--vscode-charts-orange,var(--vscode-foreground));stroke:var(--vscode-foreground);stroke-dasharray:2 2}
+#provenance {white-space:pre-wrap;overflow-wrap:anywhere}
 @media(max-width:700px){body{padding:16px}dl,dd dl{grid-template-columns:1fr;gap:4px}dd{margin-bottom:12px}}

@@ -18,12 +18,15 @@ qualification is in progress; it is not a published or production-qualified rele
 - **Settings** review configured provider/model, OpenClaw session-budget and legacy credential normalization changes. Saved settings show that runtime verification or restart is still needed.
 - **Assistant access** reviews separate expiring grants for Copilot, Claude Code and Codex. Copilot discovers its opt-in MCP definition; terminal clients receive secret-free setup previews. Inspection and proposals are available. Protected Hermes local subnet delegation is supported within its explicit qualified profile; broader delegation and platform acceptance remain in development.
 - **Terminal Intent** reviews exact endpoints and existing production/Local-Lab authority, retains requests beyond editor disconnect, and preserves uncertain outcomes without replay. Real device qualification remains separate from the controlled Mac tests.
-- **Evidence** includes selected-installation log previews, usage windows, configured device summaries and historical memory search with validity windows.
+- **Evidence** includes bounded time-filtered logs with editable local exports, recorded usage and historical memory with validity windows.
+- **Network** separates configured devices, historical collector observations and federation relationships. A local node-removal simulation changes only the displayed graph; current device health remains unknown.
 - **Documentation** searches bundled guides by title, category and path and shows the selected backend version.
 
 ![RAG search in VS Code](resources/screenshots/rag.png)
 
 ![Canvas investigations in VS Code](resources/screenshots/canvas.png)
+
+![Network evidence in VS Code](resources/screenshots/network.png)
 
 Screenshots show a controlled Mac test installation. Windows/WSL and Remote SSH
 qualification remain required. Assistant natural-language delegation and remaining

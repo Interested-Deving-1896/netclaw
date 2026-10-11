@@ -3,6 +3,7 @@ import { updateBudgetConfiguration } from './src/hud-server/configuration-mutati
 import { federationEndpoint, federationReadiness } from './src/hud-server/runtime/federation.js';
 import { mountHermesIntent } from './src/hud-server/runtime/intent.js';
 import { resolveRuntime } from './src/hud-server/runtime/selection.js';
+import { topologyEvidenceWriter } from './src/management/topology.js';
 import { createHermesRuntime } from './src/hud-server/runtime/hermes.js';
 import { mountHermesChat } from './src/hud-server/runtime/routes.js';
 import { mountChatHistory } from './src/hud-server/chat-history.js';
@@ -964,6 +965,10 @@ const topologyLogin = new TopologyLogin({ Client: SSHClient, getProfile: getTerm
   knownFingerprint: topologyKnownFingerprint, trustHost: trustTerminalHost,
   fingerprintOf: terminalHostFingerprint, keyTypeOf: terminalHostKeyType });
 const topologyService = new TopologyService({
+  publishEvidence: (() => {
+    try { return topologyEvidenceWriter(installation); }
+    catch { return () => { throw new Error('Installation evidence storage unavailable.'); }; }
+  })(),
   file: process.env.NETCLAW_TOPOLOGY_FILE || path.join(installation.home, 'netclaw-topology-authorization.json'),
   getProfile: id => topologyLogin.profile(id),
   listProfiles: listTerminalProfiles,

@@ -6,10 +6,17 @@ import { createRequire } from 'node:module';
 import net from 'node:net';
 import { installationFixture,nonce } from '../operator/fixtures.mjs';
 import {ManagementService} from '../../ui/netclaw-visual/src/management/service.js';
+import {topologyEvidenceWriter} from '../../ui/netclaw-visual/src/management/topology.js';
 const root=fileURLToPath(new URL('../../',import.meta.url)),extension=path.join(root,'extensions/netclaw-vscode');
 const require=createRequire(path.join(extension,'package.json'));
 const {runTests}=require('@vscode/test-electron');
 const a=installationFixture(),b=installationFixture(null,'hermes');
+for(const fixture of [a,b]){
+  const testbed=path.join(fixture.home,'testbed.yaml');fs.writeFileSync(testbed,'devices:\n  LAB-R1:\n    os: iosxe\n    type: router\n  LAB-R2:\n    os: iosxe\n    type: router\n',{mode:0o600});
+  fs.appendFileSync(path.join(fixture.home,'.env'),`PYATS_TESTBED_PATH=${testbed}\n`);
+  const observedAt=Date.now()-3600000;
+  topologyEvidenceWriter(fixture)({status:{devices:[{id:'LAB-R1',alias:'LAB-R1',lastSuccess:observedAt,phase:'partial'}],enabled:true,intervalSeconds:30,revision:1},snapshots:[{deviceId:'LAB-R1',facts:{cdp:{observedAt,failed:false,records:[{neighbor:'LAB-R2',interface:'Gi0/0',remotePort:'Gi0/1'}]},interfaceBrief:{observedAt,failed:false,records:[{interface:'Gi0/0',address:'192.0.2.1',state:'up',protocol:'up'}]}}}]});
+}
 if(process.env.NETCLAW_TEST_RAG_PYTHON&&process.env.NETCLAW_TEST_RAG_CACHE&&process.env.NETCLAW_TEST_LIVE_GAIT==='1'){
   fs.appendFileSync(path.join(a.home,'.env'),`RAG_MCP_PYTHON=${process.env.NETCLAW_TEST_RAG_PYTHON}\nHF_HOME=${process.env.NETCLAW_TEST_RAG_CACHE}\n`);
   const backend=new ManagementService({root,home:a.home,kind:a.kind});

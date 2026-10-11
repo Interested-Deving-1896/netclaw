@@ -15,6 +15,7 @@
 !resources/workbench.css
 !resources/chat.js
 !resources/rag.js
+!resources/network.js
 !resources/pal/john.glb
 !resources/pal/john.png
 !resources/pal/lobster.glb
@@ -22,3 +23,5 @@
 !resources/pal/manifest.json
 !resources/screenshots/rag.png
 !resources/screenshots/canvas.png
+
+!resources/screenshots/network.png

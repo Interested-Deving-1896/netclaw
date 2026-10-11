@@ -30,6 +30,7 @@ import {openNativeRuntime} from './views/native-runtime';
 import {openAvatar} from './views/avatar';
 import {openScience} from './views/science';
 import {openMobile} from './views/mobile';
+import {openNetwork} from './views/network';
 
 type Domain={title:string;method:string;args:Record<string,unknown>;group:string;icon:string};
 const domains:Record<string,Domain>={
@@ -117,7 +118,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('exportGait',()=>exportGait(connection));
   register('inspectEstateResource',node=>inspectEstateResource(context,connection,node));
   register('openPeers',()=>openPeers(context,connection));
-  register('openNetwork',()=>vscode.commands.executeCommand('netclaw.openDomain','network'));
+  register('openNetwork',()=>openNetwork(context,connection));
   register('openIntent',()=>openIntent(context,connection));
   register('openScience',()=>openScience(context,connection));
   register('openMobile',()=>openMobile(context,connection));

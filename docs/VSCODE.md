@@ -91,7 +91,9 @@ development.
 
 Tokenomics distinguishes recorded usage, missing sources and external assistant
 billing. Logs are bounded installation-owned sources with a review before
-export. Configured network inventory is labeled configured, not live discovery.
+export. Network separates configured inventory, historical collector observations,
+software federation relationships and a local graph-removal simulation. Live
+device health remains unknown; opening a view never starts collection.
 Documentation is read from the connected backend's indexed repository.
 The [federation guide](VSCODE-FEDERATION.md) describes paged estate cards,
 exact cached capability inspection, freshness and scoped assistant summaries.

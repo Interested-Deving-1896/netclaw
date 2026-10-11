@@ -8,8 +8,8 @@ import { closestReportingDevices } from './topology-closest.js';
 export const supportsTopology = profile => profile.protocol === 'ssh' && /^(ios|iosxe|ios-xe|iosv|unknown)$/i.test(profile.os);
 
 export class TopologyService {
-  constructor({ file, getProfile, listProfiles, knownFingerprint, collect, now = Date.now, autoStart = true }) {
-    Object.assign(this, { file, getProfile, listProfiles, knownFingerprint, collect, now });
+  constructor({ file, getProfile, listProfiles, knownFingerprint, collect, now = Date.now, autoStart = true, publishEvidence }) {
+    Object.assign(this, { file, getProfile, listProfiles, knownFingerprint, collect, now, publishEvidence });
     this.grants = [];
     this.intervalSeconds = 30;
     this.states = new Map();
@@ -36,11 +36,19 @@ export class TopologyService {
         if (error.code !== 'ENOENT') this.storageError = 'Saved authorization could not be read. Collection is disabled until reauthorized.';
       }
     }
+    this.publish();
     if (autoStart) this.start();
+  }
+
+  publish(stopped = this.evidenceStopped === true) {
+    if (!this.publishEvidence) return;
+    try { this.publishEvidence({ status: this.status(), snapshots: [...this.snapshots.values()], stopped }); this.evidenceError = null; }
+    catch { this.evidenceError = 'Retained topology evidence could not be saved. Existing collection authority is unchanged.'; }
   }
 
   start() {
     if (this.timer) return;
+    this.evidenceStopped = false;
     this.timer = setInterval(() => this.tick(), 1000);
     this.timer.unref?.();
   }
@@ -84,6 +92,7 @@ export class TopologyService {
     this.snapshots.clear();
     this.storageError = null;
     this.revision += 1;
+    this.publish();
     this.tick();
     return this.status();
   }
@@ -97,6 +106,7 @@ export class TopologyService {
     this.revision += 1;
     try { this.save([], this.intervalSeconds, 'revoke'); this.storageError = null; }
     catch { this.storageError = 'Collection stopped, but revocation could not be saved. Repair authorization storage before restarting NetClaw.'; throw new Error(this.storageError); }
+    finally { this.publish(); }
     return this.status();
   }
 
@@ -111,6 +121,7 @@ export class TopologyService {
     this.states.delete(id);
     this.snapshots.delete(id);
     this.revision++;
+    this.publish();
   }
 
   cancel() {
@@ -119,7 +130,7 @@ export class TopologyService {
     this.active.clear();
   }
 
-  stop() { clearInterval(this.timer); this.timer = null; this.cancel(); }
+  stop() { clearInterval(this.timer); this.timer = null; this.cancel(); this.evidenceStopped = true; this.publish(); }
 
   tick() {
     const now = this.now();
@@ -205,6 +216,7 @@ export class TopologyService {
       this.revision += 1;
     } finally {
       if (this.active.get(grant.id) === controller) this.active.delete(grant.id);
+      this.publish();
     }
   }
 
@@ -212,7 +224,7 @@ export class TopologyService {
     const now = this.now();
     const staleAfterMs = this.intervalSeconds * 2500;
     return { enabled: this.grants.length > 0, intervalSeconds: this.intervalSeconds, revision: this.revision,
-      mode: 'Read-only SSH polling · IOS/IOS-XE IPv4', storageError: this.storageError,
+      mode: 'Read-only SSH polling · IOS/IOS-XE IPv4', storageError: this.storageError, evidenceError: this.evidenceError || null,
       scopes: [...new Set(this.grants.flatMap(grant => grant.scopes || ['routes']))], availableScopes: TOPOLOGY_SCOPES,
       devices: this.grants.map(grant => {
         const state = this.states.get(grant.id) || (grant.blocked

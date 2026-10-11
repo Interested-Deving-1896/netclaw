@@ -130,6 +130,24 @@ JSON; any content truncation is visible. Usage windows are recorded-time filters
 not account quota resets. Memory search is a bounded lexical read of the selected
 installation database and retains recorded temporal validity.
 
+`operator_resources(kind="network")` defaults to the configured pyATS inventory.
+`sourceKind="historical"` reads the selected installation's private retained
+collector projection, bounded at 32 reporting devices, 400 neighbor observations,
+500 interface/routing observations and 1 MiB. It has no cursor/query filter;
+those inputs are rejected. Source kind is rejected for other resource kinds.
+The read neither starts collection nor adds a grant. Observation timestamps,
+per-source failure/staleness, collector instance/revision references and omitted
+counts survive projection. Current process/device liveness is unknown. The
+native simulated layer is local graph subtraction over historical data, with no
+backend mutation or routing prediction. Federation source records remain distinct.
+
+Log evidence supports inclusive `since`/`until` ISO timestamps with timezones.
+Time filters are rejected for other evidence kinds. Configured credential values
+are redacted before query matching; ambiguous numeric timestamp units are never
+guessed. The result includes exclusion/truncation counts and observed file/tail
+references. Native export requires an explicit destination after an editable
+redacted preview and saves that visible document; it never uploads diagnostics.
+
 ### Owned conversation settings and progress
 
 Opening/resuming a conversation is audited and never sends inference. Explicit

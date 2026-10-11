@@ -30,7 +30,7 @@ export class EstateTree implements vscode.TreeDataProvider<Node>,vscode.Disposab
         ...([{label:'Internal Claws',group:'member'},{label:'External peers',group:'peer'},{label:'Mobile and edge',group:'edge'},{label:'Science Officer',group:'advisor'}] as const).map(row=>({...row,generation})),
         {label:'External peer permissions',generation,command:'netclaw.openPeers'},
         {label:'Mobile capture and consent',generation,command:'netclaw.openMobile'},
-        {label:'Configured network inventory',generation,command:'netclaw.openNetwork'}];
+        {label:'Network evidence and topology',generation,command:'netclaw.openNetwork'}];
     }
     if(node.generation!==generation)return [{label:'Connection changed — refresh this branch',generation}];
     if(!node.group)return [];

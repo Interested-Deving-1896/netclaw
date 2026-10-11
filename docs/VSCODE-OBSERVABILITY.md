@@ -36,7 +36,30 @@ only the selected backend identity, compatibility, declared capabilities and
 the actual extension version. It does not collect environment values, logs or
 network evidence as a side effect.
 
-Network presently lists configured pyATS inventory with live state unknown.
-Full observed topology, provenance and simulation views remain an open Spec 150
-implementation gate; configured names and federation relationships must never
-be described as live physical topology.
+**NetClaw: Open Network** offers separate evidence sources:
+
+- Configured pyATS inventory, paged at 200 devices, with live state unknown.
+- Retained collector observations: CDP/LLDP neighbor advertisements and interface,
+  OSPF and BGP observations from the existing authorized HUD collector.
+- Internal membership and external peer records, explicitly labeled as software
+  federation relationships. They establish no physical connection or device health.
+- A local removal simulation derived from retained observations. It subtracts a
+  selected node and incident edges from the displayed graph. It predicts neither
+  traffic nor routing convergence and submits no network action.
+
+The existing collector publishes private installation-bound, normalized evidence
+after collection and authorization-state changes. The extension reads that file;
+opening or refreshing the view never starts polling, logs in or adds a grant.
+Use the existing HUD collector setup to authorize the selected read-only scopes.
+Revocation clears its retained view. A saved observation cannot establish that
+the collector or device is currently alive: every row remains historical, with
+its original observation timestamp, stale flag and source reference. Advertised
+neighbor names are kept separate from managed device identities.
+
+The retained projection is capped at 32 reporting devices, 400 neighbor records,
+500 interface/routing observations and 1 MiB. Omitted counts are explicit. The
+graph draws up to 80 nodes and accessible text lists show up to 200 entries each;
+filtering applies to the loaded page. Expand **Source, timestamps and evidence
+limits** for provenance. Current live device health is unavailable in this view.
+**Open Terminal Intent** enters the separate reviewed workflow and supplies no
+implicit target, approval, prompt or dispatch.

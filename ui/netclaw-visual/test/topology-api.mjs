@@ -9,15 +9,18 @@ import ssh2 from 'ssh2';
 import { FACT_FIXTURES } from './topology-fixtures.mjs';
 import { TOPOLOGY_SCOPES, commandsForTopologyScopes } from '../topology-scope.js';
 import { TopologyService } from '../topology-service.js';
+import { ManagementService } from '../src/management/service.js';
 
 const root = path.resolve(import.meta.dirname, '..');
-const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'netclaw-topology-api-'));
+const temp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'netclaw-topology-api-')));
+fs.chmodSync(temp, 0o700);
 const clients = new Set();
 const commands = [];
 let passwordAttempts = 0;
 let processHandle;
 let mock;
 let output = '';
+let management;
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function until(check) {
   for (let i = 0; i < 120; i++) { if (await check()) return; await pause(50); }
@@ -66,14 +69,21 @@ try {
     MOCK: { alias: 'Synthetic API router', os: 'iosxe', connections: { ssh: { protocol: 'ssh', ip: '127.0.0.1', port: sshPort } } },
   } }));
   fs.writeFileSync(knownHosts, JSON.stringify({ [`127.0.0.1:${sshPort}`]: { fingerprint } }));
+  const home = path.join(temp, 'openclaw');fs.mkdirSync(home,{mode:0o700});
+  fs.writeFileSync(path.join(home,'openclaw.json'),'{}',{mode:0o600});
+  fs.writeFileSync(path.join(home,'.env'),'# isolated topology integration fixture\n',{mode:0o600});
   processHandle = spawn(process.execPath, ['server.js'], { cwd: root, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'], env: {
-    ...process.env, HUD_PORT: String(port), NETCLAW_TESTBED_FILE: testbed, NETCLAW_TERMINAL_KNOWN_HOSTS_FILE: knownHosts,
+    PATH:process.env.PATH, HOME:temp, HUD_PORT: String(port), NETCLAW_RUNTIME:'openclaw', NETCLAW_RUNTIME_HOME:home,
+    OPENCLAW_STATE_DIR:home, OPENCLAW_CONFIG_PATH:path.join(home,'openclaw.json'), NETCLAW_TESTBED_FILE: testbed, NETCLAW_TERMINAL_KNOWN_HOSTS_FILE: knownHosts,
     NETCLAW_TOPOLOGY_FILE: grants, OPENCLAW_HOME: temp,
   } });
   processHandle.stdout.on('data', chunk => { output += chunk; }); processHandle.stderr.on('data', chunk => { output += chunk; });
   const base = `http://127.0.0.1:${port}/api/topology`;
   const post = (route, body, origin = 'http://localhost:3000') => fetch(`${base}/${route}`, { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: origin }, body: JSON.stringify(body) });
   await until(async () => { try { return (await fetch(`${base}/status`)).ok; } catch { return false; } });
+  management = new ManagementService({root:path.resolve(root,'../..'),home,kind:'openclaw'});
+  const initialEvidence=await management.call('operator_resources',{kind:'network',sourceKind:'historical'});
+  assert.equal(initialEvidence.data.enabled,false);assert.equal(initialEvidence.data.nodes.length,0);
   assert.equal(commands.length, 0, 'no SSH without authorization');
   assert.equal((await post('authorize', { authorized: true, devices: [{ id: 'MOCK' }], intervalSeconds: 30 }, 'https://untrusted.example')).status, 403);
   assert.equal((await post('authorize', { devices: [{ id: 'MOCK' }], intervalSeconds: 30 })).status, 400);
@@ -101,7 +111,14 @@ try {
   assert.equal(endpoint.context.switching[0].vlanName, 'DEMO-USERS');
   assert.equal(endpoint.context.neighbors[0].neighbor, 'DEMO-SWITCH');
   assert.deepEqual(commands, commandsForTopologyScopes(scopes), 'only the approved command set is sent');
+  const beforeManagementRead=commands.length;
+  const retained=await management.call('operator_resources',{kind:'network',sourceKind:'historical'});
+  assert.equal(retained.data.sourceKind,'historical');assert.equal(retained.data.collectorLiveness,'unknown');
+  assert.ok(retained.data.edges.some(row=>row.protocol==='CDP'));assert.ok(retained.data.edges.some(row=>row.protocol==='LLDP'));
+  assert.ok(retained.data.observations.some(row=>row.sourceId==='interfaceBrief'));assert.equal(commands.length,beforeManagementRead,'management evidence read never triggers SSH');
+  assert.ok(!JSON.stringify(retained).includes('test-only-password'));
   assert.equal((await post('revoke', {})).status, 200);
+  assert.equal((await management.call('operator_resources',{kind:'network',sourceKind:'historical'})).data.edges.length,0);
   // GUI onboarding verifies keys before authentication, then retains passwords
   // in RAM only. The testbed deliberately contains unusable saved credentials.
   const loginTestbed = JSON.parse(fs.readFileSync(testbed));
@@ -150,6 +167,7 @@ try {
   assert.equal((await post('login', { ...loginInput, challenge: changed.challenge })).status, 400, 'revocation invalidates pending host-key approval');
   console.log('Topology HTTP + SSH integration passed using a local synthetic router only.');
 } finally {
+  await management?.close();
   if (processHandle && processHandle.exitCode == null) {
     processHandle.kill(); await Promise.race([new Promise(resolve => processHandle.once('exit', resolve)), pause(2000)]);
     if (processHandle.exitCode == null) processHandle.kill('SIGKILL');
