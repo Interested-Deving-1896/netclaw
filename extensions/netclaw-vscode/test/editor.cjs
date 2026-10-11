@@ -8,10 +8,9 @@ exports.run=async()=>{
   const api=await extension.activate();assert.ok(extension.isActive,'extension activated');
   const commands=await vscode.commands.getCommands(true);for(const name of ['addConnection','selectConnection','disconnect','openOverview','prepareChange','reviewProposal'])assert.ok(commands.includes('netclaw.'+name));
   const fixtures=JSON.parse(process.env.NETCLAW_TEST_FIXTURES),root=process.env.NETCLAW_TEST_ROOT;
-  const context=`${vscode.env.remoteName||'local'}:${os.hostname()}:${os.userInfo().uid}`;
   const profiles=[];let count=0;
   for(const fixture of fixtures){
-    const profile=await api.profiles.save({label:'Same label',transport:'local',context,nodePath:process.env.NETCLAW_TEST_NODE,launcherPath:path.join(root,'scripts/netclaw-operator.mjs'),home:fixture.home,harness:fixture.kind,installationId:fixture.installationId});profiles.push(profile);
+    const profile=await api.profiles.save({label:'Same label',transport:'local',nodePath:process.env.NETCLAW_TEST_NODE,launcherPath:path.join(root,'scripts/netclaw-operator.mjs'),home:fixture.home,harness:fixture.kind,installationId:fixture.installationId});profiles.push(profile);
     const identity=await api.connection.connect(profile);assert.equal(identity.installationId,fixture.installationId);assert.equal(identity.harness.type,fixture.kind);count++;
     const response=await api.connection.call('operator_resources',{kind:'integration',limit:3});assert.equal(response.data.items.length,3);count++;
     assert.equal(api.connection.ready,true);
@@ -59,5 +58,5 @@ exports.run=async()=>{
   await api.connection.disconnect();assert.equal(api.connection.ready,false);count++;
   await assert.rejects(api.connection.call('operator_identity'));count++;
   for(const profile of profiles)await api.profiles.remove(profile.id);
-  fs.writeFileSync(process.env.NETCLAW_TEST_REPORT,JSON.stringify({editor:vscode.version,platform:process.platform,architecture:process.arch,osRelease:os.release(),extensionVersion:extension.packageJSON.version,backendNode:process.env.NETCLAW_TEST_NODE,assertionGroups:count,rendered,screenshots:process.env.NETCLAW_TEST_SCREENSHOTS,passed:true}));
+  fs.writeFileSync(process.env.NETCLAW_TEST_REPORT,JSON.stringify({editor:vscode.version,remoteName:vscode.env.remoteName||null,platform:process.platform,architecture:process.arch,osRelease:os.release(),extensionVersion:extension.packageJSON.version,backendNode:process.env.NETCLAW_TEST_NODE,assertionGroups:count,rendered,screenshots:process.env.NETCLAW_TEST_SCREENSHOTS,passed:true}));
 };

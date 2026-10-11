@@ -238,3 +238,10 @@ Running-backend identity/version compatibility and Node25, missing management im
 spec149 T040 and real client/platform qualification remain prerequisites. No implementation,
 provider execution or disruptive acceptance was performed. **T075 and all other task
 checkboxes remain unchecked**; the baseline is not E3/E8 or extension acceptance.
+
+## WSL implementation checkpoint
+
+See [WSL acceptance evidence](evidence/wsl-acceptance.md) for reproduced permission,
+audit-contention and distribution-isolation fixes plus separate actual process
+results. These partial results do not close the full task gates; checkboxes remain
+unchanged. Work continues on `150-vscode-extension-wsl`.

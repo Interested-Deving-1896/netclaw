@@ -101,6 +101,10 @@ export class ManagementService {
   }
   async call(name,args,principal=this.binding.principal){
     this.binding.assertCurrent();
+    // This dispatcher is the private operator surface. Assistant handlers use
+    // scoped domain entry points; hiding operator tools in discovery is not an
+    // authorization boundary for callers that invoke methods directly.
+    invariant(principal?.surface==='operator' && principal.principalId===this.binding.principal.principalId && principal.installationId===this.binding.installationId,'DENIED');
     if(name==='operator_identity')return this.identity();
     if(name==='operator_resources')return this.resources(principal,args);
     if(name==='operator_snapshot')return this.snapshot(principal,args);

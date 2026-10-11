@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { randomUUID } from 'node:crypto';
+import { randomUUID,createHash } from 'node:crypto';
 import os from 'node:os';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -13,7 +13,15 @@ export interface Identity {
   harness:{type:string;version:string|null};role:string;configurationRevision:string;observedAt:string;
   capabilities:Record<string,unknown>;
 }
-export const hostContext=()=>`${vscode.env.remoteName||'local'}:${os.hostname()}:${os.userInfo().uid}`;
+export const hostContext=()=>{
+  const base=`${vscode.env.remoteName||'local'}:${os.hostname()}:${os.userInfo().uid}`;
+  // WSL distributions commonly share hostname and UID. Never adopt a saved
+  // profile from another distro solely because those two labels match.
+  if(vscode.env.remoteName!=='wsl'&&!process.env.WSL_DISTRO_NAME)return base;
+  let machine='';try{machine=fs.readFileSync('/etc/machine-id','utf8').trim();}catch{}
+  const distro=createHash('sha256').update(`${process.env.WSL_DISTRO_NAME||''}\0${machine}`).digest('hex');
+  return `${base}:wsl:${distro}`;
+};
 const absolute=(value:unknown):value is string=>typeof value==='string'&&value.startsWith('/')&&!/[\r\n\0]/.test(value)&&value.length<4096;
 export function validateProfile(value:ConnectionProfile):ConnectionProfile {
   if(!value||!['local','ssh'].includes(value.transport)||!['openclaw','hermes'].includes(value.harness)||

@@ -75,7 +75,7 @@ export class InstallationAudit {
   }
   async record(value) {
     const work = this.queue.catch(() => {}).then(async () => {
-      const lock = this.journal.lock('gait', this.binding.principal.principalId, 60000);
+      const lock = await this.acquireLock();
       try {
         await this.connect();
         const status = await this.call('gait_status', { path: this.directory });
@@ -88,8 +88,21 @@ export class InstallationAudit {
     });
     this.queue = work; return work;
   }
+  async acquireLock() {
+    // An independently owned worker may be recording while its facade closes.
+    // Wait for that turn within a bounded deadline; never steal its lease or
+    // silently omit the required audit. Other errors still fail immediately.
+    const deadline = Date.now() + 10000;
+    for (;;) {
+      try { return this.journal.lock('gait', this.binding.principal.principalId, 60000); }
+      catch (error) {
+        if (error.code !== 'BUSY' || Date.now() >= deadline) throw error;
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+    }
+  }
   async log(limit = 100) {
-    const lock=this.journal.lock('gait',this.binding.principal.principalId,60000);
+    const lock=await this.acquireLock();
     try{await this.connect();const status=await this.call('gait_status',{path:this.directory});invariant(status.root===this.directory,'AUDIT_UNAVAILABLE');return await this.call('gait_log',{limit:Math.min(limit,500)});}
     finally{this.journal.unlock('gait',lock);}
   }

@@ -2,6 +2,20 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { sourceModule } from './bundle-fixture.mjs';
 
+test('WSL profiles do not cross distributions sharing a Windows hostname and Linux UID',async()=>{
+  const previous=process.env.WSL_DISTRO_NAME;
+  try{
+    const {Profiles,hostContext}=await sourceModule('state/profiles.ts',{env:{remoteName:'wsl'}});
+    const values=new Map(),state={get:(k,f)=>values.get(k)??f,keys:()=>[...values.keys()],update:async(k,v)=>values.set(k,v)};
+    process.env.WSL_DISTRO_NAME='synthetic-wsl-a';
+    const profiles=new Profiles(state),context=hostContext();
+    await profiles.save({label:'Same label',transport:'local',home:'/fixture/home',nodePath:'/fixture/node',launcherPath:'/fixture/repo/scripts/netclaw-operator.mjs',harness:'hermes'});
+    process.env.WSL_DISTRO_NAME='synthetic-wsl-b';
+    assert.notEqual(hostContext(),context);assert.equal(profiles.list().length,0);
+    process.env.WSL_DISTRO_NAME='synthetic-wsl-a';assert.equal(profiles.list().length,1);
+  }finally{if(previous===undefined)delete process.env.WSL_DISTRO_NAME;else process.env.WSL_DISTRO_NAME=previous;}
+});
+
 test('independent windows retain same-label profiles and host separation',async()=>{
   const {Profiles,hostContext}=await sourceModule('state/profiles.ts',{env:{}});
   const values=new Map(),state={get:(key,fallback)=>structuredClone(values.has(key)?values.get(key):fallback),keys:()=>[...values.keys()],async update(key,value){await new Promise(resolve=>setTimeout(resolve,2));values.set(key,structuredClone(value));}};
