@@ -17,16 +17,18 @@ and the separate [WSL return](../specs/150-vscode-extension/evidence/wsl-accepta
 | MCP | Official Node SDK 2.3.1; stdio only |
 | Claude Code | 2.1.286; actual hosted-provider inspection/proposal and Hermes refusal passed |
 | Codex | 0.162.1; actual inspection passed, proposal blocked by client confirmation policy |
-| Copilot | Opt-in stable MCP provider implemented/tested; actual inference acceptance open |
-| Publisher | NetClaw exists; local credential verification refused authorization |
+| Copilot | Chat 0.36.2 in owner VS Code 1.108.0; actual GPT-5 mini inspection, proposal-only and cached-connection revocation passed on synthetic OpenClaw |
+| Publisher | NetClaw authenticated locally and independently verified; no extension published |
 
 Mac fixture results do not qualify owner services, WSL, native Linux or remote
 SSH. Returned WSL tests predate the current Mac implementation. All required
 environment rows E1–E8, named clients, both harnesses and federation pairs remain
 subject to the [qualification contract](../specs/150-vscode-extension/contracts/qualification.md).
 
-Current implementation gaps include runtime-enforced assistant delegation,
-owned service and role/harness lifecycle transactions, production/Local-Lab
-authority adapters, remaining security/federation/domain workflows and complete
-performance/accessibility/release acceptance. Required workflows cannot be
+Current implementation gaps include broader runtime/federated assistant grants,
+remaining member/peering and remote tool/skill controls, additional scanner
+families and qualified OpenShell writes, complete crash recovery, and full
+performance/accessibility/platform/release acceptance. Mac owned service and
+role/harness transactions, Terminal Intent authority integration, local static
+skill scans and tool rules have separate evidence; they do not qualify other hosts. Required workflows cannot be
 replaced by an “unavailable” label to close the release.

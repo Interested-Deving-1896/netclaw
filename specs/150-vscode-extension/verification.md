@@ -81,7 +81,7 @@ requires a new build and the affected checks. See [package evidence](evidence/pa
 | SC-010 | Native controls and rendered minimum/current panels | Full keyboard and three-theme matrix unrun |
 | SC-011 | Actual candidate lifecycle preserves independent OpenClaw and saved work | Mac result only; required other contexts incomplete |
 | SC-012 | Local VSIX and authenticated publisher | Not published; no public install claim |
-| SC-013 | Actual Claude and Codex partial evidence; protected Hermes process proof | Actual Copilot and full three-client WSL/SSH/harness matrix incomplete |
+| SC-013 | Actual Claude, Copilot and Codex partial evidence; protected Hermes process proof | Real Mac Copilot inspect/propose/revoke passed; full three-client WSL/SSH/harness matrix incomplete |
 
 ## Evidence index and next closure sequence
 

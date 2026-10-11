@@ -65,7 +65,8 @@ export class Connection implements vscode.Disposable {
   async call<T=Record<string,unknown>>(name:string,args:Record<string,unknown>={}):Promise<T>{
     if(!this.ready||!this.client)throw Error('Connect to a trusted existing installation first.');
     const generation=this.serial,client=this.client;
-    const timeout=name==='operator_workspace'&&['rag-list','rag-search','assessment-preview'].includes(String(args.action))?150000:15000;
+    const timeout=name==='operator_workspace'&&['rag-list','rag-search','assessment-preview'].includes(String(args.action))?150000:
+      name==='operator_workspace'&&['security-scan-preview','security-scan-submit'].includes(String(args.action))?45000:15000;
     const response=await client.callTool({name,arguments:args},{timeout});
     if(generation!==this.serial)throw Error('The active connection changed. This response was discarded.');
     const data=response.structuredContent||JSON.parse(response.content.filter(c=>c.type==='text').map(c=>c.text).join(''));

@@ -1,8 +1,8 @@
 # Mac assistant client evidence — 2026-10-10
 
 This evidence belongs to `150-vscode-extension-release`, following WSL commit
-`413d532`. It is not WSL, Remote SSH, Copilot inference, or runtime-delegation
-acceptance. No owner NetClaw was selected by these tests.
+`413d532`. The original CLI evidence is not WSL, Remote SSH, Copilot inference, or
+runtime-delegation acceptance. The later real Copilot checkpoint is below. No owner NetClaw was selected by these tests.
 
 ## Actual installed clients
 
@@ -66,7 +66,7 @@ Restricted Mode, disconnect and safe SSH quoting.
 
 ## Required remaining acceptance
 
-Interactive Codex proposal confirmation; actual Copilot tool calls; qualified
+Interactive Codex proposal confirmation; full Copilot harness/delegation matrix; qualified
 NetClaw delegated requests and cancellation on both harnesses; nested/federated
 grant enforcement; named-client expiry, revocation and lost-response workflows
 on real WSL and Remote SSH. T048–T055 are not collectively complete.
@@ -121,3 +121,57 @@ and supported Node 24.19.0 succeeded. The earlier TF400813 failures above remain
 historical evidence; publisher authentication is no longer a blocker. No publish
 was attempted. Product completion, exact release artifacts and real platform
 acceptance remain release gates.
+
+
+## Real signed-in Copilot through the extension — Mac, 2026-10-11
+
+The owner confirmed VS Code was open and Copilot signed in. The active application
+was the translocated **VS Code 1.108.0**, with **Copilot Chat 0.36.2**. An extension
+development window loaded the built source at `6e721f8` into a fresh private
+synthetic workspace. The owner editor/window, authentication and running NetClaw
+were preserved. No account token was read or exported. Backend source reports
+**1.8.0**; supported isolated Node **24.19.0** was selected explicitly.
+
+This was an actual native UI and hosted-provider check, not a mocked Copilot
+client or direct MCP surrogate:
+
+1. Used **NetClaw: Add Connection**, chose the local extension host/OpenClaw,
+   entered the exact fixture home and fixed launcher, then reviewed/bound the
+   returned installation identity.
+2. Used **Manage Copilot, Claude Code and Codex Access** to create a one-day
+   `inspect, propose, evidence` grant with summary/usage disclosure and no
+   delegation. Reviewed the native credential/disclosure notice, then opted in
+   to discovery. No workspace MCP configuration was written.
+3. VS Code's **MCP: List Servers** displayed the immutable installation/grant
+   definition. Starting it reported **Running; Discovered 7 tools**. Other owner
+   MCP servers remained stopped. Temporarily selected only these seven tools;
+   built-in, Container and Python tools were restored afterward.
+4. In Copilot Agent/Auto, requested actual `netclaw_status` followed by
+   `netclaw_inventory(kind=overview)`. Both tool cards completed and returned the
+   exact fixture identity, OpenClaw harness, unknown role and empty operations.
+5. Requested one `budget.patch` proposal for `sessionBudgetUsd:2`, using the exact
+   status revision and a fresh nonce. Copilot displayed its normal per-call tool
+   confirmation. Allowed that single proposal call; it returned operation state
+   **waiting-approval**. Independent journal inspection found one proposal in
+   **pending-approval**, **zero apply operations**, and unchanged runtime config.
+6. Revoked the fixture grant through the actual operator backend/GAIT while the
+   same Copilot MCP connection remained open. A further single `netclaw_status`
+   call returned **DENIED: The operation is outside the current authority.**
+   Copilot reported the refusal without retry or reauthorization.
+7. Restored prior non-NetClaw tool selection, stopped the fixture MCP server,
+   hid its discovery entry, removed the test profile through the extension and
+   closed the development window. The backend grant remains revoked. The private
+   fixture audit/journal is retained locally for this session's evidence.
+
+Synthetic installation: `8b216c1f-779e-42b5-9c46-de214639cb7e`.
+Grant: `37be813f-cb6d-4a7c-80d7-b2a5800a18b5` (revoked).
+Proposal: `b1a7d7c4-5ca6-4526-91b1-a925ae83423d` (pending human approval; never applied).
+The actual Copilot response labels showed **GPT-5 mini · 1x**. Its billed/token
+usage was not exposed by the observed UI and is not assigned to NetClaw usage.
+Actual installation GAIT log succeeded after proposal/revocation verification.
+
+This closes the previously unrun Mac Copilot inspection/proposal/revocation
+checkpoint. It does not close T054: actual Hermes delegation, all three clients'
+full fault/expiry/lost-response matrix, Windows/WSL and Remote SSH remain required.
+No runtime/provider credentials, private network data, device operations, model
+delegation or applied configuration changes were involved.
