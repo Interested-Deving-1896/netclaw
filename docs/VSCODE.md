@@ -47,6 +47,8 @@ the expected revision, baseline, impact and rollback; approval is a separate
 operator action. Saved configuration may require a restart and is never labeled
 effective merely because the file write succeeded. Concurrent edits refuse
 application. Legacy credential normalization is explicit and reviewable.
+Production installations use the [read-only change-authority integration](VSCODE-CHANGE-CONTROL.md).
+Revoking an assistant grant also invalidates its pending proposals.
 
 **Manage Service** prepares start, stop or restart for an explicitly bound
 gateway, federation daemon or Hermes companion. Review impact on current work

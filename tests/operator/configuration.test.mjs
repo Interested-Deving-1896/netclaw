@@ -41,6 +41,17 @@ test('executable injection and broad lab bypass cannot be configured through man
     await assert.rejects(adapter.prepare({targets:[f.installationId],patch:{fields:[{key,intent:'replace',value:'anything'}]}}),{code:'UNSUPPORTED'});
   }
 });
+test('managed production configuration requires live approval even when a legacy lab flag is present',async t=>{
+  const f=installationFixture(t),binding=bindInstallation(f),journal=new Journal(path.join(f.statePath,'management'),f.installationId);t.after(()=>journal.close());
+  fs.appendFileSync(binding.envPath,'N2N_RISK_MODE=production\nNETCLAW_LAB_MODE=true\n');
+  const before=fs.readFileSync(f.configPath),env=fs.readFileSync(binding.envPath),p=new Proposals({binding,journal,audit:auditFixture(),adapters:configurationAdapters(binding)});
+  for(const [action,patch] of [['budget.patch',{sessionBudgetUsd:2}],['integration.configure',{fields:[{key:'ANTHROPIC_API_KEY',intent:'clear'}]}]]){
+    const proposal=await p.prepare(binding.principal,{nonce:nonce(),action,targets:[f.installationId],expectedRevision:p.revision(),patch});
+    assert.equal(proposal.proposal.changeClass,'production');
+    await assert.rejects(p.apply(binding.principal,{nonce:nonce(),proposalId:proposal.proposalId,expectedRevision:proposal.proposal.expectedRevision}),{code:'DENIED'});
+    assert.deepEqual(fs.readFileSync(f.configPath),before);assert.deepEqual(fs.readFileSync(binding.envPath),env);
+  }
+});
 test('existing HUD environment writer respects the management process lock',t=>{
   const f=installationFixture(t),journal=new Journal(path.join(f.statePath,'management'),f.installationId);t.after(()=>journal.close());
   const token=journal.lock('configuration','extension');

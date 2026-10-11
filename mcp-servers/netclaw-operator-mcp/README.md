@@ -60,3 +60,9 @@ credentials are read only from that selected home's `.env`. Generated
 Hermes operation additionally requires `NETCLAW_HERMES_HUD_API_KEY` and the
 configured companion port. The bridge remains on its isolated Python runtime.
 See [setup/recovery](../../docs/VSCODE.md) and [compatibility](../../docs/VSCODE-COMPATIBILITY.md).
+
+Service control requires the explicit [backend service binding](../../docs/VSCODE-SERVICES.md).
+Production changes require the [read-only ServiceNow verifier](../../docs/VSCODE-CHANGE-CONTROL.md).
+Those bindings are private installation metadata, never executable client input.
+Actual Mac gateway lifecycle passes; Linux/WSL services and live site approval
+qualification remain distinct open gates.

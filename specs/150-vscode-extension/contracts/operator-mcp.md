@@ -100,3 +100,19 @@ its owned tool-ledger events. Progress is redacted and bounded to 1,000 retained
 updates per operation, with answer coalescing and explicit truncation markers.
 Journal sequence and runtime source sequence remain distinct. Unknown operations
 retain partial evidence; neither reopening a view nor checking status resends them.
+
+### Exact production authority implementation
+
+Managed production configuration and service adapters use the fixed read-only
+ServiceNow verifier described in [change-control setup](../../../docs/VSCODE-CHANGE-CONTROL.md).
+The private installation binding declares the verified Implement value, executor
+user, target CIs and administrator-provisioned protected digest fields. These are
+explicit customer mappings, not invented observations of an existing instance.
+The verifier neither approves nor closes a CR. Contract fixtures pass; real
+ServiceNow deployment qualification remains outstanding.
+
+Pending assistant proposals retain their originating immutable grant snapshot.
+Human apply checks that snapshot against current backend authority before and
+after asynchronous approval/audit steps and at execution checkpoints. Expiry,
+revocation or attenuation cannot be undone by opening a human review. Legacy
+assistant proposals without this snapshot require fresh preparation.

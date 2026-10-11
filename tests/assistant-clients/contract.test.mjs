@@ -109,3 +109,26 @@ test('grant revocation is serialized and repeat revocation does not change its g
   assert.equal(f.service.journal.record('grant',g.grantId,owner).generation,generation);
   await assert.rejects(assistantCall(f.service,g.credentialRef,'netclaw_status',{}),{code:'DENIED'});
 });
+
+test('human apply cannot revive a pending proposal after its originating assistant grant is revoked',async t=>{
+  const f=await setup(t),g=await f.grant(),owner=f.service.binding.principal,before=fs.readFileSync(f.configPath);
+  const prepared=await assistantCall(f.service,g.credentialRef,'netclaw_propose_change',{nonce:nonce(),action:'budget.patch',targets:[f.installationId],expectedRevision:f.service.proposals.revision(),patch:{sessionBudgetUsd:2}});
+  const proposal=f.service.journal.record('proposal',prepared.proposalId,owner);
+  await f.service.clients.revoke(owner,{grantId:g.grantId,nonce:nonce()});
+  await assert.rejects(f.service.proposals.apply(owner,{nonce:nonce(),proposalId:proposal.proposalId,expectedRevision:proposal.expectedRevision}),{code:'DENIED'});
+  assert.deepEqual(fs.readFileSync(f.configPath),before);
+});
+
+test('grant expiry or attenuation during human apply audit denies before a configuration write',async t=>{
+  for(const mutation of ['expiry','attenuation']){
+    const f=await setup(t),g=await f.grant(),owner=f.service.binding.principal,before=fs.readFileSync(f.configPath);
+    const prepared=await assistantCall(f.service,g.credentialRef,'netclaw_propose_change',{nonce:nonce(),action:'budget.patch',targets:[f.installationId],expectedRevision:f.service.proposals.revision(),patch:{sessionBudgetUsd:2}});
+    const proposal=f.service.journal.record('proposal',prepared.proposalId,owner);
+    f.service.audit.record=async()=>{
+      const grant=f.service.journal.record('grant',g.grantId,owner);
+      f.service.journal.put('grant',g.grantId,owner,{...grant,...(mutation==='expiry'?{expiresAt:1}:{actions:['inspect']})},{replace:true});
+    };
+    await assert.rejects(f.service.proposals.apply(owner,{nonce:nonce(),proposalId:proposal.proposalId,expectedRevision:proposal.expectedRevision}),{code:mutation==='expiry'?'EXPIRED':'DENIED'});
+    assert.deepEqual(fs.readFileSync(f.configPath),before);
+  }
+});

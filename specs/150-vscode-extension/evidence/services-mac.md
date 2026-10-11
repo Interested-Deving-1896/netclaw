@@ -33,3 +33,9 @@ tests. Actual Linux/WSL service lifecycle and real federation/Hermes companion
 units remain mandatory. Runtime/role transactions and full production authority
 integration also remain incomplete. T036 covers the implemented tests; platform
 qualification remains in T041/T075/T076.
+
+The subsequent tightened argument validation also passed the actual Mac test
+(`/tmp/netclaw150-launchd-argv.log`). Shell wrappers, Node preload switches and
+indented execution hooks are refused. The same real-process harness now has a
+Linux/systemd-user branch, ready for the final Linux/WSL run; it has not been
+executed on Linux from this Mac.

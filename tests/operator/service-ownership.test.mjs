@@ -37,6 +37,18 @@ test('writable definitions, symlinks and unqualified hooks are rejected before r
   fs.appendFileSync(f.record.definitionPath,'ExecStartPre=/unreviewed/helper\n');await assert.rejects(f.controller.register(f.record),{code:'UNQUALIFIED'});
   fs.unlinkSync(f.record.definitionPath);fs.symlinkSync(f.configPath,f.record.definitionPath);await assert.rejects(f.controller.register(f.record),{code:'DENIED'});
 });
+test('service binding refuses disguised shell commands, indented hooks and alternate process launch selectors',async t=>{
+  for(const replacement of [
+    'ExecStart=/bin/sh -c "echo openclaw gateway"',
+    'ExecStart=/fixture/node /fixture/openclaw.mjs gateway run\n ExecCondition=/unreviewed/helper',
+    'ExecStart=/fixture/node --require /unreviewed/helper /fixture/openclaw.mjs gateway run',
+    'ExecStart=/fixture/node /fixture/openclaw.mjs gateway run --config /elsewhere',
+    'ExecStart=/fixture/node /fixture/openclaw.mjs gateway run\n Environment=',
+  ]){
+    const f=fixture(t);fs.writeFileSync(f.record.definitionPath,f.source.replace('ExecStart=/fixture/node /fixture/openclaw.mjs gateway run',replacement));
+    await assert.rejects(f.controller.register(f.record));assert.equal(f.calls.length,0);
+  }
+});
 test('replacement installation during binding audit writes no service registry',async t=>{
   const f=fixture(t),audit={async record(){fs.writeFileSync(path.join(f.statePath,'installation.json'),JSON.stringify({schemaVersion:1,installationId:randomUUID()}));}};
   await assert.rejects(f.controller.register(f.record,{reviewed:true,audit}),{code:'IDENTITY_CHANGED'});assert.equal(fs.existsSync(serviceRegistryPath(f.binding)),false);

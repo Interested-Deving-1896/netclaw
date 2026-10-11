@@ -2,17 +2,26 @@ import { randomUUID, randomBytes, createHmac } from 'node:crypto';
 import path from 'node:path';
 import { ArtifactStore } from './evidence.js';
 import { readOwned, atomicPrivate } from './files.js';
-import { canonical, digest } from './journal.js';
-import { authorize, verifyChangeApproval } from './policy.js';
+import { canonical, digest, ownerKey } from './journal.js';
+import { authorize, verifyChangeApproval, freezeAuthority } from './policy.js';
 import { invariant, fail, safeError } from './errors.js';
 import {configurationFiles} from './configuration.js';
 import {serviceRegistryPath} from './service-ownership.js';
+import {authorityBindingPath} from './change-authority.js';
 
 export class Proposals {
   constructor({ binding, journal, audit, adapters, authority, validatePrincipal=()=>{} }) {
     Object.assign(this, { binding, journal, audit, adapters, authority,validatePrincipal }); this.artifacts = new ArtifactStore(journal);
   }
-  revision() { return this.journal.revision([...configurationFiles(this.binding),serviceRegistryPath(this.binding)]); }
+  revision() { return this.journal.revision([...configurationFiles(this.binding),serviceRegistryPath(this.binding),authorityBindingPath(this.binding)]); }
+  validateOrigin(proposal) {
+    // Older operator proposals retain their original OS owner. Older assistant
+    // proposals without an authority snapshot must be prepared again.
+    const origin=proposal.originAuthority||this.binding.principal;
+    invariant(this.journal._row(proposal.operationId).owner===ownerKey(origin),'DENIED');
+    this.validatePrincipal(origin);authorize(origin,'propose',proposal.targets);
+    this.binding.assertCurrent();
+  }
   async prepare(principal, input) {
     this.binding.assertCurrent();this.validatePrincipal(principal);authorize(principal, 'propose', input.targets);
     if(this.journal.byNonce(principal,input.nonce)){
@@ -34,13 +43,14 @@ export class Proposals {
       this.binding.assertCurrent(); invariant(input.expectedRevision === this.revision(), 'STALE_REVISION');
       const prepared = await adapter.prepare(input, principal);
       this.validatePrincipal(principal);
+      this.binding.assertCurrent();invariant(input.expectedRevision===this.revision(),'STALE_REVISION');
       invariant(prepared?.baseline !== undefined && prepared?.rollback !== undefined, 'DENIED');
       const proposalId = randomUUID();
       const baseline = this.artifacts.write(principal, prepared.baseline, 'baseline');
       const rollback = this.artifacts.write(principal, prepared.rollback, 'rollback');
       const proposal = { proposalId, operationId: operation.operationId, action: input.action, targets: input.targets,
         expectedRevision: input.expectedRevision, patch: input.patch, actionDigest: digest({ action: input.action, targets: input.targets, patch: input.patch, revision: input.expectedRevision }),
-        changeClass: prepared.changeClass, impact: prepared.impact, baseline, rollback,
+        changeClass: prepared.changeClass, impact: prepared.impact, baseline, rollback,originAuthority:freezeAuthority(principal),
         expiresAt: Date.now()+15*60*1000, state: 'pending-approval' };
       this.journal.put('proposal', proposalId, principal, proposal);
       this.journal.transition(operation.operationId, 'waiting-approval', { proposalId, approvalRequired: true });
@@ -72,24 +82,32 @@ export class Proposals {
       operation = this.admitApply(principal,input);
       if (lease) invariant(this.journal._row(operation.operationId).lease===lease && operation.state==='running','UNKNOWN_OUTCOME');
       else if (operation.state !== 'admitted') return operation;
+      this.validateOrigin(proposal);
       invariant(proposal.state === 'pending-approval', 'DENIED');
       invariant(proposal.expiresAt > Date.now(), 'EXPIRED');
       invariant(input.expectedRevision === proposal.expectedRevision && this.revision() === proposal.expectedRevision, 'STALE_REVISION');
       const baseline = this.artifacts.read(principal, proposal.baseline.id), rollback = this.artifacts.read(principal, proposal.rollback.id);
-      await verifyChangeApproval(principal, proposal, input.approvalReference, this.authority);
+      const revalidate=async()=>{
+        this.validateOrigin(proposal);
+        await verifyChangeApproval(principal,proposal,input.approvalReference,this.authority);
+        this.validateOrigin(proposal);
+      };
+      await revalidate();
       await this.audit.record({ operationId: operation.operationId, proposalId: proposal.proposalId, action: proposal.action, state: 'before-apply' });
       // Audit/approval can take time; check the file revision again under the same lock.
       this.binding.assertCurrent(); invariant(this.revision() === proposal.expectedRevision, 'STALE_REVISION');
-      await verifyChangeApproval(principal, proposal, input.approvalReference, this.authority);
+      await revalidate();
       await adapter.validate?.(proposal,{baseline});
       this.binding.assertCurrent();invariant(this.revision()===proposal.expectedRevision,'STALE_REVISION');
       if(!lease)this.journal.transition(operation.operationId,'running');
       this.journal.put('proposal', proposal.proposalId, principal, { ...proposal, state:'executing' }, { replace:true });
       dispatched = true;
-      const applied = await adapter.apply(proposal, { baseline, replacements: input.replacements || {}, revalidate: () => verifyChangeApproval(principal, proposal, input.approvalReference, this.authority) });
+      const applied = await adapter.apply(proposal, { baseline, replacements: input.replacements || {}, revalidate });
       const verified = await adapter.verify(proposal, applied);
       invariant(verified?.verified === true, 'UNKNOWN_OUTCOME');
+      await revalidate();
       await this.audit.record({ operationId: operation.operationId, proposalId: proposal.proposalId, action: proposal.action, state:'verified' });
+      await revalidate();
       this.journal.put('proposal', proposal.proposalId, principal, { ...proposal, state:'verified' }, { replace:true });
       const result={ verified:true, ...(verified.pendingRestart ? { pendingRestart:true } : {}),...(verified.observedState?{observedState:verified.observedState}:{}), revision:this.revision() };
       return lease?this.journal.finish(operation.operationId,lease,'succeeded',result):this.journal.transition(operation.operationId,'succeeded',result);

@@ -15,6 +15,7 @@ const providerFields=['ANTHROPIC_API_KEY','OPENAI_API_KEY','OPENROUTER_API_KEY',
 const known = new Set([...providerFields,...Object.values(ENV_MAP).flatMap(item=>item.env)]);
 const prohibited = /(?:^PATH$|^HOME$|^LD_|^DYLD_|^NODE_|^PYTHON|_PATH$|_DIR$|_SCRIPT$|_COMMAND$|_EXEC|^NETCLAW_LAB_MODE$|^N2N_RISK_MODE$|^N2N_STRICT_ALL$)/;
 export function environment(binding) { return parseEnvData((readOwned(binding.envPath,{missing:true}) || Buffer.from('')).toString()); }
+export const configurationChangeClass=binding=>environment(binding).N2N_RISK_MODE==='production'?'production':'operator-local';
 export const configurationFiles = binding => [binding.configPath,binding.envPath,...(binding.kind==='hermes'?[path.join(binding.statePath,'companion-auth.json')]:[])];
 export function configuredSecrets(binding){
   const secrets=Object.entries(environment(binding)).filter(([key])=>secretField(key)).map(([,value])=>value);
@@ -66,7 +67,7 @@ export function configurationAdapters(binding) {
       }
       const original=readOwned(binding.envPath,{missing:true});
       const baseline=Buffer.from(JSON.stringify({format:1,exists:original!==null,bytes:(original||Buffer.from('')).toString('base64')}));
-      return {baseline,rollback:baseline,changeClass:'operator-local',impact:'Save selected .env fields. Running services are unchanged; restart may be required.'};
+      return {baseline,rollback:baseline,changeClass:configurationChangeClass(binding),impact:'Save selected .env fields. Running services are unchanged; restart may be required.'};
     },
     async apply(proposal,{baseline,replacements}) {
       const saved=JSON.parse(baseline);invariant(saved.format===1);
@@ -175,7 +176,7 @@ function fileTransaction(binding,project){
       invariant(input.targets.length===1&&input.targets[0]===binding.installationId,'DENIED');
       const saved=capture();planned(input,saved);
       const baseline=Buffer.from(JSON.stringify({format:2,files:saved}));
-      return {baseline,rollback:baseline,changeClass:'operator-local',impact:'Save reviewed settings in the selected installation. Existing processes keep their current settings until a separately reviewed restart. Credential normalization moves existing bytes to .env references; it never rotates credentials.'};
+      return {baseline,rollback:baseline,changeClass:configurationChangeClass(binding),impact:'Save reviewed settings in the selected installation. Existing processes keep their current settings until a separately reviewed restart. Credential normalization moves existing bytes to .env references; it never rotates credentials.'};
     },
     async apply(proposal,{baseline,replacements}){
       invariant(Object.keys(replacements||{}).length===0);const saved=JSON.parse(baseline);invariant(saved.format===2);

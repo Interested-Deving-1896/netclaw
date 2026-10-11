@@ -300,6 +300,12 @@
     "category": "Guides"
   },
   {
+    "id": "08a71cf1c7b8cd80",
+    "path": "docs/VSCODE-CHANGE-CONTROL.md",
+    "title": "Managed change authority",
+    "category": "Guides"
+  },
+  {
     "id": "f1839393802c728b",
     "path": "docs/VSCODE-COMPATIBILITY.md",
     "title": "VS Code compatibility and qualification",
