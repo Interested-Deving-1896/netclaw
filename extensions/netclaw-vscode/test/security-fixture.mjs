@@ -62,6 +62,7 @@ const config=path.join(home,'config.yaml');
 const out=v=>console.log(typeof v==='string'?v:JSON.stringify(v));
 const fail=()=>{console.error('password=private-fixture-error');process.exit(3);};
 if(fs.existsSync(path.join(path.dirname(stateFile),'fail')))fail();
+if(args.length===1&&args[0]==='--help'){out('--gateway --workspace');process.exit(0);}
 if(args.includes('--version')){out(product+' fixture contract 1');process.exit(0);}
 if(product==='defenseclaw'){
  if(process.env.DEFENSECLAW_HOME!==home||process.env.DEFENSECLAW_CONFIG!==config)fail();

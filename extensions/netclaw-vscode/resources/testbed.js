@@ -33,8 +33,35 @@
   };
   const dirty = () => formDirty || yamlDirty || drafts.size > 0;
   const send = (type, data = {}) => {
-    if (!busy && !invalidated) post(type, data);
+    if (!busy && !invalidated && (!snapshot?.readOnly || type === "refresh"))
+      post(type, data);
   };
+  const readControls = new Set(["refresh", "filter", "previous", "next"]);
+  function controls() {
+    for (const e of document.querySelectorAll("button,input,textarea,select"))
+      e.disabled =
+        busy ||
+        invalidated ||
+        (!snapshot && e.id !== "refresh") ||
+        (snapshot?.readOnly && !readControls.has(e.id));
+  }
+  function clearSnapshot() {
+    snapshot = undefined;
+    drafts.clear();
+    formDirty = yamlDirty = false;
+    editing = null;
+    mode = "cards";
+    $("yaml").value = "";
+    $("device-form").reset();
+    $("device-form").hidden = $("review").hidden = $("yaml-pane").hidden = true;
+    $("cards-pane").hidden = false;
+    $("devices").replaceChildren();
+    $("target").textContent =
+      $("note").textContent =
+      $("count").textContent =
+        "";
+    controls();
+  }
   function invalidate() {
     $("review").hidden = true;
     send("invalidate");
@@ -112,7 +139,9 @@
       ? `${page * 50 + 1}–${Math.min(page * 50 + 50, rows.length)} of ${rows.length} devices`
       : snapshot.devices.length
         ? "No devices match your search."
-        : "Your testbed is empty. Add a device or import an inventory.";
+        : snapshot.readOnly
+          ? "The HUD returned no configured devices."
+          : "Your testbed is empty. Add a device or import an inventory.";
     for (const d of rows.slice(page * 50, page * 50 + 50)) {
       const card = text("article", "", $("devices"), "info-card");
       text("p", d.os || "DEVICE", card, "card-kicker");
@@ -135,6 +164,7 @@
         text("dt", label, dl);
         text("dd", value, dl);
       }
+      if (snapshot.readOnly) continue;
       const bar = text("div", "", card, "toolbar");
       const e = text("button", "Edit device", bar);
       e.addEventListener("click", () => switchRequest("edit", d.id));
@@ -143,8 +173,9 @@
         send("preview", { operation: { type: "remove", id: d.id } }),
       );
     }
-    $("previous").disabled = page === 0;
-    $("next").disabled = (page + 1) * 50 >= rows.length;
+    controls();
+    $("previous").disabled = busy || invalidated || page === 0;
+    $("next").disabled = busy || invalidated || (page + 1) * 50 >= rows.length;
   }
   $("filter").addEventListener("input", () => {
     page = 0;
@@ -210,9 +241,13 @@
     if (!m || m.viewId !== viewId || invalidated) return;
     if (m.type === "busy") {
       busy = m.busy;
-      for (const e of document.querySelectorAll("button,input,textarea,select"))
-        e.disabled = busy || (!snapshot && e.id !== "refresh");
+      controls();
       if (!busy) draw();
+    }
+    if (m.type === "loading") {
+      clearSnapshot();
+      $("status").textContent = "Loading testbed…";
+      $("status").className = "";
     }
     if (m.type === "snapshot") {
       snapshot = m.snapshot;
@@ -220,11 +255,18 @@
       formDirty = yamlDirty = false;
       editing = null;
       $("device-form").hidden = $("review").hidden = true;
-      $("yaml").value = snapshot.content;
+      $("yaml").value = snapshot.content || "";
+      if (snapshot.readOnly) switchMode("cards", undefined, false);
       $("target").textContent =
-        snapshot.source + " · revision " + snapshot.revision.slice(0, 12);
+        snapshot.source +
+        (snapshot.readOnly
+          ? " · observed " + snapshot.observedAt
+          : " · revision " + snapshot.revision.slice(0, 12));
       $("note").textContent = snapshot.note;
-      $("status").textContent = "Testbed loaded · no device connections";
+      $("status").textContent = snapshot.readOnly
+        ? "Testbed loaded · viewing only · no device connections"
+        : "Testbed loaded · no device connections";
+      $("status").className = "";
       draw();
     }
     if (m.type === "switch") switchMode(m.mode, m.id, m.discard);
@@ -271,16 +313,7 @@
       $("status").className = "notice error";
       if (m.invalidated) {
         invalidated = true;
-        snapshot = undefined;
-        drafts.clear();
-        $("yaml").value = "";
-        $("device-form").reset();
-        $("devices").replaceChildren();
-        $("review").hidden = true;
-        for (const e of document.querySelectorAll(
-          "button,input,textarea,select",
-        ))
-          e.disabled = true;
+        clearSnapshot();
       }
     }
   });

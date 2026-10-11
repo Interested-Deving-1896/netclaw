@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";
 import { execFile } from "node:child_process";
+import { stringify as yamlStringify } from "yaml";
+import { nativeToolRules, parseOpenShellPolicy } from "./security-formats";
 export type SecurityTarget = {
   product: "defenseclaw" | "openshell";
   runtimeHome: string;
@@ -51,11 +53,19 @@ const run: Runner = (file, args, env) =>
         timeout: args.includes("set") ? 75000 : 10000,
         maxBuffer: 1024 * 1024,
       },
-      (e, stdout) =>
+      (e, stdout, stderr) =>
         e
           ? reject(
-              Error(
-                "The native security command failed or timed out. Inspect the target with its native tools; private output is withheld.",
+              Object.assign(
+                Error(
+                  "The native security command failed or timed out. Inspect the target with its native tools; private output is withheld.",
+                ),
+                {
+                  missingGlobalPolicy:
+                    /status: NotFound[\s\S]*no global policy revision found/.test(
+                      stderr,
+                    ),
+                },
               ),
             )
           : resolve(stdout),
@@ -86,7 +96,7 @@ export function redactSecurity(text: string) {
 function safe(value: any, key = "", depth = 0): any {
   if (depth > 12) return "[Depth limited]";
   if (
-    /password|passwd|secret|token|credential|authorization|cookie|private.?key/i.test(
+    /api[_-]?key|password|passwd|secret|token|credential|authorization|cookie|private.?key/i.test(
       key,
     )
   )
@@ -277,7 +287,7 @@ function maskNetwork(network: Data, revision: string) {
             x,
             [...keys, k],
             sensitive ||
-              /password|passwd|secret|token|credential|authorization|cookie|private.?key/i.test(
+              /api[_-]?key|password|passwd|secret|token|credential|authorization|cookie|private.?key/i.test(
                 k,
               ),
           ),
@@ -325,6 +335,8 @@ function unmaskNetwork(
 export class SecurityClient {
   readonly target: SecurityTarget;
   private capture: Data | undefined;
+  private workspaceSupported = true;
+  private yamlPolicy = false;
   constructor(
     target: SecurityTarget,
     private evidenceRoot: string,
@@ -335,7 +347,12 @@ export class SecurityClient {
   private args(args: string[]) {
     const t = this.target;
     return t.product === "openshell"
-      ? ["--gateway", t.gateway!, "--workspace", t.workspace!, ...args]
+      ? [
+          "--gateway",
+          t.gateway!,
+          ...(this.workspaceSupported ? ["--workspace", t.workspace!] : []),
+          ...args,
+        ]
       : args;
   }
   private command(args: string[]) {
@@ -356,11 +373,79 @@ export class SecurityClient {
   private config(key: string) {
     return this.json(["config", "get", key, "--format", "json"]);
   }
+  async sandboxes() {
+    validateSecurityTarget(this.target);
+    if (this.target.product !== "openshell") return [];
+    const help = await this.runner(
+      this.target.executable,
+      ["--help"],
+      securityEnvironment(this.target),
+    );
+    this.workspaceSupported = help.includes("--workspace");
+    if (!this.workspaceSupported && this.target.workspace !== "default")
+      return [];
+    const raw = await this.command(["sandbox", "list", "--names"]);
+    const names = raw.trim().split(/\r?\n/).filter(Boolean);
+    if (names.length > 200 || !names.every(simpleName)) return [];
+    return names;
+  }
+  private async legacyPolicy() {
+    const result = parseOpenShellPolicy(
+      await this.command(["policy", "get", this.target.sandbox!, "--full"]),
+      this.target.sandbox!,
+    );
+    boundedObject(result.policy);
+    let policy_source = "unknown";
+    try {
+      await this.command(["policy", "get", "--global", "--full"]);
+      policy_source = "global";
+    } catch (error) {
+      if ((error as { missingGlobalPolicy?: boolean }).missingGlobalPolicy)
+        policy_source = "sandbox";
+    }
+    return { ...result, policy_source };
+  }
+  private async basePolicy() {
+    return this.yamlPolicy
+      ? this.legacyPolicy()
+      : this.json([
+          "policy",
+          "get",
+          this.target.sandbox!,
+          "--base",
+          "--output",
+          "json",
+        ]);
+  }
+  private async effectivePolicy() {
+    return this.yamlPolicy
+      ? this.legacyPolicy()
+      : this.json([
+          "policy",
+          "get",
+          this.target.sandbox!,
+          "--full",
+          "--output",
+          "json",
+        ]);
+  }
   async inspect(includeLogs = true) {
     this.capture = undefined;
     validateSecurityTarget(this.target);
     const stamp = targetRevision(this.target),
       t = this.target;
+    if (t.product === "openshell") {
+      const help = await this.runner(
+        t.executable,
+        ["--help"],
+        securityEnvironment(t),
+      );
+      this.workspaceSupported = help.includes("--workspace");
+      if (!this.workspaceSupported && t.workspace !== "default")
+        throw Error(
+          "This OpenShell version has no workspace selection. Choose its default workspace.",
+        );
+    }
     const version = redactSecurity(await this.command(["--version"]))
       .trim()
       .slice(0, 200);
@@ -379,15 +464,21 @@ export class SecurityClient {
       settings: any,
       base: any,
       effective: any,
+      configuration: any,
+      nativeTools = false,
       editable = false,
       reason = "";
-    const status = await attempt(() =>
+    let status = await attempt(() =>
       this.json(
         t.product === "defenseclaw"
           ? ["status", "--json"]
           : ["gateway", "status", "--output", "json"],
       ),
     );
+    if (!status.available && t.product === "openshell")
+      status = await attempt(async () => ({
+        summary: await this.command(["status"]),
+      }));
     if (t.product === "defenseclaw") {
       const policy = await attempt(async () => {
         const rules = await this.config("asset_policy.tool");
@@ -430,19 +521,50 @@ export class SecurityClient {
         const legacy = await attempt(() =>
           this.json(["tool", "list", "--json"]),
         );
-        if (legacy.available && Array.isArray(legacy.data)) {
-          const rows = legacy.data.flatMap((r: Data) =>
-            Array.isArray(r.tools) ? r.tools : [r],
-          );
-          rules = {
-            allowed: rows.filter((r: Data) => r.status === "allowed"),
-            denied: rows.filter((r: Data) => r.status === "blocked"),
+        const config = await attempt(() =>
+          this.json(["config", "show", "--format", "json"]),
+        );
+        if (config.available) {
+          configuration = config.data;
+          settings = {
+            mode: configuration.guardrail?.mode,
+            enabled: configuration.guardrail?.enabled,
+            hook_fail_mode: configuration.guardrail?.hook_fail_mode,
           };
+        }
+        const normalized = await attempt(async () =>
+          nativeToolRules(legacy.data),
+        );
+        if (legacy.available && normalized.available) {
+          rules = normalized.data;
+          const support = await attempt(async () => {
+            for (const action of ["block", "allow", "unblock"])
+              if (
+                !(await this.command(["tool", action, "--help"])).includes(
+                  "--connector",
+                )
+              )
+                return false;
+            return true;
+          });
+          // Legacy tool rules live in the audit database, not config.yaml.
+          const database = configuration?.audit_db;
+          nativeTools =
+            support.data === true &&
+            typeof database === "string" &&
+            path.resolve(database) === path.join(t.securityHome, "audit.db") &&
+            configuration?.data_dir === t.securityHome;
+          if (nativeTools) {
+            const databaseStat = fs.lstatSync(database);
+            nativeTools =
+              databaseStat.isFile() && !databaseStat.isSymbolicLink();
+          }
+          editable = nativeTools;
         }
       }
       if (!editable)
         reason =
-          "This DefenseClaw needs the JSON config reader and revision-aware native config writer. Status/logs remain available when supported.";
+          "The selected DefenseClaw did not provide a supported scoped writer and verified profile. Available configuration and rules remain view-only.";
       if (
         editable &&
         (!status.available ||
@@ -453,26 +575,35 @@ export class SecurityClient {
         reason =
           "DefenseClaw did not report the bound data directory. Inspect the selected profile with its native tools before editing.";
       }
+      if (!configuration) {
+        const shown = await attempt(() =>
+          this.json(["config", "show", "--format", "json"]),
+        );
+        if (shown.available) configuration = shown.data;
+      }
     } else {
       const policy = await attempt(async () => {
         const help = await this.command(["policy", "get", "--help"]);
-        effective = await this.json([
-          "policy",
-          "get",
-          t.sandbox!,
-          "--full",
-          "--output",
-          "json",
-        ]);
+        this.yamlPolicy = !help.includes("--output") && help.includes("--full");
+        if (this.yamlPolicy) {
+          effective = await this.legacyPolicy();
+          if (effective.policy_source !== "sandbox")
+            throw Error("Global policy exists or could not be checked.");
+          // OpenShell 0.0.32 records the initial revision as Loaded before it
+          // records an active revision. The first explicit update must still
+          // pass --wait and exact active-version readback below.
+          const initial =
+            effective.version === 1 && effective.active_version === 0;
+          if (
+            !effective.loaded ||
+            (!initial && effective.active_version !== effective.version)
+          )
+            throw Error("Sandbox policy is not loaded.");
+          return { effective, base: effective };
+        }
+        effective = await this.effectivePolicy();
         if (!help.includes("--base")) throw Error("Base policy unavailable");
-        const base = await this.json([
-          "policy",
-          "get",
-          t.sandbox!,
-          "--base",
-          "--output",
-          "json",
-        ]);
+        const base = await this.basePolicy();
         if (
           effective.sandbox !== t.sandbox ||
           base.sandbox !== t.sandbox ||
@@ -490,7 +621,8 @@ export class SecurityClient {
         editable = true;
       } else
         reason =
-          "Scoped editing needs full/base JSON policy reads and a sandbox-owned effective policy. Global, unknown and unsupported policies stay read-only.";
+          "Editing requires a loaded sandbox policy and verified sandbox ownership. Global policy, unknown scope and unsupported formats remain read-only; available policy details are shown below.";
+      configuration = base?.policy || effective?.policy;
     }
     const logs = includeLogs
       ? await attempt(async () =>
@@ -527,6 +659,7 @@ export class SecurityClient {
       scopeStamp: targetRevision(t, true),
       revision,
       editable,
+      nativeTools,
       connectors,
       rules,
       settings,
@@ -540,6 +673,9 @@ export class SecurityClient {
       version,
       revision,
       editable,
+      nativeTools,
+      editableSettings: editable && !nativeTools,
+      policyFormat: this.yamlPolicy ? "native-yaml" : "json",
       reason,
       status: safe(status),
       rules: safe(rules),
@@ -548,6 +684,25 @@ export class SecurityClient {
       network: networkTooLarge ? undefined : masked?.value,
       policySource: effective?.policy_source,
       policyVersion: effective?.version,
+      activePolicyVersion: effective?.active_version,
+      policyYaml: configuration
+        ? yamlStringify(safe(configuration)).slice(0, 128 * 1024)
+        : undefined,
+      policyLocation:
+        t.product === "defenseclaw"
+          ? path.join(t.securityHome, "config.yaml")
+          : `${t.gateway} / ${t.sandbox} · native policy revision ${effective?.version ?? "unknown"}`,
+      permissions: safe(
+        t.product === "defenseclaw"
+          ? configuration?.asset_policy
+          : configuration
+            ? {
+                filesystem: configuration.filesystem_policy,
+                process: configuration.process,
+                landlock: configuration.landlock,
+              }
+            : undefined,
+      ),
       logs: {
         available: logs.available,
         message: logs.message,
@@ -559,7 +714,11 @@ export class SecurityClient {
             )
           : "",
       },
-      note: "Shared host security scope. Saved configuration, loaded policy and actual enforcement are distinct. No live traffic test is performed.",
+      note:
+        "Shared host security scope. Saved configuration, loaded policy and actual enforcement are distinct. No live traffic test is performed." +
+        (nativeTools
+          ? " Tool changes use the installed native CLI for one selected connector. Global fallback and enforcement settings are view-only on this version; external writers can race the immediate revision check."
+          : ""),
     };
   }
   prepare(operation: Data, revision: string, reason: string) {
@@ -604,6 +763,10 @@ export class SecurityClient {
           throw Error(
             "Choose a configured connector from the observed roster.",
           );
+        if (before.nativeTools && !connector)
+          throw Error(
+            "Choose a connector. This native CLI clears connector overrides on global changes, so global fallback rules are view-only here.",
+          );
         value = structuredClone(before.rules);
         for (const list of ["allowed", "denied"])
           value[list] = value[list].filter(
@@ -614,11 +777,18 @@ export class SecurityClient {
             name,
             connector,
             reason: reason.trim(),
+            ...(before.nativeTools
+              ? { scope: "connector", status: operation.action }
+              : {}),
           });
         key = "asset_policy.tool";
         weakening = operation.action !== "block";
         summary = `${operation.action} tool ${name} · ${connector ? "connector " + connector : "all connectors (global fallback)"}`;
       } else if (operation.type === "setting") {
+        if (before.nativeTools)
+          throw Error(
+            "Enforcement settings are view-only on this native CLI version.",
+          );
         if (
           Object.keys(operation).some(
             (k) => !["type", "key", "value"].includes(k),
@@ -672,6 +842,7 @@ export class SecurityClient {
       ),
       weakening,
       target: this.target,
+      nativeOperation: before.nativeTools ? { ...operation } : undefined,
     };
   }
   async apply(review: Data, guard: () => Promise<void>) {
@@ -735,7 +906,24 @@ export class SecurityClient {
           "The reviewed policy or target changed. Reload and review again.",
         );
       const original = path.join(dir, review.id + ".original");
-      if (this.target.product === "defenseclaw")
+      if (this.target.product === "defenseclaw" && review.before.nativeTools)
+        fs.writeFileSync(
+          original,
+          JSON.stringify(
+            {
+              configuration: regular(
+                path.join(this.target.securityHome, "config.yaml"),
+              ).toString(),
+              toolRules: review.before.rules,
+              recovery:
+                "Restore the selected connector rule using the native CLI after reviewing current policy. This is not a database restore.",
+            },
+            null,
+            2,
+          ),
+          { flag: "wx", mode: 0o600 },
+        );
+      else if (this.target.product === "defenseclaw")
         fs.writeFileSync(
           original,
           regular(path.join(this.target.securityHome, "config.yaml")),
@@ -754,7 +942,40 @@ export class SecurityClient {
       if (targetRevision(this.target) !== review.before.stamp)
         throw Error("Security target changed immediately before execution.");
       let candidate = "";
-      if (this.target.product === "defenseclaw") {
+      if (this.target.product === "defenseclaw" && review.before.nativeTools) {
+        const op = review.nativeOperation;
+        const fresh = nativeToolRules(
+          await this.json(["tool", "list", "--json"]),
+        );
+        if (canonical(fresh) !== canonical(review.before.rules))
+          throw Error("Native tool rules changed during review.");
+        const args = [
+          "tool",
+          op.action === "remove" ? "unblock" : op.action,
+          op.name,
+          "--connector",
+          op.connector,
+        ];
+        if (op.action !== "remove") args.push("--reason", review.reason);
+        launched = true;
+        await this.command(args);
+        const after = nativeToolRules(
+          await this.json(["tool", "list", "--json"]),
+        );
+        const ordered = (v: Data) =>
+          Object.fromEntries(
+            ["allowed", "denied"].map((k) => [
+              k,
+              [...v[k]].sort((a, b) =>
+                canonical(a).localeCompare(canonical(b)),
+              ),
+            ]),
+          );
+        if (canonical(ordered(after)) !== canonical(ordered(review.value)))
+          throw Error(
+            "Native tool-rule readback did not match the reviewed change.",
+          );
+      } else if (this.target.product === "defenseclaw") {
         const revision = hash(
           regular(path.join(this.target.securityHome, "config.yaml")),
         );
@@ -772,14 +993,7 @@ export class SecurityClient {
         if (canonical(after) !== canonical(review.value))
           throw Error("Changed field was not verified.");
       } else {
-        const fresh = await this.json([
-          "policy",
-          "get",
-          this.target.sandbox!,
-          "--base",
-          "--output",
-          "json",
-        ]);
+        const fresh = await this.basePolicy();
         if (canonical(fresh) !== canonical(review.before.base))
           throw Error("Sandbox policy changed during review.");
         candidate = path.join(dir, review.id + ".candidate");
@@ -800,24 +1014,10 @@ export class SecurityClient {
           candidate,
           "--wait",
         ]);
-        const after = await this.json([
-          "policy",
-          "get",
-          this.target.sandbox!,
-          "--base",
-          "--output",
-          "json",
-        ]);
+        const after = await this.basePolicy();
         if (canonical(after.policy) !== canonical(policy))
           throw Error("Applied policy was not verified.");
-        const effective = await this.json([
-          "policy",
-          "get",
-          this.target.sandbox!,
-          "--full",
-          "--output",
-          "json",
-        ]);
+        const effective = await this.effectivePolicy();
         if (
           effective.policy_source !== "sandbox" ||
           effective.version !== after.version ||

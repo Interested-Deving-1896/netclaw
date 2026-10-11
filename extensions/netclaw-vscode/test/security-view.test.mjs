@@ -148,3 +148,31 @@ test("OpenShell edits stay in memory, cancel preserves drafts and invalidation r
   assert.equal($("security-reason").value, "");
   assert.equal($("security-logs").textContent, "");
 });
+
+test("Native permissions and YAML render as text; connector-only writers never enable global/settings edits", (t) => {
+  const { $, receive, snapshot } = harness(t);
+  receive({
+    type: "security",
+    snapshot: {
+      ...snapshot,
+      nativeTools: true,
+      editableSettings: false,
+      rules: { allowed: [], denied: [{ name: "global", scope: "global" }] },
+      permissions: { filesystem: ["/sandbox"] },
+      policyYaml: "name: <script>untrusted</script>\n",
+      policyLocation: "/profile/config.yaml",
+    },
+  });
+  assert.equal($("permissions-section").hidden, false);
+  assert.match($("permissions").textContent, /sandbox/);
+  assert.equal($("policy-yaml").querySelector("script"), null);
+  assert.match($("policy-yaml").textContent, /<script>/);
+  assert.equal($("setting-key").disabled, true);
+  assert.equal($("tool-name").disabled, false);
+  assert.equal($("tool-connector").value, "openclaw");
+  assert.equal($("tool-connector").options[0].disabled, true);
+  assert.equal($("rules").querySelector("button"), null);
+  receive({ type: "error", invalidated: true, message: "Disconnected" });
+  assert.equal($("permissions").textContent, "");
+  assert.equal($("policy-yaml").textContent, "");
+});

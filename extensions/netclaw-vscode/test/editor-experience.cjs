@@ -20,6 +20,7 @@ exports.run = async () => {
       .contexts()
       .flatMap((c) => c.pages())
       .find((p) => p.url().includes("workbench"));
+  require("./verify-installed.cjs")(extension);
   page.setDefaultTimeout(15000);
   const mark = (s) => {
     checks.push(s);
@@ -625,12 +626,16 @@ exports.run = async () => {
     JSON.stringify(
       {
         editor: vscode.version,
-        packageMode: "source development; isolated native observer",
+        packageMode: process.env.NETCLAW_TEST_INSTALLED_ROOT
+          ? "exact installed VSIX; isolated native observer"
+          : "source development; isolated native observer",
+        platform: process.platform,
+        remote: vscode.env.remoteName || null,
         checks,
         matrix,
         screenshots: shots,
         scope:
-          "Mac only, synthetic data/HUD, no provider or device calls, no package/live deployment",
+          "Synthetic data and isolated source HUD; no real provider or network-device calls. Security mutations target isolated CLI fixtures.",
       },
       null,
       2,

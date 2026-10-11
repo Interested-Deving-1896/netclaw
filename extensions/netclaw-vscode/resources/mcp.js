@@ -6,6 +6,7 @@
     $ = (id) => document.getElementById(id);
   let busy = false,
     invalidated = false,
+    readOnly = false,
     dirty = false,
     descriptor;
   const text = (tag, value, parent, cls) => {
@@ -16,8 +17,27 @@
     return e;
   };
   const send = (type, fields = {}) => {
-    if (!busy && !invalidated) post(type, fields);
+    if (
+      !busy &&
+      !invalidated &&
+      (!readOnly || ["reload", "environment"].includes(type))
+    )
+      post(type, fields);
   };
+  function controls() {
+    for (const e of document.querySelectorAll("button,input,select"))
+      e.disabled =
+        busy ||
+        invalidated ||
+        !descriptor ||
+        (readOnly && !["reload", "environment"].includes(e.id));
+    if (!busy && descriptor && !readOnly)
+      for (const f of descriptor.fields)
+        $("value-" + f.key).disabled = $("intent-" + f.key).value !== "replace";
+    $("environment").hidden = !readOnly;
+    $("environment").disabled ||= !descriptor?.fields.length;
+    $("save-fields").hidden = readOnly;
+  }
   function draw(d) {
     descriptor = d;
     dirty = false;
@@ -46,7 +66,7 @@
     if (!d.fields.length)
       text(
         "p",
-        "This integration has no known .env fields. Review its setup guidance for CLI flags or runtime-owned configuration.",
+        "This HUD reports no environment fields for this integration. Review its setup guidance for CLI flags or runtime-owned configuration.",
         $("fields"),
         "empty-state",
       );
@@ -60,6 +80,7 @@
         box,
         "hint",
       );
+      if (readOnly) continue;
       const intent = text("select", "", box);
       intent.id = "intent-" + f.key;
       intent.setAttribute("aria-label", "Change intent for " + f.label);
@@ -121,6 +142,7 @@
   }
   $("mcp-form").onsubmit = (e) => {
     e.preventDefault();
+    if (readOnly || !descriptor) return;
     const changes = {};
     for (const f of descriptor.fields) {
       const intent = $("intent-" + f.key).value;
@@ -134,24 +156,27 @@
   };
   $("reload").onclick = () => send("reload", { dirty });
   $("setup").onclick = () => send("setup");
+  $("environment").onclick = () => send("environment");
   window.addEventListener("message", (event) => {
     const m = event.data;
     if (!m || m.viewId !== viewId || invalidated) return;
     if (m.type === "busy") {
       busy = m.busy;
-      for (const e of document.querySelectorAll("button,input,select"))
-        e.disabled = busy;
-      if (!busy && descriptor)
-        for (const f of descriptor.fields)
-          $("value-" + f.key).disabled =
-            $("intent-" + f.key).value !== "replace";
+      controls();
     }
     if (m.type === "configuration") {
+      readOnly = Boolean(m.readOnly);
       draw(m.descriptor);
       $("source").textContent =
-        m.source + " · revision " + m.revision.slice(0, 12);
-      $("status").textContent =
-        "Configuration loaded. Existing values stay private.";
+        m.source +
+        (readOnly
+          ? " · observed " + m.observedAt
+          : " · revision " + m.revision.slice(0, 12));
+      $("status").textContent = readOnly
+        ? "Configuration inventory loaded · compatibility view"
+        : "Configuration loaded. Existing values stay private.";
+      $("status").className = "";
+      controls();
     }
     if (m.type === "notice") $("status").textContent = m.message;
     if (m.type === "error") {

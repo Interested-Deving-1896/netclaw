@@ -72,23 +72,42 @@ export async function configureSettings(connection: Connection) {
     );
   void vscode.window.showInformationMessage("Budget setting verified.");
 }
-export async function environment(connection: Connection) {
+export async function environment(
+  connection: Connection,
+  integrationId?: string,
+) {
   const b = connection.bound(),
     inventory = await b.run(() =>
       b.client.request("GET", "/api/hud/configuration"),
     );
-  const integration = await vscode.window.showQuickPick<
-    vscode.QuickPickItem & { integration: Json }
-  >(
-    (inventory.integrations || []).map((i: Json) => ({
-      label: i.id,
-      description: i.notes,
-      integration: i,
-    })),
-    { title: "Environment integration" },
-  );
+  const integration = integrationId
+    ? {
+        integration: inventory.integrations?.find(
+          (i: Json) => i.id === integrationId,
+        ),
+      }
+    : await vscode.window.showQuickPick<
+        vscode.QuickPickItem & { integration: Json }
+      >(
+        (inventory.integrations || []).map((i: Json) => ({
+          label: i.id,
+          description: i.notes,
+          integration: i,
+        })),
+        { title: "Environment integration" },
+      );
   if (!integration) return;
   const value = (integration as { integration: Json }).integration;
+  if (!value)
+    throw Error(
+      "The selected integration is no longer in the HUD environment inventory.",
+    );
+  if (!value.fields?.length) {
+    void vscode.window.showInformationMessage(
+      "This integration has no environment fields reported by the HUD.",
+    );
+    return;
+  }
   const field = await vscode.window.showQuickPick<vscode.QuickPickItem>(
     (value.fields || []).map((f: Json) => ({
       label: f.key,
@@ -98,6 +117,12 @@ export async function environment(connection: Connection) {
   );
   if (!field) return;
   const key = (field as { label: string }).label;
+  const shared = (inventory.integrations || [])
+    .filter(
+      (i: Json) =>
+        i.id !== value.id && i.fields?.some((f: Json) => f.key === key),
+    )
+    .map((i: Json) => i.id);
   const replacement = await vscode.window.showInputBox({
     title: `New ${key}`,
     password: true,
@@ -110,7 +135,7 @@ export async function environment(connection: Connection) {
       `${replacement ? "Replace" : "Clear"} ${key}?`,
       {
         modal: true,
-        detail: `Installation: ${connection.identity?.installationId}\nSource: ${inventory.environmentFile}\nOnly this field is sent to the existing environment writer. Some changes take effect after a separately requested restart. This API has no atomic revision precondition.`,
+        detail: `Installation: ${connection.identity?.installationId}\nSource: ${inventory.environmentFile}\nIntegration: ${value.id}\n${shared.length ? "Also used by: " + shared.join(", ") + "\n" : ""}Only this field is sent to the existing environment writer. Some changes take effect after a separately requested restart. This API has no atomic revision precondition.`,
       },
       "Apply",
     )) !== "Apply"
