@@ -7,14 +7,17 @@ import { ownedDirectory, readOwned, atomicPrivate } from './files.js';
 import { fail, invariant } from './errors.js';
 
 const secretKey = /password|secret|api.?key|authorization|credential|^(?:token|accessToken|refreshToken|bearer|cookie)$/i;
-export function redactor(secrets = []) {
+export function redactText(secrets = []) {
   const values = [...new Set(secrets.filter(v => typeof v === 'string' && v.length > 0))].sort((a,b) => b.length-a.length);
-  const text = value => {
+  return value => {
     let result = value;
     for (const secret of values) result = result.split(secret).join('[redacted]');
     return result.replace(/\bBearer\s+[A-Za-z0-9._~+/-]+=*/gi, 'Bearer [redacted]')
       .replace(/\b(?:sk-|ghp_|github_pat_)[A-Za-z0-9_-]{8,}/g, '[redacted]');
   };
+}
+export function redactor(secrets = []) {
+  const text=redactText(secrets);
   return value => {
     const truncation={strings:0,arrays:0,objects:0,depth:0};
     const visit = (item, depth = 0) => {

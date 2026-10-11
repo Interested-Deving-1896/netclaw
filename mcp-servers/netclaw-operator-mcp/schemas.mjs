@@ -81,7 +81,8 @@ export const schemas = Object.freeze({
   operator_cancel_request: z.strictObject({ operationId: id, nonce }),
   operator_change_prepare: changeSchema,
   operator_change_apply: z.strictObject({ proposalId: id, nonce, expectedRevision: z.string().uuid(), approvalReference: id.optional(), replacements: z.record(envKey, z.string().max(65536)).optional() }),
-  operator_evidence: z.strictObject({ kind: z.enum(['gait','log','artifact','approval']), id: id.optional(), filters: z.strictObject({ query: z.string().max(200).optional(), severity: z.enum(['info','warning','error']).optional() }).optional(), ...page }),
+  operator_evidence: z.strictObject({ kind: z.enum(['gait','log','artifact','approval']), id: id.optional(), filters: z.strictObject({ query: z.string().max(200).optional(), severity: z.enum(['info','warning','error','debug','unknown']).optional(),since:z.string().datetime({offset:true}).optional(),until:z.string().datetime({offset:true}).optional() }).optional(), ...page }).refine(value=>
+    !(value.filters?.since||value.filters?.until)||value.kind==='log'&&(!value.filters.since||!value.filters.until||Date.parse(value.filters.since)<=Date.parse(value.filters.until))),
   operator_workspace: workspaceSchema,
   operator_client_prepare: z.strictObject({ nonce, client: z.enum(['copilot','claude-code','codex']), targets: z.array(id).min(1).max(100), actions: z.array(z.enum(['inspect','delegate','propose','evidence','cancel'])).min(1).max(5), disclosure: z.array(z.enum(['summary','usage','evidence','conversation'])).min(1).max(4), expiresAt: z.number().int().positive() }),
   operator_client_apply: z.strictObject({ proposalId: id, nonce, expectedRevision: z.string().uuid() }),

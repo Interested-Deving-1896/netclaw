@@ -4,7 +4,7 @@ import yaml from 'js-yaml';
 import { randomUUID } from 'node:crypto';
 import { bindInstallation } from './identity.js';
 import { Journal } from './journal.js';
-import { InstallationAudit,redactor,bounded } from './evidence.js';
+import { InstallationAudit,redactor,redactText,bounded } from './evidence.js';
 import { Proposals } from './proposals.js';
 import { configurationAdapters,configurationSnapshot,managedSettingsSnapshot,environment,configuredSecrets } from './configuration.js';
 import { readOwned } from './files.js';
@@ -199,7 +199,7 @@ export class ManagementService {
     if(name==='operator_evidence'){
       authorize(principal,'evidence',[]);
       if(args.kind==='gait')return this.envelope(await this.audit.log(args.limit),'Installation-specific GAIT');
-      if(args.kind==='log')return this.envelope(installationLogs(this.binding,args),'Selected installation bounded log tail');
+      if(args.kind==='log')return this.envelope(installationLogs(this.binding,args,{cleanText:redactText(configuredSecrets(this.binding))}),'Selected installation bounded log tail');
       if(args.kind==='approval'&&args.id)return this.envelope(this.journal.record('proposal',args.id,principal),'Managed proposal');
       fail('UNSUPPORTED');
     }

@@ -10775,7 +10775,7 @@
           "operationId": "get_api_hud_logs",
           "summary": "GET /api/hud/logs",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/src/hud-server/logs.js:35",
+          "x-source": "ui/netclaw-visual/src/hud-server/logs.js:52",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."
@@ -12107,7 +12107,7 @@
           "operationId": "get_api_hud_logs_id",
           "summary": "GET /api/hud/logs/{id}",
           "description": "Local Host/Origin guards apply. See x-source for implementation. General response schema is intentionally unspecified; this is not a promise of upstream device API compatibility.",
-          "x-source": "ui/netclaw-visual/src/hud-server/logs.js:36",
+          "x-source": "ui/netclaw-visual/src/hud-server/logs.js:53",
           "responses": {
             "200": {
               "description": "Successful response; see implementation for payload and other success codes."

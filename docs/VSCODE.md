@@ -95,6 +95,8 @@ export. Configured network inventory is labeled configured, not live discovery.
 Documentation is read from the connected backend's indexed repository.
 The [federation guide](VSCODE-FEDERATION.md) describes paged estate cards,
 exact cached capability inspection, freshness and scoped assistant summaries.
+The [observability guide](VSCODE-OBSERVABILITY.md) explains log time filters,
+source references, usage gaps and explicitly reviewed local exports.
 
 [Copilot, Claude Code and Codex setup](VSCODE-ASSISTANTS.md) uses a separate,
 scoped assistant interface. Its current supported access is inspection and

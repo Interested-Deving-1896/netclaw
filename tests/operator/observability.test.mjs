@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {installationFixture,nonce,auditFixture} from './fixtures.mjs';
 import {ManagementService} from '../../ui/netclaw-visual/src/management/service.js';
 import {readUsage} from '../../ui/netclaw-visual/src/hud-server/tokenomics.js';
+import {selectLogRows,tailFile} from '../../ui/netclaw-visual/src/hud-server/logs.js';
 const root=fileURLToPath(new URL('../../',import.meta.url));
 function service(t,kind='openclaw'){
   const f=installationFixture(t,kind),backend=new ManagementService({root,home:f.home,kind,audit:auditFixture()});t.after(()=>backend.close());return {...f,backend};
@@ -48,4 +49,42 @@ test('configured network inventory contains provenance and no credentials or inv
   fs.appendFileSync(path.join(f.home,'.env'),`PYATS_TESTBED_PATH=${file}\n`);
   const {data}=await f.backend.call('operator_resources',{kind:'network'});assert.equal(data.sourceKind,'configured');assert.equal(data.items[0].id,'R1');assert.equal(data.items[0].observedState,null);assert.deepEqual(data.edges,[]);assert.ok(!JSON.stringify(data).includes('SYNTHETIC_DEVICE_SECRET'));
   fs.writeFileSync(file,'bad: [yaml');assert.equal((await f.backend.call('operator_resources',{kind:'network'})).data.available,false);
+});
+test('log time filters use supplied timestamps, retain source byte references and exclude undated rows explicitly',async t=>{
+  const f=service(t);fs.mkdirSync(path.join(f.home,'logs'));
+  fs.writeFileSync(path.join(f.home,'logs/gateway.log'),[
+    JSON.stringify({timestamp:'2026-10-11T01:00:00Z',level:'info',message:'before'}),
+    JSON.stringify({timestamp:'2026-10-11T02:00:00Z',level:'warning',message:'selected'}),
+    JSON.stringify({timestamp:'2026-10-11T03:00:00Z',level:'debug',message:'after'}),'error undated'].join('\n'));
+  const result=await f.backend.call('operator_evidence',{kind:'log',id:'gateway',filters:{since:'2026-10-11T01:30:00Z',until:'2026-10-11T02:30:00Z'}});
+  assert.equal(result.data.rows.length,1);assert.match(result.data.rows[0].message,/selected/);assert.equal(result.data.undatedExcluded,1);
+  assert.equal(result.data.sourceReference.sourceId,'gateway');assert.equal(result.data.sourceReference.byteStart,0);assert.ok(result.data.sourceReference.byteEnd>0);
+  assert.ok(!JSON.stringify(result.data.sourceReference).includes(f.home));
+  await assert.rejects(f.backend.call('operator_evidence',{kind:'log',id:'gateway',filters:{since:'2026-10-12T00:00:00Z',until:'2026-10-11T00:00:00Z'}}),{code:'INVALID_INPUT'});
+  await assert.rejects(f.backend.call('operator_evidence',{kind:'gait',filters:{since:'2026-10-11T00:00:00Z'}}),{code:'INVALID_INPUT'});
+  const debug=await f.backend.call('operator_evidence',{kind:'log',id:'gateway',filters:{severity:'debug'}});assert.equal(debug.data.rows.length,1);
+});
+test('configured secret values are redacted before log query matching, with explicit row truncation',async t=>{
+  const f=service(t);fs.mkdirSync(path.join(f.home,'logs'));fs.appendFileSync(path.join(f.home,'.env'),'ANTHROPIC_API_KEY=SECRET_QUERY_NEVER_MATCHES\n');
+  fs.writeFileSync(path.join(f.home,'logs/gateway.log'),'info echoed SECRET_QUERY_NEVER_MATCHES\n'+'info '.repeat(3000));
+  const filtered=await f.backend.call('operator_evidence',{kind:'log',id:'gateway',filters:{query:'SECRET_QUERY_NEVER_MATCHES'}});assert.equal(filtered.data.rows.length,0);
+  const result=await f.backend.call('operator_evidence',{kind:'log',id:'gateway'});assert.equal(result.data.truncated,true);assert.ok(result.data.rows.some(row=>row.messageTruncated===true));assert.ok(!JSON.stringify(result).includes('SECRET_QUERY_NEVER_MATCHES'));
+});
+test('time filtering does not guess a numeric timestamp unit and tail reads verify the opened inode',t=>{
+  const timestamp=Date.parse('2026-10-11T02:00:00Z');
+  const selection=selectLogRows([
+    JSON.stringify({timestamp,level:'info',message:'ambiguous'}),
+    JSON.stringify({timestamp,timestampUnit:'milliseconds',level:'info',message:'qualified millis'}),
+    JSON.stringify({timestamp:timestamp/1000,timestampUnit:'seconds',level:'info',message:'qualified seconds'}),
+  ].join('\n'),{since:'2026-10-11T01:00:00Z',until:'2026-10-11T03:00:00Z'});
+  assert.equal(selection.rows.length,2);assert.equal(selection.undatedExcluded,1);
+  const f=installationFixture(t),file=path.join(f.home,'log');fs.writeFileSync(file,'first');const before=fs.statSync(file);
+  const other=path.join(f.home,'replacement');fs.writeFileSync(other,'second');fs.renameSync(other,file);
+  assert.throws(()=>tailFile(file,{expected:before}),/identity changed/);
+});
+test('configured multiline secret values are redacted across log line boundaries',async t=>{
+  const f=service(t);fs.mkdirSync(path.join(f.home,'logs'));fs.appendFileSync(path.join(f.home,'.env'),'CUSTOM_SECRET="UNIQUE_FIRST\nUNIQUE_LAST"\n');
+  fs.writeFileSync(path.join(f.home,'logs/gateway.log'),'info echoed UNIQUE_FIRST\nUNIQUE_LAST\ninfo public line');
+  const result=await f.backend.call('operator_evidence',{kind:'log',id:'gateway'});
+  assert.ok(!JSON.stringify(result).includes('UNIQUE_FIRST'));assert.ok(!JSON.stringify(result).includes('UNIQUE_LAST'));assert.equal(result.data.rows.length,2);
 });

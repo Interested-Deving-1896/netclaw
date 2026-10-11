@@ -338,3 +338,10 @@ tests. Exact reviewed chat/grant/revoke controls, receiver admission, shared SQL
 revisions and native review are implemented. T030/T032 remain open for their
 remaining membership/peering and remote conversation/tool/skill workflows;
 T033/T034 remain full runtime/platform gates.
+
+## Log review checkpoint
+
+Bounded time-filtered logs and editable local diagnostic export are implemented.
+[Observability evidence](evidence/observability.md) records secret-query, multiline
+redaction, descriptor identity and native cancellation/binding tests. T059/T060
+remain open for network/topology implementation and provenance acceptance.

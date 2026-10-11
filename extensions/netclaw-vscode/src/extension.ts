@@ -13,7 +13,7 @@ import {manageAssistant} from './assistants/setup';
 import {LocalState} from './state/local';
 import path from 'node:path';
 import {openDocumentation} from './views/documentation';
-import {openLogs} from './views/logs';
+import {openLogs,exportDiagnostics} from './views/logs';
 import {openIntent} from './views/intent';
 import {openTokenomics} from './views/tokenomics';
 import {searchMemory,analyzeSelectedContext,openMeetings} from './views/knowledge';
@@ -124,12 +124,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('openSecurity',()=>openSecurity(context,connection));
   register('openOpenShell',()=>openOpenShell(context,connection));
   register('configureService',()=>configureService(connection));
-  register('exportDiagnostics',async()=>{
-    const result=await connection.call('operator_identity');const content=JSON.stringify({generatedAt:new Date().toISOString(),extensionVersion:'0.1.0',identity:result},null,2);
-    const document=await vscode.workspace.openTextDocument({content,language:'json'});await vscode.window.showTextDocument(document);
-    if(await vscode.window.showInformationMessage('Review these local diagnostics before saving or sharing.','Save local copy')!=='Save local copy')return;
-    const destination=await vscode.window.showSaveDialog({filters:{JSON:['json']},saveLabel:'Save reviewed diagnostics'});if(destination)await vscode.workspace.fs.writeFile(destination,Buffer.from(content));
-  });
+  register('exportDiagnostics',()=>exportDiagnostics(context,connection));
   const connections=connectionTree(connection,profiles);trees.push(connections);context.subscriptions.push(vscode.window.registerTreeDataProvider('netclaw.connections',connections));
   const estate=new EstateTree(connection);trees.push(estate);context.subscriptions.push(estate,vscode.window.registerTreeDataProvider('netclaw.estate',estate));
   for(const group of ['operations','integrations','knowledge','security','help']){

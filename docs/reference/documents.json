@@ -336,6 +336,12 @@
     "category": "Guides"
   },
   {
+    "id": "59ff42129fc1820c",
+    "path": "docs/VSCODE-OBSERVABILITY.md",
+    "title": "Usage, logs and diagnostic previews",
+    "category": "Guides"
+  },
+  {
     "id": "712fc06d8cd311e4",
     "path": "docs/VSCODE-PUBLISHING.md",
     "title": "Publishing NetClaw for VS Code",
