@@ -211,6 +211,19 @@ async def handle_n2n(method, path, body):
     parts = path.strip("/").split("/")  # e.g. ["n2n","peers","as65007-7.7.7.7","inventory"]
 
     try:
+        if path == '/n2n/management/peer-policy' and method == 'POST':
+            from bgp.federation.management_peer_policy import ManagementPeerPolicy
+            try:
+                if not isinstance(body,dict): raise ValueError('Invalid peer policy request')
+                controller=ManagementPeerPolicy(fed); action=body.get('action')
+                if action=='snapshot' and set(body)=={'action','peer'}:
+                    return 200,controller.snapshot(body['peer'])
+                if action in ('apply','verify','rollback') and set(body)=={'action','operationId','lease'}:
+                    if action=='verify':return 200,controller.verify(body['operationId'],body['lease'])
+                    return 200,controller.mutate(body['operationId'],body['lease'],rollback=action=='rollback')
+                raise ValueError('Invalid peer policy action')
+            except (ValueError,KeyError,TypeError,OSError):
+                return 409,{'error':'Peer permission request is outside its current reviewed authority or baseline.'}
         if path == '/n2n/management/estate' and method == 'POST':
             from bgp.federation.management_estate import ManagementEstate
             try:

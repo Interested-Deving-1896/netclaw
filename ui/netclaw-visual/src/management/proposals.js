@@ -104,7 +104,7 @@ export class Proposals {
       if(!lease)this.journal.transition(operation.operationId,'running');
       this.journal.put('proposal', proposal.proposalId, principal, { ...proposal, state:'executing' }, { replace:true });
       dispatched = true;
-      const applied = await adapter.apply(proposal, { baseline, replacements: input.replacements || {}, revalidate });
+      const applied = await adapter.apply(proposal, { baseline, replacements: input.replacements || {}, revalidate, operationId:operation.operationId, lease });
       const verified = await adapter.verify(proposal, applied);
       invariant(verified?.verified === true, 'UNKNOWN_OUTCOME');
       await revalidate();

@@ -34,6 +34,10 @@ Estate cards show received harness/model and capability counts. Selecting a Claw
 reads its exact cached tool/skill/knowledge inventory, with stale, unavailable and
 truncated results explicit. Assistant estate summaries use the reviewed inspect
 grant; detailed capability names additionally require evidence disclosure.
+**Manage Existing External Peer Permissions** prepares exact chat-admission or
+tool/skill grant changes for native review. New invocation grants require NCFED
+approval. Existing peer identities, consent, certificate pins and unselected
+grants are preserved; already dispatched work may continue.
 
 ## Connect
 

@@ -15,7 +15,7 @@ const providerFields=['ANTHROPIC_API_KEY','OPENAI_API_KEY','OPENROUTER_API_KEY',
 const known = new Set([...providerFields,...Object.values(ENV_MAP).flatMap(item=>item.env)]);
 const prohibited = /(?:^PATH$|^HOME$|^LD_|^DYLD_|^NODE_|^PYTHON|_PATH$|_DIR$|_SCRIPT$|_COMMAND$|_EXEC|^NETCLAW_LAB_MODE$|^N2N_RISK_MODE$|^N2N_STRICT_ALL$)/;
 export function environment(binding) { return parseEnvData((readOwned(binding.envPath,{missing:true}) || Buffer.from('')).toString()); }
-export const configurationChangeClass=binding=>environment(binding).N2N_RISK_MODE==='production'?'production':'operator-local';
+export const configurationChangeClass=binding=>(environment(binding).N2N_RISK_MODE||'').trim().toLowerCase()==='production'?'production':'operator-local';
 export const configurationFiles = binding => [binding.configPath,binding.envPath,...(binding.kind==='hermes'?[path.join(binding.statePath,'companion-auth.json')]:[])];
 export function configuredSecrets(binding){
   const secrets=Object.entries(environment(binding)).filter(([key])=>secretField(key)).map(([,value])=>value);

@@ -52,6 +52,22 @@ from another client's recovery sweep.
 
 Supported managed action enum: `settings.patch`, `runtime.select`, `service.start`, `service.stop`, `service.restart`, `risk.role`, `member.enroll`, `member.disable`, `member.enable`, `peer.trust`, `peer.untrust`, `security.patch`, `budget.patch`, `integration.configure`, `terminal-intent.prepare`, `terminal-intent.apply`. Each action must map to a reviewed shared domain adapter; enum presence is not qualification. Enrollment only targets existing installations. Production and external-communication effects require their actual existing gates. Forbidden destructive device operations are never added through generic enum values.
 
+`operator_workspace` action `peer-policy` takes `{id}` for an exact existing
+external peer and returns local permissions, known work, current production mode,
+bounded local grant candidates and the configuration review revision. It does
+not contact that peer. `peer.trust` targets exactly `[installationId, peerId]`,
+requires `acknowledgeActiveWork:true`, and takes `chatEnabled` and/or one `grant`
+with `{type:tool|skill,name,requiresApproval:true,timeoutSeconds:1..600}`.
+`peer.untrust` uses the same targets/acknowledgment and takes `disableChat:true`
+and/or 1–100 distinct existing `revokeGrantIds`. These names refer to local inbound
+permission changes, not certificate trust, new peering or a network kill switch.
+Unselected grants, consent and pins remain unchanged. Both actions are currently
+operator-only, have exact private baselines, shared SQLite policy revisions and
+durable daemon receipts, and require live worker admission at the receiver.
+Production on either the configured or running side requires independent approval.
+Rollback cannot undo work that already ran; intervening policy changes prevent
+overwrite. Peer task progress can advance independently of permission verification.
+
 `runtime.select` accepts a registered installation UUID as `runtimeId`, explicit
 `acknowledgeActiveWork:true`, and the exact distinct source/target installation
 IDs in `targets`. It changes only a registered existing default descriptor for

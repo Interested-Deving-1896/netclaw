@@ -78,7 +78,7 @@ Paths are repository-relative. `[P]` identifies independent files runnable toget
 
 **Independent test**: Standalone, mixed/all-Hermes internal and external relationships support qualified work and refuse unauthorized lifecycle/peer actions.
 
-- [ ] T029 [P] [US3] Add internal/external capability, stale/legacy card and exact-action denial tests in `tests/operator/federation.test.mjs`. (FR-014, FR-015, FR-016, FR-017, SC-003, SC-006)
+- [X] T029 [P] [US3] Add internal/external capability, stale/legacy card and exact-action denial tests in `tests/operator/federation.test.mjs`. (FR-014, FR-015, FR-016, FR-017, SC-003, SC-006)
 - [ ] T030 [US3] Implement fixed member/peer inventory, existing-estate lifecycle/peering proposals and qualified delegation in `ui/netclaw-visual/src/management/federation.js`; enforce grants at existing NCFED brokers. (FR-014, FR-015, FR-016, FR-017, FR-043)
 - [X] T031 [US3] Implement Border/member/edge/advisor tree and per-Claw inspectors in `extensions/netclaw-vscode/src/views/estate.ts`; distinguish advertisement, installation and verified tool execution. (FR-003, FR-014, FR-015, FR-017)
 - [ ] T032 [US3] Implement external peer/trust/conversation/tool/skill workflows in `extensions/netclaw-vscode/src/views/peers.ts`, routing mutations through proposal review and preserving origin/evidence. (FR-016, FR-022, FR-024)
@@ -212,7 +212,7 @@ Deliver small story checkpoints with real behavioral evidence, preserve the exis
 
 ## Counts and traceability
 
-79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Forty-nine tasks are complete; 30 remain unchecked. T027 adds explicit native UI navigation to the already rendered Canvas/Avatar implementation; remote browser acceptance remains a platform gate. T049/T050/T053 have protected Hermes MCP/worker/runtime and native grant-review evidence in evidence/assistant-clients.md; broad federation, named-client and platform acceptance remain open. T036 has isolated Mac launchd and controller fault evidence in evidence/services-mac.md; T037 and T063 have configuration/RAG behavioral and rendered-editor evidence. Full story/platform qualification remains separate. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
+79 tasks; 13 explicitly parallel task entries. Five setup/branding tasks were complete at the Mac development checkpoint; WSL binding/revision validation additionally completes T006. WSL profile tests and explicit installer integration additionally complete T016 and T071. Fifty tasks are complete; 29 remain unchecked. T027 adds explicit native UI navigation to the already rendered Canvas/Avatar implementation; remote browser acceptance remains a platform gate. T049/T050/T053 have protected Hermes MCP/worker/runtime and native grant-review evidence in evidence/assistant-clients.md; broad federation, named-client and platform acceptance remain open. T036 has isolated Mac launchd and controller fault evidence in evidence/services-mac.md; T037 and T063 have configuration/RAG behavioral and rendered-editor evidence. Full story/platform qualification remains separate. Partial implementations do not close full story or platform acceptance. See [development evidence](evidence/mac-development.md). See [traceability.md](traceability.md) for the requirement-to-task index.
 
 | Group | Tasks |
 |---|---|
@@ -332,3 +332,9 @@ and loopback process checks passed on both selected harnesses with synthetic
 100-member/100-peer estates and zero peer contacts or federation writes. It does
 not close T029/T030/T032/T033/T034 or qualify runtime execution, named-client
 inference, editor performance, WSL or native Linux.
+
+The later peer-permission checkpoint in the same evidence closes T029's boundary
+tests. Exact reviewed chat/grant/revoke controls, receiver admission, shared SQLite
+revisions and native review are implemented. T030/T032 remain open for their
+remaining membership/peering and remote conversation/tool/skill workflows;
+T033/T034 remain full runtime/platform gates.

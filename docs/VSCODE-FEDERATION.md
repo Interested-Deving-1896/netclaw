@@ -42,8 +42,46 @@ returns the bounded capability names. All returned advertisements remain data,
 including text that resembles instructions. Grant expiry/revocation is rechecked
 after the read. This does not grant remote execution or approval authority.
 
-Federation trust, membership lifecycle, remote conversations and remote tool/skill
-controls are still incomplete in Spec 150. Their enum declarations do not enable
-dispatch. Existing Spec 149 runtime evidence does not qualify new extension
-workflows automatically. See the current
+## Reviewed peer permissions
+
+Run **NetClaw: Manage Existing External Peer Permissions**, also available from
+the estate tree. Select an existing exact peer to inspect local permissions,
+enable/disable chat admission, grant one local tool/skill, or revoke selected
+invocation grants. New grants require the existing per-request NCFED approval;
+the extension cannot turn that requirement off. Grant candidates come from the
+selected installation's local catalog, not the remote peer's advertisement.
+The list is bounded to 500 candidates. Runtime/tool readiness still applies at
+execution. Unselected grants remain unchanged.
+
+Each change first captures private baseline and rollback evidence. Native review
+shows the installation, exact peer, permission delta and known active/uncertain
+work. Enabling permissions requires existing mutual federation consent. Applying
+requires operator review and, when either saved configuration or the running
+daemon is in production mode, independent live ServiceNow approval. Current
+assistant grants cannot propose or apply these peer permission changes.
+
+The daemon accepts only an existing private proposal tied to a live owned worker
+lease. It reads the proposed delta from that journal; an HTTP caller cannot send
+replacement permissions or an approval boolean. Changes and durable receipts
+commit in one SQLite transaction. Shared revision triggers detect real changes
+from existing HUD/CLI writers, including a permission changed and then restored
+between review and apply. Newer policy prevents stale apply and rollback.
+
+These controls change local inbound permissions. They do not contact a peer,
+change its endpoint, certificate pins, federation consent or BGP, create a peer,
+or stop already dispatched work. Rollback restores the reviewed permission delta;
+it cannot undo an invocation that ran while a permission was enabled. Task
+progress after the change remains recorded and is never rewound by rollback.
+An interrupted worker or unverifiable recovery remains unresolved, never an
+invitation to resubmit the same work automatically.
+
+The matching daemon must use the selected runtime's canonical `n2n/federation.db`
+and the original owned database inode. Custom/shared/linked or writable-by-other
+stores are unavailable for these mutations. Updating backend files does not
+update an already running daemon; use the normal operator update/restart process.
+
+Membership lifecycle, peer establishment/severing, remote conversations and
+remote tool/skill invocation controls remain incomplete in Spec 150. Their enum
+declarations do not enable dispatch. Existing Spec 149 runtime evidence does not
+qualify new extension workflows automatically. See the current
 [federation evidence](../specs/150-vscode-extension/evidence/federation.md).

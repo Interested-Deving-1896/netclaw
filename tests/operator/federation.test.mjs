@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {federationReader,projectFederation} from '../../ui/netclaw-visual/src/management/federation.js';
+import {ManagementService} from '../../ui/netclaw-visual/src/management/service.js';
+import {installationFixture,nonce,auditFixture} from './fixtures.mjs';
+import {fileURLToPath} from 'node:url';
 
 const binding={installationId:'installation',kind:'hermes',assertCurrent(){}};
 const status={installation_id:binding.installationId,harness_type:'hermes',federation_ready:true};
@@ -50,4 +53,10 @@ test('peer inspector projects received model, bounded details and stale source w
   const row=projectFederation('peer',value).items[0];assert.equal(row.model.primary,'fixture/model');assert.equal(row.inventory.counts.tools,1100);
   assert.equal(row.inventory.truncated,true);assert.equal(row.stale,true);assert.equal(row.executionVerified,null);assert.equal(row.capabilities[0].executionVerified,null);
   assert.deepEqual(row.capabilities[0].tools,['first']);assert.ok(!JSON.stringify(row).includes('SECRET'));assert.ok(!JSON.stringify(row).includes('qualified'));
+});
+test('unimplemented member lifecycle and remote invocation cannot acquire authority from inventory or action declarations',async t=>{
+  const f=installationFixture(t),service=new ManagementService({...f,root:fileURLToPath(new URL('../../',import.meta.url)),audit:auditFixture()});t.after(()=>service.close());
+  for(const action of ['member.enroll','member.enable','member.disable'])await assert.rejects(service.call('operator_change_prepare',{action,targets:['risk/member'],nonce:nonce(),expectedRevision:service.proposals.revision(),patch:{}}),{code:'UNSUPPORTED'});
+  await assert.rejects(service.call('operator_workspace',{action:'peer-invoke',args:{id:'peer',tool:'advertised/shell'}}),{code:'INVALID_INPUT'});
+  assert.equal(service.journal.list(service.binding.principal).length,0);
 });

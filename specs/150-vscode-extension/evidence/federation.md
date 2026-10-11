@@ -73,3 +73,70 @@ Local logs: `/tmp/netclaw150-estate-{targeted,python,extension,process}.log`.
 Tests do not substitute for the four internal runtime pairings, both-direction
 external interactions, reviewed lifecycle/trust mutations or exact-action
 execution/denial. Those implementations and their qualification remain open.
+
+## Reviewed peer permissions checkpoint
+
+T029's capability, stale/legacy inventory and exact-action denial tests are now
+complete for the implemented boundary. This does not close T030/T032's remaining
+membership, peering, remote conversation/tool/skill workflows or T033/T034's full
+runtime and host qualification.
+
+The native peer workflow prepares one exact local inbound permission delta and
+opens the existing human review/apply UI. `peer.trust` can enable chat admission
+and/or add one current local tool/skill grant with per-request approval mandatory.
+`peer.untrust` disables chat admission and/or revokes selected existing grant IDs.
+Both target the selected installation plus exact existing peer. They cannot
+change consent, certificate pins, endpoints, BGP or unselected permissions, create
+peers, contact a remote service, or terminate already dispatched work.
+
+The fixed daemon receiver reads the proposal and hash-verified baseline from the
+private journal using the current operator worker lease. The caller supplies no
+permission delta. Installation, original database path/inode, owner, proposal
+origin, exact targets, revision, expiry, worker state and artifact bytes are
+checked. The receiver checks authority again before committing. SQLite triggers
+on peer/consent/grant values detect old HUD/CLI writes and preserve revision
+tombstones across delete/recreate and change/restore sequences. The permission
+effect and durable receipt are one transaction; retrying its reference cannot
+add a second grant. Rollback touches only the reviewed delta and refuses newer
+policy. Task progress remains independent and is never represented as undone.
+
+Both stored and actual running production mode require independent ServiceNow
+approval. A saved testing value cannot downgrade a running production daemon.
+The shared configuration/service approval classifier now matches the existing
+daemon's case/whitespace normalization. This fixed a real mismatch for values
+such as `" Production "`. Positive/withdrawal approval cases use a synthetic
+authoritative service, not an actual external ServiceNow change.
+
+Validation on isolated Mac fixtures:
+
+- Receiver transaction/fence suite: **11 passed**; current real SQLite semantics
+  with explicit synthetic admission in these unit cases.
+- Node peer boundary suite: **8 passed**; exact target, lease-only dispatch,
+  consent/assistant denial, stale policy, audit loss, current production approval,
+  withdrawal rollback, rollback failure and post-response identity mismatch.
+- Full operator/assistant suite: **200 passed, 17 opt-in skipped**.
+- Extension suite: **61 passed**; TypeScript check/build passed. Native tests cover
+  exact enable/disable/grant/revoke review, cancellation and connection changes.
+- Full existing NCFED suite after the shared revision-trigger change:
+  **634 passed, 6 opt-in skipped**, with 37 existing UTC deprecation warnings.
+  The subsequently added task-progress/rollback case passed in the 11-case
+  receiver subset. No skipped live-runtime case is counted as a pass.
+- Actual separate-process receiver/private journal/GAIT/detached worker:
+  **1 passed**, both OpenClaw/Hermes selections. The shipped daemon handler,
+  SQLite transaction and Node proposal/worker code were real; the HTTP listener
+  and local tool catalog were controlled fixtures. No actual tool/provider/peer
+  execution occurred. Both configurations and credential files were preserved.
+
+The process case enables chat plus one approval-required grant, reconnects after
+facade exit, verifies state, disables chat while retaining that grant, then
+revokes only its ID. It denies forged/expired leases, changed targets, assistant
+origin, approval-free grants and altered baseline bytes. It deliberately loses
+the HTTP response after a committed change; the worker verifies exact rollback
+from the retained receipt without repeating the apply. Finally it switches only
+the synthetic daemon to production and verifies that absent independent approval
+blocks a change even though the saved fixture environment remains non-production.
+
+Logs: `/tmp/netclaw150-peer-{process,python,n2n-regression,backend,extension}.log`.
+The native permission implementation is ready for further controlled acceptance,
+not a claim of full federation, named-client, actual ServiceNow, WSL or Linux
+qualification. Public release remains gated.

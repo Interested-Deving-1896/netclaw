@@ -1,4 +1,4 @@
-import {environment} from './configuration.js';
+import {configurationChangeClass} from './configuration.js';
 import {invariant} from './errors.js';
 import {digest} from './journal.js';
 import {activeManagementWork} from './runtime.js';
@@ -36,7 +36,7 @@ export function lifecycleAdapters({binding,journal,controller,settleTimeoutMs=15
       const healthy=service.active?await controller.ready(input.patch.serviceId):false;
       binding.assertCurrent();
       const baseline=Buffer.from(JSON.stringify({format:1,installationId:binding.installationId,service,healthy,workRevision:digest(work)}));
-      return {baseline,rollback:baseline,changeClass:environment(binding).N2N_RISK_MODE==='production'?'production':'operator-local',
+      return {baseline,rollback:baseline,changeClass:configurationChangeClass(binding),
         impact:`${input.action} on the attested ${input.patch.serviceId} service (${service.manager}: ${service.unit}) only. ${work.length} retained active/unknown management requests. Jobs initiated outside management are unknown and may be interrupted. The process manager may replace the service process. Configuration and service definitions are preserved. A new job or changed definition invalidates this review.`};
     },
     validate:async(proposal,{baseline})=>{await validate(proposal,baseline);},

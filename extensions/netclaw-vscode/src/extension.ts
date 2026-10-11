@@ -22,6 +22,7 @@ import {openIntegrations} from './views/integrations';
 import {openOperations,reviewProposal} from './views/operations';
 import {openGait,exportGait} from './views/gait';
 import {EstateTree,inspectEstateResource} from './views/estate';
+import {openPeers} from './views/peers';
 import {openSecurity} from './views/security';
 import {openOpenShell} from './views/openshell';
 import {configureService} from './views/lifecycle';
@@ -115,6 +116,7 @@ export async function activate(context:vscode.ExtensionContext):Promise<{connect
   register('openGait',()=>openGait(context,connection));
   register('exportGait',()=>exportGait(connection));
   register('inspectEstateResource',node=>inspectEstateResource(context,connection,node));
+  register('openPeers',()=>openPeers(context,connection));
   register('openNetwork',()=>vscode.commands.executeCommand('netclaw.openDomain','network'));
   register('openIntent',()=>openIntent(context,connection));
   register('openScience',()=>openScience(context,connection));

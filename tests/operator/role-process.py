@@ -24,6 +24,7 @@ async def main():
     daemon=importlib.util.module_from_spec(spec);spec.loader.exec_module(daemon)
     fed=FederationService(local_as=65001,router_id='4.4.4.4',manager=FederationManager(base_dir=str(home/'n2n')))
     fed.runtime=Runtime(kind,home,home/('config.yaml' if kind=='hermes' else 'openclaw.json'),installation);daemon._federation=fed
+    fed.inventory.runtime=fed.runtime
     fed.risk.set_role('border',risk_name='existing-risk',description='retained description',enabled_stacks='both',border_endpoint='wss://existing.invalid:18443/in2n',self_member_id='existing-risk/existing-member')
     before={key:fed.risk.get_risk()[key] for key in ['risk_name','description','enabled_stacks','border_endpoint','self_member_id']}
     if '--estate' in sys.argv:
@@ -36,15 +37,23 @@ async def main():
             member=fed.risk.add_member(f'claw-{number}',profile='custom',specialty=['subnet-calculator'])
             fed.risk.update_health(member['member_id'],inventory=card,inventory_at='2026-01-01T00:00:00Z')
     estate_changes=fed.manager._conn.total_changes
-    requests=[]
+    if '--peer-policy' in sys.argv:
+        fed.manager.local_consent(65002,'2.2.2.2');fed.manager.remote_consent(65002,'2.2.2.2')
+        # Controlled local catalog, no actual tool or model execution.
+        fed.inventory._load_mcp_servers=lambda:[{'name':'fixture-mcp','tools':['calculate'],'invocable_tools':['calculate'],'qualification':'synthetic catalog only'}]
+        fed.inventory._load_skills=lambda:[];fed.inventory._load_knowledge=lambda peer:[]
+    requests=[];drop_policy_reply=False
     async def handle(reader,writer):
+        nonlocal drop_policy_reply
         try:
             head=await asyncio.wait_for(reader.readuntil(b'\r\n\r\n'),5);assert len(head)<=8192
-            method,route,_=head.decode().split('\r\n')[0].split(' ');assert method=='GET' or '--estate' in sys.argv and method=='POST';requests.append(route)
+            method,route,_=head.decode().split('\r\n')[0].split(' ');assert method=='GET' or ('--estate' in sys.argv or '--peer-policy' in sys.argv) and method=='POST';requests.append(route)
             length=next((int(line.split(':',1)[1]) for line in head.decode().split('\r\n') if line.lower().startswith('content-length:')),0)
             assert 0<=length<=8192;body=json.loads(await reader.readexactly(length)) if length else {}
             if route=='/status':code,value=200,{'installation_id':installation,'harness_type':kind,'federation_ready':True}
             else:code,value=await daemon.handle_n2n(method,route,body)
+            if drop_policy_reply and route=='/n2n/management/peer-policy' and body.get('action')=='apply' and code==200:
+                drop_policy_reply=False;return  # Effect committed; deliberately lose its receipt.
             data=json.dumps(value).encode();writer.write(f'HTTP/1.1 {code} Result\r\nContent-Type: application/json\r\nContent-Length: {len(data)}\r\nConnection: close\r\n\r\n'.encode()+data);await writer.drain()
         finally:writer.close();await writer.wait_closed()
     api=await asyncio.start_server(handle,'127.0.0.1',0)
@@ -53,6 +62,10 @@ async def main():
         while True:
             line=await asyncio.to_thread(sys.stdin.readline)
             if not line:break
+            if line.strip()=='set-live-production':
+                os.environ['N2N_RISK_MODE']='production';print(json.dumps({'production':True}),flush=True)
+            if line.strip()=='drop-next-policy-reply':
+                drop_policy_reply=True;print(json.dumps({'armed':True}),flush=True)
             if line.strip()=='check-estate':
                 print(json.dumps({'writes':fed.manager._conn.total_changes-estate_changes,'routes':sorted(set(requests)),'channels':len(fed.channels),'membersConnected':len(fed.member_channels)}),flush=True)
             if line.strip()=='startup-sync':

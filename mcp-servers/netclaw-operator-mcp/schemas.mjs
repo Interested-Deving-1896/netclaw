@@ -16,6 +16,9 @@ export const patch = z.strictObject({
   fields: z.array(z.strictObject({ key: envKey, intent: z.enum(['keep','replace','clear']), value: z.string().max(4096).optional() })).max(100).optional(),
   mode: z.enum(['observe','enforce','disabled']).optional(), enabled: z.boolean().optional(), intent: z.string().max(65536).optional(),
   acknowledgeActiveWork: z.boolean().optional(),
+  chatEnabled:z.boolean().optional(),disableChat:z.literal(true).optional(),
+  grant:z.strictObject({type:z.enum(['tool','skill']),name:id,requiresApproval:z.literal(true),timeoutSeconds:z.number().int().min(1).max(600)}).optional(),
+  revokeGrantIds:z.array(z.number().int().positive()).min(1).max(100).refine(ids=>new Set(ids).size===ids.length).optional(),
 });
 export const changeInput = { nonce, action, targets: z.array(id).min(1).max(100), expectedRevision: z.string().uuid(), patch };
 // Action-specific shapes prevent an accepted field from becoming an accidental
@@ -30,7 +33,8 @@ const patches = {
   'service.start': servicePatch, 'service.stop': servicePatch, 'service.restart': servicePatch,
   'risk.role': z.strictObject({role:fields.role.unwrap(),acknowledgeActiveWork:fields.acknowledgeActiveWork}),
   'member.enroll': z.strictObject({}), 'member.disable': z.strictObject({}), 'member.enable': z.strictObject({}),
-  'peer.trust': z.strictObject({}), 'peer.untrust': z.strictObject({}),
+  'peer.trust': z.strictObject({chatEnabled:fields.chatEnabled,grant:fields.grant,acknowledgeActiveWork:z.literal(true)}).refine(value=>value.chatEnabled!==undefined||value.grant!==undefined),
+  'peer.untrust': z.strictObject({disableChat:fields.disableChat,revokeGrantIds:fields.revokeGrantIds,acknowledgeActiveWork:z.literal(true)}).refine(value=>value.disableChat===true||value.revokeGrantIds!==undefined),
   'security.patch': z.strictObject({mode:fields.mode.unwrap()}),
   'budget.patch': nonempty(z.strictObject({monthlyLimit:fields.monthlyLimit,dailyLimit:fields.dailyLimit,sessionBudgetUsd:fields.sessionBudgetUsd,maxToolCallsPerTurn:fields.maxToolCallsPerTurn,contextWarningTokens:fields.contextWarningTokens,allowOverride:fields.allowOverride,overrideIncrementUsd:fields.overrideIncrementUsd})),
   'integration.configure': z.strictObject({fields:fields.fields.unwrap().min(1).refine(rows=>new Set(rows.map(row=>row.key)).size===rows.length)}),
@@ -44,6 +48,7 @@ const content = z.string().max(14*1024*1024);
 const name = z.string().min(1).max(200);
 const intentInput={request:z.string().min(1).max(4000).refine(value=>value.trim().length>0),requestKind:z.enum(['read-only','change']),changeMode:z.enum(['production','local-lab']),targetDeviceIds:z.array(id).min(1).max(100).refine(ids=>new Set(ids).size===ids.length),expectedRevision:z.string().uuid(),policyRevision:z.string().uuid().optional()};
 const workspaceActions = {
+  'peer-policy':[false,{id}],
   'intent-state':[false,{}], 'intent-read':[false,{id}],
   'intent-preview':[false,intentInput],
   'intent-submit':[true,{...intentInput,approvalReference:id.optional()}],

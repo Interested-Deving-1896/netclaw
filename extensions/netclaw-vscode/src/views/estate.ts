@@ -28,6 +28,7 @@ export class EstateTree implements vscode.TreeDataProvider<Node>,vscode.Disposab
       if(!identity)return [{label:'Connect an existing NetClaw',generation,command:'netclaw.selectConnection'}];
       return [{label:this.connection.profile?.label||'Selected installation',generation,description:`${identity.harness.type} · ${identity.role}`,command:'netclaw.openOverview'},
         ...([{label:'Internal Claws',group:'member'},{label:'External peers',group:'peer'},{label:'Mobile and edge',group:'edge'},{label:'Science Officer',group:'advisor'}] as const).map(row=>({...row,generation})),
+        {label:'External peer permissions',generation,command:'netclaw.openPeers'},
         {label:'Mobile capture and consent',generation,command:'netclaw.openMobile'},
         {label:'Configured network inventory',generation,command:'netclaw.openNetwork'}];
     }

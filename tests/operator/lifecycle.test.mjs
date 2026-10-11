@@ -44,7 +44,7 @@ test('failed restart health runs bounded recovery and retains a failed approval 
   assert.deepEqual(f.calls.map(c=>c.action),['restart','restart']);
 });
 test('production service changes cannot borrow operator-local initiation as independent approval',async t=>{
-  const f=fixture(t);fs.appendFileSync(path.join(f.home,'.env'),'N2N_RISK_MODE=production\n');
+  const f=fixture(t);fs.appendFileSync(path.join(f.home,'.env'),'N2N_RISK_MODE=" Production "\n');
   const p=await prepare(f,'service.stop');assert.equal(p.proposal.changeClass,'production');
   await assert.rejects(apply(f,p),{code:'DENIED'});assert.equal(f.calls.length,0);
 });

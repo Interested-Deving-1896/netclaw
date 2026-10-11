@@ -300,8 +300,14 @@ class FederationManager:
         # feature 060: new tables (credential registry, rotation audit, per-source
         # failed-auth rate limiting). additive + idempotent (data-model.md §1/4/5).
         self._conn.executescript(SCHEMA_060)
+        from .management_peer_policy import install_schema
+        install_schema(self._conn)
         self._conn.execute('CREATE UNIQUE INDEX IF NOT EXISTS task_request_owner ON delegated_task(direction,peer_identity,client_request) WHERE client_request IS NOT NULL')
         self._conn.commit()
+        try:
+            info=Path(self.db_path).stat(); self._management_db_identity=(info.st_dev,info.st_ino)
+        except OSError:
+            self._management_db_identity=None  # Legacy/in-memory stores cannot be managed through this adapter.
         logger.info("FederationManager ready (db=%s)", self.db_path)
 
     # ---- peer registry ------------------------------------------------
