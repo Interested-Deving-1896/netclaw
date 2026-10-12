@@ -36,19 +36,37 @@ then passed continuous typing and failed specifically on the defaults/IP check.
 
 ## Verification on Mac
 
-- Typecheck and build passed. Extension unit/HTTP tests cover no per-keystroke
+- Typecheck and build passed. 64 extension tests passed; one optional cached
+  RAG test was skipped. Unit/HTTP tests cover no per-keystroke
   messages/state, delayed review rejection, host-side stale-save refusal, and
   compatibility with older HUD projections.
-- HUD document/configuration tests cover reserved-default protection, CSV
-  projection, preservation, revision guards and credential handling.
+- All 372 HUD unit tests and 10 document/configuration tests passed, including
+  reserved-default protection, CSV projection, preservation, revision guards
+  and credential handling. Extension dependency audit found no vulnerabilities.
 - Native source input suite passed on VS Code 1.108.0/macOS arm64: existing and
   new fields, search, IPv4/IPv6/host/ENV references, native reviewed save and file
   readback, preserving shared defaults/credentials/console/SSH options, and YAML.
 - Native source experience suite passed 18 checks, 149 layout cases and 43
   screenshots. MCP secret/URL and DefenseClaw/OpenShell rule fields now use real
   page keyboard events with focus/value checks after every character.
-- Installed-candidate results and artifact identity are recorded separately
-  after packaging below. All runtime writes in tests use isolated fixtures.
+- The exact installed 1.0.1 candidate passed six focused input workflows and
+  all 18 experience checks / 149 layout cases / 43 screenshots on VS Code
+  1.108.0, macOS arm64. This includes Backspace, Unicode text insertion,
+  editing after preview, stale-review disappearance, and a fresh reviewed save.
+  All 32 installed extension payload files match the VSIX (allowing VS Code's
+  own package metadata). All runtime writes use isolated fixtures.
+
+## Candidate artifact
+
+- Source: `17e79e4395e320e7d39a79d54263c7007baa48cf`.
+- File: `netclaw-1.0.1.vsix`, 4,213,410 bytes.
+- SHA-256: `b26cab8083558fb412e4772b94058463887bc22bf973db148d375605a92fc8b3`.
+- Mac evidence/artifact cache: `~/.cache/netclaw-101-hotfix-20261012`.
+- Draft PR: <https://github.com/automateyournetwork/netclaw/pull/297>.
+- Extension CI passed on that source. Broader HUD CI was still running at this
+  checkpoint. CI rebuilds have their own digest and are not the Mac-tested bytes.
+  If using a rebuilt VSIX on WSL, verify and record that exact candidate there.
+- No 1.0.1 Marketplace upload or merge was performed.
 
 `test/keyboard.cjs` focuses once, then sends keys through `page.keyboard` and
 checks focus and value after every character. It does not refocus the locator
@@ -85,7 +103,8 @@ for each key. Native Select All is given time to finish before typing.
    additional evidence, but **does not replace Windows-renderer + WSL-host
    acceptance**. `scripts/editor.mjs` currently launches a local editor/fixture;
    it is not a Windows/WSL remote-host automation harness.
-8. Once the affected environment passes, update this report, commit changes,
+8. Once the affected environment passes, update this report and the candidate
+   status in README/CHANGELOG/package qualification text, commit changes,
    run PR checks, merge, and publish the **unchanged tested artifact** as 1.0.1.
    The owner's hotfix publication authorization is already present. Verify
    Marketplace validation, public version, and downloaded SHA-256, not only
