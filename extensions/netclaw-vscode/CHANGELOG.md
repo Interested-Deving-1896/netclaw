@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1 — input and Testbed address hotfix candidate
+
+- Keep Testbed typing local to the webview, without per-keystroke host messages or persisted VS Code state. Bind Save to the reviewed draft revision and reject stale reviews.
+- Exclude pyATS `connections.defaults` from endpoint choices, including responses from an already-running HUD. Edit displays the stored endpoint address; shared defaults remain preserved.
+- Reject guided endpoint writes to the reserved `defaults` mapping. Advanced YAML continues to support shared settings.
+- Add character-by-character editor tests across Testbed, MCP and security forms, endpoint variants, stale review rejection and saved-file readback. Windows/WSL acceptance is required before this candidate is published.
+
 ## 1.0.0 — button hotfix
 
 - Bring Testbed Edit/Add forms and YAML/review panels into view, then focus an enabled field. Existing-device edits no longer appear to do nothing beneath a long device list.

@@ -11,6 +11,8 @@
     mode = "cards",
     editing = null,
     pendingFocus,
+    draftRevision = 0,
+    reviewedRevision,
     formDirty = false,
     yamlDirty = false;
   const drafts = new Map(),
@@ -35,10 +37,8 @@
   const dirty = () => formDirty || yamlDirty || drafts.size > 0;
   const send = (type, data = {}) => {
     if (!busy && !invalidated && (!snapshot?.readOnly || type === "refresh")) {
-      if (type !== "invalidate") {
-        busy = true;
-        controls();
-      }
+      busy = true;
+      controls();
       post(type, data);
     }
   };
@@ -71,6 +71,7 @@
     formDirty = yamlDirty = false;
     editing = null;
     pendingFocus = undefined;
+    reviewedRevision = undefined;
     mode = "cards";
     $("yaml").value = "";
     $("device-form").reset();
@@ -84,8 +85,12 @@
     controls();
   }
   function invalidate() {
+    draftRevision++;
+    reviewedRevision = undefined;
     $("review").hidden = true;
-    send("invalidate");
+    // Typing stays entirely in the webview. In particular, do not set VS Code
+    // state or round-trip through a remote extension host on each keystroke.
+    // Save carries this revision so the host rejects an outdated preview.
   }
   function values() {
     return Object.fromEntries(fields.map((k) => [k, $("device-" + k).value]));
@@ -131,6 +136,7 @@
     controls();
   }
   function switchMode(next, id, discard) {
+    invalidate();
     if (discard) {
       drafts.clear();
       formDirty = yamlDirty = false;
@@ -199,7 +205,10 @@
       e.addEventListener("click", () => switchRequest("edit", d.id));
       const r = text("button", "Remove", bar, "secondary danger");
       r.addEventListener("click", () =>
-        send("preview", { operation: { type: "remove", id: d.id } }),
+        send("preview", {
+          draftRevision,
+          operation: { type: "remove", id: d.id },
+        }),
       );
     }
     controls();
@@ -240,6 +249,7 @@
     event.preventDefault();
     const v = values();
     send("preview", {
+      draftRevision,
       operation: {
         type: editing ? "update" : "create",
         id: v.id,
@@ -257,11 +267,14 @@
   };
   $("preview-yaml").onclick = () =>
     send("preview", {
+      draftRevision,
       operation: { type: "document", content: $("yaml").value },
     });
   for (const type of ["refresh", "import", "export", "recover"])
-    $(type).onclick = () => send(type, { dirty: dirty() });
-  $("save").onclick = () => send("save");
+    $(type).onclick = () => send(type, { dirty: dirty(), draftRevision });
+  $("save").onclick = () => {
+    if (reviewedRevision === draftRevision) send("save", { draftRevision });
+  };
   $("cancel-review").onclick = () => invalidate();
   window.addEventListener("message", (event) => {
     const m = event.data;
@@ -277,6 +290,7 @@
       $("status").className = "";
     }
     if (m.type === "snapshot") {
+      invalidate();
       snapshot = m.snapshot;
       drafts.clear();
       formDirty = yamlDirty = false;
@@ -304,6 +318,8 @@
       $("device-form").hidden = true;
     }
     if (m.type === "preview") {
+      if (m.draftRevision !== draftRevision) return;
+      reviewedRevision = m.draftRevision;
       const r = m.review;
       const body = $("review-body");
       body.replaceChildren();

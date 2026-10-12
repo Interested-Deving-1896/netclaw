@@ -136,12 +136,82 @@ test("existing-device Edit waits for enabled focus; all testbed toolbar routes r
   receive({ type: "busy", busy: false });
   $("preview-yaml").click();
   assert.equal(messages.at(-1).operation.type, "document");
+  receive({
+    type: "preview",
+    draftRevision: messages.at(-1).draftRevision,
+    review: {
+      source: "fixture",
+      added: [],
+      changed: [],
+      removed: [],
+      affected: [],
+      secretChanges: [],
+    },
+  });
   receive({ type: "busy", busy: false });
   $("save").click();
   assert.equal(messages.at(-1).type, "save");
   receive({ type: "busy", busy: false });
   $("cancel-review").click();
-  assert.equal(messages.at(-1).type, "invalidate");
+  assert.equal(messages.at(-1).type, "save", "cancel is local");
+});
+
+test("typing has no host/state traffic; editing invalidates a review and rejects delayed previews", (t) => {
+  const { $, receive, w, messages, state } = testbedHarness(t);
+  receive({
+    type: "snapshot",
+    snapshot: {
+      source: "fixture",
+      revision: "123",
+      content: "devices: {}",
+      devices: [],
+    },
+  });
+  receive({ type: "switch", mode: "add" });
+  const count = messages.length,
+    savedState = JSON.stringify(state());
+  $("device-host").focus();
+  for (const character of "192.0.2.10") {
+    $("device-host").value += character;
+    $("device-host").dispatchEvent(new w.Event("input", { bubbles: true }));
+    assert.equal(w.document.activeElement, $("device-host"));
+    assert.equal($("device-host").disabled, false);
+  }
+  assert.equal(messages.length, count);
+  assert.equal(
+    JSON.stringify(state()),
+    savedState,
+    "typing must not call VS Code setState",
+  );
+  $("device-form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+  const revision = messages.at(-1).draftRevision;
+  const response = {
+    type: "preview",
+    draftRevision: revision,
+    review: {
+      source: "fixture",
+      added: [],
+      changed: [],
+      removed: [],
+      affected: [],
+      secretChanges: [],
+    },
+  };
+  receive(response);
+  receive({ type: "busy", busy: false });
+  assert.equal($("review").hidden, false);
+  $("device-host").value = "192.0.2.20";
+  $("device-host").dispatchEvent(new w.Event("input", { bubbles: true }));
+  assert.equal($("review").hidden, true);
+  const previewCount = messages.length;
+  receive(response);
+  $("save").click();
+  assert.equal($("review").hidden, true);
+  assert.equal(
+    messages.length,
+    previewCount,
+    "a stale save must not leave the webview",
+  );
 });
 test("MCP reload remains usable after initial metadata failure", (t) => {
   const h = setup(

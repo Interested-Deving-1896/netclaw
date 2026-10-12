@@ -49,8 +49,14 @@ export function openTestbed(
     snapshot = await p.bound.run(() => loadTestbed(client));
     await p.post({ type: "snapshot", snapshot });
   };
-  const preview = async (operation: Json) => {
+  const preview = async (operation: Json, draftRevision: unknown) => {
     prepared = undefined;
+    if (!Number.isSafeInteger(draftRevision) || (draftRevision as number) < 0)
+      throw Error("Reload the testbed editor before reviewing changes.");
+    if (operation.connection === "defaults")
+      throw Error(
+        "'defaults' contains shared pyATS settings. Choose an endpoint connection; edit defaults through Advanced YAML.",
+      );
     const request = {
       targetId: snapshot.targetId,
       revision: snapshot.revision,
@@ -59,8 +65,8 @@ export function openTestbed(
     const review = await p.bound.run(() =>
       client.request("POST", "/api/testbed/preview", request),
     );
-    prepared = { ...request, digest: review.digest, review };
-    await p.post({ type: "preview", review });
+    prepared = { ...request, digest: review.digest, review, draftRevision };
+    await p.post({ type: "preview", review, draftRevision });
   };
   const discard = async (detail: string) =>
     (await vscode.window.showWarningMessage(
@@ -78,15 +84,8 @@ export function openTestbed(
       "export",
       "recover",
       "switch",
-      "invalidate",
     ],
     async (m) => {
-      // Draft invalidation is local bookkeeping, not a round trip that should
-      // disable the form and steal focus after every keystroke.
-      if (m.type === "invalidate") {
-        prepared = undefined;
-        return;
-      }
       if (busy) return;
       busy = true;
       await p.post({ type: "busy", busy: true });
@@ -130,10 +129,10 @@ export function openTestbed(
         }
         if (m.type === "preview") {
           if (!snapshot) throw Error("Load the testbed first.");
-          await preview(m.operation);
+          await preview(m.operation, m.draftRevision);
         }
         if (m.type === "save") {
-          if (!prepared)
+          if (!prepared || prepared.draftRevision !== m.draftRevision)
             throw Error("Preview these changes again before saving.");
           const current = prepared;
           const detail = `${connection.profile?.label} · ${connection.identity?.kind}\n${connection.identity?.installationId}\n${current.review.source}\nAdded: ${current.review.added.join(", ") || "none"}\nChanged: ${current.review.changed.join(", ") || "none"}\nRemoved: ${current.review.removed.join(", ") || "none"}\nAffected collection consent: ${current.review.affected.length} device(s)\nPrivate recovery copy retained. All drafts in this view will reload after saving.`;
@@ -149,7 +148,7 @@ export function openTestbed(
           await p.bound.run(() => client.verifyIdentity());
           p.bound.current();
           prepared = undefined;
-          const { review, ...request } = current;
+          const { review, draftRevision, ...request } = current;
           await p.bound.run(() =>
             client.request("PUT", "/api/testbed/document", {
               ...request,
@@ -218,7 +217,10 @@ export function openTestbed(
             }
           }
           p.bound.current();
-          await preview({ type: "import", format, mode, conflicts, content });
+          await preview(
+            { type: "import", format, mode, conflicts, content },
+            m.draftRevision,
+          );
           await p.post({ type: "imported" });
         }
         if (m.type === "recover") {
@@ -244,7 +246,7 @@ export function openTestbed(
           );
           if (!choice) return;
           p.bound.current();
-          await preview({ type: "restore", id: choice.id });
+          await preview({ type: "restore", id: choice.id }, m.draftRevision);
         }
         if (m.type === "export") {
           const format = await vscode.window.showQuickPick(

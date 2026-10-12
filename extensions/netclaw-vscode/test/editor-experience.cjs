@@ -1,3 +1,4 @@
+const { typeAndCheck } = require("./keyboard.cjs");
 const vscode = require("vscode"),
   assert = require("node:assert/strict"),
   fs = require("node:fs"),
@@ -281,11 +282,21 @@ exports.run = async () => {
       mcp = await frameFor('body[data-kind="mcp"]');
     await mcp.locator("#intent-NETBOX_TOKEN").waitFor();
     await mcp.locator("#intent-NETBOX_TOKEN").selectOption("replace");
-    await mcp
-      .locator("#value-NETBOX_TOKEN")
-      .fill("synthetic-secret-151-editor");
+    await typeAndCheck(
+      page,
+      mcp,
+      "#value-NETBOX_TOKEN",
+      "synthetic-secret-151-editor",
+      35,
+    );
     await mcp.locator("#intent-NETBOX_URL").selectOption("replace");
-    await mcp.locator("#value-NETBOX_URL").fill("https://netbox.example");
+    await typeAndCheck(
+      page,
+      mcp,
+      "#value-NETBOX_URL",
+      "https://netbox.example",
+      35,
+    );
     await vscode.workspace
       .getConfiguration("workbench")
       .update(
@@ -413,21 +424,33 @@ exports.run = async () => {
         ),
       );
       if (product === "defenseclaw") {
-        await sf.locator("#tool-name").fill("editor_read");
+        await typeAndCheck(page, sf, "#tool-name", "editor_read", 35);
         await sf.locator("#tool-connector").selectOption("openclaw");
         await sf.locator("#tool-action").selectOption("allow");
-        await sf.locator("#security-reason").fill("Reviewed fixture access");
+        await typeAndCheck(
+          page,
+          sf,
+          "#security-reason",
+          "Reviewed fixture access",
+          35,
+        );
         await sf
           .getByRole("button", { name: "Preview tool rule", exact: true })
           .press("Enter");
       } else {
-        await sf.locator("#network-name").fill("reviewed_endpoint");
-        await sf.locator("#network-host").fill("reviewed.example");
-        await sf.locator("#network-binary").fill("/usr/bin/curl");
+        await typeAndCheck(page, sf, "#network-name", "reviewed_endpoint", 35);
+        await typeAndCheck(page, sf, "#network-host", "reviewed.example", 35);
+        await typeAndCheck(page, sf, "#network-binary", "/usr/bin/curl", 35);
         await sf
           .getByRole("button", { name: "Add to network draft", exact: true })
           .press("Enter");
-        await sf.locator("#security-reason").fill("Reviewed fixture egress");
+        await typeAndCheck(
+          page,
+          sf,
+          "#security-reason",
+          "Reviewed fixture egress",
+          35,
+        );
         await sf.locator("#preview-network").press("Enter");
       }
       await sf.locator("#security-review").waitFor({ state: "visible" });

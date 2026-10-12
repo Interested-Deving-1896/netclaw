@@ -40,8 +40,8 @@ const records = (value: unknown): Json[] => {
   return value;
 };
 
-export function loadTestbed(client: HudClient): Promise<Json> {
-  return readInventory(
+export async function loadTestbed(client: HudClient): Promise<Json> {
+  const snapshot = await readInventory(
     client,
     "/api/testbed/document",
     "/api/terminal/devices",
@@ -74,6 +74,18 @@ export function loadTestbed(client: HudClient): Promise<Json> {
       }),
     }),
   );
+  // Existing HUDs include the pyATS defaults mapping in their projection.
+  // Filter it here as well as server-side so an extension upgrade works with
+  // an already-running HUD and never offers shared settings as an endpoint.
+  return {
+    ...snapshot,
+    devices: records(snapshot.devices).map((device) => ({
+      ...device,
+      connections: records(device.connections || []).filter(
+        (c) => c.name !== "defaults",
+      ),
+    })),
+  };
 }
 
 export function loadMcpConfiguration(client: HudClient): Promise<Json> {
