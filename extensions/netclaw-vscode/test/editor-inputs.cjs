@@ -124,6 +124,106 @@ exports.run = async () => {
     mark(
       "Existing-device fields retain focus and every character with real page keyboard events",
     );
+    await typeAndCheck(page, frame, "#device-alias", "Keyboard");
+    for (let i = 0; i < 8; i++) await page.keyboard.down("x");
+    await page.keyboard.up("x");
+    assert.equal(
+      await frame.locator("#device-alias").inputValue(),
+      "Keyboardxxxxxxxx",
+    );
+    await page.keyboard.press("Home");
+    await page.keyboard.press("Delete");
+    assert.equal(
+      await frame.locator("#device-alias").inputValue(),
+      "eyboardxxxxxxxx",
+    );
+    await page.keyboard.press("End");
+    await page.keyboard.press("Backspace");
+    assert.equal(
+      await frame.locator("#device-alias").inputValue(),
+      "eyboardxxxxxxx",
+    );
+    const clipboard = await vscode.env.clipboard.readText();
+    try {
+      await vscode.env.clipboard.writeText("Pasted router é");
+      await page.keyboard.press(
+        process.platform === "darwin" ? "Meta+A" : "Control+A",
+      );
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      await page.keyboard.press(
+        process.platform === "darwin" ? "Meta+V" : "Control+V",
+      );
+      await frame.waitForFunction(
+        () =>
+          document.getElementById("device-alias").value === "Pasted router é",
+      );
+    } finally {
+      await vscode.env.clipboard.writeText(clipboard);
+    }
+    await page.keyboard.press("Tab");
+    assert.equal(
+      await frame.evaluate(() => document.activeElement.id),
+      "device-os",
+    );
+    await page.keyboard.press("Shift+Tab");
+    assert.equal(
+      await frame.evaluate(() => document.activeElement.id),
+      "device-alias",
+    );
+    mark(
+      "Held keys, Delete, Backspace, clipboard replacement and Tab/Shift+Tab retain focus",
+    );
+
+    const other = await vscode.workspace.openTextDocument({
+      content: "Isolated focus acceptance",
+    });
+    await vscode.window.showTextDocument(other);
+    panel.reveal();
+    await frame.locator("#device-alias").click();
+    await page.keyboard.press("End");
+    await page.keyboard.type(" after tab", { delay: 80 });
+    assert.equal(
+      await frame.locator("#device-alias").inputValue(),
+      "Pasted router é after tab",
+    );
+    assert.equal(
+      await frame.evaluate(() => document.activeElement.id),
+      "device-alias",
+    );
+    mark("Draft and uninterrupted typing survive switching editor tabs");
+    // Delay delivery of a real isolated-HUD preview response to the host. The
+    // packaged webview/host handlers and the HUD still execute unchanged.
+    const client = api.connection.client,
+      request = client.request;
+    let release;
+    const delayed = new Promise((resolve) => {
+      release = resolve;
+    });
+    client.request = async function (method, route, ...args) {
+      const result = await request.call(this, method, route, ...args);
+      if (method === "POST" && route === "/api/testbed/preview") await delayed;
+      return result;
+    };
+    try {
+      await frame
+        .getByRole("button", { name: "Preview device change", exact: true })
+        .click();
+      await frame.waitForFunction(
+        () => document.getElementById("device-alias").disabled,
+      );
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      assert.equal(await frame.locator("#device-alias").isDisabled(), true);
+      release();
+      await frame.waitForFunction(() => document.activeElement.id === "save");
+      await typeAndCheck(page, frame, "#device-alias", "After slow preview");
+      assert.equal(await frame.locator("#review").isVisible(), false);
+      mark(
+        "Slow preview keeps controls busy, then typing recovers and invalidates its review",
+      );
+    } finally {
+      release();
+      client.request = request;
+    }
     // Reopen the original snapshot without applying the typed draft.
     await frame.locator("#refresh").click();
     await page
@@ -303,6 +403,31 @@ exports.run = async () => {
       before + "\n# keyboard draft",
     );
     mark("Advanced YAML retains focus during continuous keyboard input");
+    api.connection.disconnect();
+    await frame.waitForFunction(() => document.getElementById("yaml").disabled);
+    assert.equal(await frame.locator("#yaml").inputValue(), "");
+    await api.connection.connect(profile);
+    panel.dispose();
+    const reopened = await vscode.commands.executeCommand(
+      "netclaw.openNetwork",
+    );
+    try {
+      const fresh = await frameFor("testbed");
+      await fresh
+        .locator("#status")
+        .filter({ hasText: /Testbed loaded/ })
+        .waitFor();
+      await fresh.locator("#add").click();
+      await fresh.waitForFunction(
+        () => document.activeElement.id === "device-id",
+      );
+      await typeAndCheck(page, fresh, "#device-id", "after-reconnect");
+      mark(
+        "Disconnect clears and disables drafts; a fresh view accepts typing after reconnect",
+      );
+    } finally {
+      reopened.dispose();
+    }
   } finally {
     panel.dispose();
   }
@@ -312,6 +437,8 @@ exports.run = async () => {
       {
         version: extension.packageJSON.version,
         editor: vscode.version,
+        extensionHost: process.platform,
+        remoteName: vscode.env.remoteName,
         checks,
       },
       null,
