@@ -49,7 +49,8 @@ module.exports = async ({ vscode, page, frameFor, root, mark, shot }) => {
     await shot("hotfix-existing-device-edit");
     assert.equal(result.id, "router-00");
     assert.ok(
-      result.top >= 0 && result.top < result.viewport - 80,
+      // Chromium scroll offsets are rounded to device pixels on Windows.
+      result.top >= -1 && result.top < result.viewport - 80,
       "Edit must bring the existing-device form into view: " +
         JSON.stringify(result),
     );
@@ -86,7 +87,7 @@ module.exports = async ({ vscode, page, frameFor, root, mark, shot }) => {
         .locator("#review")
         .evaluate(
           (e) =>
-            e.getBoundingClientRect().top >= 0 &&
+            e.getBoundingClientRect().top >= -1 &&
             e.getBoundingClientRect().top < innerHeight,
         ),
       true,
