@@ -103,7 +103,7 @@ function project(data) {
     id,
     ...Object.fromEntries(metadata.map((k) => [k, safeString(d[k])])),
     connections: Object.entries(d.connections || {})
-      .filter(([, c]) => map(c))
+      .filter(([name, c]) => name !== "defaults" && map(c))
       .map(([name, c]) => ({
         name,
         protocol: safeString(c.protocol),
@@ -289,6 +289,10 @@ function guided(data, op) {
     else device[k] = v;
   }
   if (op.endpoint !== undefined) {
+    if (op.connection === "defaults")
+      fail(
+        "'defaults' contains shared pyATS settings, not an endpoint. Edit it through Advanced YAML.",
+      );
     if (
       typeof op.connection !== "string" ||
       !op.connection.trim() ||

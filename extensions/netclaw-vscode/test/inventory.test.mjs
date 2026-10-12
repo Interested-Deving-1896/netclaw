@@ -128,6 +128,34 @@ test("modern HUD keeps full editors and does not request compatibility endpoints
   );
 });
 
+test("an already-running HUD cannot project pyATS defaults as an editable connection", async (t) => {
+  const devices = [
+    {
+      id: "r1",
+      connections: [
+        { name: "defaults", host: "", protocol: "" },
+        { name: "ssh", host: "192.0.2.101", protocol: "ssh", port: 22 },
+        {
+          name: "console",
+          host: "console.example",
+          protocol: "telnet",
+          port: 2300,
+        },
+      ],
+    },
+  ];
+  const { client } = await fixture(t, () => [
+    200,
+    { source: "testbed.yaml", revision: "old-HUD", devices },
+  ]);
+  const snapshot = await loadTestbed(client);
+  assert.deepEqual(
+    snapshot.devices[0].connections,
+    devices[0].connections.slice(1),
+  );
+  assert.equal(snapshot.readOnly, undefined);
+});
+
 for (const status of [401, 403, 409, 500, 503])
   test(`HTTP ${status} never downgrades to a compatibility view`, async (t) => {
     const { client, calls } = await fixture(t, () => [

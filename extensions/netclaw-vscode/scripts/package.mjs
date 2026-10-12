@@ -57,7 +57,7 @@ fs.writeFileSync(
       bytes: bytes.length,
       artifact: path.basename(packagePath),
       qualification:
-        "Packaged candidate; see extensions/netclaw-vscode/HOTFIX-1.0.0.md for button-hotfix qualification and platform limits. Packaging does not publish.",
+        "Packaged candidate; see extensions/netclaw-vscode/HOTFIX-1.0.1.md for input/address verification and pending Windows/WSL acceptance. Packaging does not publish.",
     },
     null,
     2,

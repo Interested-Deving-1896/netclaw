@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { createTestbedDocument } from "../testbed-document.js";
+import { parse } from "yaml";
 const source =
   "# preserve this comment\ntestbed:\n  credentials:\n    default:\n      username: admin\n      password: synthetic-secret-151\ndevices:\n  R1:\n    os: iosxe\n    custom: {owner: engineering}\n    connections:\n      cli: {protocol: ssh, ip: 192.0.2.1, port: 22}\n      console: {protocol: telnet, host: 192.0.2.2, port: 2001}\n";
 function fixture(t, options = {}) {
@@ -30,6 +31,55 @@ function commit(service, operation) {
     p = service.preview(r);
   return service.commit({ ...r, digest: p.digest, confirm: true });
 }
+test("pyATS defaults stay out of endpoint cards/CSV and cannot be overwritten by guided endpoint edits", (t) => {
+  const { service, file } = fixture(t);
+  const defaults = {
+    class: "unicon.Unicon",
+    arguments: { init_exec_commands: [] },
+  };
+  const connections = {
+    defaults,
+    ssh: {
+      protocol: "ssh",
+      ip: "192.0.2.101",
+      port: 22,
+      ssh_options: "preserve",
+    },
+  };
+  fs.writeFileSync(
+    file,
+    JSON.stringify({ devices: { R1: { os: "iosxe", connections } } }),
+  );
+  assert.deepEqual(
+    service.snapshot().devices[0].connections.map((c) => c.name),
+    ["ssh"],
+  );
+  assert.ok(
+    !service
+      .export({
+        ...request(service, {}),
+        format: "csv",
+        credentials: "redacted",
+      })
+      .content.includes("defaults"),
+  );
+  const operation = {
+    type: "update",
+    id: "R1",
+    connection: "defaults",
+    endpoint: { host: "192.0.2.9", protocol: "ssh" },
+  };
+  const before = fs.readFileSync(file, "utf8");
+  assert.throws(
+    () => service.preview(request(service, operation)),
+    /shared pyATS settings/,
+  );
+  assert.equal(fs.readFileSync(file, "utf8"), before);
+  commit(service, { ...operation, connection: "ssh" });
+  const saved = parse(fs.readFileSync(file, "utf8")).devices.R1.connections;
+  assert.deepEqual(saved.defaults, defaults);
+  assert.deepEqual(saved.ssh, { ...connections.ssh, ip: "192.0.2.9" });
+});
 test("masked read, read-only preview, CST guided update, private baseline and stale rejection", (t) => {
   const { service, file, revoked } = fixture(t);
   const s = service.snapshot();
