@@ -1,11 +1,11 @@
 # Changelog
 
-## 1.0.1 — input and Testbed address hotfix candidate
+## 1.0.1 — input and Testbed address hotfix
 
 - Keep Testbed typing local to the webview, without per-keystroke host messages or persisted VS Code state. Bind Save to the reviewed draft revision and reject stale reviews.
 - Exclude pyATS `connections.defaults` from endpoint choices, including responses from an already-running HUD. Edit displays the stored endpoint address; shared defaults remain preserved.
 - Reject guided endpoint writes to the reserved `defaults` mapping. Advanced YAML continues to support shared settings.
-- Add character-by-character editor tests across Testbed, MCP and security forms, endpoint variants, stale review rejection and saved-file readback. Windows/WSL acceptance is required before this candidate is published.
+- Add character-by-character editor tests across Testbed, MCP and security forms, endpoint variants, stale review rejection and saved-file readback. Windows VS Code 1.141.0 with a WSL extension host passed ten focused input workflows and all 18 experience checks / 149 layout cases. The reported one-character failure was traced to still-loaded 0.1.1 code despite 1.0.0 being installed; reload the window after installing the update.
 
 ## 1.0.0 — button hotfix
 

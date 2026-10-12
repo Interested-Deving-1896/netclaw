@@ -1,11 +1,10 @@
-# VS Code 1.0.1 input/address hotfix — WSL handoff
+# VS Code 1.0.1 input/address hotfix — acceptance and publishing handoff
 
 Branch: `hotfix/vscode-1.0.1-input-focus`, based on main `2faa215` (PR 296).
 Owner requested a new hotfix, not a spec or website update. The reported affected
 environment is **Windows VS Code / WSL, NetClaw 1.0.0**. The owner offered to move
-the remaining work to that environment. This branch is a candidate, not a claim
-that the reported Windows/WSL focus failure has been reproduced or resolved.
-Do not merge or publish 1.0.1 until that acceptance passes.
+the remaining work to that environment. The Windows/WSL investigation below supersedes the initial Mac-only checkpoint.
+Publish only the unchanged artifact identified in the final handoff after acceptance.
 
 ## Findings and changes
 
@@ -56,7 +55,7 @@ then passed continuous typing and failed specifically on the defaults/IP check.
   All 32 installed extension payload files match the VSIX (allowing VS Code's
   own package metadata). All runtime writes use isolated fixtures.
 
-## Candidate artifact
+## Original Mac candidate artifact
 
 - Source: `17e79e4395e320e7d39a79d54263c7007baa48cf`.
 - File: `netclaw-1.0.1.vsix`, 4,213,410 bytes.
@@ -72,7 +71,7 @@ then passed continuous typing and failed specifically on the defaults/IP check.
 checks focus and value after every character. It does not refocus the locator
 for each key. Native Select All is given time to finish before typing.
 
-## Continue in Windows/WSL
+## Original Windows/WSL acceptance plan
 
 1. Fetch and check out `origin/hotfix/vscode-1.0.1-input-focus`. Follow startup
    and GAIT instructions; keep owner Testbed, `.env`, and security configs safe.
@@ -141,3 +140,91 @@ review tests need a real display or a correctly configured virtual display.
 For source development omit `NETCLAW_TEST_VSIX`; build first. Commit reviewed
 source before `npm run package`. `out/package.json` records the source commit,
 artifact size and SHA-256. Installing/building a new candidate is not publishing.
+
+
+## Windows/WSL investigation — 2026-10-12
+
+The affected Windows renderer is VS Code **1.141.0**, Electron 43.7.7 /
+Chromium 150, with a Linux extension host in WSL2 (distribution registration
+`Ubuntu-22.04`, actual guest **Ubuntu 26.04 LTS**). Do not infer the guest OS
+version from the distribution registration name.
+
+All 32 files of the installed 1.0.0 extension matched the downloaded Marketplace
+1.0.0 package (allowing VS Code's installation metadata). Its SHA-256 is
+`8200e567f3094471828cfbb3e06b450bd8d5abe36568d67f623c2efdb3c5f0f3`.
+However, a read-only inspection of the **already-running affected extension
+host's loaded module cache** found `netclaw.netclaw-0.1.1/dist/extension.cjs`.
+The host log independently shows activation following 0.1.1 installation and no
+new activation following the 1.0.0 installation. This is evidence of the code
+actually executing; a manifest/version label or installed directory was
+insufficient. The temporary loopback inspector was closed after inspection.
+
+The exact symptom was reproduced in a separate Windows-renderer/WSL-host window
+with an unchanged 0.1.1 artifact. With the alias field focused once, page keyboard
+input `XYZ` changed `Lab router` to **`Lab routerX`**. The event trace recorded:
+
+1. `X` keydown and input on `device-alias`.
+2. Approximately 9 ms later, host `busy: true`, input disabling and `focusout`.
+3. Host `busy: false` re-enabled the field without restoring focus.
+4. `Y` and `Z` keydowns targeted the page, leaving the field unchanged.
+
+The cause is the earlier host's per-input `invalidate` dispatch entering its
+busy-control path. A fresh, exact published **1.0.0** host passed all six original
+input workflows with the current isolated HUD; this investigation does **not**
+claim a reproduced 1.0.0 focus defect. That HUD already filters shared defaults,
+so this comparison does not independently reproduce the older-HUD address bug.
+The 1.0.1 local draft/revision implementation eliminates the per-keystroke host
+path entirely and retains the extension-side address correction for older HUDs.
+
+The first installed 1.0.1 candidate passed ten expanded Windows/WSL workflows:
+continuous Edit/Add typing, held/repeated keydown, Delete/Backspace, real clipboard
+replacement and Unicode, Tab/Shift+Tab, editor tab switching, delayed preview
+recovery, review invalidation, endpoint variants and reviewed save/file readback,
+multiline YAML, and disconnect/reconnect. The delay test holds delivery of a real
+fixture HUD preview response for 600 ms; it does not change the packaged handlers.
+Clipboard contents are restored without logging them. Saves use synthetic private
+fixtures, never the owner's active inventory.
+
+The broader experience test's viewport check now allows one pixel of scroll
+rounding: the Windows form was fully visible and focused, but its border measured
+`top=-0.390625`. Initial harness attempts also exposed reuse of a mutated fixture
+between suites; final acceptance uses a fresh fixture for each suite. These were
+harness corrections, not additional product behavior changes.
+
+The extension unit suite passed 64 tests (one optional cached RAG skip). The HUD
+suite initially passed 371/372 with a 25 ms avatar-render timing assertion failure;
+the isolated avatar check and a complete standard-suite rerun passed, **372/372**.
+All ten document/configuration tests passed. Typecheck, build and dependency audit
+passed. No new device, provider or live security-policy operation was performed.
+
+Raw local evidence: `~/.cache/netclaw-101-wsl-20261012/` (affected-host module
+inspection, preserved old artifacts, keyboard event trace, native reports and
+screenshots). MemPalace was unavailable (missing module); GAIT records the session.
+
+## Publication ownership
+
+The owner requested the **Mac publishing handoff** after WSL publisher verification
+failed with `TF400813` and no publisher credentials were configured here. Acceptance
+and PR completion remain authorized. No Marketplace upload is performed from WSL.
+The handoff includes the unchanged tested VSIX, `SHA256SUMS`, source provenance,
+and exact-artifact publishing/verification commands. Do not rebuild it on the Mac.
+
+
+## Windows/WSL acceptance result
+
+The installed 1.0.1 candidate passed **10 input workflows**, **18 experience
+checks**, **149 layout cases** and **43 screenshots** in the real Windows renderer
+with a WSL extension host. The experience run includes continuous MCP secret/URL
+and DefenseClaw/OpenShell rule typing, reviewed fixture writes, theme/width/zoom
+and keyboard checks, and clearing sensitive drafts on disconnect. All installed
+payload files are compared with the selected VSIX before each suite.
+
+The final distribution artifact is reinstalled and subjected to the same input
+and experience suites after release-text packaging. Its authoritative source,
+byte count and SHA-256 accompany the draft GitHub handoff release
+`vscode-v1.0.1-rc.1` as `package.json`, `acceptance.json` and `SHA256SUMS`.
+This avoids a self-referential digest in the packaged documentation. The raw
+reports remain in the private evidence cache; the handoff report contains only
+synthetic acceptance and package metadata. Previous Mac acceptance covered the
+same product code in the earlier package described above; no new Mac run or
+native Windows extension-host support is claimed by the WSL qualification.
