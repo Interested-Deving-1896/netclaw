@@ -6,6 +6,7 @@
     busy = false,
     invalid = false,
     dirty = false,
+    pendingFocus,
     page = 0,
     logs = "";
   const el = (tag, value, parent, cls) => {
@@ -38,6 +39,10 @@
         node.disabled = true;
     for (const id of ["rule-filter", "previous", "next"])
       if ($(id)) $(id).disabled = busy || invalid;
+    if (!busy && !invalid && pendingFocus) {
+      window.netclawReveal($(pendingFocus));
+      pendingFocus = undefined;
+    }
   }
   function changed() {
     dirty = true;
@@ -152,6 +157,7 @@
           "secondary",
         );
         edit.onclick = () => {
+          changed();
           if (snapshot.product === "defenseclaw") {
             $("tool-name").value = row.name;
             $("tool-connector").value = row.connector || "";
@@ -406,6 +412,8 @@
       $("review-difference").textContent = m.difference || "";
       $("review-impact").textContent =
         (m.weakening ? "This change can weaken protection. " : "") + m.impact;
+      pendingFocus = "apply-security";
+      controls();
     }
     if (m.type === "cancelled") $("security-review").hidden = true;
     if (m.type === "notice" || m.type === "error")

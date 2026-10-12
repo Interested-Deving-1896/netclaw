@@ -298,6 +298,29 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
         .waitFor();
       await shot("canvas");
       mark("Canvas branch without dispatch");
+      if (!liveProvider) {
+        const lane = canvas.locator(".canvas-lane").first();
+        await lane.locator("textarea").fill("Synthetic Canvas hotfix request");
+        await lane
+          .getByRole("button", { name: "Send in this lane", exact: true })
+          .click();
+        await lane
+          .locator("pre")
+          .filter({ hasText: "assistant: Synthetic gateway reply" })
+          .waitFor();
+        await lane
+          .getByRole("button", { name: "Send in this lane", exact: true })
+          .waitFor();
+        assert.equal(
+          await lane
+            .getByRole("button", { name: "Send in this lane", exact: true })
+            .isEnabled(),
+          true,
+        );
+        mark(
+          "Canvas Send receives fixture reply and re-enables for another explicit request",
+        );
+      }
       const ragPanel = await vscode.commands.executeCommand("netclaw.openRag");
       const rag = await frameFor("#rag-search");
       if (process.env.NETCLAW_TEST_RAG_READY === "1") {

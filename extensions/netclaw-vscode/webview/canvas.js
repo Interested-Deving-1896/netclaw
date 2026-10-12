@@ -3,15 +3,42 @@ const api = acquireVsCodeApi(),
   viewId = document.body.dataset.viewId;
 let documentState = { v: 1, nodes: [] },
   requests = {},
+  busy = true,
+  invalidated = false,
   contexts = [],
   selectedContexts = {};
 const el = (id) => document.getElementById(id);
 const send = window.netclawPost(api, viewId);
-const post = (type, extra = {}) =>
+const post = (type, extra = {}) => {
+  if (invalidated || (busy && !["ready", "state"].includes(type))) return;
+  if (type !== "state") {
+    busy = true;
+    controls();
+  }
   send(type, {
     ...(type === "ready" ? {} : { document: documentState }),
     ...extra,
   });
+};
+const terminal = new Set([
+  "succeeded",
+  "failed",
+  "cancelled",
+  "denied",
+  "expired",
+  "interrupted",
+]);
+function controls() {
+  for (const button of document.querySelectorAll("button"))
+    button.disabled =
+      busy ||
+      invalidated ||
+      Boolean(
+        button.dataset.sendNode &&
+          requests[button.dataset.sendNode] &&
+          !terminal.has(requests[button.dataset.sendNode].state),
+      );
+}
 for (const id of ["save", "open", "import", "export", "refresh"])
   el(id).addEventListener("click", () => post(id));
 const text = (tag, value, parent) => {
@@ -106,11 +133,9 @@ function render() {
       status = text("p", requests[node.id]?.state || "Ready", lane);
     status.setAttribute("role", "status");
     submit.disabled = Boolean(
-      requests[node.id] &&
-        !["succeeded", "failed", "cancelled", "denied", "expired"].includes(
-          requests[node.id].state,
-        ),
+      requests[node.id] && !terminal.has(requests[node.id].state),
     );
+    submit.dataset.sendNode = node.id;
     submit.addEventListener("click", () => {
       if (!input.value.trim()) return;
       submit.disabled = true;
@@ -122,13 +147,20 @@ function render() {
       });
     });
   }
+  controls();
 }
 window.addEventListener("message", (event) => {
   const m = event.data;
-  if (m.viewId !== viewId) return;
+  if (m.viewId !== viewId || invalidated) return;
   if (m.invalidated) {
-    for (const b of document.querySelectorAll("button")) b.disabled = true;
+    invalidated = true;
+    el("status").textContent = m.message;
+    controls();
     return;
+  }
+  if (m.type === "busy") {
+    busy = m.busy;
+    controls();
   }
   if (m.type === "document") {
     documentState = m.document;

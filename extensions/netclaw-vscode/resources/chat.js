@@ -3,10 +3,27 @@
     viewId = document.body.dataset.viewId;
   let selected = new Set(),
     sending = false,
-    available = true;
+    available = false,
+    busy = true,
+    invalidated = false,
+    canStop = false,
+    lost = false;
   const el = (id) => document.getElementById(id);
   const send = window.netclawPost(api, viewId);
-  const post = (type, payload) => send(type, payload ? { payload } : {});
+  const controls = () => {
+    for (const id of ["refresh", "new", "settings", "history", "prompt"])
+      el(id).disabled = busy || invalidated;
+    el("send").disabled = busy || invalidated || !available || lost || sending;
+    el("cancel").disabled = busy || invalidated || !canStop || available;
+  };
+  const post = (type, payload) => {
+    if (invalidated || (busy && !["draft", "ready"].includes(type))) return;
+    if (type !== "draft") {
+      busy = true;
+      controls();
+    }
+    send(type, payload ? { payload } : {});
+  };
   for (const id of ["refresh", "new", "settings", "cancel", "history"])
     el(id)?.addEventListener("click", () => post(id));
   const draft = () =>
@@ -19,7 +36,15 @@
   el("retain").addEventListener("change", draft);
   el("composer").addEventListener("submit", (event) => {
     event.preventDefault();
-    if (sending || !el("prompt").value.trim()) return;
+    if (
+      busy ||
+      invalidated ||
+      sending ||
+      !available ||
+      lost ||
+      !el("prompt").value.trim()
+    )
+      return;
     sending = true;
     el("send").disabled = true;
     el("status").textContent = "Admitting request…";
@@ -36,12 +61,13 @@
   };
   window.addEventListener("message", (event) => {
     const data = event.data;
-    if (data.viewId !== viewId) return;
+    if (data.viewId !== viewId || invalidated) return;
     if (data.type === "notice") {
       el("status").textContent = data.message;
       return;
     }
     if (data.invalidated) {
+      invalidated = true;
       el("status").textContent = data.message;
       for (const b of document.querySelectorAll("button")) b.disabled = true;
       return;
@@ -54,10 +80,13 @@
     if (data.type === "error") {
       el("status").textContent = data.message;
       sending = false;
-      el("send").disabled = !available;
+      busy = false;
+      controls();
       return;
     }
     if (data.type !== "state") return;
+    busy = Boolean(data.busy);
+    if (!busy) sending = false;
     if (data.initial) {
       el("prompt").value = data.saved.draft || "";
       el("retain").checked = data.saved.retain === true;
@@ -76,9 +105,9 @@
     available = ["completed", "failed", "cancelled", "interrupted"].includes(
       data.state,
     );
-    const lost = data.saved.pendingNonce && !data.saved.operationId;
-    el("send").disabled = Boolean(active || lost || sending);
-    el("cancel").disabled = !data.canStop || !active;
+    lost = Boolean(data.saved.pendingNonce && !data.saved.operationId);
+    canStop = data.canStop;
+    controls();
     el("status").textContent = lost
       ? "Admission is unconfirmed. Check status; nothing will be resent."
       : active
@@ -104,5 +133,6 @@
       el("contexts").textContent =
         "Use NetClaw: Add Selected Context after selecting text in an editor.";
   });
+  controls();
   post("ready");
 })();

@@ -147,6 +147,14 @@ exports.run = async () => {
     await vscode.commands.executeCommand("workbench.action.closeSidebar");
     await vscode.commands.executeCommand("workbench.action.closeAuxiliaryBar");
     await vscode.commands.executeCommand("notifications.clearAll");
+    await require("./editor-hotfix.cjs")({
+      vscode,
+      page,
+      frameFor,
+      root,
+      mark,
+      shot,
+    });
     // Every existing observation view, including actual unavailable sources.
     const domains = [
       "overview",
@@ -307,6 +315,15 @@ exports.run = async () => {
     mark(
       "Scoped MCP native review, secret replacement, verified save and private reset",
     );
+    await mcp.locator("#reload").click();
+    await mcp.waitForFunction(
+      () => !document.getElementById("reload").disabled,
+    );
+    await mcp.locator("#setup").click();
+    await page.getByText("Read lifecycle guidance", { exact: true }).waitFor();
+    await page.locator(".quick-input-widget input").press("Escape");
+    await mcp.waitForFunction(() => !document.getElementById("setup").disabled);
+    mark("MCP Reload and setup menu cancellation return to enabled fields");
     await auditLayout(mcp, "mcp-fields");
     // Width, zoom and keyboard controls in the actual editor webview.
     for (const width of [360, 700, 1200]) {
@@ -418,8 +435,31 @@ exports.run = async () => {
         await sf.locator("#review-difference").textContent(),
         /Before:/,
       );
-      await sf.locator("#security-review").scrollIntoViewIfNeeded();
+      await sf.waitForFunction(
+        () => document.activeElement.id === "apply-security",
+      );
       await shot(product + "-review");
+      const reviewGeometry = await sf
+        .locator("#security-review")
+        .evaluate((e) => ({
+          top: e.getBoundingClientRect().top,
+          bottom: e.getBoundingClientRect().bottom,
+          viewport: innerHeight,
+          apply: document
+            .getElementById("apply-security")
+            .getBoundingClientRect().top,
+        }));
+      assert.ok(
+        reviewGeometry.bottom > 0 &&
+          reviewGeometry.top < reviewGeometry.viewport,
+        "Security review must intersect the viewport: " +
+          JSON.stringify(reviewGeometry),
+      );
+      assert.ok(
+        reviewGeometry.apply >= 0 &&
+          reviewGeometry.apply < reviewGeometry.viewport,
+        "Focused Apply must be visible: " + JSON.stringify(reviewGeometry),
+      );
       const fixtureFile =
         product === "defenseclaw"
           ? securityTargets[product].config
@@ -492,6 +532,19 @@ exports.run = async () => {
     );
     await graphFrame
       .getByRole("button", { name: "Zoom in", exact: true })
+      .click();
+    await graphFrame
+      .getByRole("button", { name: "Zoom out", exact: true })
+      .click();
+    await graphFrame
+      .getByRole("button", { name: "Hide graph", exact: true })
+      .click();
+    assert.equal(
+      await graphFrame.locator(".topology-surface").isVisible(),
+      false,
+    );
+    await graphFrame
+      .getByRole("button", { name: "Show graph", exact: true })
       .click();
     await graphFrame
       .getByRole("button", { name: "Reset view", exact: true })

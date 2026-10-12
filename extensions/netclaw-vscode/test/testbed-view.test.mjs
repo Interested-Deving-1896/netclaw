@@ -33,6 +33,129 @@ function setup(kind, html) {
       ),
   };
 }
+function testbedHarness(t) {
+  const fields = [
+    "id",
+    "alias",
+    "os",
+    "type",
+    "platform",
+    "connection",
+    "protocol",
+    "host",
+    "port",
+  ];
+  const buttons = [
+    "add",
+    "import",
+    "export",
+    "recover",
+    "refresh",
+    "cards-mode",
+    "yaml-mode",
+    "previous",
+    "next",
+    "cancel-form",
+    "preview-yaml",
+    "save",
+    "cancel-review",
+  ];
+  const h = setup(
+    "testbed",
+    buttons.map((id) => `<button id="${id}"></button>`).join("") +
+      '<p id="status"></p><p id="target"></p><p id="note"></p><section id="cards-pane"><input id="filter"><p id="count"></p><div id="devices"></div></section><form id="device-form"><h2 id="form-title"></h2>' +
+      fields.map((id) => `<input id="device-${id}">`).join("") +
+      '<select id="connection-choice"></select></form><section id="yaml-pane"><textarea id="yaml"></textarea></section><section id="review"><div id="review-body"></div></section>',
+  );
+  t.after(() => h.dom.window.close());
+  return { ...h, $: (id) => h.w.document.getElementById(id) };
+}
+test("existing-device Edit waits for enabled focus; all testbed toolbar routes respond and drafts keep the chosen connection", (t) => {
+  const { $, receive, w, messages } = testbedHarness(t);
+  receive({
+    type: "snapshot",
+    snapshot: {
+      source: "fixture",
+      revision: "123",
+      content: "devices: {}",
+      devices: [
+        {
+          id: "r1",
+          os: "iosxe",
+          connections: [
+            { name: "cli", host: "192.0.2.1" },
+            { name: "console", host: "192.0.2.2" },
+          ],
+        },
+      ],
+    },
+  });
+  $("devices").querySelector("button").click();
+  assert.equal(messages.at(-1).id, "r1");
+  receive({ type: "busy", busy: true });
+  receive({ type: "switch", mode: "edit", id: "r1" });
+  assert.notEqual(w.document.activeElement.id, "device-alias");
+  receive({ type: "busy", busy: false });
+  assert.equal(w.document.activeElement.id, "device-alias");
+  assert.equal($("device-id").readOnly, true);
+  $("connection-choice").value = "console";
+  $("connection-choice").dispatchEvent(new w.Event("change"));
+  assert.equal($("device-host").value, "192.0.2.2");
+  assert.equal(
+    $("device-host").disabled,
+    false,
+    "draft invalidation must not disable typing",
+  );
+  receive({ type: "switch", mode: "close" });
+  receive({ type: "switch", mode: "edit", id: "r1" });
+  assert.equal($("connection-choice").value, "console");
+  for (const id of ["import", "export", "recover", "refresh"]) {
+    $(id).click();
+    assert.equal(messages.at(-1).type, id);
+    const count = messages.length;
+    $(id).click();
+    assert.equal(
+      messages.length,
+      count,
+      "overlapping clicks must not disappear in the host",
+    );
+    receive({ type: "busy", busy: false });
+  }
+  for (const [id, mode] of [
+    ["add", "add"],
+    ["cards-mode", "cards"],
+    ["yaml-mode", "yaml"],
+    ["cancel-form", "close"],
+  ]) {
+    $(id).click();
+    assert.equal(messages.at(-1).mode, mode);
+    receive({ type: "busy", busy: false });
+  }
+  $("device-form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+  assert.equal(messages.at(-1).operation.type, "update");
+  receive({ type: "busy", busy: false });
+  $("preview-yaml").click();
+  assert.equal(messages.at(-1).operation.type, "document");
+  receive({ type: "busy", busy: false });
+  $("save").click();
+  assert.equal(messages.at(-1).type, "save");
+  receive({ type: "busy", busy: false });
+  $("cancel-review").click();
+  assert.equal(messages.at(-1).type, "invalidate");
+});
+test("MCP reload remains usable after initial metadata failure", (t) => {
+  const h = setup(
+    "mcp",
+    '<p id="status"></p><div id="summary"></div><p id="source"></p><button id="setup"></button><button id="environment"></button><button id="reload"></button><form id="mcp-form"><div id="fields"></div><button id="save-fields">Save</button></form>',
+  );
+  t.after(() => h.dom.window.close());
+  h.receive({ type: "busy", busy: false });
+  h.receive({ type: "error", message: "Metadata unavailable" });
+  const reload = h.w.document.getElementById("reload");
+  assert.equal(reload.disabled, false);
+  reload.click();
+  assert.equal(h.messages.at(-1).type, "reload");
+});
 test("testbed drafts survive mode switches, never enter saved state and clear on invalidation", () => {
   const fields = [
     "id",
@@ -129,6 +252,7 @@ test("MCP untouched blanks keep values, explicit replace/clear submit only inten
     });
     $("mcp-form").dispatchEvent(new h.w.Event("submit", { cancelable: true }));
     assert.deepEqual(Object.keys(h.messages.at(-1).changes), []);
+    h.receive({ type: "busy", busy: false });
     $("intent-TOKEN").value = "replace";
     $("intent-TOKEN").dispatchEvent(new h.w.Event("change"));
     $("value-TOKEN").value = "draft-secret";

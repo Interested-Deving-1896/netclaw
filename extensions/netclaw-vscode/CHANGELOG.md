@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0 — button hotfix
+
+- Bring Testbed Edit/Add forms and YAML/review panels into view, then focus an enabled field. Existing-device edits no longer appear to do nothing beneath a long device list.
+- Keep keyboard focus while typing, retain the selected connection in saved drafts, prevent overlapping actions, and explain when no recovery copies exist.
+- Reveal security reviews, invalidate the old visible review when editing a different rule, and keep MCP Reload available after metadata errors.
+- Serialize Chat and Canvas actions, recover Canvas Send after a failed admission or interrupted request, and prevent delayed responses from enabling disconnected views.
+- Add existing-device edit/save/cancel/preservation and button-recovery regression coverage. No HUD upgrade is required for this hotfix beyond the existing full-editor prerequisites.
+
 ## 0.1.1 — release candidate
 
 - Restore testbed details and MCP configuration access with older running HUDs. Safe editing uses the updated HUD; legacy environment changes retain native review.

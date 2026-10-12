@@ -57,7 +57,7 @@ fs.writeFileSync(
       bytes: bytes.length,
       artifact: path.basename(packagePath),
       qualification:
-        "Release candidate; see specs/151-extension-experience/production-readiness.md. Publication not performed.",
+        "Packaged candidate; see extensions/netclaw-vscode/HOTFIX-1.0.0.md for button-hotfix qualification and platform limits. Packaging does not publish.",
     },
     null,
     2,

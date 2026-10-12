@@ -81,6 +81,12 @@ export function openTestbed(
       "invalidate",
     ],
     async (m) => {
+      // Draft invalidation is local bookkeeping, not a round trip that should
+      // disable the form and steal focus after every keystroke.
+      if (m.type === "invalidate") {
+        prepared = undefined;
+        return;
+      }
       if (busy) return;
       busy = true;
       await p.post({ type: "busy", busy: true });
@@ -88,7 +94,6 @@ export function openTestbed(
         if (!["ready", "refresh"].includes(m.type))
           requireEditableInventory(snapshot);
         if (m.type === "ready") await load();
-        if (m.type === "invalidate") prepared = undefined;
         if (
           m.type === "refresh" &&
           (!m.dirty ||
@@ -217,6 +222,14 @@ export function openTestbed(
           await p.post({ type: "imported" });
         }
         if (m.type === "recover") {
+          if (!snapshot?.backups?.length) {
+            await p.post({
+              type: "notice",
+              message:
+                "No recovery copies yet. A private recovery copy is created when you save a testbed change.",
+            });
+            return;
+          }
           const choice = await vscode.window.showQuickPick<{
             label: string;
             description: string;

@@ -21,15 +21,18 @@
       !busy &&
       !invalidated &&
       (!readOnly || ["reload", "environment"].includes(type))
-    )
+    ) {
+      busy = true;
+      controls();
       post(type, fields);
+    }
   };
   function controls() {
     for (const e of document.querySelectorAll("button,input,select"))
       e.disabled =
         busy ||
         invalidated ||
-        !descriptor ||
+        (!descriptor && e.id !== "reload") ||
         (readOnly && !["reload", "environment"].includes(e.id));
     if (!busy && descriptor && !readOnly)
       for (const f of descriptor.fields)
