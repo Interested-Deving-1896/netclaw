@@ -438,17 +438,28 @@ exports.run = async () => {
       await sf.waitForFunction(
         () => document.activeElement.id === "apply-security",
       );
-      assert.equal(
-        await sf
-          .locator("#security-review")
-          .evaluate(
-            (e) =>
-              e.getBoundingClientRect().top >= 0 &&
-              e.getBoundingClientRect().top < innerHeight,
-          ),
-        true,
-      );
       await shot(product + "-review");
+      const reviewGeometry = await sf
+        .locator("#security-review")
+        .evaluate((e) => ({
+          top: e.getBoundingClientRect().top,
+          bottom: e.getBoundingClientRect().bottom,
+          viewport: innerHeight,
+          apply: document
+            .getElementById("apply-security")
+            .getBoundingClientRect().top,
+        }));
+      assert.ok(
+        reviewGeometry.bottom > 0 &&
+          reviewGeometry.top < reviewGeometry.viewport,
+        "Security review must intersect the viewport: " +
+          JSON.stringify(reviewGeometry),
+      );
+      assert.ok(
+        reviewGeometry.apply >= 0 &&
+          reviewGeometry.apply < reviewGeometry.viewport,
+        "Focused Apply must be visible: " + JSON.stringify(reviewGeometry),
+      );
       const fixtureFile =
         product === "defenseclaw"
           ? securityTargets[product].config

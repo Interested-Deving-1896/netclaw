@@ -29,7 +29,7 @@ blocked. Late messages cannot reactivate disconnected Chat/Canvas views.
 | 2 — Inventory workflows | Existing device and connection edit; uninterrupted keyboard input; preview, native Cancel and Save; credentials/other-connection preservation; recovery preview/cancel; Remove; Add/Close; YAML/cards; search and both pagination directions. Import/export/restore contracts are covered by source-HUD tests; no owner inventory writes. |
 | 3 — MCP and security | Scoped field replacement and private reset; Reload/setup cancellation; binding, rule/policy preview, native Cancel, weakening acknowledgment and verified isolated CLI-fixture writes; read-only capability and stale-target fences. |
 | 4 — Other workbench controls | All generic view action IDs/command mappings reviewed; Chat toolbar/Send/stop and Canvas toolbar/Send recovery tests; RAG overlap/recovery tests; graph selection/zoom/reset/hide/show; Avatar controls and view-family layout checks. |
-| 5 — Release artifact | Clean committed-source packaging, installed VSIX payload comparison, native experience and conversation/Canvas regressions, compatibility run and public Marketplace validation are required before declaring the release live. Final results are recorded below after execution. |
+| 5 — Release artifact | Clean committed-source package passed exact installed-payload checks on VS Code 1.108.0 and minimum-supported 1.102.0. Both passed 18 experience checks / 149 layout cases. The 1.108.0 conversation/Canvas suite passed 14 checks. Publication uses these exact tested bytes; Microsoft validation and public download are checked separately after upload. |
 
 ## Source verification
 
@@ -37,7 +37,7 @@ blocked. Late messages cannot reactivate disconnected Chat/Canvas views.
 - `npm test`: 61 passed, one optional cached-embedding RAG test skipped.
 - HUD `npm run test:experience`: nine passed, including YAML/JSON/CSV, revision checks and credential preservation.
 - `npm audit --audit-level=high`: no vulnerabilities.
-- Native source experience: 17 checks, 149 layout cases, 43 screenshots, including the new existing-device hotfix workflows. The packaged run adds MCP setup cancellation and additional graph controls.
+- Native source experience: 17 checks, 149 layout cases, 43 screenshots, including the new existing-device hotfix workflows. Installed 1.0.0 on macOS arm64 / VS Code 1.108.0: 18 experience checks, 149 layout cases and 43 screenshots, plus 14 conversation/Canvas checks and seven screenshots. All 32 installed extension payload files match the exact VSIX. MCP setup cancellation and graph hide/show/zoom-out are included.
 
 Tests use synthetic local gateway data and isolated filesystem/CLI fixtures.
 They do not establish new Windows/WSL, remote-host, live network-device or native
@@ -50,3 +50,12 @@ The first source-editor attempt used stale pre-merge dependencies/bundles and
 timed out on security loading. `npm ci` restored the locked dependencies; clean
 typecheck/build and the full source UI run then passed. This was a local test
 setup issue, not evidence against the exact published artifact reproduction.
+
+## Release artifact
+
+- Extension: `NetClaw.netclaw` 1.0.0; source commit `3cb35a6bf98f5d2490c82bbf68491459032519eb`.
+- VSIX: 4,212,698 bytes; SHA-256 `8200e567f3094471828cfbb3e06b450bd8d5abe36568d67f623c2efdb3c5f0f3`.
+- Source commit CI: all 32 checks passed.
+- The security geometry assertion now checks that the review intersects the viewport and its focused Apply button is visible. A section edge can sit slightly above the viewport while its heading and controls remain visible; both native screenshots were inspected. No product change was required.
+
+Minimum-supported VS Code 1.102.0 on macOS arm64 passed the same 18 installed experience checks, 149 layout cases and 43 screenshots. The existing legacy-HUD-only compatibility harness requires a populated older external HUD; it was mistakenly launched against the empty modern fixture and is not counted as a passed check. The correct full experience suite passed at the minimum editor version.
