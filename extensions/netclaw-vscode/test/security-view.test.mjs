@@ -149,6 +149,17 @@ test("OpenShell edits stay in memory, cancel preserves drafts and invalidation r
   assert.equal($("security-logs").textContent, "");
 });
 
+test("security previews reveal enabled Apply and editing another rule cancels the old visible review", (t) => {
+  const { $, receive, w } = harness(t);
+  receive({ type: "busy", busy: true });
+  receive({ type: "review", summary: "Review rule", impact: "Shared" });
+  receive({ type: "busy", busy: false });
+  assert.equal(w.document.activeElement.id, "apply-security");
+  $("rules").querySelector("button").click();
+  assert.equal($("security-review").hidden, true);
+  assert.equal(w.document.activeElement.id, "tool-name");
+});
+
 test("Native permissions and YAML render as text; connector-only writers never enable global/settings edits", (t) => {
   const { $, receive, snapshot } = harness(t);
   receive({

@@ -92,6 +92,7 @@ export function openCanvas(
       if (m.type === "state") return;
       if (busy) return;
       busy = true;
+      await p.post({ type: "busy", busy: true });
       try {
         if (m.type === "open") saved = local.get(key, saved);
         if (m.type === "save") await persist();
@@ -184,7 +185,11 @@ export function openCanvas(
           });
       } finally {
         busy = false;
-        await load();
+        try {
+          await load();
+        } finally {
+          await p.post({ type: "busy", busy: false });
+        }
       }
     },
   );

@@ -10,6 +10,7 @@
     page = 0,
     mode = "cards",
     editing = null,
+    pendingFocus,
     formDirty = false,
     yamlDirty = false;
   const drafts = new Map(),
@@ -33,8 +34,13 @@
   };
   const dirty = () => formDirty || yamlDirty || drafts.size > 0;
   const send = (type, data = {}) => {
-    if (!busy && !invalidated && (!snapshot?.readOnly || type === "refresh"))
+    if (!busy && !invalidated && (!snapshot?.readOnly || type === "refresh")) {
+      if (type !== "invalidate") {
+        busy = true;
+        controls();
+      }
       post(type, data);
+    }
   };
   const readControls = new Set(["refresh", "filter", "previous", "next"]);
   function controls() {
@@ -44,12 +50,27 @@
         invalidated ||
         (!snapshot && e.id !== "refresh") ||
         (snapshot?.readOnly && !readControls.has(e.id));
+    $("previous").disabled ||= page === 0;
+    $("next").disabled ||=
+      !snapshot ||
+      (page + 1) * 50 >=
+        snapshot.devices.filter((d) =>
+          JSON.stringify(d)
+            .toLocaleLowerCase()
+            .includes($("filter").value.toLocaleLowerCase()),
+        ).length;
+    if (!busy && !invalidated && pendingFocus) {
+      const target = $(pendingFocus);
+      pendingFocus = undefined;
+      window.netclawReveal(target);
+    }
   }
   function clearSnapshot() {
     snapshot = undefined;
     drafts.clear();
     formDirty = yamlDirty = false;
     editing = null;
+    pendingFocus = undefined;
     mode = "cards";
     $("yaml").value = "";
     $("device-form").reset();
@@ -93,16 +114,21 @@
     }
     const option = text("option", "New connection…", choice);
     option.value = "";
-    if (d?.connections.length) choice.value = d.connections[0].name;
-    connection(d?.connections[0]);
+    if (d?.connections?.length) choice.value = d.connections[0].name;
+    connection(d?.connections?.[0]);
     const saved = drafts.get(editing);
     if (saved) for (const k of fields) $("device-" + k).value = saved[k];
+    if (saved)
+      choice.value = d?.connections?.some((c) => c.name === saved.connection)
+        ? saved.connection
+        : "";
     formDirty = Boolean(saved);
     $("device-form").hidden = false;
     $("yaml-pane").hidden = true;
     $("cards-pane").hidden = false;
     mode = "cards";
-    $("device-id").focus();
+    pendingFocus = d ? "device-alias" : "device-id";
+    controls();
   }
   function switchMode(next, id, discard) {
     if (discard) {
@@ -116,13 +142,16 @@
     }
     if (next === "close") {
       $("device-form").hidden = true;
+      pendingFocus = "add";
+      controls();
       return;
     }
     mode = next;
     $("cards-pane").hidden = next !== "cards";
     $("yaml-pane").hidden = next !== "yaml";
     $("device-form").hidden = true;
-    if (next === "yaml") $("yaml").focus();
+    pendingFocus = next === "yaml" ? "yaml" : "filter";
+    controls();
   }
   function switchRequest(next, id) {
     send("switch", { mode: next, id, dirty: dirty() });
@@ -174,8 +203,6 @@
       );
     }
     controls();
-    $("previous").disabled = busy || invalidated || page === 0;
-    $("next").disabled = busy || invalidated || (page + 1) * 50 >= rows.length;
   }
   $("filter").addEventListener("input", () => {
     page = 0;
@@ -304,7 +331,8 @@
       text("p", r.notice, body, "hint");
       $("review").hidden = false;
       $("status").textContent = "Preview ready. No changes saved.";
-      $("save").focus();
+      pendingFocus = "save";
+      controls();
     }
     if (m.type === "notice") $("status").textContent = m.message;
     if (m.type === "error") {
@@ -317,5 +345,6 @@
       }
     }
   });
+  controls();
   post("ready");
 })();

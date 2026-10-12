@@ -1,5 +1,12 @@
 // VS Code recreates a hidden webview's scripts when the tab is revealed.
 // Keep message IDs monotonic without retaining the entire hidden document.
+window.netclawReveal = (element) => {
+  if (!element || element.disabled) return;
+  (element.closest("form,section") || element).scrollIntoView?.({
+    block: "start",
+  });
+  element.focus({ preventScroll: true });
+};
 window.netclawPost = (api, viewId) => {
   const saved = api.getState();
   let sequence =
