@@ -123,6 +123,8 @@ Cards, labeled forms, search and filters follow light, dark and high-contrast ed
 
 Changes retain their review boundaries: Testbed saves do not connect devices, saved MCP configuration does not prove endpoint access, and stored security policy does not prove traffic enforcement. Supported actions depend on the installed runtime and native CLI capabilities.
 
+**1.1.0 candidate (Spec152):** the upper Connections panel now opens the six runtime workspace Markdown files for reading, reviewed edits and upload/overwrite, with no delete. It also provides reviewed Start/Stop/Restart for the selected installation’s verified owned services, offline Start and Save & Restart. This is not in Marketplace 1.0.1. See [workspace controls and prerequisites](extensions/netclaw-vscode/README.md#workspace-files-and-claw-controls--local-source-preview) and [verification](specs/152-workspace-claw-controls/verification.md). The owner-authorized candidate and [WSL handoff prompt](specs/152-workspace-claw-controls/WSL-HANDOFF.md) are on the feature branch for real-workspace inspection. Merge/live deployment/Marketplace publication remain held.
+
 [Extension guide and setup](extensions/netclaw-vscode/README.md) · [Privacy](extensions/netclaw-vscode/PRIVACY.md) · [Exact 0.1.1 qualification and platform scope](specs/151-extension-experience/production-readiness.md)
 
 ## Resources

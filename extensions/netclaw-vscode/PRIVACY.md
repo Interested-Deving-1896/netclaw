@@ -45,3 +45,29 @@ viewing it makes no image-generation or remote asset request.
 Security pages invoke only the selected native CLI with fixed operations and explicit scope. Security bindings retain paths/identities in host-local extension storage, not credentials. Existing policy secrets are masked before entering a webview; drafts remain in memory. Logs and status are bounded and redacted, but arbitrary upstream text still requires operator care. Native read commands may contact the selected security service. DefenseClaw update checks are disabled for these invocations.
 
 Security changes retain mode0600 original configuration/policy and operation evidence under this editor's private `security-operations` directory; originals can contain secrets. There is no automatic log export, cloud telemetry setup or external disclosure. Unknown outcomes are retained for inspection and are never replayed. Settings, observed loading and actual enforcement are reported separately.
+
+## Workspace files and local lifecycle controls (Spec152 source preview)
+
+Management discovery requires an owned HUD session and returns installation paths,
+identity and the native workspace, never file contents or credential values. File
+operations run on the extension host through a separately reviewed local helper.
+The control webview contains metadata only. Markdown appears as native source text;
+this feature opens no HTML/Markdown preview and makes no content-driven remote fetch.
+No management capability is added to the assistant MCP provider.
+
+Bindings contain host context, paths, identity and helper hashes. Drafts use VS Code’s
+native document model; its local editor backup/Hot Exit policy is controlled by the
+operator. The isolated preview disables Hot Exit. No document text is placed in
+webview state, routine audit output, telemetry or assistant context by this feature.
+Private originals and metadata-only operation journals live beneath the selected
+home’s `netclaw-hud/management` (0700 directories, 0600 files). Private service launch
+definitions may contain the existing process environment and must be treated as
+credentials; they are never returned to the panel or included in operation journals.
+Owned service output stays in that same private service directory.
+
+The initial binding persists so a selected installation can be started while its
+HTTP server is stopped. Every subsequent action rechecks host, identity, workspace,
+source and service scope, and every mutation requires explicit native review. A
+failed/unknown save never authorizes restart. Unknown outcomes require observation
+before another mutation. There is no delete/reset/uninstall or arbitrary-shell
+operation. Nothing is pushed or published by the preview.

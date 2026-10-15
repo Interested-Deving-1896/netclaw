@@ -1,3 +1,9 @@
+import { Management } from "./state/management";
+import {
+  WorkspaceFiles,
+  openWorkspace,
+  workspaceFiles,
+} from "./views/workspace";
 import { openSecurity } from "./views/security";
 import * as vscode from "vscode";
 import path from "node:path";
@@ -27,6 +33,9 @@ export async function activate(context: vscode.ExtensionContext) {
     profiles = new Profiles(local),
     connection = new Connection(context.secrets),
     assistants = new AssistantProvider(context, connection);
+  const management = new Management(local);
+  const workspace = new WorkspaceFiles(context, management, connection);
+  context.subscriptions.push(management, workspace);
   const output = vscode.window.createOutputChannel("NetClaw"),
     status = vscode.window.createStatusBarItem(
       vscode.StatusBarAlignment.Left,
@@ -54,7 +63,10 @@ export async function activate(context: vscode.ExtensionContext) {
       : "Connect to existing NetClaw";
     status.show();
   };
-  context.subscriptions.push(connection.changed.event(refresh));
+  context.subscriptions.push(
+    connection.changed.event(refresh),
+    management.changed.event(refresh),
+  );
   const register = (name: string, fn: (...args: any[]) => unknown) =>
     context.subscriptions.push(
       vscode.commands.registerCommand(
@@ -71,6 +83,7 @@ export async function activate(context: vscode.ExtensionContext) {
       ),
     );
   const connect = async (profile: ConnectionProfile) => {
+    await management.select(profile);
     const identity = await vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
@@ -101,6 +114,18 @@ export async function activate(context: vscode.ExtensionContext) {
     }
     refresh();
   };
+  register("workspaceControls", async () => {
+    if (!management.selected) await management.bind(connection);
+    if (management.selected)
+      return openWorkspace(context, management, workspace);
+  });
+  register("bindWorkspace", () => management.bind(connection));
+  register("openWorkspaceFile", (name: string) => workspace.open(name));
+  register("uploadWorkspaceFile", (name?: string) => workspace.upload(name));
+  register("saveRestartClaw", () => workspace.saveAndRestart());
+  register("startClaw", () => workspace.lifecycle("start"));
+  register("stopClaw", () => workspace.lifecycle("stop"));
+  register("restartClaw", () => workspace.lifecycle("restart"));
   register("addConnection", async () => {
     if (!vscode.workspace.isTrusted)
       throw Error("Trust this workspace before connecting.");
@@ -160,6 +185,7 @@ export async function activate(context: vscode.ExtensionContext) {
     });
     if (label) {
       await profiles.save({ ...item.p, label });
+      await management.rename(item.p.id, label);
       if (connection.profile?.id === item.p.id)
         connection.profile.label = label;
       refresh();
@@ -172,6 +198,7 @@ export async function activate(context: vscode.ExtensionContext) {
     if (!item) return;
     if (connection.profile?.id === item.p.id) connection.disconnect();
     await profiles.remove(item.p.id);
+    await management.forget(item.p.id);
     refresh();
   });
   const openDomain = (key: Domain) => {
@@ -440,6 +467,42 @@ export async function activate(context: vscode.ExtensionContext) {
   const items = (group: string): Navigation[] => {
     if (group === "connections")
       return [
+        {
+          label: "Workspace & Claw",
+          description: management.selected?.profile.label || "Enable controls",
+          command: "netclaw.workspaceControls",
+          icon: "files",
+        },
+        {
+          label: "Select connection",
+          command: "netclaw.selectConnection",
+          icon: "remote",
+        },
+        ...(management.selected
+          ? [
+              ...workspaceFiles.map((name) => ({
+                label: name,
+                command: "netclaw.openWorkspaceFile",
+                args: [name],
+                icon: "markdown",
+              })),
+              {
+                label: "Start claw",
+                command: "netclaw.startClaw",
+                icon: "play",
+              },
+              {
+                label: "Stop claw",
+                command: "netclaw.stopClaw",
+                icon: "debug-stop",
+              },
+              {
+                label: "Restart claw",
+                command: "netclaw.restartClaw",
+                icon: "debug-restart",
+              },
+            ]
+          : []),
         ...profiles.list().map((p) => ({
           label: p.label,
           description: connection.profile?.id === p.id ? "Connected" : p.url,
@@ -510,6 +573,6 @@ export async function activate(context: vscode.ExtensionContext) {
     );
   }
   refresh();
-  return { connection, profiles, assistants };
+  return { connection, profiles, assistants, management, workspace };
 }
 export function deactivate() {}
