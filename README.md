@@ -70,6 +70,7 @@ Direct commits to OSP or OOC are detected and opened as PRs back to `Interested-
 | [@chkp-yoavg](https://github.com/chkp-yoavg) | 2 |
 | [@BeArchiTek](https://github.com/BeArchiTek) | 1 |
 | [@prime001](https://github.com/prime001) | 1 |
+| [@Interested-Deving-1896](https://github.com/Interested-Deving-1896) | 1 |
 | [@MatrixNeoKozak](https://github.com/MatrixNeoKozak) | 1 |
 | [@justinbrenton](https://github.com/justinbrenton) | 1 |
 | [@satyam-thakur](https://github.com/satyam-thakur) | 1 |
