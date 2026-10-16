@@ -61,3 +61,21 @@ Local gate completion: the separate full HUD rerun passed **372/372**; HUD produ
 build passed. All six reconciliation surfaces, catalog coverage, 136-spec artifact
 validation and six release-helper tests passed. Extension dependency audit reports
 zero vulnerabilities. Raw local logs are `/tmp/netclaw152-release-*.log`.
+
+## Final extension artifact
+
+The production package changes only `readme.md` and `changelog.md` from the WSL
+candidate; every runtime byte remains identical. Source provenance:
+`2458913d831b467465fd9e69549cad63b6247828`. VSIX size **4,225,885 bytes**, SHA-256
+`d94b9d38d65759ed653485f254f07813d33e5ccc84671094bacb4e5aa3cdbfdb`.
+The runtime bundle remains
+`c262b80dbc146ca0aef6735c0cadb8393b6858aaf9c1bb498741bf7adfeb4a0f`.
+The exact installed production artifact passed **35/35 native checks on Mac VS Code
+1.141.0 with the corrected backing source**, and all 34 installed payload files
+match it (allowing VS Code installation metadata). Private release cache:
+`~/.cache/netclaw-110-publish-20261016/`.
+
+The first Linux PR candidate job found the hosted Node tool-cache path untrusted
+under the production ownership checks (nine tests refused). CI now copies that exact
+Node executable into the runner's private temporary directory before native fixtures;
+no executable permission check was relaxed. CI status must pass before merge.

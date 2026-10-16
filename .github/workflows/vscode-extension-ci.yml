@@ -37,6 +37,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Use a private native runtime for ownership-sensitive acceptance
+        # The hosted tool-cache ancestors can be world-writable. Keep production
+        # executable ownership checks intact and copy this exact Node binary into
+        # the runner's private temporary directory for native helper fixtures.
+        shell: bash
+        run: |
+          netclaw_node_dir=$(mktemp -d "$RUNNER_TEMP/netclaw-node.XXXXXX")
+          chmod 700 "$netclaw_node_dir"
+          cp "$(command -v node)" "$netclaw_node_dir/node"
+          chmod 755 "$netclaw_node_dir/node"
+          echo "$netclaw_node_dir" >> "$GITHUB_PATH"
       - run: npm ci
       - run: npm --prefix ../../ui/netclaw-visual ci
       - run: npm run check
