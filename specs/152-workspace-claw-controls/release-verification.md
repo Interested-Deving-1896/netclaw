@@ -79,3 +79,20 @@ The first Linux PR candidate job found the hosted Node tool-cache path untrusted
 under the production ownership checks (nine tests refused). CI now copies that exact
 Node executable into the runner's private temporary directory before native fixtures;
 no executable permission check was relaxed. CI status must pass before merge.
+
+## Linux PR gate
+
+At source/CI revision `39772ec2e2e0ca9908062adbc1cea038ef325986`, the
+[Linux extension candidate job](https://github.com/automateyournetwork/netclaw/actions/runs/38897419769)
+passed: **91 tests, 88 passed, three skips, zero failures**. Skips are the Mac-only
+launchd case, optional installed OpenClaw CLI, and optional cached-RAG execution.
+The actual owned-process lifecycle, combined save/restart and orphan recovery tests
+all ran and passed. Ten HUD document/configuration checks, audit, package/asset
+validation and candidate upload also passed. The CI-built archive is a separate
+artifact; publication uses the exact Mac-installed/tested digest above.
+
+[Repository reconciliation and all contract suites](https://github.com/automateyournetwork/netclaw/actions/runs/38897419724)
+passed. Final PR/main/tag checks remain mandatory and publication must verify
+Microsoft validation, public version and the downloaded VSIX digest. Upload alone
+is not completion. Final publication receipts are retained in daily memory, GAIT
+and the local private release cache rather than modifying the tested package.
