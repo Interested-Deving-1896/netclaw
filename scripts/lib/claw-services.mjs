@@ -184,10 +184,29 @@ async function launchd(t) {
   }
   return result;
 }
-async function systemd(t) {
+// Accept only the literal, single-line subset whose systemd interpretation we
+// can reproduce. Dotenv parsing differs for comments, escapes and multiline data.
+function systemdEnvironment(text) {
+  const env = Object.create(null);
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || /^[#;]/.test(line)) continue;
+    const m = line.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
+    if (!m) throw Error("Native environment file uses unsupported syntax.");
+    const value = m[2].trim();
+    if (/^[^\s"'\\]*$/.test(value)) env[m[1]] = value;
+    else if (/^"[^"\\]*"$/.test(value) || /^'[^'\\]*'$/.test(value))
+      env[m[1]] = value.slice(1, -1);
+    else throw Error("Native environment file uses unsupported syntax.");
+  }
+  return env;
+}
+// The injectable read-only command transport is used by host-independent
+// contract tests. Production always uses the fixed systemctl executable.
+export async function discoverSystemdServices(t, run = command) {
   let listing;
   try {
-    listing = await command("/usr/bin/systemctl", [
+    listing = await run("/usr/bin/systemctl", [
       "--user",
       "list-unit-files",
       "--type=service",
@@ -204,11 +223,11 @@ async function systemd(t) {
     .split("\n")
     .map((l) => l.trim().split(/\s+/)[0])
     .filter((n) =>
-      /^(openclaw-gateway|hermes-gateway|netclaw-mesh)(?:[-.][\w.-]+)?\.service$/.test(
-        n,
-      ),
+      new RegExp(
+        `^(${t.kind}-gateway|netclaw-mesh)(?:[-.][\\w.-]+)?\\.service$`,
+      ).test(n),
     )) {
-    const raw = await command("/usr/bin/systemctl", [
+    const raw = await run("/usr/bin/systemctl", [
       "--user",
       "show",
       unit,
@@ -231,36 +250,56 @@ async function systemd(t) {
     );
     const envFiles = [];
     if (v.EnvironmentFiles) {
-      for (const m of v.EnvironmentFiles.matchAll(
-        /(\/[^ ]+) \(ignore_errors=(?:yes|no)\)/g,
-      )) {
+      const entries = [
+        ...v.EnvironmentFiles.matchAll(
+          /(\/[^\s]+) \(ignore_errors=(yes|no)\)/g,
+        ),
+      ];
+      if (
+        !entries.length ||
+        entries.map((m) => m[0]).join(" ") !== v.EnvironmentFiles.trim()
+      )
+        throw Error("Native environment file list uses unsupported syntax.");
+      for (const m of entries) {
         const file = m[1];
+        // Resolve explicit neighboring installations before applying selected-
+        // home eligibility. Their private files are never changed or projected.
         if (
-          ![
-            path.join(t.home, ".env"),
-            path.join(t.home, "mesh.systemd.env"),
-          ].includes(file)
+          ![".env", "mesh.systemd.env", "gateway.systemd.env"].includes(
+            path.basename(file),
+          )
         )
           throw Error("Native unit uses an unqualified environment file.");
         if (fs.existsSync(file)) {
           safePath(file, { privateMode: true });
-          Object.assign(env, parseEnvData(bytes(file).b.toString("utf8")));
+          Object.assign(
+            env,
+            systemdEnvironment(bytes(file).b.toString("utf8")),
+          );
           envFiles.push(file);
-        }
+        } else if (m[2] !== "yes")
+          throw Error("Required native environment file is missing.");
       }
-      if (!envFiles.length)
-        throw Error("Native environment files could not be verified.");
     }
     if (!owns(t, env)) {
       const specified =
         t.kind === "hermes" ? env.HERMES_HOME : env.OPENCLAW_STATE_DIR;
-      if (specified) continue;
+      if (
+        same(specified, t.home) ||
+        (t.kind === "openclaw" && same(env.OPENCLAW_CONFIG_PATH, t.configPath))
+      )
+        throw Error("Native unit has conflicting installation scope.");
+      if (specified && path.isAbsolute(specified)) continue;
       if (unit.startsWith(t.kind))
         throw Error(
           "Native unit lacks an explicit verifiable installation scope.",
         );
       continue;
     }
+    if (envFiles.some((file) => path.dirname(file) !== t.home))
+      throw Error(
+        "Selected native unit uses an environment file outside its home.",
+      );
     if (v.NeedDaemonReload !== "no" || v.LoadState !== "loaded")
       throw Error(
         "Native unit uses unqualified environment files or needs a manager reload.",
@@ -374,7 +413,7 @@ export async function inspectServices(raw) {
       process.platform === "darwin"
         ? await launchd(t)
         : process.platform === "linux"
-          ? await systemd(t)
+          ? await discoverSystemdServices(t)
           : [];
     for (const d of native) {
       if (services.some((s) => s.role === d.role))

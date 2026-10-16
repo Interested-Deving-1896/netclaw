@@ -14,27 +14,52 @@ test("OpenClaw HUD and helper preserve native tilde workspace resolution with a 
   const config = JSON.parse(fs.readFileSync(f.target.configPath, "utf8"));
   config.agents.defaults.workspace = "~/custom-agent-workspace";
   fs.writeFileSync(f.target.configPath, JSON.stringify(config));
-  fs.writeFileSync(f.target.cli, `#!${process.execPath}\nconst fs=require('fs'),path=require('path');const c=JSON.parse(fs.readFileSync(process.env.OPENCLAW_CONFIG_PATH));const w=c.agents.defaults.workspace;console.log(JSON.stringify([{id:'main',isDefault:true,workspace:w.startsWith('~/')?path.join(process.env.OPENCLAW_HOME||process.env.HOME,w.slice(2)):w}]));\n`);
-  const port = await freePort(), uiPort = await freePort();
+  fs.writeFileSync(
+    f.target.cli,
+    `#!${process.execPath}\nconst fs=require('fs'),path=require('path');const c=JSON.parse(fs.readFileSync(process.env.OPENCLAW_CONFIG_PATH));const w=c.agents.defaults.workspace;console.log(JSON.stringify([{id:'main',isDefault:true,workspace:w.startsWith('~/')?path.join(process.env.OPENCLAW_HOME||process.env.HOME,w.slice(2)):w}]));\n`,
+  );
+  const port = await freePort(),
+    uiPort = await freePort();
   const env = {
-    PATH: path.dirname(f.target.cli) + path.delimiter + path.dirname(process.execPath) + path.delimiter + "/usr/bin:/bin",
-    HOME: f.base, NETCLAW_RUNTIME: "openclaw", OPENCLAW_HOME: f.base,
-    OPENCLAW_STATE_DIR: f.home, OPENCLAW_CONFIG_PATH: f.target.configPath,
-    HUD_PORT: String(port), HUD_UI_PORT: String(uiPort),
+    PATH:
+      path.dirname(f.target.cli) +
+      path.delimiter +
+      path.dirname(process.execPath) +
+      path.delimiter +
+      "/usr/bin:/bin",
+    HOME: f.base,
+    NETCLAW_RUNTIME: "openclaw",
+    OPENCLAW_HOME: f.base,
+    OPENCLAW_STATE_DIR: f.home,
+    OPENCLAW_CONFIG_PATH: f.target.configPath,
+    HUD_PORT: String(port),
+    HUD_UI_PORT: String(uiPort),
   };
-  const child = spawn(process.execPath, [path.join(sourceRoot, "ui/netclaw-visual/server.js")], { env, cwd: f.base, stdio: "ignore" });
+  const child = spawn(
+    process.execPath,
+    [path.join(sourceRoot, "ui/netclaw-visual/server.js")],
+    { env, cwd: f.base, stdio: "ignore" },
+  );
   let client;
   try {
     const url = `http://127.0.0.1:${port}`;
     let ready = false;
     for (let i = 0; i < 100; i++) {
-      try { if ((await fetch(url + "/api/runtime")).ok) { ready = true; break; } } catch {}
-      await new Promise(r => setTimeout(r, 100));
+      try {
+        if ((await fetch(url + "/api/runtime")).ok) {
+          ready = true;
+          break;
+        }
+      } catch {}
+      await new Promise((r) => setTimeout(r, 100));
     }
     assert.equal(ready, true, "isolated HUD starts");
-    const { HudClient } = await load(new URL("../src/client/hud.ts", import.meta.url).pathname);
+    const { HudClient } = await load(
+      new URL("../src/client/hud.ts", import.meta.url).pathname,
+    );
     client = new HudClient(url, f.target.installationId);
-    await client.connect(); await client.session();
+    await client.connect();
+    await client.session();
     const target = await client.request("GET", "/api/hud/management");
     assert.equal(target.expectedWorkspace, f.workspace);
     assert.equal(target.launch.openclawHome, f.base);
@@ -44,8 +69,9 @@ test("OpenClaw HUD and helper preserve native tilde workspace resolution with a 
   } finally {
     client?.close();
     if (child.exitCode === null) {
-      const exited = new Promise(resolve => child.once("exit", resolve));
-      child.kill("SIGTERM"); await exited;
+      const exited = new Promise((resolve) => child.once("exit", resolve));
+      child.kill("SIGTERM");
+      await exited;
     }
   }
 });

@@ -2,6 +2,14 @@
 
 NetClaw source releases use `1.x.y`. Feature specs increment the minor version and reset the patch; fixes, documentation and maintenance increment the patch. Every release records its numbered specs. Component and mobile distribution versions are independent.
 
+## [1.11.0] - 2026-10-16
+
+- Add VS Code native workspace Markdown read/edit/upload without delete, verified owned-claw lifecycle and offline recovery, and Save & Restart.
+- Preserve native OpenClaw workspace expansion and isolate systemd discovery from neighboring installations.
+- Document exact Mac and WSL acceptance, source/helper upgrade requirements and unsupported symlink/live-lifecycle boundaries.
+
+Spec [152-workspace-claw-controls](specs/152-workspace-claw-controls/spec.md). See [release notes](docs/releases/1.11.0.md).
+
 ## [1.10.0] - 2026-10-11
 
 - Add an AYN-inspired VS Code workbench with responsive cards/forms, branded artwork, clearer connection setup and attributable3D BGP visualization.

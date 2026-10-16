@@ -23,7 +23,7 @@ No automatic connection or runtime changes occur when you open a workspace.
 Connections require Workspace Trust. Public HUD URLs, browser VS Code, native
 Windows runtime hosting and virtual workspaces are unsupported.
 
-## Workspace files and claw controls — local source preview
+## Workspace files and claw controls
 
 Spec152 adds **Workspace & Claw** to the upper Connections panel. This feature is
 not yet in the published 1.0.1 extension. Connect to an updated source HUD, choose
@@ -84,9 +84,9 @@ for the newly selected binding before saving.
 Qualification and the isolated preview are recorded in
 [Spec152 verification](../../specs/152-workspace-claw-controls/verification.md).
 Mac fixture acceptance does not claim provider execution or Linux/WSL/Remote live
-qualification. The owner authorized the 1.1.0 candidate package and feature-branch push
-for a [WSL inspection preview](../../specs/152-workspace-claw-controls/WSL-HANDOFF.md).
-Merge, live deployment and Marketplace publication remain held.
+qualification. WSL verified actual regular-file reads and native editing/Undo; symlink files remain
+refused. Full live WSL lifecycle is not claimed. Use source release 1.11.0 or later
+for the matching HUD/helper, and see [release verification](../../specs/152-workspace-claw-controls/release-verification.md).
 
 ## Workbench
 
@@ -235,4 +235,4 @@ Backend integration tests require the HUD dependencies
 `npm run test:editor` launches an isolated desktop extension test. RAG and named
 assistant live checks are explicit opt-ins documented in Spec150 evidence.
 
-`npm run package` requires a clean committed checkout, checks that every runtime bundle and license notice is included, and records source and VSIX digest in `out/package.json`. Install from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw). The [1.0.1 input/address hotfix](HOTFIX-1.0.1.md) passed Windows-renderer/WSL-host acceptance and is prepared for owner-managed Marketplace publication from the Mac. Install the tested artifact and reload the window; an installed version label does not establish which code the current extension host is running. The earlier 0.1.1 WSL-tested VSIX passed native Mac acceptance and was published unchanged; Microsoft completed its validation on October 11, 2026. See [production readiness](../../specs/151-extension-experience/production-readiness.md) for qualification, artifact verification and platform limits. Earlier [Spec151 verification](../../specs/151-extension-experience/verification.md) records the original Mac source checkpoint.
+`npm run package` requires a clean committed checkout, checks that every runtime bundle and license notice is included, and records source and VSIX digest in `out/package.json`. Install from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw). Version 1.1.0 adds workspace files and owned lifecycle controls and retains the [1.0.1 input/address hotfix](HOTFIX-1.0.1.md). Install the tested artifact and reload the window; an installed version label does not establish which code the current extension host is running. The earlier 0.1.1 WSL-tested VSIX passed native Mac acceptance and was published unchanged; Microsoft completed its validation on October 11, 2026. See [production readiness](../../specs/151-extension-experience/production-readiness.md) for qualification, artifact verification and platform limits. Earlier [Spec151 verification](../../specs/151-extension-experience/verification.md) records the original Mac source checkpoint.

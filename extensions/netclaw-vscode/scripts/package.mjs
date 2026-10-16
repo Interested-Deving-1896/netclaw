@@ -57,7 +57,7 @@ fs.writeFileSync(
       bytes: bytes.length,
       artifact: path.basename(packagePath),
       qualification:
-        "Spec152 workspace files and claw controls candidate. See specs/152-workspace-claw-controls/verification.md and WSL-HANDOFF.md for exact evidence and platform limits. Feature-branch packaging/push authorized; no merge, live deployment or Marketplace publication authorized. Packaging does not publish.",
+        "Spec152 workspace files and claw controls, extension 1.1.0 with source HUD/helper 1.11.0. See specs/152-workspace-claw-controls/release-verification.md for exact evidence and platform limits. Production publication authorized by the owner on 2026-10-16. Packaging itself does not publish.",
     },
     null,
     2,

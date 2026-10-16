@@ -1,12 +1,12 @@
 # Changelog
 
-## 1.1.0 candidate — Spec152 workspace files and claw controls
+## 1.1.0 — workspace files and claw controls
 
 - Add top-panel access to six native workspace Markdown files for OpenClaw and Hermes, with read, reviewed save and exact UTF-8 upload/overwrite; no delete/rename.
 - Use the native VS Code document editor for keyboard behavior, Undo and dirty-close protection. Preserve original recovery copies and reject stale revisions.
 - Add installation-bound Start/Stop/Restart with durable offline recovery, exact owned-service/supervisor controls and private operation evidence. Unknown ownership disables full control.
 - Add Save & Restart gated on verified saved bytes and the reviewed service scope. Keep saving, service readiness and prompt loading distinct.
-- Candidate package and feature branch prepared for the owner-requested WSL preview against real NetClaw. Merge, live deployment and Marketplace publication remain held. See the Spec152 WSL handoff.
+- Requires source HUD/helper 1.11.0. WSL native-home resolution and systemd neighbor/environment discovery corrections are in the backing source. WSL regular-file reads and native editing/Undo are verified; symlink entries remain refused and live WSL lifecycle is unqualified. See Spec152 release verification.
 
 ## 1.0.1 — input and Testbed address hotfix
 

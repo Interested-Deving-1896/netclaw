@@ -1,6 +1,6 @@
 # Tasks: Workspace Files and Claw Controls
 
-All five user stories are required. Owner authorized implementation, verification and ephemeral preview, then packaging and feature-branch push with a WSL inspection handoff. Merge/live deployment/publication remain held. Tests below are required by spec acceptance.
+All five user stories are required. Owner authorized implementation, verification and ephemeral preview, then packaging and feature-branch push with a WSL inspection handoff. The owner subsequently authorized production PR/merge/publication on 2026-10-16. Tests below are required by spec acceptance.
 
 ## Phase 1 — Setup and design
 

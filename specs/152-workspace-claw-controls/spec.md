@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-15
 
-**Status**: Implemented; packaging and feature-branch push authorized for WSL inspection; live deployment/publication held
+**Status**: Implemented; production PR/merge/publication authorized on 2026-10-16 with evidence-scoped qualification
 
 **Input**: Create a new, focused VS Code extension feature and branch. After connecting to a claw, expose the six major workspace Markdown files in the extension's top panel: SOUL.md, AGENTS.md, IDENTITY.md, USER.md, TOOLS.md and HEARTBEAT.md. Support READ, UPDATE and UPLOAD / OVERWRITE, but no DELETE. Also provide a restart path after saving and let the operator fully Start, Stop and Restart the connected claw from this panel.
 
@@ -225,3 +225,5 @@ An operator chooses either **Save** or **Save and Restart** when editing or uplo
 - On 2026-10-15 the owner authorized planning, implementation, verification and an ephemeral VS Code preview of the built feature. Push, live deployment and publication remain held until the owner reviews the preview. All development lifecycle operations must target isolated installations.
 
 - Later on 2026-10-15 the owner explicitly authorized packaging, a WSL handoff prompt and pushing the feature branch for a real-runtime isolated editor preview. This supersedes the earlier package/push hold. No merge, Marketplace release or unattended live lifecycle action is authorized.
+
+- On 2026-10-16 the owner authorized fetching WSL changes, commit/PR/merge, completed-branch deletion, return to main and production publication. This supersedes prior Spec152 release holds. See release-verification.md for failures/remediation and actual qualification limits.

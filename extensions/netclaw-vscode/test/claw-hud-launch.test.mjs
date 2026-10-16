@@ -94,7 +94,10 @@ for (const kind of ["openclaw", "hermes"])
       const config = JSON.parse(fs.readFileSync(f.target.configPath, "utf8"));
       config.agents.defaults.workspace = "~/custom-agent-workspace";
       fs.writeFileSync(f.target.configPath, JSON.stringify(config));
-      fs.writeFileSync(f.target.cli, `#!${process.execPath}\nconst fs=require('fs'),path=require('path');const c=JSON.parse(fs.readFileSync(process.env.OPENCLAW_CONFIG_PATH));console.log(JSON.stringify([{id:'main',isDefault:true,workspace:path.join(process.env.OPENCLAW_HOME||process.env.HOME,c.agents.defaults.workspace.slice(2))}]));\n`);
+      fs.writeFileSync(
+        f.target.cli,
+        `#!${process.execPath}\nconst fs=require('fs'),path=require('path');const c=JSON.parse(fs.readFileSync(process.env.OPENCLAW_CONFIG_PATH));console.log(JSON.stringify([{id:'main',isDefault:true,workspace:path.join(process.env.OPENCLAW_HOME||process.env.HOME,c.agents.defaults.workspace.slice(2))}]));\n`,
+      );
       f.target.launch.openclawHome = f.base;
       Object.assign(env, {
         OPENCLAW_HOME: f.base,

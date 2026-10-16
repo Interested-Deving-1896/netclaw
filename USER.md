@@ -62,3 +62,5 @@
 - Spec152 implementation authorization (2026-10-15): proceed through planning, implementation and verification, then FIRST show an ephemeral isolated VS Code with the implemented build. Push/live deployment require later owner approval.
 
 - Spec152 WSL handoff authorization (2026-10-15): package the implemented build, add a WSL handoff prompt, and push the feature branch so it can be pulled on the real NetClaw host. Launch an isolated patched VS Code there connected to the real installation for file inspection. This supersedes the earlier package/push hold; no merge or Marketplace publication was requested.
+
+- Spec152 production authorization (2026-10-16): fetch the WSL follow-up, commit remaining work, create and merge the PR, remove completed feature branches, return to main and push to production. This explicitly supersedes the earlier merge/publication hold for this feature.
