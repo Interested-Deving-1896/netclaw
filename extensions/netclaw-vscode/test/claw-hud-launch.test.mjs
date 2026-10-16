@@ -89,12 +89,19 @@ for (const kind of ["openclaw", "hermes"])
         NETCLAW_HERMES_SOURCE: dir,
         NETCLAW_HERMES_HUD_PORT: String(companion),
       });
-    } else
+    } else {
+      // Real OpenClaw expands a tilde workspace against its user home, not state.
+      const config = JSON.parse(fs.readFileSync(f.target.configPath, "utf8"));
+      config.agents.defaults.workspace = "~/custom-agent-workspace";
+      fs.writeFileSync(f.target.configPath, JSON.stringify(config));
+      fs.writeFileSync(f.target.cli, `#!${process.execPath}\nconst fs=require('fs'),path=require('path');const c=JSON.parse(fs.readFileSync(process.env.OPENCLAW_CONFIG_PATH));console.log(JSON.stringify([{id:'main',isDefault:true,workspace:path.join(process.env.OPENCLAW_HOME||process.env.HOME,c.agents.defaults.workspace.slice(2))}]));\n`);
+      f.target.launch.openclawHome = f.base;
       Object.assign(env, {
-        OPENCLAW_HOME: f.home,
+        OPENCLAW_HOME: f.base,
         OPENCLAW_STATE_DIR: f.home,
         OPENCLAW_CONFIG_PATH: f.target.configPath,
       });
+    }
     const { resolveTarget } = await import(
         pathToFileURL(path.join(root, "scripts/lib/claw-files.mjs"))
       ),
@@ -124,6 +131,12 @@ for (const kind of ["openclaw", "hermes"])
         (await fetch(`http://127.0.0.1:${api}/api/runtime`)).status,
         200,
       );
+      if (kind === "openclaw") {
+        const owned = definition(t, "hud");
+        assert.equal(owned.env.OPENCLAW_HOME, f.base);
+        assert.equal(owned.env.OPENCLAW_STATE_DIR, f.home);
+        assert.equal(t.workspace, f.workspace);
+      }
       const response = await fetch(`http://127.0.0.1:${vite}`);
       assert.ok(response.status === 200 || response.status === 404);
       await stopOwned(t, definition(t, "hud"));

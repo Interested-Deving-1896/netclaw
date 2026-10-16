@@ -217,7 +217,7 @@ export function scopedEnv(t) {
   });
   if (t.kind === "openclaw")
     Object.assign(env, {
-      OPENCLAW_HOME: t.launch.openclawHome || t.home,
+      OPENCLAW_HOME: t.launch.openclawHome || t.launch.home,
       OPENCLAW_STATE_DIR: t.home,
       OPENCLAW_CONFIG_PATH: t.configPath,
       ...(t.launch.profile ? { OPENCLAW_PROFILE: t.launch.profile } : {}),

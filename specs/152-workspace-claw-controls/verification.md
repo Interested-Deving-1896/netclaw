@@ -1,5 +1,8 @@
 # Spec152 verification — 2026-10-15
 
+WSL follow-up: [real workspace inspection and qualification limits](wsl-verification.md).
+The sections below record the earlier Mac acceptance, not the later WSL results.
+
 Implemented on `152-workspace-claw-controls`, based on main `eb5475e`. The owner first
 requested an ephemeral preview, then explicitly authorized packaging and pushing the
 feature branch with a WSL handoff for real-runtime file inspection. Merge, live

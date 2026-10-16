@@ -82,7 +82,9 @@ process.env.NETCLAW_ENV_FILE=installation.envPath;
 if (installation.kind==='hermes') {
   for (const key of Object.keys(process.env)) if(key.startsWith('OPENCLAW_')) delete process.env[key];
   process.env.HERMES_HOME=installation.home;
-} else Object.assign(process.env,{OPENCLAW_HOME:installation.home,OPENCLAW_STATE_DIR:installation.home,OPENCLAW_CONFIG_PATH:installation.configPath});
+// Native OpenClaw uses OPENCLAW_HOME for tilde expansion, not its state directory.
+// Keep that launch home distinct while pinning the selected state/config explicitly.
+} else Object.assign(process.env,{OPENCLAW_HOME:process.env.OPENCLAW_HOME || process.env.HOME || os.homedir(),OPENCLAW_STATE_DIR:installation.home,OPENCLAW_CONFIG_PATH:installation.configPath});
 const { Client: SSHClient } = ssh2;
 const { listTerminalProfiles, appendTerminalProfile, getTerminalProfile } = createTerminalProfiles({
   parseTestbed, parseEnvFile, readText, getTestbedFile: () => TESTBED_FILE, pickDeviceConnection,

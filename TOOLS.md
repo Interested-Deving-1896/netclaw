@@ -1038,6 +1038,18 @@ Spec151 security amendment adds native host-bound DefenseClaw tool-rule/mode con
 
 Owner subsequently authorized the Spec151 commit/push/PR/main-merge step on2026-10-11. The packaging, deployment and release/Marketplace publication hold remains.
 
+### Spec152 WSL inspection — 2026-10-15
+
+Native OpenClaw expands tilde workspace paths using `OPENCLAW_HOME`; that is a
+user home, distinct from `OPENCLAW_STATE_DIR`. Preserve both during HUD discovery
+and helper execution. Windows VS Code profile isolation alone did not isolate
+remote extension file storage; verify the WSL host's actual global-storage path.
+The inspected Border workspace contains regular SOUL/IDENTITY files and four
+symlinked persona files, which the current management helper correctly refuses.
+The installed systemd gateway environment file remains unqualified for lifecycle
+controls. See specs/152-workspace-claw-controls/wsl-verification.md for evidence
+and limits; no live configuration or service change was made.
+
 ## VS Code workspace and lifecycle controls (Spec152, local source)
 
 The upper Connections panel exposes SOUL/AGENTS/IDENTITY/USER/TOOLS/HEARTBEAT.md through a native VS Code document provider. Only reviewed read/save/upload/overwrite is available; no delete/rename. OpenClaw resolves the bound agent’s native workspace and verifies agreement with HUD discovery; Hermes files reside in its selected home. The protected Hermes HUD engine intentionally does not load persona context. Saved content, service readiness and actual prompt consumption remain distinct.
