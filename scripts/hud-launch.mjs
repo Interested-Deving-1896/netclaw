@@ -1,5 +1,9 @@
 #!/usr/bin/env node
+import { managementDiscovery } from '../ui/netclaw-visual/src/hud-server/management.js';
+import { resolveTarget } from './lib/claw-files.mjs';
+import { registerOwned, startOwned, definition, ownedState } from './lib/claw-process.mjs';
 import fs from 'node:fs';
+import os from 'node:os';
 import { supportsHudNode } from './hud-node-version.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,7 +20,7 @@ for (const [flag,key] of [['--runtime','NETCLAW_RUNTIME'],['--home','HUD_HOME']]
 }
 if(env.HUD_HOME) {
   if(!env.NETCLAW_RUNTIME) throw Error('--home requires --runtime openclaw or --runtime hermes');
-  env[env.NETCLAW_RUNTIME==='hermes'?'HERMES_HOME':'OPENCLAW_HOME']=env.HUD_HOME;
+  env[env.NETCLAW_RUNTIME==='hermes'?'HERMES_HOME':'OPENCLAW_STATE_DIR']=env.HUD_HOME;
 }
 const children=[];
 const stop=()=>{ for(const child of children) { try { process.kill(-child.pid,'SIGTERM'); } catch { child.kill(); } } };
@@ -28,7 +32,7 @@ try {
     console.log(`Selected ${selected.kind}: ${selected.home}`);
   } else {
     const selected=resolveRuntime({env,initialize:mode==='start' && !args.includes('--dry-run')});
-    if(!['start','status','--dry-run'].includes(mode)) throw Error('Usage: netclaw hud [start|status|select KIND HOME] [--runtime KIND --home PATH] [--dry-run]');
+    if(!['start','managed','status','--dry-run'].includes(mode)) throw Error('Usage: netclaw hud [start|managed|status|select KIND HOME] [--runtime KIND --home PATH] [--dry-run]');
     if(mode==='status' || args.includes('--dry-run')) {
       let readiness={ready:false,code:'runtime_stopped',executionVerified:false};
       if(selected.kind==='hermes' && mode==='status') {
@@ -49,7 +53,17 @@ try {
       const configured=fs.existsSync(selected.envPath)?parseEnvData(fs.readFileSync(selected.envPath,'utf8')):{};
       Object.assign(env,{...configured,...env}, {NETCLAW_RUNTIME:selected.kind,NETCLAW_HUD_INSTALLATION_ID:selected.installationId});
       if(selected.kind==='hermes') { for(const key of Object.keys(env)) if(key.startsWith('OPENCLAW_')) delete env[key]; env.HERMES_HOME=selected.home; }
-      else Object.assign(env,{OPENCLAW_HOME:selected.home,OPENCLAW_STATE_DIR:selected.home,OPENCLAW_CONFIG_PATH:selected.configPath});
+      else Object.assign(env,{OPENCLAW_HOME:env.OPENCLAW_HOME || env.HOME || os.homedir(),OPENCLAW_STATE_DIR:selected.home,OPENCLAW_CONFIG_PATH:selected.configPath});
+      if(mode==='managed') {
+        if(selected.kind==='hermes')readPrivate(path.join(selected.statePath,'companion-auth.json'));
+        const target=await resolveTarget(await managementDiscovery(selected,root,env.HUD_AGENT_ID,env));
+        const existing=definition(target,'hud');
+        if(existing && (await ownedState(target,existing)).state!=='stopped')throw Error('This HUD already has an active owner.');
+        const descriptor=registerOwned(target,'hud',process.execPath,[path.join(root,'scripts/hud-launch.mjs'),'start','--runtime',selected.kind,'--home',selected.home],env,root,{url:`http://127.0.0.1:${hudPorts(env).api}/api/runtime`,installationId:selected.installationId,kind:selected.kind});
+        await startOwned(target,descriptor);
+        console.log('Managed HUD ready. Its private ownership record supports offline VS Code controls.');
+        process.exit(0);
+      }
       const ports=hudPorts(env), companionPort=Number(env.NETCLAW_HERMES_HUD_PORT || 8643);
       if(selected.kind==='hermes' && (!Number.isInteger(companionPort)||companionPort<1024||companionPort>65535||Object.values(ports).includes(companionPort))) throw Error('Invalid or conflicting companion port.');
       const endpoints=[['HUD API','127.0.0.1',ports.api],['HUD UI',hudHost(env),ports.ui]];

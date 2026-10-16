@@ -1,3 +1,4 @@
+import { managementDiscovery } from './src/hud-server/management.js';
 import { ENV_MAP } from './env-map.js';
 import { mountMcpConfiguration } from './mcp-configuration.js';
 import { federationEndpoint, federationReadiness } from './src/hud-server/runtime/federation.js';
@@ -81,7 +82,9 @@ process.env.NETCLAW_ENV_FILE=installation.envPath;
 if (installation.kind==='hermes') {
   for (const key of Object.keys(process.env)) if(key.startsWith('OPENCLAW_')) delete process.env[key];
   process.env.HERMES_HOME=installation.home;
-} else Object.assign(process.env,{OPENCLAW_HOME:installation.home,OPENCLAW_STATE_DIR:installation.home,OPENCLAW_CONFIG_PATH:installation.configPath});
+// Native OpenClaw uses OPENCLAW_HOME for tilde expansion, not its state directory.
+// Keep that launch home distinct while pinning the selected state/config explicitly.
+} else Object.assign(process.env,{OPENCLAW_HOME:process.env.OPENCLAW_HOME || process.env.HOME || os.homedir(),OPENCLAW_STATE_DIR:installation.home,OPENCLAW_CONFIG_PATH:installation.configPath});
 const { Client: SSHClient } = ssh2;
 const { listTerminalProfiles, appendTerminalProfile, getTerminalProfile } = createTerminalProfiles({
   parseTestbed, parseEnvFile, readText, getTestbedFile: () => TESTBED_FILE, pickDeviceConnection,
@@ -132,6 +135,11 @@ app.get('/api/runtime', async (_req, res) => {
   if (hermesRuntime) { try { readiness = await hermesRuntime.call('status'); } catch(error) {readiness.code=error.code || 'runtime_unavailable';} }
   else readiness = { ready: fs.existsSync(installation.configPath), executionVerified: false };
   res.set('Cache-Control', 'no-store').json({ kind: installation.kind, installationId: installation.installationId, label: installation.kind === 'hermes' ? 'Hermes' : 'OpenClaw', readiness, capabilities: { attachments: !hermesRuntime, modelSelection: !hermesRuntime, effort: !hermesRuntime, federation: !hermesRuntime || (await federationReadiness(installation,BGP_API)).ready, hostedAvatar: !hermesRuntime, writes: !hermesRuntime } });
+});
+app.get('/api/hud/management', async (req, res) => {
+  try { hudBindings.read(cookieFrom(req)); } catch { return res.status(401).json({error:'An owned HUD session is required.'}); }
+  try { return res.set('Cache-Control','no-store').json(await managementDiscovery(installation,ROOT,process.env.HUD_AGENT_ID)); }
+  catch { return res.status(409).json({error:'Native management discovery is unavailable. Verify this installation’s source checkout and native runtime executable.'}); }
 });
 if (hermesRuntime) {
   mountHermesChat(app, { runtime: hermesRuntime, bindings: hudBindings });

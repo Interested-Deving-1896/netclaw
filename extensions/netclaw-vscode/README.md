@@ -23,6 +23,71 @@ No automatic connection or runtime changes occur when you open a workspace.
 Connections require Workspace Trust. Public HUD URLs, browser VS Code, native
 Windows runtime hosting and virtual workspaces are unsupported.
 
+## Workspace files and claw controls
+
+Spec152 adds **Workspace & Claw** to the upper Connections panel. This feature is
+not yet in the published 1.0.1 extension. Connect to an updated source HUD, choose
+Workspace & Claw and review the installation, native executable and local helper
+before enabling controls. The selected host must have the supported HUD Node
+runtime and this feature’s source helpers; older HUDs need that source update.
+
+- Open **SOUL.md, AGENTS.md, IDENTITY.md, USER.md, TOOLS.md or HEARTBEAT.md** in
+  VS Code’s native Markdown editor. Review and save with Cmd+S / Ctrl+S. Normal
+  typing, Undo and dirty-close prompts apply. No delete, rename or move is exposed.
+- **Upload / overwrite** accepts strict UTF-8 up to 1 MiB, including BOMs, CRLF and
+  intentionally empty files. Select the destination explicitly and review its diff.
+  Missing files are created exclusively. Empty replacement keeps the file present.
+- **Save & Restart** reviews the exact draft and service scope together. Restart
+  runs only after verified persistence of that same revision. Save alone never
+  restarts a service. Saving and restart outcomes are reported separately.
+- **Start / Stop / Restart** operate the selected installation’s verified gateway
+  or engine, owned HUD (including its protected Hermes companion), and configured
+  federation services. Stop and restart can interrupt work; the native review says
+  when activity is unknown. The saved host binding keeps Start usable with HUD
+  offline, including after an editor reload. It never selects another installation.
+- **Recovery & history** shows local operation evidence and private original paths.
+  Restore an original through Upload / overwrite and a fresh review. Refresh /
+  reconcile observes interrupted operations; it never blindly repeats one.
+
+OpenClaw workspaces come from its native agent catalog and must agree with the
+connected HUD’s launch context. Hermes persona files live directly in its selected
+home. The protected Hermes HUD engine deliberately does **not** load those persona
+files; restarting does not remove this protection. For OpenClaw, session type and
+heartbeat scheduling determine loading, and an existing conversation may keep its
+previous context. Saved bytes and service readiness do not prove prompt consumption.
+
+Full lifecycle is enabled only when every configured component has a verifiable
+owner. New HUD ownership can be established with the existing selected environment:
+
+```sh
+node scripts/hud-launch.mjs managed --runtime openclaw --home /absolute/runtime/home
+# Or --runtime hermes with that installation’s home and preinstalled companion.
+```
+
+This creates no installation, provider setup or service-manager definition. Start
+requires existing configuration, dependencies and, for Hermes, its private companion
+credential. Stop the prior foreground HUD using its existing owner before using
+managed mode; this feature never adopts or kills an unknown listener. Native user
+services use their exact verified launchd/systemd definitions. Opaque launchers,
+ambiguous ownership, unqualified Hermes native messaging gateways and unsupported
+service definitions leave full controls unavailable, with a reason. Existing owned
+standalone federation uses its installation-scoped helper; supervised federation
+must use its verified manager. No process-name or port-wide termination is used.
+
+Coordinate external file writers: private locking, revision checks, recovery copies
+and final readback protect the managed workflow, but ordinary filesystem rename is
+not a universal compare-and-swap against an uncooperative external writer. Changing
+the helper, target workspace or installation identity requires a new binding/review.
+After switching targets, stale documents retain their drafts but must be reopened
+for the newly selected binding before saving.
+
+Qualification and the isolated preview are recorded in
+[Spec152 verification](../../specs/152-workspace-claw-controls/verification.md).
+Mac fixture acceptance does not claim provider execution or Linux/WSL/Remote live
+qualification. WSL verified actual regular-file reads and native editing/Undo; symlink files remain
+refused. Full live WSL lifecycle is not claimed. Use source release 1.11.0 or later
+for the matching HUD/helper, and see [release verification](../../specs/152-workspace-claw-controls/release-verification.md).
+
 ## Workbench
 
 Spec151 adds a shared card layout, persistent form labels and contextual help, while retaining blue actions, search and pagination. Pages automatically follow light, dark and high-contrast editor themes. The locally bundled artwork is decorative; BGP's interactive 3D view uses reported sessions and has an independent readable list. It does not depict physical cabling or infer device health.
@@ -170,4 +235,4 @@ Backend integration tests require the HUD dependencies
 `npm run test:editor` launches an isolated desktop extension test. RAG and named
 assistant live checks are explicit opt-ins documented in Spec150 evidence.
 
-`npm run package` requires a clean committed checkout, checks that every runtime bundle and license notice is included, and records source and VSIX digest in `out/package.json`. Install from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw). The [1.0.1 input/address hotfix](HOTFIX-1.0.1.md) passed Windows-renderer/WSL-host acceptance and is prepared for owner-managed Marketplace publication from the Mac. Install the tested artifact and reload the window; an installed version label does not establish which code the current extension host is running. The earlier 0.1.1 WSL-tested VSIX passed native Mac acceptance and was published unchanged; Microsoft completed its validation on October 11, 2026. See [production readiness](../../specs/151-extension-experience/production-readiness.md) for qualification, artifact verification and platform limits. Earlier [Spec151 verification](../../specs/151-extension-experience/verification.md) records the original Mac source checkpoint.
+`npm run package` requires a clean committed checkout, checks that every runtime bundle and license notice is included, and records source and VSIX digest in `out/package.json`. Install from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw). Version 1.1.0 adds workspace files and owned lifecycle controls and retains the [1.0.1 input/address hotfix](HOTFIX-1.0.1.md). Install the tested artifact and reload the window; an installed version label does not establish which code the current extension host is running. The earlier 0.1.1 WSL-tested VSIX passed native Mac acceptance and was published unchanged; Microsoft completed its validation on October 11, 2026. See [production readiness](../../specs/151-extension-experience/production-readiness.md) for qualification, artifact verification and platform limits. Earlier [Spec151 verification](../../specs/151-extension-experience/verification.md) records the original Mac source checkpoint.

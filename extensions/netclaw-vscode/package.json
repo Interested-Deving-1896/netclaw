@@ -2,7 +2,7 @@
   "name": "netclaw",
   "displayName": "NetClaw",
   "description": "Manage existing NetClaw and Risk installations from Visual Studio Code.",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "publisher": "NetClaw",
   "license": "Apache-2.0",
   "engines": {
@@ -54,7 +54,9 @@
     "package": "node scripts/package.mjs",
     "publisher:login": "vsce login NetClaw",
     "publisher:verify": "vsce verify-pat NetClaw",
-    "preview:local": "npm run build && node scripts/preview.mjs"
+    "preview:local": "npm run build && node scripts/preview.mjs",
+    "preview:workspace": "node scripts/workspace-preview.mjs",
+    "test:workspace": "node --test test/claw-*.test.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.3.1",
@@ -332,6 +334,46 @@
       {
         "command": "netclaw.openMeetings",
         "title": "Stage Meeting Context Investigation",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.workspaceControls",
+        "title": "Workspace & Claw",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.bindWorkspace",
+        "title": "Enable / rebind workspace controls",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.openWorkspaceFile",
+        "title": "Open workspace Markdown file",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.uploadWorkspaceFile",
+        "title": "Upload / overwrite workspace file",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.saveRestartClaw",
+        "title": "Save workspace file and Restart claw",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.startClaw",
+        "title": "Start claw",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.stopClaw",
+        "title": "Stop claw",
+        "category": "NetClaw"
+      },
+      {
+        "command": "netclaw.restartClaw",
+        "title": "Restart claw",
         "category": "NetClaw"
       }
     ],

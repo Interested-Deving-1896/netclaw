@@ -57,3 +57,10 @@
 - Interface correction (2026-10-09): Avatar is the fourth Chat interface beside Chat, Canvas and OpenClaw, not a separate Pal sidebar tab.
 - Spec151 security choice (2026-10-11): expose OpenShell and DefenseClaw allow/block rules, supported policies/enforcement modes, status and logs; require explicit acknowledgment for weakened protection. This addition does not include lifecycle start/stop/restart.
 - Spec151 merge authorization (2026-10-11): commit all completed work, push the feature branch, create and merge its PR into main, then stop for further instructions. Packaging, deployment, release tags and Marketplace/GitHub release/blog publication remain held.
+- Spec152 direction (2026-10-15): new focused VS Code feature/branch for the top-panel workspace files SOUL.md, AGENTS.md, IDENTITY.md, USER.md, TOOLS.md and HEARTBEAT.md. Read, edit/update and upload/overwrite; no deletion. Include restart after saving and direct Start/Stop/Restart. Confirmed both OpenClaw and Hermes using actual runtime workspaces, and full selected-installation lifecycle including its owned gateway/engine, HUD and federation services. Specification work does not authorize live deployment or publication.
+
+- Spec152 implementation authorization (2026-10-15): proceed through planning, implementation and verification, then FIRST show an ephemeral isolated VS Code with the implemented build. Push/live deployment require later owner approval.
+
+- Spec152 WSL handoff authorization (2026-10-15): package the implemented build, add a WSL handoff prompt, and push the feature branch so it can be pulled on the real NetClaw host. Launch an isolated patched VS Code there connected to the real installation for file inspection. This supersedes the earlier package/push hold; no merge or Marketplace publication was requested.
+
+- Spec152 production authorization (2026-10-16): fetch the WSL follow-up, commit remaining work, create and merge the PR, remove completed feature branches, return to main and push to production. This explicitly supersedes the earlier merge/publication hold for this feature.

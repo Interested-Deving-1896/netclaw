@@ -57,7 +57,7 @@ fs.writeFileSync(
       bytes: bytes.length,
       artifact: path.basename(packagePath),
       qualification:
-        "1.0.1 input/address hotfix; see extensions/netclaw-vscode/HOTFIX-1.0.1.md for Windows/WSL acceptance and platform limits. Publish only the unchanged artifact whose SHA-256 matches the final acceptance handoff. Packaging does not publish.",
+        "Spec152 workspace files and claw controls, extension 1.1.0 with source HUD/helper 1.11.0. See specs/152-workspace-claw-controls/release-verification.md for exact evidence and platform limits. Production publication authorized by the owner on 2026-10-16. Packaging itself does not publish.",
     },
     null,
     2,
