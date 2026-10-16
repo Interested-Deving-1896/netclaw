@@ -66,11 +66,11 @@ Direct commits to OSP or OOC are detected and opened as PRs back to `Interested-
 | [@akshaysiddaram](https://github.com/akshaysiddaram) | 3 |
 | [@popey](https://github.com/popey) | 2 |
 | [@AlekseiChek](https://github.com/AlekseiChek) | 2 |
+| [@Interested-Deving-1896](https://github.com/Interested-Deving-1896) | 2 |
 | [@Vadims06](https://github.com/Vadims06) | 2 |
 | [@chkp-yoavg](https://github.com/chkp-yoavg) | 2 |
 | [@BeArchiTek](https://github.com/BeArchiTek) | 1 |
 | [@prime001](https://github.com/prime001) | 1 |
-| [@Interested-Deving-1896](https://github.com/Interested-Deving-1896) | 1 |
 | [@MatrixNeoKozak](https://github.com/MatrixNeoKozak) | 1 |
 | [@justinbrenton](https://github.com/justinbrenton) | 1 |
 | [@satyam-thakur](https://github.com/satyam-thakur) | 1 |
