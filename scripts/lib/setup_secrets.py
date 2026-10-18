@@ -68,6 +68,9 @@ def child_environment(home, harness, credentials=None, *, tool_directories=()):
            'XDG_CACHE_HOME': str(home/'.setup/cache'), 'XDG_DATA_HOME': str(home/'.setup/data'),
            'XDG_STATE_HOME': str(home/'.setup/state'), 'TMPDIR': str(home/'.setup/tmp'),
            'UV_CACHE_DIR': str(home/'.setup/cache/uv'), 'UV_PYTHON_INSTALL_DIR': str(home/'.setup/python'),
+           # An installed system Python 3.14 must not become the companion's
+           # executable. Independent installations own their interpreters.
+           'UV_MANAGED_PYTHON': '1',
            'NPM_CONFIG_CACHE': str(home/'.setup/cache/npm'), 'NPM_CONFIG_PREFIX': str(home/'.setup/prefix'),
            'NPM_CONFIG_USERCONFIG': '/dev/null', 'PIP_CONFIG_FILE': '/dev/null',
            'HF_HOME':str(home/'.setup/cache/huggingface'),'HF_HUB_OFFLINE':'1','TRANSFORMERS_OFFLINE':'1',

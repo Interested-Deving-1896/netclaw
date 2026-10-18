@@ -33,6 +33,9 @@ class SecretTests(unittest.TestCase):
             self.assertEqual(env['SELECTED_API_KEY'],'selected')
             self.assertEqual(env['HOME'],str(root/'.setup/os-home'))
             self.assertEqual(env['HERMES_HOME'],str(root))
+            self.assertEqual(env['UV_MANAGED_PYTHON'],'1')
+            self.assertEqual(env['UV_PYTHON_INSTALL_DIR'],str(root/'.setup/python'))
+            with self.assertRaises(Exception):child_environment(root,'hermes',{'UV_MANAGED_PYTHON':'0'})
             self.assertNotIn('OPENAI_API_KEY',env)
             # Generated scope in this run's dotenv may repeat but never change
             # the selected harness/home established by the parent.
