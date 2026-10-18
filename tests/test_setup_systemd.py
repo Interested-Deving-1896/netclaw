@@ -1,4 +1,4 @@
-"""Typed busctl contract fixtures, not evidence of a live WSL manager."""
+"""Typed busctl contracts and an explicitly opted-in live WSL manager test."""
 import copy
 import json
 import os

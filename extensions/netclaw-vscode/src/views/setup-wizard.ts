@@ -336,7 +336,13 @@ export class SetupWizard implements vscode.Disposable {
       this.runs.begin();
       this.run=await engine.execute(file,{terminal:openNativeTerminal,review:async binding=>{
         const accepted=await reviewPlan(plan,binding,report);
-        if(accepted){this.view?.reveal();await this.render();}
+        if(accepted){
+          // A newly reviewed installation must not show the previous run's
+          // status alongside its progress. Keep the saved recovery reference
+          // until the engine supplies the new run's authoritative identity.
+          if(!reference)this.run=undefined;
+          this.view?.reveal();await this.render();
+        }
         return accepted;
       },destination:channelDestination,choice:async(_binding,title,choices)=>vscode.window.showQuickPick(choices,{title}),secret:(owner,key)=>this.setupCredential(owner,key),
         event:event=>{if(event.runId){this.run={...this.run,runId:event.runId,state:event.state};void this.runs.event(event,plan,file).catch(()=>engine.pause());}void this.view?.webview.postMessage({type:'progress',event});}},reference?.runId);
