@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { setupServices } from './claw-setup-services.mjs';
 import {
   resolveTarget,
   scopedEnv,
@@ -409,12 +410,12 @@ export async function inspectServices(raw) {
       const d = definition(t, role);
       if (d) services.push({ ...d, definition: definitionHash(t, role) });
     }
-    const native =
+    const native = [...await setupServices(t,command),...(
       process.platform === "darwin"
         ? await launchd(t)
         : process.platform === "linux"
           ? await discoverSystemdServices(t)
-          : [];
+          : [])];
     for (const d of native) {
       if (services.some((s) => s.role === d.role))
         throw Error(

@@ -22,6 +22,14 @@
 
 ## Notes
 
+- Spec153 handoff (2026-10-18): after the fixed Mac engineering gate passed, commit and push the completed source to the feature branch and provide an exact WSL continuation prompt. Windows is bounded smoke/platform-difference qualification, then return to Mac for regression, packaging readiness, recording and the owner walkthrough.
+
+- Spec153 direction (2026-10-17): start a new branch and full Spec Kit cycle using the supplied IDE installer spec, plan and Codex kickoff. Ask five additional clarification questions before planning, then generate tasks, analyze and resolve every finding before implementing and testing. The current request supersedes the kickoff's G2 stop; real installations and publication remain outside scope.
+- Spec153 clarification 1 (2026-10-17): a machine may already host claws. Detect and clearly identify them, explain that the new installation is separate, require a new empty runtime home, and support managing multiple claw installations on the same machine.
+- Spec153 clarification 2 (2026-10-17): allow mixed OpenClaw/Hermes Risks. Choose the harness independently per claw; members inherit the Border's harness by default with explicit overrides where supported.
+- Spec153 clarification 3 (2026-10-17): missing production controls must stop setup. Proceed only after verification or an explicit user choice of testing mode and fresh review of the revised plan; never automatically downgrade.
+- Spec153 clarification 4 (2026-10-17): closing VS Code pauses its installation run at the next safe checkpoint; reopening offers explicit Resume. Abrupt termination requires observing unknown outcomes before retrying, without unattended continuation into later phases.
+- Spec153 clarification 5 (2026-10-17): installation report exports redact hostnames, IP addresses, usernames and local paths by default; detailed local export requires explicit review. Both exclude secrets. All five clarifications complete; continue the authorized SDD process.
 - Spec151 direction (2026-10-11): redesign the VS Code extension around automateyournetwork.com branding and responsive cards; preserve blue actions, filters and search. Add clear connection guidance, testbed CRUD/import and per-MCP environment/setup. Follow SDD with at least five clarification questions before plan/tasks/analyze/fixes/implementation. No packaging, pushing, live deployment or Marketplace/public release until explicitly requested.
 - Spec151 theme choice (2026-10-11): automatically follow VS Code's light/dark theme with branded cards, typography and accents; preserve high-contrast accessibility.
 - Spec151 testbed workflow (2026-10-11): device cards and guided forms plus an advanced YAML editor, with file import/export.

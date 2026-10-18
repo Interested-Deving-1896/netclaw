@@ -338,6 +338,28 @@ function guided(data, op) {
   if (!exists && (!device.os || !Object.keys(device.connections || {}).length))
     fail("New devices require an operating system and connection.");
 }
+// Setup uses the same import rules before a HUD exists. This pure function
+// performs no file writes, connections or device operations.
+export function normalizeSetupTestbed(content,format) {
+  bounded(content);
+  if(format==='yaml'){parse(content);return content;}
+  if(format==='json'){
+    const data=parse(content).data;
+    try { JSON.parse(content); } catch { fail('Invalid JSON testbed.'); }
+    return stringify(data);
+  }
+  if(format!=='csv')fail('Choose YAML, JSON or CSV.');
+  const data={devices:{}},shared=new Map();
+  for(const row of readCsv(content)){
+    const fields=Object.fromEntries(metadata.filter(k=>Object.hasOwn(row,k)).map(k=>[k,row[k]]));
+    if(shared.has(row.id)&&!equal(shared.get(row.id),fields))fail('Conflicting CSV device metadata.');
+    shared.set(row.id,fields);
+    const endpoint=Object.fromEntries(['protocol','host','port'].filter(k=>Object.hasOwn(row,k)&&(k!=='port'||row[k]!=='')).map(k=>[k,row[k]]));
+    guided(data,{type:Object.hasOwn(data.devices,row.id)?'update':'create',id:row.id,fields,
+      ...(Object.keys(endpoint).length?{connection:row.connection,endpoint}:{})});
+  }
+  validate(data);return stringify(data);
+}
 export function createTestbedDocument({
   file,
   installationId,

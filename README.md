@@ -10,7 +10,7 @@ Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one Ne
 
 **Start here:** [Choose a runtime](#hermes-or-openclaw) · [Install](#quick-install) · [Capabilities](#what-it-does) · [RAG](#rag--answers-grounded-in-your-documents) · [GCF](#gcf--compact-network-evidence) · [Mobile](#netclaw-mobile--your-network-in-your-pocket) · [Zoom](#zoom--network-investigations-in-the-meeting) · [VS Code](#vs-code-extension) · [HUD](#visual-hud) · [Jev](#optional-jev-science-officer)
 
-**Project:** [Source version 1.9.0 — unpublished](VERSION) · [Release notes](docs/releases/1.9.0.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
+**Project:** [Source version 1.11.0](VERSION) · [Release notes](docs/releases/1.11.0.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 
 **VS Code:** [Install NetClaw](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw) or [explore the VS Code Extension](#vs-code-extension): a native workbench for your existing NetClaw, with Chat, Canvas, RAG, Testbed management, per-MCP configuration and reviewed security controls.
 
@@ -134,6 +134,8 @@ Changes retain their review boundaries: Testbed saves do not connect devices, sa
 ---
 
 ## Quick Install
+
+**New source-development workflow (Spec153, unpublished):** [VS Code wizard](docs/GETTING-STARTED-VSCODE.md), [CLI Claw Plans](docs/CLAW-PLAN.md) and [assistant guidance](docs/ASSISTANT-INSTALL.md) now share a separate-home setup engine. A [deployment Spec Kit preset](docs/SPEC-KIT-CLAWS.md) stages the same native review. Existing claws are detected and preserved; each new claw has independent identity, credentials, services and connection. This branch requires VS Code 1.109+. See [verification and open acceptance work](specs/153-ide-installer/verification.md) before real installation; the historical installer below retains its existing behavior.
 
 ```bash
 git clone https://github.com/automateyournetwork/netclaw.git

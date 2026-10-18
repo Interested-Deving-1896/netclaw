@@ -4,11 +4,13 @@ Manage your **existing NetClaw or Risk** from VS Code. Connect to its running HU
 inspect operations, converse with its configured runtime, search RAG knowledge and
 review supported settings without leaving your editor.
 
+**Spec153 source development:** this branch also adds **NetClaw: Set Up a New NetClaw** for separate Focused claws and mixed Risks, plus CLI and assistant frontends to one reviewed plan engine. It is not published yet. Read [new setup](../../docs/GETTING-STARTED-VSCODE.md), [assistant setup](../../docs/ASSISTANT-INSTALL.md), [deployment Spec Kit](../../docs/SPEC-KIT-CLAWS.md) and [current qualification limits](../../specs/153-ide-installer/verification.md). Existing installations receive a visible separate-install disclosure and remain independent Connections.
+
 NetClaw remains your runtime. Opening the extension changes no runtime. Explicitly reviewed setup actions can install selected isolated MCP runtimes, register canonical OpenClaw MCPs or restart the owned federation service using existing NetClaw helpers.
 
 ## Connect
 
-1. Use VS Code 1.102 or later on macOS or Linux. On Windows, first open your
+1. This source branch requires VS Code 1.109 or later on macOS or Linux. Published 1.1.0 retains its 1.102 baseline. On Windows, first open your
    intended **WSL distribution** with VS Code Remote WSL and install this extension
    **in WSL**. For another Linux/Mac machine, use your existing Remote SSH workspace.
 2. Start your already-installed NetClaw HUD using its normal supported environment.

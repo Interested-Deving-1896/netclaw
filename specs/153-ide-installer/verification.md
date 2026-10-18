@@ -1,0 +1,61 @@
+# Spec153 verification — Mac engineering gate complete
+
+2026-10-18: **8/8 frozen Mac groups passed**. [MAC-COMPLETION.md](MAC-COMPLETION.md) defines exactly what this means and records decisions. Original task count: **81/84 checked**; T081's Windows/WSL portion, T082 and final cross-platform T084 remain. Windows has not been tested. Packaging, recording and the owner walkthrough follow Windows return and affected Mac regression.
+
+All operator inputs below are synthetic unless stated otherwise. No provider turn, real channel message or device connection occurred. Existing owner credentials and claws were excluded. Passing supported installer scenarios does not qualify every one of the 110 catalog components against live infrastructure.
+
+## Actual Mac acceptance
+
+| Exercise | Result and evidence |
+| --- | --- |
+| Fresh macOS prerequisite/bootstrap and blank Minimal wizard | macOS 26.6.2 / 25G83 arm64 VM, 4 vCPU, 8GiB, 80GiB virtual disk. Native package actions installed prerequisites; supplied public checkout, no owner files. OpenClaw 2026.7.1-2; pyATS, GAIT, subnet and drawio/RFC all discovered; required Tiers 1–3 verified. [Report and timing](evidence/clean-mac-minimal.json), [report screenshot](evidence/clean-mac-result.jpg). |
+| Both harness wizard journeys | Actual isolated VS Code 1.109 saved-plan review/Apply/report: OpenClaw 48.943s, Hermes 169.442s. Required tiers verified. These are separate fresh homes on the existing Mac, not additional clean OS tests. [Composed evidence](evidence/mac-composed-acceptance.json). |
+| Mixed Risk, both Border harnesses | Each actual Border has three members, both member harnesses, inheritance/override, Ollama/LM Studio configurations, hot and on-demand modes. All four pairings, enrollment, identity-bound local self-status and Tiers 1–3 pass. On-demand wake and idempotence pass. Provider configurations are not model execution. [Evidence](evidence/mac-composed-acceptance.json). |
+| Multiclaw management | Actual native connection/save/bind, reviewed USER.md edits, stop/start/restart on OpenClaw Border/OpenClaw member/Hermes member. Existing-NetClaw disclosure visible. Neighbor config/identity/service hashes and PIDs unchanged. Config-budget forms have fixture coverage; no native Hermes budget API support is invented. [Evidence](evidence/mac-composed-acceptance.json). |
+| Legacy CLI | Actual `--plan` through controlling PTY; exact-hash synthetic review, 49.58s, required tiers verified. [Evidence](evidence/cli-native.json). |
+| Installed assistants | Codex 0.163.0 registration and native app-server discovery of eight tools; Claude Code 2.1.286 registration/connected handshake with tools capability (CLI does not expose the full list); actual VS Code MCP client used by Copilot discovers eight tools. No signed-in hosted chat turn. Same seven intent cases across three client formats remain contract fixtures. [Evidence](evidence/assistant-clients.json). |
+| Deployment Spec Kit | Actual pinned Specify 0.7.1 renders Codex, Claude, Copilot and combined integrations; effective templates/commands verified; overriding a required template is refused. Included in setup regression. |
+| Earlier native focused/preservation acceptance | Three fresh-home engine installations (59.136s, 67.962s, 52.500s), first-claw file/PID preservation and five reviewed cleanups. [Evidence](evidence/mac-native-local.json). |
+
+## Synthetic usability and performance
+
+The owner replaced recruited participants with synthetic engineering and a final owner walkthrough. [UI evidence](evidence/ui-workflows.json) covers nine light/dark/high-contrast × 360/700/1200px combinations; six native keyboard dialog/cancel paths per combination; keyboard search/Tab; 200% zoom; numeric Shape Advisor; both-direction shape override; actual report inspection. Cached search/render took **2.3–2.8ms**. Earlier visual preview screenshots remain in [editor-preview](evidence/editor-preview/report.json).
+
+For the clean VM's unmodified Minimal profile, three blank native wizard journeys measured **8.289s, 7.556s and 7.519s**; median **7.556s**. These are automated choice/input timings, not human comprehension measurements. One journey installed; two stopped after validation. **Apply to verified Tier 3: 110.755s**. Package acquisition phases totaled **55.918s**, including resolver, transfer, unpack/build/install; wire-only transfer cannot be isolated by the adapters. OS/Homebrew prerequisite bootstrap occurred before this benchmark and is excluded. No model download occurred. Full phase samples are in [clean-mac-minimal.json](evidence/clean-mac-minimal.json).
+
+Twenty-nine actual engine stdout frames reached the webview's next animation frame in **0–14ms**. The native plan review now restores visible progress before execution advances. Validation messages survive unchanged snapshots and invalidate when the draft changes. This measurement covers observed engine-output delivery and rendering, not user reaction time.
+
+## Regression and analysis
+
+| Check | Result |
+| --- | --- |
+| Setup Python | **136 passed, zero skips**, 20.703s, with actual pinned Specify, Hermes, certificate and MCP interpreters supplied. Final GAIT record ownership tightening also passed all six deployment and four component tests. |
+| Extension | **134 passed, two skips**, 25.351s; TypeScript and build passed. Skips require an installed-native workspace fixture and cached RAG embedding model. Actual disposable setup/management is separately covered; RAG retrieval is outside this fixed installer gate. |
+| Installer selection | **216 passed plus 16 subtests**, 31.33s. Retained relevant legacy regression, unchanged by final setup-only fixes. |
+| Catalog/schema | 110 components, 237 skills, 124 registered MCP servers and 52 external integrations; metadata/generation/coverage checks pass, zero unexplained joins. Plan schemas identical. |
+| Traceability | All 84 unique tasks mapped; 56 FR and 14 SC covered, no unmapped tasks. Scope remained fixed. |
+| Links | 126 syntactically valid links; 124 checked successfully and two retained auth/transport dispositions. No unexplained dead link. See catalog-links.json; not a claim of universal unauthenticated access. |
+| Privacy | Default report structural redaction, secret/native-channel tests and final seeded artifact scan pass. Scan scope and limits in [privacy-audit.json](evidence/privacy-audit.json). |
+
+[Test hashes](evidence/test-results.json) identify retained logs. [Analysis](analysis.md) records original design remediation and subsequent runtime findings. No unresolved implementation finding remains in the frozen Mac scope. Windows/platform observations and final cross-platform closure remain unperformed, not passed.
+
+Actual isolated supplements: [ANTA catalog canary](evidence/anta-canary.json), [certificate helper](evidence/certificate-helper.json), [gtrace build](evidence/gtrace-build.json), and [HUD dependency remove/restore observation](evidence/hud-dependencies.json). None sends network configuration or claims general integration qualification.
+
+## Recovery, ownership and cleanup
+
+The engine retains writer locks, journals effects before writes, and pauses after native input cancellation/editor loss. Real child-process tests exercise surviving writers and disconnect. Owned partial home/skill/identity/source files may repair only against exact journal evidence and fresh review. Source recovery stops at the dependency boundary. Runtime and native services require their own observed postconditions; uncertain components/registration/inventory remain unknown instead of being replayed. Apply/Resume never advances beyond unsettled onboarding.
+
+Source indexes bind service launch and management to the selected copied source. Canonical interpreter paths agree across setup and management. Native Hermes MCP discovery verifies a live owned registry for servers outside the protected companion allowlist; the allowlist is not widened. Reports distinguish artifact, native discovery, local canary and authenticated HUD readiness from optional live tiers.
+
+[Actual cleanup](evidence/mac-cleanup.json) stopped and removed all five final host test installations' native controllers, including both four-claw Risks. The OpenClaw-Border Risk returned `configuration_required` because cleanup correctly retained the Hermes identity manifest changed by the management test. Audit ownership records and dependency directories remain private. No changed/shared file was forced away. Earlier diagnostic and clean-VM runs also used reviewed cleanup; the final Minimal cleanup verified, and the VM is stopped with its disk retained for reproduction.
+
+Cleanup's closed-connection port probe tolerates TCP TIME_WAIT while still refusing an active listener. A launchd list/print disappearance race now requires a second successful parsed listing to establish absence; manager failures remain unknown.
+
+## Supported limits and remaining stages
+
+- Optional provider/channel/device tiers were unselected. They require designated resources and separate native consent. No existing credentials were borrowed and no live-host export was received.
+- Production requests refuse when mandatory installation-bound controls are unverified; no silent downgrade. Hermes model guard remains unsupported.
+- Webex 0.1.3 is incompatible with the pinned OpenClaw API and refuses before effects. The legacy shared-host `in2n-production` component is unavailable in this independent-home installer. `computer-use` remains WSL-only/native. These are explicit tested dispositions, not unfinished Mac success claims.
+- Keychain popups in ephemeral editors were cancelled; test editors use `--use-mock-keychain`. No reset or owner keychain change.
+- Windows/WSL now performs only the bounded smoke/platform-difference matrix in [WSL-HANDOFF.md](WSL-HANDOFF.md). The old archive is obsolete. New source plans/reviews must bind to the Windows/WSL host.
+- Return fixes and sanitized evidence to this Mac for regression and T084 closure, then owner walkthrough/recording and separately authorized package/publication. Nothing has been published or packaged as a release.

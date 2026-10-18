@@ -23,6 +23,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NETCLAW_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$SCRIPT_DIR/lib/plan-cli.sh"
+netclaw_plan_dispatch "$@" || true
 NETCLAW_PY_EXPLICIT=0
 [ -z "${NETCLAW_PY:-}" ] || NETCLAW_PY_EXPLICIT=1
 
