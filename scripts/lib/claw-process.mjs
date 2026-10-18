@@ -19,14 +19,33 @@ import {
 const exec = promisify(execFile),
   self = fileURLToPath(import.meta.url);
 export const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+// Linux wall-clock start times reported by ps can move when WSL adjusts its
+// boot-time clock. Bind new records to kernel boot ID + monotonic start ticks.
+function linuxStart(pid) {
+  const text = fs.readFileSync(`/proc/${pid}/stat`, 'utf8');
+  const fields = text.slice(text.lastIndexOf(')') + 2).trim().split(/\s+/);
+  if (!text.startsWith(`${pid} (`) || !/^[0-9]+$/.test(fields[19] || '')) throw Error('Unknown process identity.');
+  if (['Z', 'X'].includes(fields[0])) return null;
+  const boot = fs.readFileSync('/proc/sys/kernel/random/boot_id', 'utf8').trim();
+  if (!/^[a-f0-9-]{36}$/.test(boot)) throw Error('Unknown boot identity.');
+  return `linux:${boot}:${fields[19]}`;
+}
+export function sameProcessStart(observed, expected) {
+  return !!observed && (expected.startId !== undefined
+    ? observed.startId === expected.startId
+    : observed.birth === expected.birth);
+}
 export async function processIdentity(pid) {
   if (!Number.isInteger(pid) || pid < 2) return null;
   try {
+    const startId = process.platform === 'linux' ? linuxStart(pid) : undefined;
+    if (startId === null) return null;
     const { stdout } = await exec(
       "/bin/ps",
       ["-p", String(pid), "-o", "uid=,lstart=,command="],
-      { timeout: 3000 },
+      { timeout: 3000, env: { ...process.env, LC_ALL: "C" } },
     );
+    if (startId !== undefined && linuxStart(pid) !== startId) return null;
     const s = stdout.trim();
     if (!s) return null;
     const m = s.match(/^(\d+)\s+(\w+\s+\w+\s+\d+\s+[\d:]+\s+\d+)\s+(.+)$/);
@@ -36,6 +55,7 @@ export async function processIdentity(pid) {
           uid: Number(m[1]),
           birth: m[2].replace(/\s+/g, " "),
           command: m[3],
+          ...(startId === undefined ? {} : { startId }),
         }
       : null;
   } catch {
@@ -107,7 +127,7 @@ export async function ownedState(t, d) {
   const identity = await processIdentity(r.pid);
   if (!identity) {
     const child = await processIdentity(r.childPid);
-    if (child && child.birth === r.childBirth) {
+    if (sameProcessStart(child, { birth: r.childBirth, startId: r.childStartId })) {
       if (child.uid !== process.getuid() || child.command !== r.childCommand)
         throw Error("Orphan process identity is unverified.");
       return { state: "orphaned", record: r };
@@ -116,7 +136,7 @@ export async function ownedState(t, d) {
   }
   if (
     identity.uid !== process.getuid?.() ||
-    identity.birth !== r.birth ||
+    !sameProcessStart(identity, r) ||
     !identity.command.includes(r.nonce) ||
     !identity.command.includes(self)
   )
@@ -222,12 +242,12 @@ export async function stopOwned(t, d) {
   if (s.state === "stopped") return s;
   const orphan = s.state === "orphaned",
     pid = orphan ? s.record.childPid : s.record.pid,
-    birth = orphan ? s.record.childBirth : s.record.birth;
+    expected = orphan ? { birth: s.record.childBirth, startId: s.record.childStartId } : s.record;
   const again = await processIdentity(pid);
   if (
     !again ||
     again.uid !== process.getuid() ||
-    again.birth !== birth ||
+    !sameProcessStart(again, expected) ||
     (orphan
       ? again.command !== s.record.childCommand
       : !again.command.includes(s.record.nonce))
@@ -260,7 +280,7 @@ export async function reconcileOwned(t, d) {
     saved.installationId !== t.installationId ||
     saved.pid !== record.pid ||
     saved.nonce !== record.nonce ||
-    saved.birth !== record.birth
+    !sameProcessStart(saved, record)
   )
     throw Error(
       "Stale service lock cannot be attributed to this installation.",
@@ -289,6 +309,7 @@ async function run(file, nonce) {
     JSON.stringify({
       pid: process.pid,
       birth: selfIdentity.birth,
+      ...(selfIdentity.startId ? { startId: selfIdentity.startId } : {}),
       nonce,
       installationId: d.installationId,
     }),
@@ -326,11 +347,13 @@ async function run(file, nonce) {
   atomic(path.join(state, d.role + ".process.json"), {
     pid: process.pid,
     birth: selfIdentity.birth,
+    ...(selfIdentity.startId ? { startId: selfIdentity.startId } : {}),
     nonce,
     installationId: d.installationId,
     definition: hash(bytes(file).b),
     childPid: child.pid,
     childBirth: childIdentity?.birth,
+    ...(childIdentity?.startId ? { childStartId: childIdentity.startId } : {}),
     childCommand: childIdentity?.command,
     started: Date.now(),
   });

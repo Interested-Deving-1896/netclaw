@@ -34,7 +34,7 @@ class SystemdTests(unittest.TestCase):
             root=Path(tmp).resolve();home=root/'space $literal% "quote" apostrophe\' backslash\\ trailing '
             source=home/'.setup/source';(source/'scripts').mkdir(parents=True,mode=0o700)
             output=root/'observed.json'
-            (source/'scripts/setup-service.py').write_text('import json,os,sys,time\nfrom pathlib import Path\nPath('+repr(str(output))+').write_text(json.dumps({"cwd":os.getcwd(),"argv":sys.argv}))\ntime.sleep(30)\n')
+            (source/'scripts/setup-service.py').write_text('import json,os,sys,time\nfrom pathlib import Path\ninitial=os.getcwd()\nos.chdir(sys.argv[sys.argv.index("--home")+1])\nPath('+repr(str(output))+').write_text(json.dumps({"initial":initial,"cwd":os.getcwd(),"argv":sys.argv}))\ntime.sleep(30)\n')
             item,data=descriptor('wsl2','netclaw-spec153-test-'+secrets.token_hex(6),'hud',home,source,sys.executable,Path.home(),hot=False)
             file=Path(item['file']);file.parent.mkdir(parents=True,exist_ok=True,mode=0o700)
             def call(args):
@@ -49,6 +49,7 @@ class SystemdTests(unittest.TestCase):
                 deadline=time.monotonic()+10
                 while not output.exists() and time.monotonic()<deadline:time.sleep(.05)
                 observed=json.loads(output.read_text())
+                self.assertEqual(observed['initial'],str(home/'.setup'))
                 self.assertEqual(observed['cwd'],str(home))
                 self.assertEqual(observed['argv'],item['arguments'][1:])
             finally:

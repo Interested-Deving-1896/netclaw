@@ -28,6 +28,7 @@ import {
   startOwned,
   stopOwned,
   processIdentity,
+  sameProcessStart,
   healthy,
   delay,
   endpointOwned,
@@ -560,7 +561,7 @@ async function nativeAction(d, action) {
     }
     if (action === "stop" && s.state === "stopped") {
       const live = previous ? await processIdentity(previous.pid) : null;
-      if (!live || live.birth !== previous.birth) return s;
+      if (!sameProcessStart(live, previous)) return s;
     }
     if (action === "start" && s.state === "ready") return s;
     await delay(150);
