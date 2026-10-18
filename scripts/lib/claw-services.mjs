@@ -195,7 +195,10 @@ function systemdEnvironment(text) {
     const m = line.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
     if (!m) throw Error("Native environment file uses unsupported syntax.");
     const value = m[2].trim();
-    if (/^[^\s"'\\]*$/.test(value)) env[m[1]] = value;
+    // EnvironmentFile preserves interior whitespace and quotes when the value
+    // starts unquoted (systemd.exec). These are literal bytes, not shell words.
+    // Keep escapes and multiline values outside this qualified subset.
+    if (/^(?:[^"'\\\s][^\\]*)?$/.test(value)) env[m[1]] = value;
     else if (/^"[^"\\]*"$/.test(value) || /^'[^'\\]*'$/.test(value))
       env[m[1]] = value.slice(1, -1);
     else throw Error("Native environment file uses unsupported syntax.");

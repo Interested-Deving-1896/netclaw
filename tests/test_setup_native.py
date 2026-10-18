@@ -65,7 +65,11 @@ class NativeTerminalTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             lock=os.open(str(Path(tmp)/'writer.lock'),os.O_RDWR|os.O_CREAT,0o600)
             fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-            code='''import os,subprocess,sys
+            # Linux sends SIGHUP to the foreground process group when its
+            # controlling-terminal leader exits. Ignore it before spawning so
+            # this fixture actually leaves a surviving writer on both hosts.
+            code='''import os,signal,subprocess,sys
+signal.signal(signal.SIGHUP,signal.SIG_IGN)
 subprocess.Popen([sys.executable,'-c','import time; time.sleep(10)'],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,pass_fds=(int(sys.argv[1]),))
 '''
             process=OwnedTerminal([sys.executable,'-c',code,str(lock)],cwd=tmp,env={'PATH':os.defpath},lock_fds=(lock,))
