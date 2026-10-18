@@ -92,7 +92,11 @@ def descriptor(platform,name,role,home,source,python,user_home,*,hot=True):
         # systemd has its own specifier/argument escaping, not shell quoting.
         def quote(value):return json.dumps(str(value).replace('%','%%'),ensure_ascii=False)
         file=root/(label+'.service')
-        text='[Unit]\nDescription=Owned NetClaw '+role+'\n[Service]\nType=simple\nUMask=0077\nWorkingDirectory='+quote(home)+'\nExecStart=:'+ ' '.join(quote(a) for a in arguments)+'\nRestart='+('on-failure' if hot else 'no')+'\nRestartSec=10\nStandardOutput=null\nStandardError=null\n[Install]\nWantedBy=default.target\n'
+        # WorkingDirectory is a literal path, unlike ExecStart's quoted argv.
+        # Quoting it makes systemd see a non-absolute path. A final /. preserves
+        # trailing whitespace/backslashes through unit-file line parsing.
+        working_directory=str(home).replace('%','%%')+'/.'
+        text='[Unit]\nDescription=Owned NetClaw '+role+'\n[Service]\nType=simple\nUMask=0077\nWorkingDirectory='+working_directory+'\nExecStart=:'+ ' '.join(quote(a) for a in arguments)+'\nRestart='+('on-failure' if hot else 'no')+'\nRestartSec=10\nStandardOutput=null\nStandardError=null\n[Install]\nWantedBy=default.target\n'
         data=text.encode()
     else:raise Conflict('service_platform_unsupported')
     item={'role':role,'label':label,'file':str(file),'arguments':arguments,'sha256':hashlib.sha256(data).hexdigest(),'hot':hot}

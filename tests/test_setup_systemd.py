@@ -1,8 +1,13 @@
 """Typed busctl contract fixtures, not evidence of a live WSL manager."""
 import copy
 import json
+import os
 from pathlib import Path
+import secrets
+import subprocess
 import sys
+import tempfile
+import time
 import unittest
 
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'scripts/lib'))
@@ -20,6 +25,39 @@ def bus_reply(args,item,*,foreign=False):
     return {'returncode':0,'stdout':canonical(value)}
 
 class SystemdTests(unittest.TestCase):
+    @unittest.skipUnless(os.environ.get('NETCLAW_SETUP_SYSTEMD')=='1', 'opt-in disposable WSL user manager')
+    def test_actual_descriptor_preserves_special_paths_and_typed_argv(self):
+        from setup_observation import host_identity
+        from setup_risk import descriptor
+        self.assertEqual(host_identity()['platform'],'wsl2')
+        with tempfile.TemporaryDirectory(prefix='nc153-systemd-') as tmp:
+            root=Path(tmp).resolve();home=root/'space $literal% "quote" apostrophe\' backslash\\ trailing '
+            source=home/'.setup/source';(source/'scripts').mkdir(parents=True,mode=0o700)
+            output=root/'observed.json'
+            (source/'scripts/setup-service.py').write_text('import json,os,sys,time\nfrom pathlib import Path\nPath('+repr(str(output))+').write_text(json.dumps({"cwd":os.getcwd(),"argv":sys.argv}))\ntime.sleep(30)\n')
+            item,data=descriptor('wsl2','netclaw-spec153-test-'+secrets.token_hex(6),'hud',home,source,sys.executable,Path.home(),hot=False)
+            file=Path(item['file']);file.parent.mkdir(parents=True,exist_ok=True,mode=0o700)
+            def call(args):
+                p=subprocess.run(args,capture_output=True,timeout=15)
+                return {'returncode':p.returncode,'stdout':p.stdout}
+            with file.open('xb') as f:f.write(data)
+            file.chmod(0o600)
+            try:
+                subprocess.run(['systemctl','--user','daemon-reload'],check=True,capture_output=True)
+                subprocess.run(['systemctl','--user','start',file.name],check=True,capture_output=True)
+                self.assertTrue(observe_argv(call,item))
+                deadline=time.monotonic()+10
+                while not output.exists() and time.monotonic()<deadline:time.sleep(.05)
+                observed=json.loads(output.read_text())
+                self.assertEqual(observed['cwd'],str(home))
+                self.assertEqual(observed['argv'],item['arguments'][1:])
+            finally:
+                # Only this exclusive, unchanged fixture definition is stopped.
+                self.assertEqual(file.read_bytes(),data)
+                subprocess.run(['systemctl','--user','stop',file.name],check=True,capture_output=True)
+                file.unlink()
+                subprocess.run(['systemctl','--user','daemon-reload'],check=True,capture_output=True)
+
     def test_python_and_editor_share_typed_contract_cases(self):
         cases=json.loads((ROOT/'tests/fixtures/setup/systemd-observation.json').read_text())
         for case in cases:
