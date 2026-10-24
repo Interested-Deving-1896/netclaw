@@ -163,7 +163,7 @@ All stories remain required. Each pending environment-dependent acceptance item 
 - [ ] T081 Qualify the full Mac focused/Risk/CLI/wizard/three assistants/Spec, four-pair and multiclaw scope first; only afterward run WSL2 Ubuntu 24.04/26.04 smoke and platform-specific integrations, reusing platform-independent Mac evidence per MAC-COMPLETION.md; record actual evidence in specs/153-ide-installer/verification.md.
 - [ ] T082 Qualify native Windows gate/handoff matrix with before/after snapshots on disposable hosts; record specs/153-ide-installer/verification.md.
 - [x] T083 Run owner-authorized synthetic usability scenarios and minimal-profile timing/performance checks on Mac; defer the owner walkthrough to the final Mac return before recording (SC-002 sequencing amendment, 2026-10-18); record automated versus owner observations, rendering/progress latency and download-separated time in specs/153-ide-installer/verification.md. Track organic community feedback after release separately; do not claim recruited participants.
-- [ ] T084 Create local specs/153-ide-installer/milestone-draft.md and final coverage/status; update memory/2026-10-17.md and GAIT trail without publishing or touching real installations.
+- [x] T084 Create local specs/153-ide-installer/milestone-draft.md and final coverage/status; update memory/2026-10-17.md and GAIT trail without publishing or touching real installations.
 
 ## Dependencies and execution strategy
 
@@ -182,3 +182,5 @@ Total: **84 tasks**. Story/shared counts: shared: 12, US11: 8, US5: 14, US10: 3,
 Mac closure checkpoint (2026-10-18): M01–M08 passed; 81/84 checked. T081 retains Windows/WSL qualification, T082 native Windows, T084 final cross-platform reconciliation. T083 evidence is synthetic and does not claim the later owner walkthrough. See MAC-COMPLETION.md.
 
 WSL return checkpoint (2026-10-24): still **81/84 checked**. Both releases pass the final 140-test setup suite with all opt-ins; real wizard, Risk, client, management and native Windows subcases are recorded in [the return matrix](../../spec153-wsl-return/matrix.json). T081 remains open for incomplete actual WSL scenarios, T082 for unavailable/unrun native Windows cases, and T084 for Mac reconciliation. The owner requested remote delivery/handoff and host stability; no missing case is counted as passed, and no accepted scope was regenerated or reduced.
+
+Release reconciliation (2026-10-24): **82/84 checked**. T084 closes with the existing milestone draft, three additional actual Mac installer passes, final coverage/status in release-verification.md, daily memory and GAIT. The owner then explicitly authorized merge/publication and branch cleanup. T081 and T082 retain their incomplete Windows/WSL subcases; no unrun platform test is relabeled as passed. Operational capability retesting is outside this installer release scope.

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0 — reviewed new-claw setup
+
+- Add **Set Up a New NetClaw** without an existing HUD: bootstrap a reviewed source, choose a Focused claw or mixed OpenClaw/Hermes Risk, and use new empty homes.
+- Review the exact plan natively, keep per-claw credentials private, pause safely and resume explicitly. Save a connection only after authenticated installation readiness.
+- Add assistant-guided drafting, deployment Spec Kit, structurally redacted reports and ownership-checked cleanup.
+- Require VS Code 1.109+ and source setup engine 1.12.0+. Existing installations remain independent; extension upgrades do not upgrade runtime homes.
+- Mac installer acceptance passed, including three fresh-home return scenarios. Windows/WSL qualification is partial; see Spec153 release verification for exact evidence.
+
 ## 1.1.0 — workspace files and claw controls
 
 - Add top-panel access to six native workspace Markdown files for OpenClaw and Hermes, with read, reviewed save and exact UTF-8 upload/overwrite; no delete/rename.

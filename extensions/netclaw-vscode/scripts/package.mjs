@@ -42,6 +42,17 @@ for (const name of fs.readdirSync(path.join(cwd, "dist"))) {
   if (/\.(?:cjs|mjs|js|txt)$/.test(name) && !packaged.has("dist/" + name))
     throw Error(`Required runtime asset missing from VSIX: dist/${name}`);
 }
+// Setup metadata, assistant skill and deployment preset are loaded from disk in
+// an installed extension. Source-mode tests alone cannot catch their omission.
+for (const directory of ["setup", "skills", "preset"]) {
+  for (const name of fs.readdirSync(path.join(cwd, "dist", directory), {
+    recursive: true,
+  })) {
+    const relative = `dist/${directory}/${name.replaceAll(path.sep, "/")}`;
+    if (fs.statSync(path.join(cwd, relative)).isFile() && !packaged.has(relative))
+      throw Error(`Required setup asset missing from VSIX: ${relative}`);
+  }
+}
 const bytes = fs.readFileSync(packagePath),
   sha256 = createHash("sha256").update(bytes).digest("hex");
 fs.mkdirSync(path.join(cwd, "out"), { recursive: true });
@@ -57,7 +68,7 @@ fs.writeFileSync(
       bytes: bytes.length,
       artifact: path.basename(packagePath),
       qualification:
-        "Spec152 workspace files and claw controls, extension 1.1.0 with source HUD/helper 1.11.0. See specs/152-workspace-claw-controls/release-verification.md for exact evidence and platform limits. Production publication authorized by the owner on 2026-10-16. Packaging itself does not publish.",
+        "Spec153 separate-claw installer, extension 1.2.0 with source setup engine 1.12.0 and VS Code >=1.109. Mac installer acceptance is complete; Windows/WSL qualification remains partial. See specs/153-ide-installer/release-verification.md. Publication authorized by the owner on 2026-10-24. Packaging itself does not publish.",
     },
     null,
     2,

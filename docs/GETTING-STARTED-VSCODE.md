@@ -1,6 +1,6 @@
 # Set up a separate NetClaw from VS Code
 
-This is the **Spec153 source-development workflow**. It is not included in the published extension yet. See [verification and remaining qualification](../specs/153-ide-installer/verification.md). This branch requires VS Code 1.109 or later; upgrading the extension does not upgrade an existing claw.
+This workflow is included in **extension 1.2.0**, using **NetClaw source 1.12.0 or later**. See [verification and remaining qualification](../specs/153-ide-installer/verification.md). It requires VS Code 1.109 or later; upgrading the extension does not upgrade an existing claw.
 
 ```mermaid
 flowchart LR

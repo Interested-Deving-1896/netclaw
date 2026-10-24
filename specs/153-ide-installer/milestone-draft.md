@@ -13,3 +13,7 @@ Clean-host work found and fixed GAIT registration/probe, empty pyATS inventory, 
 Regressions: 136 setup passes/no skips; 134 extension passes/two unrelated opt-in skips; 216 installer passes plus 16 subtests. TypeScript/build/catalog/schema/traceability/privacy checks pass. Production controls, incompatible Webex and platform-only components retain explicit refusal/availability states. No owner credentials, installed claws or keychain were changed.
 
 The owner authorized a feature-branch push after the manifest-verified overlay was prepared. The pushed Git baseline now hands Windows only the bounded smoke/platform-difference work. Return fixes and sanitized evidence to this Mac, rerun impacted checks, then perform the owner walkthrough, recording and separately authorized packaging/publication. Source commit/push is authorized for this handoff; merge, release packaging and Marketplace publication remain for the final Mac return.
+
+## Final Mac return and release decision — 2026-10-24
+
+The three additional actual Mac installer scenarios passed. The owner then authorized merge/publication and completed-branch cleanup. See [Mac acceptance](mac-return-installer-acceptance.md) and [release verification](release-verification.md). T084 coverage reconciliation is complete; T081/T082 retain their partial Windows/WSL results. The earlier source-only hold above is historical and superseded.
