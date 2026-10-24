@@ -16,7 +16,7 @@ Devices are defined in `testbed/testbed.yaml`. Update that file with your SSH-ac
 
 ## Platform Credentials
 
-All credentials are in `~/.openclaw/.env`. Never put credentials in skill files or this document.
+Credentials belong to the **selected installation's** private `.env`. The historical default is `~/.openclaw/.env`; a separate setup-owned OpenClaw or Hermes home has its own file. Verify the selected home and installation identity first. Never borrow another claw's credentials or put values in skill files, plans, reports or this document. [Spec153 setup](docs/GETTING-STARTED-VSCODE.md) ships in source 1.12.0 / extension 1.2.0. Publishing these artifacts does not install or change any existing local runtime.
 
 ```
 ### Batfish Configuration Analysis (reference only — actual values in .env)

@@ -38,6 +38,7 @@ import sys
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CATALOG_SH = os.path.join(REPO_ROOT, "scripts", "lib", "catalog.sh")
+CANONICAL_CATALOG = os.path.join(REPO_ROOT, "config", "components", "catalog.json")
 OPENCLAW_CONFIG = os.path.join(REPO_ROOT, "config", "openclaw.json")
 VERIFY_INVENTORY = os.path.join(REPO_ROOT, "scripts", "verify-inventory-counts.py")
 
@@ -151,13 +152,9 @@ VENDORED_STATE_REASONS = {
 
 
 def load_catalog_ids():
-    """Parse the CATALOG array's "id|Category|Name|Description" lines."""
-    with open(CATALOG_SH) as f:
-        text = f.read()
-    ids = []
-    for match in re.finditer(r'"([a-z0-9-]+)\|[^"]*"', text):
-        ids.append(match.group(1))
-    return ids
+    """Read canonical entries; comments in generated shell cannot become IDs."""
+    with open(CANONICAL_CATALOG) as f:
+        return [item['id'] for item in json.load(f)['components']]
 
 
 def load_registered_servers():
@@ -183,6 +180,11 @@ def strip_mcp_suffix(server_id):
 
 
 def check_config_coverage(registered, catalog_ids):
+    if os.path.isfile(CANONICAL_CATALOG):
+        with open(CANONICAL_CATALOG) as f:
+            data = json.load(f)
+        mapped = {server for item in data['components'] if item['id'] in catalog_ids for server in item['servers']}
+        return [(server, 'no explicit canonical component/server join') for server in registered if server not in mapped]
     catalog_set = set(catalog_ids)
     gaps = []
     for server_id in registered:
@@ -208,6 +210,11 @@ def check_config_coverage(registered, catalog_ids):
 
 
 def check_external_coverage(external_names, catalog_ids, catalog_text):
+    if os.path.isfile(CANONICAL_CATALOG):
+        with open(CANONICAL_CATALOG) as f:
+            data = json.load(f)
+        mapped = {item['name'] for item in data['externalIntegrations'] if item['components'] and set(item['components']) <= set(catalog_ids)}
+        return [(name, 'no explicit canonical external integration disposition') for name in external_names if name not in mapped]
     catalog_set = set(catalog_ids)
     covered_names = set()
     for catalog_id, names in GROUPED_EXTERNAL_COVERAGE.items():
@@ -327,17 +334,22 @@ def main():
     config_gaps = check_config_coverage(registered, catalog_ids)
     external_gaps = check_external_coverage(external_names, catalog_ids, catalog_text)
     vendored_gaps = check_vendored_state(registered, external_names)
+    with open(os.path.join(REPO_ROOT, 'scripts', 'lib', 'install-steps.sh')) as f:
+        functions = set(re.findall(r'^(component_install_\w+)\(\)', f.read(), re.M))
+    installer_gaps = [name for name in catalog_ids if 'component_install_' + name.replace('-', '_') not in functions]
 
     print(f"Catalog entries: {len(catalog_ids)}")
     print(f"Registered config/openclaw.json servers: {len(registered)}")
     print(f"External (non-registered) integrations tracked: {len(external_names)}")
     print()
 
-    if not config_gaps and not external_gaps and not vendored_gaps:
+    if not config_gaps and not external_gaps and not vendored_gaps and not installer_gaps:
         print("Catalog coverage check: PASS (zero unexplained gaps)")
         return 0
 
     print("Catalog coverage check: FAIL")
+    if installer_gaps:
+        print('Missing installer functions: ' + ', '.join(installer_gaps))
     if config_gaps:
         print(f"\n  Registered servers with no catalog coverage ({len(config_gaps)}):")
         for server_id, reason in config_gaps:

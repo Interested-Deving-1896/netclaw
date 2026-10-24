@@ -1,14 +1,16 @@
 # NetClaw for Visual Studio Code
 
-Manage your **existing NetClaw or Risk** from VS Code. Connect to its running HUD,
+Set up a **new NetClaw or mixed Risk**, or manage your **existing NetClaw or Risk**, from VS Code. Connect to its running HUD,
 inspect operations, converse with its configured runtime, search RAG knowledge and
 review supported settings without leaving your editor.
+
+**New in 1.2.0:** **NetClaw: Set Up a New NetClaw** for separate Focused claws and mixed Risks, plus CLI and assistant frontends to one reviewed plan engine. Uses source setup engine 1.12.0 or later. Read [new setup](../../docs/GETTING-STARTED-VSCODE.md), [assistant setup](../../docs/ASSISTANT-INSTALL.md), [deployment Spec Kit](../../docs/SPEC-KIT-CLAWS.md) and [current qualification limits](../../specs/153-ide-installer/verification.md). Existing installations receive a visible separate-install disclosure and remain independent Connections.
 
 NetClaw remains your runtime. Opening the extension changes no runtime. Explicitly reviewed setup actions can install selected isolated MCP runtimes, register canonical OpenClaw MCPs or restart the owned federation service using existing NetClaw helpers.
 
 ## Connect
 
-1. Use VS Code 1.102 or later on macOS or Linux. On Windows, first open your
+1. Extension 1.2.0 requires VS Code 1.109 or later on macOS or Linux. Extension 1.1.0 retains its 1.102 baseline. On Windows, first open your
    intended **WSL distribution** with VS Code Remote WSL and install this extension
    **in WSL**. For another Linux/Mac machine, use your existing Remote SSH workspace.
 2. Start your already-installed NetClaw HUD using its normal supported environment.
@@ -25,8 +27,7 @@ Windows runtime hosting and virtual workspaces are unsupported.
 
 ## Workspace files and claw controls
 
-Spec152 adds **Workspace & Claw** to the upper Connections panel. This feature is
-not yet in the published 1.0.1 extension. Connect to an updated source HUD, choose
+Extension 1.1.0 added **Workspace & Claw** to the upper Connections panel. Connect to an updated source HUD, choose
 Workspace & Claw and review the installation, native executable and local helper
 before enabling controls. The selected host must have the supported HUD Node
 runtime and this feature’s source helpers; older HUDs need that source update.
@@ -235,4 +236,4 @@ Backend integration tests require the HUD dependencies
 `npm run test:editor` launches an isolated desktop extension test. RAG and named
 assistant live checks are explicit opt-ins documented in Spec150 evidence.
 
-`npm run package` requires a clean committed checkout, checks that every runtime bundle and license notice is included, and records source and VSIX digest in `out/package.json`. Install from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw). Version 1.1.0 adds workspace files and owned lifecycle controls and retains the [1.0.1 input/address hotfix](HOTFIX-1.0.1.md). Install the tested artifact and reload the window; an installed version label does not establish which code the current extension host is running. The earlier 0.1.1 WSL-tested VSIX passed native Mac acceptance and was published unchanged; Microsoft completed its validation on October 11, 2026. See [production readiness](../../specs/151-extension-experience/production-readiness.md) for qualification, artifact verification and platform limits. Earlier [Spec151 verification](../../specs/151-extension-experience/verification.md) records the original Mac source checkpoint.
+`npm run package` requires a clean committed checkout, checks that every runtime bundle and license notice is included, and records source and VSIX digest in `out/package.json`. Install from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw). Version 1.2.0 adds reviewed separate-claw setup, retains workspace files and owned lifecycle controls from 1.1.0, and includes the [1.0.1 input/address hotfix](HOTFIX-1.0.1.md). Install the tested artifact and reload the window; an installed version label does not establish which code the current extension host is running. The earlier 0.1.1 WSL-tested VSIX passed native Mac acceptance and was published unchanged; Microsoft completed its validation on October 11, 2026. See [production readiness](../../specs/151-extension-experience/production-readiness.md) for qualification, artifact verification and platform limits. Earlier [Spec151 verification](../../specs/151-extension-experience/verification.md) records the original Mac source checkpoint.

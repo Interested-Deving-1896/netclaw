@@ -22,7 +22,7 @@ test("every known MCP has a scoped descriptor; aliases and unknown secrets are h
     "secret",
   );
   assert.deepEqual(s.integrations.find((d) => d.id === "catc").components, [
-    "catalyst-center",
+    "catc",
   ]);
   assert.ok(
     !s.integrations

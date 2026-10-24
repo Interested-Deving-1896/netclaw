@@ -2,6 +2,14 @@
 
 NetClaw source releases use `1.x.y`. Feature specs increment the minor version and reset the patch; fixes, documentation and maintenance increment the patch. Every release records its numbered specs. Component and mobile distribution versions are independent.
 
+## [1.12.0] - 2026-10-24
+
+- Install separate Focused NetClaws and mixed OpenClaw/Hermes Risks from VS Code, CLI or assistant-guided plans, with exact native review and independent homes/credentials.
+- Add a canonical setup catalog, durable pause/resume, verified connection handoff, private reports and ownership-safe cleanup.
+- Include Windows/WSL return fixes and three additional actual Mac installer passes; retain explicit incomplete platform qualification.
+
+Spec [153-ide-installer](specs/153-ide-installer/spec.md). See [release notes](docs/releases/1.12.0.md).
+
 ## [1.11.0] - 2026-10-16
 
 - Add VS Code native workspace Markdown read/edit/upload without delete, verified owned-claw lifecycle and offline recovery, and Save & Restart.

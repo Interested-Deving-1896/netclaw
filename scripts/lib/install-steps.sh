@@ -857,7 +857,7 @@ echo ""
 # ── Step 24b: GitLab MCP Server ─────────────────────────────────
 component_install_gitlab() {
 log_step "Configuring GitLab MCP Server..."
-echo "  Source: https://github.com/zereight/mcp-gitlab"
+echo "  Source: https://github.com/zereight/gitlab-mcp"
 echo "  Auth: GitLab Personal Access Token (PAT)"
 echo "  Transport: stdio via npx @zereight/mcp-gitlab"
 
@@ -2775,7 +2775,7 @@ _set_env_var "WIKIPEDIA_MCP_SCRIPT"     "$WIKIPEDIA_MCP_DIR/main.py"
 _set_env_var "NVD_MCP_SCRIPT"           "$NVD_MCP_DIR/mcp_nvd/main.py"
 _set_env_var "SUBNET_MCP_SCRIPT"        "$SUBNET_MCP_DIR/servers/subnetcalculator_mcp.py"
 _set_env_var "F5_MCP_SCRIPT"            "$F5_MCP_DIR/F5MCPserver.py"
-_set_env_var "CATC_MCP_SCRIPT"          "$CATC_MCP_DIR/catalyst-center-mcp.py"
+_set_env_var "CATC_MCP_SCRIPT"          "$CATC_MCP_DIR/server.py"
 _set_env_var "PACKET_BUDDY_MCP_SCRIPT"  "$PACKET_BUDDY_MCP_DIR/server.py"
 _set_env_var "NMAP_MCP_SCRIPT"          "$NMAP_MCP_DIR/server.py"
 _set_env_var "PROTOCOL_MCP_SCRIPT"      "$PROTOCOL_MCP_DIR/server.py"
@@ -3934,6 +3934,15 @@ else
 fi
 
 CATC_MCP_CMD_DETECTED="python3 $CATC_MCP_DIR/server.py"
+}
+
+component_install_k8s() {
+    log_step "Installing pinned Kubernetes read-only MCP..."
+    # Reuse the reviewed platform/hash manifest; never fetch @latest or touch a
+    # cluster. Runtime discovery still requires an explicitly selected kubeconfig.
+    python3 "$NETCLAW_DIR/scripts/install-pinned-artifact.py" k8s \
+        --destination "$NETCLAW_DIR/mcp-servers/k8s-mcp/kubernetes-mcp-server" || return 1
+    log_info "Pinned Kubernetes MCP installed. Configure K8S_KUBECONFIG separately."
 }
 
 component_install_zabbix() {
