@@ -1,6 +1,23 @@
-# Spec153 verification — Mac engineering gate complete
+# Spec153 verification — Mac baseline complete; WSL return partial
 
-2026-10-18: **8/8 frozen Mac groups passed**. [MAC-COMPLETION.md](MAC-COMPLETION.md) defines exactly what this means and records decisions. Original task count: **81/84 checked**; T081's Windows/WSL portion, T082 and final cross-platform T084 remain. Windows has not been tested. Packaging, recording and the owner walkthrough follow Windows return and affected Mac regression.
+2026-10-18: **8/8 frozen Mac groups passed**. [MAC-COMPLETION.md](MAC-COMPLETION.md) defines exactly what this means and records decisions. Original task count remains **81/84 checked**; T081's Windows/WSL portion, T082 and final cross-platform T084 remain. The October 24 Windows/WSL return is partial, with real-host results and explicit blockers in [SUMMARY.md](../../spec153-wsl-return/SUMMARY.md) and [matrix.json](../../spec153-wsl-return/matrix.json). Packaging, the final recording and owner walkthrough follow readiness reconciliation and affected Mac regression.
+
+## Windows/WSL return — 2026-10-24
+
+Exact Mac baseline `89627477fb470cd7c293e33e192c5983819d45d4`; fresh ext4 qualification branch `153-ide-installer-wsl-qualification`. Original dirty checkout, owner claws and credentials preserved. New source/host-bound plans and native reviews were used throughout. No archive overlay or Spec Kit regeneration.
+
+| Exercise | Observed result |
+| --- | --- |
+| Ubuntu 26.04 focused wizard | Actual Windows VS Code / Linux remote extension host: OpenClaw and fresh managed-Python Hermes passed required Tiers 1–3. |
+| Ubuntu 24.04 focused wizard | OpenClaw passed required tiers. Hermes installed but lost its engine during verification; unknown, not passed. Both new runs subsequently received verified reviewed cleanup. |
+| Mixed Risk and management | Ubuntu 26.04 three-claw Risk passed installation and authenticated hot-member status. Actual focused OpenClaw/Hermes stop/start/restart reruns preserved neighbor hashes/PIDs. Full Risk cold-wake rerun remains blocked after volatile fixture loss. |
+| Installed clients / Spec Kit | Ubuntu 26.04 Codex/Claude/VS Code MCP discovery passed in isolated profiles, with no hosted chat turn. Actual pinned Specify checks passed on both releases. Ubuntu 24.04 installed-client discovery and actual legacy CLI installs remain unrun. |
+| Native systemd / regressions | Final source `cf97be1c286442660c355d50cf0788199a24c2a1`: **140 setup tests passed, zero skips on each release**, including native special paths and cold wake. Extension: 136 passed, three explicit skips on each release; check/build passed. Installer: 216 passed plus 16 subtests. Catalog checks passed. Exact versions, source bindings, log hashes and unsuccessful attempts are in the return evidence. |
+| Native Windows gate | Missing/disabled WSL extension, supported/cancel, UTF-16, reviewed private handoff/restore/replay exercised. Other actual OS variants, expiry and wrong-host cases remain blocked/unrun. Source-development restoration does not qualify packaged VSIX activation. |
+
+[Findings](wsl-findings.md) retain every observed failure and fix. The owner requested remote delivery and a Mac handoff, then cautioned against destabilizing the shared host. Further disposable installations and deliberate restart exercises were stopped; this does not change the acceptance scope. Cleanup retains uncertain/changed artifacts and private journals rather than forcing removal. See [cleanup evidence](../../spec153-wsl-return/evidence/cleanup.json).
+
+The separately requested [60-second synthetic draft tour](../../spec153-wsl-return/demo/netclaw-setup-60s.mp4) was completed October 18. It configures two MCP selections and a mixed Risk draft in the actual UI, then cancels native Apply; it is not deployment acceptance or the final release recording. No publication or merge occurred in this WSL stage. Mac regressions and unresolved platform gates must be reconciled before final closure/integration.
 
 All operator inputs below are synthetic unless stated otherwise. No provider turn, real channel message or device connection occurred. Existing owner credentials and claws were excluded. Passing supported installer scenarios does not qualify every one of the 110 catalog components against live infrastructure.
 
@@ -37,7 +54,7 @@ Twenty-nine actual engine stdout frames reached the webview's next animation fra
 | Links | 126 syntactically valid links; 124 checked successfully and two retained auth/transport dispositions. No unexplained dead link. See catalog-links.json; not a claim of universal unauthenticated access. |
 | Privacy | Default report structural redaction, secret/native-channel tests and final seeded artifact scan pass. Scan scope and limits in [privacy-audit.json](evidence/privacy-audit.json). |
 
-[Test hashes](evidence/test-results.json) identify retained logs. [Analysis](analysis.md) records original design remediation and subsequent runtime findings. No unresolved implementation finding remains in the frozen Mac scope. Windows/platform observations and final cross-platform closure remain unperformed, not passed.
+[Test hashes](evidence/test-results.json) identify retained Mac logs. [Analysis](analysis.md) records original design remediation and subsequent runtime findings. No unresolved implementation finding remained in the frozen Mac scope. Later Windows findings and open cross-platform closure are recorded separately above; the WSL fixes still require affected Mac regression.
 
 Actual isolated supplements: [ANTA catalog canary](evidence/anta-canary.json), [certificate helper](evidence/certificate-helper.json), [gtrace build](evidence/gtrace-build.json), and [HUD dependency remove/restore observation](evidence/hud-dependencies.json). None sends network configuration or claims general integration qualification.
 

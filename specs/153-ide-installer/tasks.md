@@ -180,3 +180,5 @@ Machine-readable complete task-to-FR/SC mapping: [task-coverage.json](task-cover
 Total: **84 tasks**. Story/shared counts: shared: 12, US11: 8, US5: 14, US10: 3, US1: 6, US2: 3, US3: 7, US6: 7, US4: 7, US7: 7, US8: 3, US9: 4, US12: 3.
 
 Mac closure checkpoint (2026-10-18): M01–M08 passed; 81/84 checked. T081 retains Windows/WSL qualification, T082 native Windows, T084 final cross-platform reconciliation. T083 evidence is synthetic and does not claim the later owner walkthrough. See MAC-COMPLETION.md.
+
+WSL return checkpoint (2026-10-24): still **81/84 checked**. Both releases pass the final 140-test setup suite with all opt-ins; real wizard, Risk, client, management and native Windows subcases are recorded in [the return matrix](../../spec153-wsl-return/matrix.json). T081 remains open for incomplete actual WSL scenarios, T082 for unavailable/unrun native Windows cases, and T084 for Mac reconciliation. The owner requested remote delivery/handoff and host stability; no missing case is counted as passed, and no accepted scope was regenerated or reduced.
