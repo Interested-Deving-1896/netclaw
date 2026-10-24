@@ -42,7 +42,7 @@ def observe_argv(call,item,*,allow_absent=False):
         # read-only listing must successfully report no loaded unit or alias.
         absent=read(BUS+['call',DEST,'/org/freedesktop/systemd1',DEST+'.Manager',
                          'ListUnitsByPatterns','asas','0','1',unit])
-        if absent!={'type':'a(ssssssouso)','data':[]}:
+        if absent!={'type':'a(ssssssouso)','data':[[]]}:
             raise Conflict('service_bus_unit_unknown') from None
         return False
     if value!={'type':'o','data':[expected_path]}:raise Conflict('service_bus_unit_changed')

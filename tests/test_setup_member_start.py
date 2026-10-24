@@ -33,7 +33,7 @@ class MemberStartTests(unittest.TestCase):
                 home,source,account,item=self.fixture(Path(tmp).resolve(),'wsl2');started=[]
                 def execute(args,**options):
                     if 'GetUnit' in args and not started:return {'returncode':1,'stdout':b''}
-                    if 'ListUnitsByPatterns' in args:return {'returncode':int(fail_listing),'stdout':canonical({'type':'a(ssssssouso)','data':[]})}
+                    if 'ListUnitsByPatterns' in args:return {'returncode':int(fail_listing),'stdout':canonical({'type':'a(ssssssouso)','data':[[]]})}
                     reply=bus_reply(args,item,foreign=bool(started and foreign_after))
                     if reply is not None:return reply
                     if args[2]=='start':started.append(True)

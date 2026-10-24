@@ -27,7 +27,8 @@ def bus_reply(args,item,*,foreign=False):
 class SystemdTests(unittest.TestCase):
     def test_absence_requires_successful_exact_name_listing_and_explicit_opt_in(self):
         item={'file':'/fixture/one.service','arguments':['/fixture/python'],'execFlags':['no-env-expand']}
-        for reply,accepted in [({'returncode':0,'stdout':canonical({'type':'a(ssssssouso)','data':[]})},True),
+        for reply,accepted in [({'returncode':0,'stdout':canonical({'type':'a(ssssssouso)','data':[[]]})},True),
+                               ({'returncode':0,'stdout':canonical({'type':'a(ssssssouso)','data':[]})},False),
                                ({'returncode':1,'stdout':b''},False),
                                ({'returncode':0,'stdout':canonical({'type':'wrong','data':[]})},False),
                                ({'returncode':0,'stdout':canonical({'type':'a(ssssssouso)','data':[['present']]})},False)]:
