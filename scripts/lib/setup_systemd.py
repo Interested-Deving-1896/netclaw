@@ -17,7 +17,7 @@ def unit_path(unit):
         raise Conflict('service_unit_invalid')
     return '/org/freedesktop/systemd1/unit/'+''.join(c if c.isalnum() else '_'+format(ord(c),'02x') for c in unit)
 
-def observe_argv(call,item):
+def observe_argv(call,item,*,allow_absent=False):
     unit=Path(item['file']).name;expected_path=unit_path(unit)
     expected=item['arguments'];flags=item.get('execFlags',[])
     if flags not in ([],['no-env-expand']) or not isinstance(expected,list) or not expected or not all(isinstance(a,str) and a and '\x00' not in a for a in expected):
@@ -33,7 +33,18 @@ def observe_argv(call,item):
         value=loads(result,65536)
         if not isinstance(value,dict) or set(value)!={'type','data'}:raise Conflict('service_bus_output_unknown')
         return value
-    value=read(BUS+['call',DEST,'/org/freedesktop/systemd1',DEST+'.Manager','GetUnit','s',unit])
+    try:
+        value=read(BUS+['call',DEST,'/org/freedesktop/systemd1',DEST+'.Manager','GetUnit','s',unit])
+    except Conflict as error:
+        if not allow_absent or error.code!='service_bus_unavailable':raise
+        # Inactive on-demand units may be collected between systemctl show and
+        # GetUnit. A failed query alone never proves absence. This exact-name,
+        # read-only listing must successfully report no loaded unit or alias.
+        absent=read(BUS+['call',DEST,'/org/freedesktop/systemd1',DEST+'.Manager',
+                         'ListUnitsByPatterns','asas','0','1',unit])
+        if absent!={'type':'a(ssssssouso)','data':[]}:
+            raise Conflict('service_bus_unit_unknown') from None
+        return False
     if value!={'type':'o','data':[expected_path]}:raise Conflict('service_bus_unit_changed')
     value=read(BUS+['get-property',DEST,expected_path,DEST+'.Service','ExecStartEx'])
     rows=value['data']

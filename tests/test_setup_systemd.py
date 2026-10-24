@@ -25,6 +25,24 @@ def bus_reply(args,item,*,foreign=False):
     return {'returncode':0,'stdout':canonical(value)}
 
 class SystemdTests(unittest.TestCase):
+    def test_absence_requires_successful_exact_name_listing_and_explicit_opt_in(self):
+        item={'file':'/fixture/one.service','arguments':['/fixture/python'],'execFlags':['no-env-expand']}
+        for reply,accepted in [({'returncode':0,'stdout':canonical({'type':'a(ssssssouso)','data':[]})},True),
+                               ({'returncode':1,'stdout':b''},False),
+                               ({'returncode':0,'stdout':canonical({'type':'wrong','data':[]})},False),
+                               ({'returncode':0,'stdout':canonical({'type':'a(ssssssouso)','data':[['present']]})},False)]:
+            calls=[]
+            def call(args):
+                calls.append(args)
+                if 'GetUnit' in args:return {'returncode':1,'stdout':b''}
+                self.assertEqual(args[-5:],['ListUnitsByPatterns','asas','0','1','one.service'])
+                return reply
+            with self.assertRaises(Exception):observe_argv(call,item)
+            self.assertEqual(len(calls),1)
+            if accepted:self.assertIs(observe_argv(call,item,allow_absent=True),False)
+            else:
+                with self.assertRaises(Exception):observe_argv(call,item,allow_absent=True)
+
     @unittest.skipUnless(os.environ.get('NETCLAW_SETUP_SYSTEMD')=='1', 'opt-in disposable WSL user manager')
     def test_actual_descriptor_preserves_special_paths_and_typed_argv(self):
         from setup_observation import host_identity

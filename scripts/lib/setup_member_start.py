@@ -49,15 +49,23 @@ def start(home,source,*,execute=run,user_home=None):
         command=['/bin/launchctl','kickstart',target]
     else:
         unit=Path(item['file']).name
-        result=call(['/usr/bin/systemctl','--user','show',unit,'--no-pager','--property=FragmentPath,DropInPaths,NeedDaemonReload'])
-        fields=dict(line.split('=',1) for line in result['stdout'].decode().splitlines() if '=' in line)
-        if result['returncode'] or fields.get('FragmentPath')!=item['file'] or fields.get('DropInPaths') or fields.get('NeedDaemonReload')!='no':
-            raise Conflict('member_loaded_service_changed')
+        def check_definition():
+            result=call(['/usr/bin/systemctl','--user','show',unit,'--no-pager','--property=FragmentPath,DropInPaths,NeedDaemonReload'])
+            fields=dict(line.split('=',1) for line in result['stdout'].decode().splitlines() if '=' in line)
+            if result['returncode'] or fields.get('FragmentPath')!=item['file'] or fields.get('DropInPaths') or fields.get('NeedDaemonReload')!='no':
+                raise Conflict('member_loaded_service_changed')
+        check_definition()
         from setup_systemd import observe_argv
-        observe_argv(call,item)
+        observe_argv(call,item,allow_absent=True)
         command=['/usr/bin/systemctl','--user','start',unit]
     if revision(item['file'])!=item['sha256']:raise Conflict('member_service_changed')
     if call(command)['returncode']:raise Conflict('member_service_start_unknown')
+    if platform=='wsl2':
+        # Starting an exactly owned inactive unit may load it afresh. Confirm
+        # the actual loaded definition and typed argv before acknowledging it.
+        if revision(item['file'])!=item['sha256']:raise Conflict('member_service_changed')
+        check_definition()
+        observe_argv(call,item)
     # This is manager acknowledgement only. Border still waits for the pinned
     # authenticated member channel before routing any work.
     return True
