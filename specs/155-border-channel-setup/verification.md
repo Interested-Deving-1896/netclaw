@@ -139,3 +139,143 @@ OpenClaw's final dedicated native suite passed 18/18. The final Zalo SDK-root/SR
 The ledger has 47/50 scoped tasks checked. T047 retains the remaining positive full installer/platform qualification beyond these blocked-service Mac cases; T048 awaits actual WSL execution; T050 awaits final reconciliation after that return. The current all-entry coverage ledger is complete as an accounting artifact and explicitly has `complete: false`. No 100% or release-readiness claim is made. Related-interface references remain distinct from selectable conversation channels.
 
 The handoff is in `wsl-handoff.md`. All 178 changed public source files were compared locally against secret values from the owner's root environment without exposing values; no matches were found. `.env`, `env_exported` and its unpack script remain ignored. No private runtimes, test logs, secrets or dependency caches are included in the source handoff.
+
+## WSL qualification return — 2026-10-25
+
+This pass fetched and tested exactly `c3aa0951519a0be79db085f7092043ee1c97d830`
+in a separate worktree on `155-comms-wsl-qualification-20261025`. The original
+`153-ide-installer` checkout, its modified testbed and untracked backup were
+preserved. All test homes, caches, credentials, setup journals and editor profiles
+were private and separate. The earlier Mac credential checks above were **not**
+repeated or inherited as WSL authentication evidence; only fixture credentials
+were used in this pass.
+
+The actual host was Ubuntu **26.04 LTS**, WSL2 x86_64, kernel
+`6.18.54.1-microsoft-standard-WSL2` (the distribution registration still says
+`Ubuntu-22.04`). System Python was 3.14.4. A private Node 24.19.0 archive was
+verified against the official SHA-256 manifest; its owned executable had one
+inode link. Default Node 25 was not used for qualification. Host uv 0.6.14 selected
+Python 3.14.0a6 and the Hermes installer correctly refused it. A separate empty
+home with private uv 0.9.5 acquired stable Python 3.14.0. System tools were unchanged.
+
+### Test results and corrective work
+
+| Check | Actual WSL result |
+| --- | --- |
+| Comms catalog, catalog metadata and coverage scripts | All passed; 77 entries retained |
+| Extension dependency install, typecheck and build | Passed with private Node and committed lockfiles |
+| Final full Python setup suite | 268 tests: **261 passed, seven skipped**, zero failures/errors; 204.383 seconds |
+| Fresh Twilio/Zoom acquisition | Three tests passed, including four real installs across OpenClaw/Hermes; 68.583 seconds |
+| Native Comms registry discovery | One test passed across all four runtime/component combinations; 25.093 seconds |
+| Final full extension suite | 146 tests: **137 passed, six failed, three skipped** |
+
+Exact individual results, skip/failure names, initial unsuccessful runs and private
+log hashes are in [wsl-results.json](evidence/wsl-results.json). No raw test log or
+environment file is published. The seven final Python skips are the separately
+passed acquisition test (not repeated in the last run), three separately acquired
+OpenClaw external/personal-package fixtures, two disposable-systemd fixtures, and
+the pinned Specify CLI fixture. Extension skips concern installed native
+OpenClaw workspace resolution, macOS launchd and cached-embedding RAG retrieval.
+
+All six extension failures report that the user service manager is unavailable
+in the isolated test environment. They cover both runtime lifecycle tests,
+changed-scope refusal, orphan recovery, combined save/restart and four-pair
+harness switching. They remain failures. The tests were not granted access to
+the existing shared manager to manufacture a pass.
+
+Three test-only corrections are included in this branch:
+
+- Actual component acquisition now replaces the generic macOS/ARM sample-plan
+  host with `host_identity()`, selecting the real WSL Zoom lock. The first
+  acquisition run installed Twilio but failed both Zoom subtests on the wrong
+  host lock; the corrected actual acquisition passed.
+- The expanded Hermes SDK assertion includes Matrix after real WSL SDK
+  acquisition and import/readback passed.
+- The concurrent adapter test accepts either refusal of a reserved request or
+  successful readback of the already durable request, while still requiring
+  exactly one `/api/chat` submission. The original assertion rejected the valid
+  latter schedule. The complete extension rerun passed that case.
+
+Initial Python runs lacked jsonschema, then cryptography. Another run bound the
+certificate test to Zoom's interpreter, which has a different locked cryptography
+version. The private test interpreter with cryptography 46.0.5 passed all four
+certificate tests and the final full suite. Initial extension imports also
+required `npm ci` using the committed HUD lockfile. No dependency pin, runtime
+guard or production implementation was changed to address these fixture errors.
+
+### Actual installer evidence and fixture boundaries
+
+Both real engines acquired their pinned runtime into empty Focused homes:
+OpenClaw `2026.7.1-2` at `0790d9f593ad30c940ed93b5872a8cf6d6f3cf8c`, and Hermes
+`0.21.6` at `818c13be1dc4fd28987e1e881a9408224afd4535`. Each verified eleven
+effects through source/runtime/dependency acquisition, private credentials,
+onboarding, minimal component, skills, MCP registration, inputs, identity and
+Slack/Discord configuration. Homes were 0700 and environment files 0600. Empty
+sender access produced `configuration_required` before service artifacts or
+manager activation. Final read-only verification ran and remained `unverified`.
+The private wrapper wrongly expected that verification to remain pending, so
+both wrapper exits were 1. Separate read-only assertions checked the actual
+postconditions; neither journal was rewritten or replayed to hide that error.
+See the [OpenClaw engine](evidence/wsl-openclaw-engine.json),
+[Hermes engine](evidence/wsl-hermes-engine.json) and their separate redacted
+[OpenClaw report](evidence/wsl-openclaw-report.json) /
+[Hermes report](evidence/wsl-hermes-report.json).
+
+Fresh Twilio/Zoom acquisition used real locks, installation-owned interpreters,
+intent/completion receipts and ownership checks. Native registry discovery used
+real native CLIs with owned interpreter shims and socket/listener denial;
+configuration/environment bytes were preserved. Acquisition evidence is separate
+from these registry fixtures. Five actual Linux process cleanup tests passed,
+including timeout, output flood and supervisor death, with the neighboring
+fixture process preserved. Missing receipts, changed ownership, retained
+channels and interrupted-write recovery passed their contract tests.
+
+Hermes SDK acquisition grew the isolated environment from 93 to 155 packages
+without changing any pre-existing package version. The selected native readback
+ledger records twenty expanded channels; Teams, SMS and WhatsApp Cloud also
+passed their actual selected-runtime tests. Matrix's SDK import/readback passed
+on WSL. These are SDK/module dependencies and synthetic configuration inputs;
+they do not qualify external daemons, account authentication or callbacks.
+See [SDK acquisition](evidence/wsl-hermes-sdk-acquisition.json) and
+[readback ledger](evidence/wsl-hermes-readback.json).
+
+The actual Hermes owned-effect scenario acquired/configured Photon, Home
+Assistant and Raft. Buzz used an explicitly compiled fixture binary. WhatsApp
+acquired its bridge dependencies and remained unpaired/configuration-required,
+preserving native configuration/environment. Pair receipts in other tests were
+synthetic. OpenClaw expanded forms passed native pinned-source schema checks;
+those checks do not prove every selected plugin was installed on WSL. Real
+Twilio SDK signatures, callback reducers, voice routing and Zoom MCP/loopback
+lifetime tests used fake accounts and controlled local fixtures. None establishes
+provider transport or delivery. No model session, device operation, message,
+call, meeting capture, account link or coordinated network window was started.
+
+### Editor, preservation and remaining gates
+
+An actual private Linux VS Code 1.109.0 instance activated the extension, but
+the local Linux window did not satisfy the genuine WSL remote-host requirement;
+the preview timed out without opening the Comms wizard. A separate Windows
+1.109.0 archive, private profiles/extensions and private server paths were then
+tried. The remote development launches did not establish a WSL extension host
+(direct launch exited 255 without a useful diagnosis). No acceptance report or
+private remote-server installation resulted. The host guard was not bypassed.
+Visual multiselection, both-runtime search/restrictions, keyboard operation and
+redacted report inspection in WSL remain **unqualified**; frontend tests and
+earlier Mac screenshots do not substitute for them.
+
+[Preservation results](evidence/wsl-preservation.json) compare **8,138 selected
+files, 99 logical SQLite tables and ten service PID/start identities** with zero
+changes. The original branch/status and both testbed files matched. A further
+52 shared-policy/configuration files had no post-start modification time; those
+paths were absent from the initial hash snapshot, so this is weaker evidence.
+The names `wsl-cml` and `wsl-viz` were not located in the observed roots/tables;
+no per-identity hash claim is made for them. Stopped WSL distributions remained
+stopped. No enrollment, key reset, mesh operation or existing-home deployment
+was issued.
+
+The [coverage ledger](coverage.json) now accounts for all 77 WSL outcomes and
+keeps configuration, dependencies, authentication, transport and delivery
+distinct. `complete` remains false. Required remote-editor/isolated-manager and
+positive installer acceptance remain open, as do the recorded package/optional
+fixtures and final Mac reconciliation. T047, T048 and T050 remain unchecked.
+This branch is a partial qualification return, not a release or 100% claim.

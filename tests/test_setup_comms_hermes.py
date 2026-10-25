@@ -92,7 +92,7 @@ class SelectedHermesTests(unittest.TestCase):
                 native=CONTRACTS[channel]['native']
                 result=self.invoke(native,config,mode='readback',credentials={**values,**updates})
                 self.assertTrue(result['configured'])
-                if os.environ.get('NETCLAW_TEST_HERMES_EXTRA_SDKS') and channel in ('google-chat','dingtalk','feishu','wecom-callback'):
+                if os.environ.get('NETCLAW_TEST_HERMES_EXTRA_SDKS') and channel in ('google-chat','dingtalk','feishu','wecom-callback','matrix'):
                     self.assertTrue(result['dependencies'])
                 # Dependency acquisition is independently observed. This test
                 # never labels a missing SDK or external daemon ready.

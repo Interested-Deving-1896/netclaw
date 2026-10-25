@@ -69,12 +69,17 @@ class CommsAcquisitionTests(unittest.TestCase):
 
     @unittest.skipUnless(os.environ.get('NETCLAW_TEST_COMMS_ACQUIRE')=='1','explicit isolated acquisition pass required')
     def test_fresh_actual_twilio_and_zoom_installers_for_both_runtimes(self):
+        from setup_observation import host_identity
+        host = host_identity()
         base=Path(os.environ['NETCLAW_TEST_COMMS_ACQUIRE_ROOT']).resolve()
         base.mkdir(mode=0o700,parents=True,exist_ok=True)
         for harness in ('openclaw','hermes'):
             with self.subTest(harness=harness):
                 run=Path(tempfile.mkdtemp(prefix=harness+'-',dir=base))
-                _,_,context,deploy,effect=self.fixture(run,harness)
+                plan,_,context,deploy,effect=self.fixture(run,harness)
+                # The generic plan fixture describes macOS/ARM. Actual installs
+                # must select the observed host's lock, especially Zoom's wheel.
+                plan['host']=host
                 for name in ('twilio-env-mcp','zoom-rtms-mcp'):
                     shutil.copytree(ROOT/'mcp-servers'/name,deploy.source/'mcp-servers'/name,
                         ignore=shutil.ignore_patterns('node_modules','.venv','__pycache__'))

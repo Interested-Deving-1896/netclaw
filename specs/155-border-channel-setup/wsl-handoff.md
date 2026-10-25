@@ -1,8 +1,11 @@
 # Spec155 WSL installer qualification
 
-Status: prepared on Mac; WSL execution is pending. Use the exact commit supplied
-with the handoff prompt on `origin/155-border-channel-setup`. Do not substitute
-an older Spec153/Border HUD branch or infer operational readiness from this work.
+Status: executed with remaining gates on 2026-10-25 from exact commit
+`c3aa0951519a0be79db085f7092043ee1c97d830`. See [WSL results](evidence/wsl-results.json)
+and the WSL section of [verification](verification.md). The qualification branch
+is `155-comms-wsl-qualification-20261025`. T048 remains open: actual remote-editor
+and isolated service-manager acceptance did not pass. Do not infer operational
+readiness from the installer evidence.
 
 ## Preserve the running environment
 
@@ -93,3 +96,38 @@ test it, and return the changed files, commit SHA and evidence for Mac reconcili
 Do not merge, publish a release, deploy into existing homes or declare 100% while
 required gates remain open. Return a concise summary plus paths to the sanitized
 artifacts; never include credentials or raw provider output.
+
+## WSL execution notes — 2026-10-25
+
+- Ubuntu 26.04 / WSL2 x64, system Python 3.14.4; SHA-256-checked private Node
+  24.19.0 with a single-link owned executable. Host uv 0.6.14 selected a Python
+  3.14 alpha and the Hermes installer refused it. Private uv 0.9.5 acquired stable
+  Python 3.14.0 in another empty home. Neither system tool was upgraded.
+- Install the committed HUD lockfile (`npm --prefix ui/netclaw-visual ci`) as well
+  as extension dependencies before the extension suite; its fixtures import HUD
+  packages. The private Python test interpreter needs jsonschema and cryptography.
+  `NETCLAW_SETUP_CERT_PYTHON` must actually have cryptography 46.0.5; the Zoom SDK
+  interpreter uses another locked version and is not a substitute.
+- Actual acquisition must replace the generic macOS/ARM sample-plan host with
+  `host_identity()`. The corrected test now selects the WSL Zoom lock. Keep
+  `WSL_DISTRO_NAME` in the otherwise sanitized test environment.
+- Full Python suite: 268 tests, 261 passed, seven explicit skips. Four actual
+  component acquisitions passed separately. Extension: 146 tests, 137 passed,
+  six failed, three skipped. The six failures require an accessible user service
+  manager; this isolated environment deliberately did not inherit that access.
+  They remain failures, not retroactive skips. See the JSON for every skip/failure.
+- Both real engines verified eleven effects including Slack/Discord configuration
+  and refused service activation for empty sender access. Final read-only
+  verification ran and remained unverified. The private runner's assertion that
+  verification stayed pending was wrong; the original journals were retained and
+  the actual postconditions checked read-only, without a rerun or fabricated receipt.
+- `preview-setup.mjs` is a local macOS preview harness. An actual Linux desktop
+  editor in WSL is not a WSL remote extension host and correctly fails the host
+  gate. Private Windows 1.109.0 launch attempts did not establish the remote host
+  (direct development launch exited 255 without a useful diagnosis). Do not count
+  those attempts as visual, keyboard, role-selection or report acceptance. No
+  host guard was weakened and no ordinary editor extension was installed/replaced.
+- Preserve the remaining gates, including the three separately acquired native
+  OpenClaw package fixtures, isolated systemd/Specify fixtures, positive service
+  acceptance and Mac reconciliation. Do not start existing stopped distributions
+  or borrow their enrollment merely to complete a test.

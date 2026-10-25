@@ -16,7 +16,7 @@
     "retiredReference": 1
   },
   "limits": [
-    "All WSL paths await actual handoff execution.",
+    "WSL installer checks were executed; required editor, isolated-manager and package/positive-service gates remain open. See evidence/wsl-results.json.",
     "Synthetic pairing or binary fixtures do not establish an external account link or upstream binary qualification.",
     "Eight related interfaces are discoverable context with no selectable managed installer adapter; they are not counted as implemented conversation channels.",
     "Twilio live operations are excluded by the owner.",
@@ -54,8 +54,12 @@
         "detail": "openclaw-adapter-evidence.json#a2a"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "unavailable-baseline",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -89,8 +93,12 @@
         "detail": "openclaw-adapter-evidence.json#buzz"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "unavailable-baseline",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -125,8 +133,11 @@
         "limitation": "Exact sender allowlist applies in the selected workspace, including shared channels; native adapter has no separate group-disable control."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -160,8 +171,11 @@
         "detail": "openclaw-adapter-evidence.json#discord"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "engine-configuration-and-dependencies-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-openclaw-engine.json",
+        "limitation": "Actual fresh engine, fixture credentials, empty sender access. Service activation refused; final verification unverified. No authentication or transport."
       },
       "provider": {
         "authentication": "unverified",
@@ -195,8 +209,11 @@
         "detail": "openclaw-adapter-evidence.json#feishu"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -230,8 +247,11 @@
         "detail": "openclaw-adapter-evidence.json#googlechat"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -265,8 +285,10 @@
         "limitation": "Actual imsg, signed-in Messages and macOS privacy permissions were not exercised; no database content was read."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "unsupported-host",
+        "configured": false,
+        "dependencies": false,
+        "reason": "catalog host restriction; no native host operation attempted"
       },
       "provider": {
         "authentication": "unverified",
@@ -300,8 +322,11 @@
         "detail": "openclaw-adapter-evidence.json#irc"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -335,8 +360,11 @@
         "detail": "openclaw-adapter-evidence.json#line"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -370,8 +398,11 @@
         "detail": "openclaw-adapter-evidence.json#matrix"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -405,8 +436,11 @@
         "detail": "openclaw-adapter-evidence.json#mattermost"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -441,8 +475,11 @@
         "limitation": "Native Teams listener binds wildcard; explicit port and public-listener effect are reviewed. No Teams callback delivery test ran."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -476,8 +513,11 @@
         "detail": "openclaw-adapter-evidence.json#nextcloud-talk"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -511,8 +551,11 @@
         "detail": "openclaw-adapter-evidence.json#nostr"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -546,8 +589,11 @@
         "detail": "openclaw-adapter-evidence.json#qqbot"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -581,8 +627,11 @@
         "detail": "openclaw-adapter-evidence.json#raft"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -616,8 +665,12 @@
         "detail": "openclaw-adapter-evidence.json#reef"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "unavailable-baseline",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -652,8 +705,11 @@
         "limitation": "Prepared external loopback signal-cli daemon required; this form never starts or links it. No daemon/account authentication was tested."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -687,8 +743,11 @@
         "detail": "openclaw-adapter-evidence.json#slack"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "engine-configuration-and-dependencies-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-openclaw-engine.json",
+        "limitation": "Actual fresh engine, fixture credentials, empty sender access. Service activation refused; final verification unverified. No authentication or transport."
       },
       "provider": {
         "authentication": "unverified",
@@ -722,8 +781,11 @@
         "detail": "openclaw-adapter-evidence.json#sms"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -757,8 +819,11 @@
         "detail": "openclaw-adapter-evidence.json#synology-chat"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -792,8 +857,10 @@
         "detail": "openclaw-adapter-evidence.json#telegram"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "not-qualified",
+        "configured": false,
+        "dependencies": false,
+        "reason": "not exercised as an actual installed path in this WSL pass"
       },
       "provider": {
         "authentication": "unverified",
@@ -827,8 +894,11 @@
         "detail": "openclaw-adapter-evidence.json#tlon"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -863,8 +933,11 @@
         "limitation": "Exact sender allowlist applies in the selected Twitch channel; native role-wide access is disabled."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -899,8 +972,10 @@
         "limitation": "Gateway/browser operation was not started by this child qualification; no channels.webchat object is written."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "not-qualified",
+        "configured": false,
+        "dependencies": false,
+        "reason": "not exercised as an actual installed path in this WSL pass"
       },
       "provider": {
         "authentication": "unverified",
@@ -935,8 +1010,10 @@
         "limitation": "No real QR/account connection. Owner identity, account files, unknown outcome and interrupted promotion are fixture-qualified only."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "not-qualified",
+        "configured": false,
+        "dependencies": false,
+        "reason": "not exercised as an actual installed path in this WSL pass"
       },
       "provider": {
         "authentication": "unverified",
@@ -971,8 +1048,10 @@
         "limitation": "WeCom plugin additionally registers its documented tool and gateway webhook paths; startup review declares those effects."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "not-qualified",
+        "configured": false,
+        "dependencies": false,
+        "reason": "not exercised as an actual installed path in this WSL pass"
       },
       "provider": {
         "authentication": "unverified",
@@ -1007,8 +1086,10 @@
         "limitation": "No real QR scan or linked account. Fixture verifies matching phone, timeout, mismatch, one SDK restart, full auth receipt and key-rotation readback."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "not-qualified",
+        "configured": false,
+        "dependencies": false,
+        "reason": "not exercised as an actual installed path in this WSL pass"
       },
       "provider": {
         "authentication": "unverified",
@@ -1042,8 +1123,12 @@
         "detail": "openclaw-adapter-evidence.json#x"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "unavailable-baseline",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -1078,8 +1163,12 @@
         "limitation": "Pinned ordinary messages from an unlisted sender pass both native access guards under disabled and allowlist policies; no channel activation is permitted."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "incompatible-dependency",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -1113,8 +1202,11 @@
         "detail": "openclaw-adapter-evidence.json#zalo"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "native-schema-contract-observed",
+        "configured": false,
+        "dependencies": false,
+        "evidence": "tests/test_setup_comms_openclaw_config.py",
+        "limitation": "Actual pinned source validates synthetic form input. Selected plugin acquisition/registration/configuration effect was not exercised for this entry."
       },
       "provider": {
         "authentication": "unverified",
@@ -1149,8 +1241,10 @@
         "limitation": "No real QR/account connection. Owner identity, account files, unknown outcome and interrupted promotion are fixture-qualified only."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "not-qualified",
+        "configured": false,
+        "dependencies": false,
+        "reason": "not exercised as an actual installed path in this WSL pass"
       },
       "provider": {
         "authentication": "unverified",
@@ -1185,8 +1279,10 @@
         "limitation": "No real QR/account connection. Owner identity, account files, unknown outcome and interrupted promotion are fixture-qualified only."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "not-qualified",
+        "configured": false,
+        "dependencies": false,
+        "reason": "not exercised as an actual installed path in this WSL pass"
       },
       "provider": {
         "authentication": "unverified",
@@ -1220,8 +1316,11 @@
         "detail": "hermes-adapter-evidence.json#telegram"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1255,8 +1354,11 @@
         "detail": "hermes-adapter-evidence.json#discord"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "engine-configuration-and-dependencies-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-engine.json",
+        "limitation": "Actual fresh engine, fixture credentials, empty sender access. Service activation refused; final verification unverified. No authentication or transport."
       },
       "provider": {
         "authentication": "unverified",
@@ -1290,8 +1392,11 @@
         "detail": "hermes-adapter-evidence.json#slack"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "engine-configuration-and-dependencies-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-engine.json",
+        "limitation": "Actual fresh engine, fixture credentials, empty sender access. Service activation refused; final verification unverified. No authentication or transport."
       },
       "provider": {
         "authentication": "unverified",
@@ -1325,8 +1430,11 @@
         "detail": "hermes-adapter-evidence.json#google-chat"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1361,8 +1469,11 @@
         "limitation": "No real QR/pair/account; configured remains false until explicitly reviewed native pairing completes. Synthetic pairing and recovery are not live pairing proof."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "configuration-required",
+        "configured": false,
+        "dependencies": true,
+        "evidence": "tests/test_setup_comms_hermes_owned.py",
+        "limitation": "Actual bridge acquisition. No QR, account linking or native pairing; receipts in other tests are synthetic."
       },
       "provider": {
         "authentication": "unverified",
@@ -1396,8 +1507,11 @@
         "detail": "hermes-adapter-evidence.json#whatsapp-cloud"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "tests/test_setup_comms_hermes.py",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1431,8 +1545,11 @@
         "detail": "hermes-adapter-evidence.json#signal"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1466,8 +1583,11 @@
         "detail": "hermes-adapter-evidence.json#sms"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "tests/test_setup_comms_hermes.py",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1501,8 +1621,11 @@
         "detail": "hermes-adapter-evidence.json#email"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1535,8 +1658,11 @@
         "detail": "hermes-adapter-evidence.json#homeassistant"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "owned-configuration-effect-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "tests/test_setup_comms_hermes_owned.py",
+        "limitation": "Frozen dependencies and private configuration; no provider or external native service operation."
       },
       "provider": {
         "authentication": "unverified",
@@ -1570,8 +1696,11 @@
         "detail": "hermes-adapter-evidence.json#mattermost"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1604,8 +1733,11 @@
         "detail": "hermes-adapter-evidence.json#matrix"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1639,8 +1771,11 @@
         "detail": "hermes-adapter-evidence.json#dingtalk"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1674,8 +1809,11 @@
         "detail": "hermes-adapter-evidence.json#feishu"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1709,8 +1847,11 @@
         "detail": "hermes-adapter-evidence.json#wecom"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1744,8 +1885,11 @@
         "detail": "hermes-adapter-evidence.json#wecom-callback"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1779,8 +1923,11 @@
         "detail": "hermes-adapter-evidence.json#weixin"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1813,8 +1960,10 @@
         "detail": "hermes-adapter-evidence.json#bluebubbles"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "unsupported-host",
+        "configured": false,
+        "dependencies": false,
+        "reason": "catalog host restriction; no native host operation attempted"
       },
       "provider": {
         "authentication": "unverified",
@@ -1847,8 +1996,10 @@
         "detail": "hermes-adapter-evidence.json#photon"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "unsupported-host",
+        "configured": false,
+        "dependencies": false,
+        "reason": "catalog host restriction; no native host operation attempted"
       },
       "provider": {
         "authentication": "unverified",
@@ -1882,8 +2033,11 @@
         "detail": "hermes-adapter-evidence.json#qqbot"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1917,8 +2071,11 @@
         "detail": "hermes-adapter-evidence.json#yuanbao"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1952,8 +2109,11 @@
         "detail": "hermes-adapter-evidence.json#teams"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "tests/test_setup_comms_hermes.py",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -1987,8 +2147,11 @@
         "detail": "hermes-adapter-evidence.json#line"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -2022,8 +2185,11 @@
         "detail": "hermes-adapter-evidence.json#ntfy"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -2057,8 +2223,11 @@
         "detail": "hermes-adapter-evidence.json#simplex"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -2092,8 +2261,11 @@
         "detail": "hermes-adapter-evidence.json#raft"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "owned-configuration-effect-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "tests/test_setup_comms_hermes_owned.py",
+        "limitation": "Frozen dependencies and private configuration; no provider or external native service operation."
       },
       "provider": {
         "authentication": "unverified",
@@ -2127,8 +2299,11 @@
         "detail": "hermes-adapter-evidence.json#irc"
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "selected-native-readback-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "evidence/wsl-hermes-readback.json",
+        "limitation": "Synthetic configuration in temporary private homes; selected SDK/module dependencies only. No external daemon, account authentication, provider callback or transport qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -2163,8 +2338,11 @@
         "limitation": "Actual upstream Buzz binary build and community account not exercised; prepared binary import contract was exercised with explicitly synthetic compiled native executable."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "owned-configuration-effect-observed",
+        "configured": true,
+        "dependencies": true,
+        "evidence": "tests/test_setup_comms_hermes_owned.py",
+        "limitation": "Fake accounts. Buzz is a compiled binary fixture, not upstream binary qualification."
       },
       "provider": {
         "authentication": "unverified",
@@ -2194,8 +2372,12 @@
         "reason": "Related interface has a separate installation contract; not ordinary human-chat readiness."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "incomplete-adapter",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -2225,8 +2407,12 @@
         "reason": "Related interface has a separate installation contract; not ordinary human-chat readiness."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "reference-only",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -2256,8 +2442,12 @@
         "reason": "Related interface has a separate installation contract; not ordinary human-chat readiness."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "incomplete-adapter",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -2287,8 +2477,12 @@
         "reason": "Related interface has a separate installation contract; not ordinary human-chat readiness."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "incomplete-adapter",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -2318,8 +2512,12 @@
         "reason": "Related interface has a separate installation contract; not ordinary human-chat readiness."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "incomplete-adapter",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -2349,8 +2547,12 @@
         "reason": "Related interface has a separate installation contract; not ordinary human-chat readiness."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "incomplete-adapter",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -2380,8 +2582,12 @@
         "reason": "Related interface has a separate installation contract; not ordinary human-chat readiness."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "incomplete-adapter",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -2411,8 +2617,12 @@
         "reason": "Related interface has a separate installation contract; not ordinary human-chat readiness."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "incomplete-adapter",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -2443,8 +2653,12 @@
         "reason": "Pinned Webex plugin 0.1.3 uses removed registerHttpHandler API."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "incompatible-dependency",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -2474,8 +2688,12 @@
         "reason": "Related interface has a separate installation contract; not ordinary human-chat readiness."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "incomplete-adapter",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -2510,8 +2728,15 @@
         "limitation": "Placeholder credentials; no provider operations. Voice routing tested separately with a controlled fixture."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "local-installation-and-discovery-observed",
+        "configured": false,
+        "dependencies": true,
+        "evidence": [
+          "tests/test_setup_comms_acquisition.py",
+          "tests/test_setup_comms_native.py",
+          "evidence/wsl-results.json"
+        ],
+        "limitation": "Real locked acquisition. Inert core/Zoom discovery uses native registries and owned interpreter shims; voice uses real SDK contracts with synthetic routing. No provider configuration/authentication/delivery claim."
       },
       "provider": {
         "authentication": "unverified",
@@ -2546,8 +2771,15 @@
         "limitation": "Placeholder credentials; no provider operations. Voice routing tested separately with a controlled fixture."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "local-installation-and-discovery-observed",
+        "configured": false,
+        "dependencies": true,
+        "evidence": [
+          "tests/test_setup_comms_acquisition.py",
+          "tests/test_setup_comms_native.py",
+          "evidence/wsl-results.json"
+        ],
+        "limitation": "Real locked acquisition. Inert core/Zoom discovery uses native registries and owned interpreter shims; voice uses real SDK contracts with synthetic routing. No provider configuration/authentication/delivery claim."
       },
       "provider": {
         "authentication": "unverified",
@@ -2582,8 +2814,15 @@
         "limitation": "Placeholder credentials; no provider operations. Voice routing tested separately with a controlled fixture."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "local-installation-and-discovery-observed",
+        "configured": false,
+        "dependencies": true,
+        "evidence": [
+          "tests/test_setup_comms_acquisition.py",
+          "tests/test_setup_comms_native.py",
+          "evidence/wsl-results.json"
+        ],
+        "limitation": "Real locked acquisition. Inert core/Zoom discovery uses native registries and owned interpreter shims; voice uses real SDK contracts with synthetic routing. No provider configuration/authentication/delivery claim."
       },
       "provider": {
         "authentication": "unverified",
@@ -2614,8 +2853,12 @@
         "reason": "NetClaw managed voice routes through the OpenClaw session API. Hermes voice is refused; Twilio core MCP remains available on Hermes."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "catalog-restriction-observed",
+        "configured": false,
+        "dependencies": false,
+        "reason": "incompatible-dependency",
+        "evidence": "tests/test_setup_comms_catalog.py",
+        "limitation": "Catalog/plan refusal evidence only; existing Mac provider/package findings were not requalified."
       },
       "provider": {
         "authentication": "unverified",
@@ -2650,8 +2893,15 @@
         "limitation": "Placeholder credentials; no provider operations. Voice routing tested separately with a controlled fixture."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "local-installation-and-discovery-observed",
+        "configured": false,
+        "dependencies": true,
+        "evidence": [
+          "tests/test_setup_comms_acquisition.py",
+          "tests/test_setup_comms_native.py",
+          "evidence/wsl-results.json"
+        ],
+        "limitation": "Real locked acquisition. Inert core/Zoom discovery uses native registries and owned interpreter shims; voice uses real SDK contracts with synthetic routing. No provider configuration/authentication/delivery claim."
       },
       "provider": {
         "authentication": "unverified",
@@ -2686,8 +2936,15 @@
         "limitation": "Placeholder credentials; no provider operations. Voice routing tested separately with a controlled fixture."
       },
       "wsl": {
-        "state": "unverified",
-        "reason": "handoff-not-executed"
+        "state": "local-installation-and-discovery-observed",
+        "configured": false,
+        "dependencies": true,
+        "evidence": [
+          "tests/test_setup_comms_acquisition.py",
+          "tests/test_setup_comms_native.py",
+          "evidence/wsl-results.json"
+        ],
+        "limitation": "Real locked acquisition. Inert core/Zoom discovery uses native registries and owned interpreter shims; voice uses real SDK contracts with synthetic routing. No provider configuration/authentication/delivery claim."
       },
       "provider": {
         "authentication": "unverified",
@@ -2696,5 +2953,14 @@
         "outbound": "unverified"
       }
     }
-  ]
+  ],
+  "wslQualification": {
+    "date": "2026-10-25",
+    "sourceCommit": "c3aa0951519a0be79db085f7092043ee1c97d830",
+    "branch": "155-comms-wsl-qualification-20261025",
+    "complete": false,
+    "evidence": "evidence/wsl-results.json",
+    "preservation": "evidence/wsl-preservation.json",
+    "requiredGatesOpen": true
+  }
 }
