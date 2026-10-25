@@ -24269,7 +24269,7 @@
     {
       "id": "forward",
       "title": "forward",
-      "description": "Read-only Forward Networks analysis through Forward's official MCP: path search, device/interface/VLAN/VRF/host and subnet lookups, vulnerabilities, network complexity, and NQE generation and documentation search.",
+      "description": "Read-only Forward Networks analysis through Forward's official MCP server: trace packet paths, look up devices, interfaces, VLANs, VRFs, hosts, cloud objects and subnet locations, check CVE exposure, summarize network complexity, and generate NQE queries. Use when a question is about what Forward's digital twin of the network says. Every call needs a networkId.",
       "path": "workspace/skills/forward/SKILL.md",
       "sha256": "5c23a40bde6e4dcca8a43a0d896848790f3ce882861721edc3dde52bfbab721a",
       "components": [
