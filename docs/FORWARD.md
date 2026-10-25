@@ -175,6 +175,7 @@ it listed all 14 tools above.
 | Symptom | Cause | Fix |
 |---------|-------|-----|
 | HTTP 403 on every request (body: `MCP is not enabled for this organization`) | An admin disabled **Enable MCP server**, or the license is expired or inactive | Re-enable it (self-hosted admin) or contact Forward support |
+| HTTP 400 or 404 on a call after connecting | The endpoint is session-based: the call carried no MCP session id (400) or an unknown one (404) | Reconnect (`initialize` again) and retry; a standard MCP client does this itself |
 | HTTP 401 | Wrong or revoked token | Mint a new token and rerun `./scripts/forward-enable.sh` |
 | A tool is missing from `tools/list` | Not in your license, or AI is not enabled for the org | Ask your Forward admin to check the license and whether Forward AI is enabled for the org |
 | `No processed snapshot for network N` | The network has no processed snapshot, or the ID does not exist (Forward gives the same message for both; the token may also lack access) | Check the ID and the token's access |

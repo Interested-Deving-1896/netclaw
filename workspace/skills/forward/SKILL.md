@@ -126,6 +126,7 @@ normal MCP result with `isError: true` and a plain-text message.
 |---------|---------|-----------------------|
 | HTTP 403 on every call (the body says `MCP is not enabled for this organization`) | An admin turned off **Enable MCP server** for the org (Settings > System > Org preferences > Experimental features on self-hosted; Forward support on SaaS), or the license is expired/inactive | MCP is disabled for this org; an admin must re-enable it |
 | HTTP 401 | The API token is wrong or revoked | Mint a new token at Settings > Account > API tokens and update `FORWARD_AUTH_BASE64` |
+| HTTP 400, or 404, on a call after connecting | The endpoint is session-based: the call carried no MCP session id (400) or an unknown one (404) | Reconnect (run `initialize` again) and retry; a standard MCP client does this itself |
 | `No processed snapshot for network N` | The network has no processed snapshot, **or** the ID does not exist (Forward gives the same message for both; the token may also lack access) | Check the ID and the token's access; do not try other IDs |
 | `'networkId' is required` | The call omitted `networkId` | Ask the user for it |
 | `Device 'X' not found in snapshot S` / `CVE-... not found in Snapshot S` | The object is not in that snapshot | Say so, with the snapshot; do not guess a near match |

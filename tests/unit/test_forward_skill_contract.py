@@ -31,7 +31,7 @@ def test_every_tool_requires_a_network_id():
 
 def test_skill_covers_the_failure_modes_seen_live():
     for phrase in ('INVALID_QUERY', 'executionKey', 'No processed snapshot', '`isError: true`', 'queryUrl',
-                   'NOT_VULNERABLE', 'empty list'):
+                   'NOT_VULNERABLE', 'empty list', 'session-based'):
         assert phrase in SKILL, phrase
 
 
