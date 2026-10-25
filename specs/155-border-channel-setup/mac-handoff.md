@@ -1,5 +1,10 @@
 # Spec155 Mac reconciliation handoff
 
+Mac reconciliation returned on branch `155-comms-mac-reconciliation-20261025`; see
+[verification](verification.md) and [Mac results](evidence/mac-reconciliation-results.json).
+Mac installer scope is complete with recorded limits. Overall Spec155 remains
+incomplete because T048 WSL gates are open. This handoff remains below as history.
+
 The WSL qualification branch is `155-comms-wsl-qualification-20261025`.
 Its qualification evidence commit is
 `2e3023f7ad7d1b81e19bd1d6147d99a929b4f4ff`, based on the requested source

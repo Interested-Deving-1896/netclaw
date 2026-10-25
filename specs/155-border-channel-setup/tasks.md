@@ -94,10 +94,10 @@ Tasks are complete only when their stated evidence exists. Provider/platform qua
 
 - [x] T045 Update coherent setup documentation/examples in `README.md`, `SOUL.md`, `TOOLS.md`, `.env.example`, `docs/GETTING-STARTED-VSCODE.md` and extension walkthroughs; keep existing operational tool counts accurate.
 - [x] T046 Run applicable catalog/schema/security checks, Python setup suites, affected Twilio/Zoom regressions and extension typecheck/build/tests; record exact results in `specs/155-border-channel-setup/verification.md`.
-- [ ] T047 Perform actual isolated Mac installer acceptance for both runtimes, multiple channels, Comms role placement, cancel/resume and preserved neighboring state; record evidence in `specs/155-border-channel-setup/verification.md`.
+- [x] T047 Perform actual isolated Mac installer acceptance for both runtimes, multiple channels, Comms role placement, cancel/resume and preserved neighboring state; record evidence in `specs/155-border-channel-setup/verification.md`.
 - [ ] T048 Prepare and execute the scoped WSL installer qualification handoff, preserving the running sandbox, with results in `specs/155-border-channel-setup/wsl-handoff.md` and `verification.md`. **Partial execution 2026-10-25:** actual both-runtime acquisition/configuration, inert discovery, access refusal and recovery checks recorded; remote editor and isolated-manager acceptance remain open.
 - [x] T049 Reconcile every inventory entry and supported setup path against actual local/provider/platform evidence in `specs/155-border-channel-setup/coverage.json`; missing accounts and untested claims remain open, never simulated live passes.
-- [ ] T050 Complete final cross-artifact review and source-change audit, draft the milestone article in `specs/155-border-channel-setup/milestone-draft.md`, and record GAIT/session closure without publishing or claiming completion prematurely.
+- [x] T050 Complete final cross-artifact review and source-change audit, draft the milestone article in `specs/155-border-channel-setup/milestone-draft.md`, and record GAIT/session closure without publishing or claiming completion prematurely.
 
 ## Dependencies and execution
 
@@ -122,3 +122,18 @@ Independent work can be parallelized only on disjoint files after dependencies s
 ## Implementation strategy
 
 Deliver complete contract-tested slices in dependency order and mark tasks only after evidence. A discovery-only milestone is useful but does not satisfy onboarding/activation requirements. Native helper packaging and actual MCP lifetime are explicit implementation gates, not reasons to weaken the spec. External/provider/platform qualification remains visible until performed with the required identities and exact consent.
+
+
+## Mac reconciliation closure — 2026-10-25
+
+T047 and T050 are complete for the installer-only scope documented in the Mac
+runtime/editor/preservation evidence. Actual editor drafting/reload and direct
+redacted report inspection are distinct from controlled engine review authority;
+the product report-button/export-dialog success path was not executed against the
+isolated journals. Positive service fixtures retain synthetic manager/provider
+boundaries. No provider readiness, live deployment or release is implied.
+
+**49/50 tasks complete. T048 remains open** for genuine WSL remote-editor and
+isolated-manager acceptance and the documented remaining WSL fixtures. Six WSL
+extension failures remain failures. Mac results cannot close these gates;
+`coverage.json` retains overall `complete: false`.

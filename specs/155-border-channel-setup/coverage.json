@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "date": "2026-10-25",
-  "branch": "155-border-channel-setup",
-  "baseCommit": "a5480b4cea4cf3729a25576fa75394b41257faab",
+  "branch": "155-comms-mac-reconciliation-20261025",
+  "baseCommit": "04645395530a060b35404ec3a27bc516ae9ba076",
   "scope": "Installer contracts and isolated local qualification; no operational capability retesting.",
   "complete": false,
   "inventoryCount": 77,
@@ -164,11 +164,11 @@
       "documentation": "https://docs.openclaw.ai/channels/discord",
       "setupContract": "typed-bot-v1",
       "mac": {
-        "state": "local-contract-observed",
+        "state": "engine-configuration-and-dependencies-observed",
         "configured": true,
         "dependencies": true,
-        "evidence": "actual-owned-helper-acquisition-registration-and-typed-config-validation",
-        "detail": "openclaw-adapter-evidence.json#discord"
+        "evidence": "evidence/mac-runtime-results.json",
+        "limitation": "Fresh Focused-home actual engine and native readback with fixture credentials; checkpoint recovery and empty-access service refusal passed. No provider authentication/transport/delivery claim."
       },
       "wsl": {
         "state": "engine-configuration-and-dependencies-observed",
@@ -736,11 +736,11 @@
       "documentation": "https://docs.openclaw.ai/channels/slack",
       "setupContract": "typed-bot-v1",
       "mac": {
-        "state": "local-contract-observed",
+        "state": "engine-configuration-and-dependencies-observed",
         "configured": true,
         "dependencies": true,
-        "evidence": "actual-owned-helper-acquisition-registration-and-typed-config-validation",
-        "detail": "openclaw-adapter-evidence.json#slack"
+        "evidence": "evidence/mac-runtime-results.json",
+        "limitation": "Fresh Focused-home actual engine and native readback with fixture credentials; checkpoint recovery and empty-access service refusal passed. No provider authentication/transport/delivery claim."
       },
       "wsl": {
         "state": "engine-configuration-and-dependencies-observed",
@@ -1347,11 +1347,11 @@
       "documentation": "https://hermes-agent.nousresearch.com/docs/user-guide/messaging/discord",
       "setupContract": "typed-bot-v1",
       "mac": {
-        "state": "local-contract-observed",
+        "state": "engine-configuration-and-dependencies-observed",
         "configured": true,
         "dependencies": true,
-        "evidence": "actual-pinned-Hermes-passive-readback",
-        "detail": "hermes-adapter-evidence.json#discord"
+        "evidence": "evidence/mac-runtime-results.json",
+        "limitation": "Fresh Focused-home actual engine and native readback with fixture credentials; checkpoint recovery and empty-access service refusal passed. No provider authentication/transport/delivery claim."
       },
       "wsl": {
         "state": "engine-configuration-and-dependencies-observed",
@@ -1385,11 +1385,11 @@
       "documentation": "https://hermes-agent.nousresearch.com/docs/user-guide/messaging/slack",
       "setupContract": "typed-bot-v1",
       "mac": {
-        "state": "local-contract-observed",
+        "state": "engine-configuration-and-dependencies-observed",
         "configured": true,
         "dependencies": true,
-        "evidence": "actual-pinned-Hermes-passive-readback",
-        "detail": "hermes-adapter-evidence.json#slack"
+        "evidence": "evidence/mac-runtime-results.json",
+        "limitation": "Fresh Focused-home actual engine and native readback with fixture credentials; checkpoint recovery and empty-access service refusal passed. No provider authentication/transport/delivery claim."
       },
       "wsl": {
         "state": "engine-configuration-and-dependencies-observed",
@@ -1730,7 +1730,8 @@
         "configured": true,
         "dependencies": false,
         "evidence": "actual-pinned-Hermes-passive-readback",
-        "detail": "hermes-adapter-evidence.json#matrix"
+        "detail": "hermes-adapter-evidence.json#matrix",
+        "limitation": "Passive native configuration contract only. Catalog remains WSL-only; dependency assertion is strict on WSL. Actual Mac editor disables selection for host incompatibility."
       },
       "wsl": {
         "state": "selected-native-readback-observed",
@@ -2723,7 +2724,8 @@
         "state": "local-installation-and-discovery-observed",
         "evidence": [
           "tests/test_setup_comms_acquisition.py",
-          "tests/test_setup_comms_native.py"
+          "tests/test_setup_comms_native.py",
+          "evidence/mac-runtime-results.json"
         ],
         "limitation": "Placeholder credentials; no provider operations. Voice routing tested separately with a controlled fixture."
       },
@@ -2766,7 +2768,8 @@
         "state": "local-installation-and-discovery-observed",
         "evidence": [
           "tests/test_setup_comms_acquisition.py",
-          "tests/test_setup_comms_native.py"
+          "tests/test_setup_comms_native.py",
+          "evidence/mac-runtime-results.json"
         ],
         "limitation": "Placeholder credentials; no provider operations. Voice routing tested separately with a controlled fixture."
       },
@@ -2806,23 +2809,23 @@
       "documentation": "https://www.twilio.com/docs/voice",
       "setupContract": "managed-comms-component-v1",
       "mac": {
-        "state": "local-installation-and-discovery-observed",
+        "state": "local-dependencies-and-routing-contract-observed",
         "evidence": [
           "tests/test_setup_comms_acquisition.py",
-          "tests/test_setup_comms_native.py"
+          "tests/test_setup_comms_voice.py"
         ],
-        "limitation": "Placeholder credentials; no provider operations. Voice routing tested separately with a controlled fixture."
+        "limitation": "Real locked dependency acquisition and real SDK contracts with synthetic routing. Voice MCP native registry discovery was not tested. No provider configuration/authentication/delivery claim."
       },
       "wsl": {
-        "state": "local-installation-and-discovery-observed",
+        "state": "local-dependencies-and-routing-contract-observed",
         "configured": false,
         "dependencies": true,
         "evidence": [
           "tests/test_setup_comms_acquisition.py",
-          "tests/test_setup_comms_native.py",
+          "tests/test_setup_comms_voice.py",
           "evidence/wsl-results.json"
         ],
-        "limitation": "Real locked acquisition. Inert core/Zoom discovery uses native registries and owned interpreter shims; voice uses real SDK contracts with synthetic routing. No provider configuration/authentication/delivery claim."
+        "limitation": "Real locked dependency acquisition and real SDK contracts with synthetic routing. Voice MCP native registry discovery was not tested. No provider configuration/authentication/delivery claim."
       },
       "provider": {
         "authentication": "unverified",
@@ -2888,7 +2891,8 @@
         "state": "local-installation-and-discovery-observed",
         "evidence": [
           "tests/test_setup_comms_acquisition.py",
-          "tests/test_setup_comms_native.py"
+          "tests/test_setup_comms_native.py",
+          "evidence/mac-runtime-results.json"
         ],
         "limitation": "Placeholder credentials; no provider operations. Voice routing tested separately with a controlled fixture."
       },
@@ -2931,7 +2935,8 @@
         "state": "local-installation-and-discovery-observed",
         "evidence": [
           "tests/test_setup_comms_acquisition.py",
-          "tests/test_setup_comms_native.py"
+          "tests/test_setup_comms_native.py",
+          "evidence/mac-runtime-results.json"
         ],
         "limitation": "Placeholder credentials; no provider operations. Voice routing tested separately with a controlled fixture."
       },
@@ -2962,5 +2967,24 @@
     "evidence": "evidence/wsl-results.json",
     "preservation": "evidence/wsl-preservation.json",
     "requiredGatesOpen": true
-  }
+  },
+  "macReconciliation": {
+    "date": "2026-10-25",
+    "branch": "155-comms-mac-reconciliation-20261025",
+    "sourceCommit": "04645395530a060b35404ec3a27bc516ae9ba076",
+    "complete": true,
+    "status": "installer-acceptance-complete-with-recorded-scope-limits",
+    "scope": "Mac installer acceptance only; WSL gates and provider readiness remain separate.",
+    "evidence": [
+      "evidence/mac-reconciliation-results.json",
+      "evidence/mac-runtime-results.json",
+      "evidence/mac-editor-results.json",
+      "evidence/mac-preservation.json"
+    ],
+    "providerReadiness": "unverified",
+    "reportControlLimit": "Both actual redacted reports were opened and inspected without edits. Product report/export controls were not exercised: engine reads the OS account shared state root, while qualification journals remain isolated.",
+    "remainingRequiredMacGates": false
+  },
+  "featureBaseCommit": "a5480b4cea4cf3729a25576fa75394b41257faab",
+  "originalFeatureBranch": "155-border-channel-setup"
 }

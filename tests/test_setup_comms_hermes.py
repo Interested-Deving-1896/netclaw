@@ -85,6 +85,14 @@ class SelectedHermesTests(unittest.TestCase):
         import sys
         sys.path.insert(0,str(ROOT/'scripts/lib'))
         from setup_comms_hermes import CONTRACTS,prepare,fixtures
+        extra_sdks={'google-chat','dingtalk','feishu','wecom-callback'}
+        if os.environ.get('NETCLAW_TEST_HERMES_EXTRA_SDKS'):
+            from setup_observation import host_identity
+            catalog=json.loads((ROOT/'config/components/comms.json').read_text())
+            matrix=next(entry for entry in catalog['entries'] if entry['id']=='hermes-matrix')
+            # The pinned Matrix extra is WSL-only; retain its real SDK assertion
+            # there without requiring an unsupported dependency on macOS.
+            if host_identity()['platform'] in matrix['hosts']:extra_sdks.add('matrix')
         for channel,values in fixtures().items():
             if channel in ('photon','whatsapp','raft','buzz','homeassistant'):continue # owned native acquisition fixtures separately
             with self.subTest(channel=channel):
@@ -92,7 +100,7 @@ class SelectedHermesTests(unittest.TestCase):
                 native=CONTRACTS[channel]['native']
                 result=self.invoke(native,config,mode='readback',credentials={**values,**updates})
                 self.assertTrue(result['configured'])
-                if os.environ.get('NETCLAW_TEST_HERMES_EXTRA_SDKS') and channel in ('google-chat','dingtalk','feishu','wecom-callback','matrix'):
+                if os.environ.get('NETCLAW_TEST_HERMES_EXTRA_SDKS') and channel in extra_sdks:
                     self.assertTrue(result['dependencies'])
                 # Dependency acquisition is independently observed. This test
                 # never labels a missing SDK or external daemon ready.

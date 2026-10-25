@@ -1,7 +1,7 @@
 # Specification verification — Spec155
 
 **Date:** 2026-10-25
-**State:** Specification ratified; SDD analysis/design remediation complete. Implementation is in progress. No installer acceptance claim is made yet.
+**State:** Mac installer reconciliation is complete within the explicitly documented fixture and editor scope; T047 and T050 are complete. WSL qualification (T048) remains partial. Overall Spec155 completion is **false**. Earlier sections are chronological checkpoints, not the current completion state.
 
 ## Baseline and authorized scope
 
@@ -279,3 +279,114 @@ distinct. `complete` remains false. Required remote-editor/isolated-manager and
 positive installer acceptance remain open, as do the recorded package/optional
 fixtures and final Mac reconciliation. T047, T048 and T050 remain unchecked.
 This branch is a partial qualification return, not a release or 100% claim.
+
+
+## Mac reconciliation of the WSL return — 2026-10-25
+
+Fetched and verified `origin/155-comms-wsl-qualification-20261025` at exactly
+`04645395530a060b35404ec3a27bc516ae9ba076`. Work is confined to separate branch
+`155-comms-mac-reconciliation-20261025` and a separate worktree. The original
+`155-border-channel-setup` checkout remains at
+`c3aa0951519a0be79db085f7092043ee1c97d830`; its tracked/untracked status is checked
+independently of this worktree. New runtime homes, setup journals and editor
+profiles are private and separate from existing installations.
+
+The three WSL test corrections were reviewed. Actual acquisition correctly uses
+the observed host, and the concurrent adapter test still requires exactly one
+synthetic chat submission while accepting valid durable-status schedules. The
+Matrix SDK assertion initially failed on Mac because that catalog entry is
+WSL-only. The test now requires the actual Matrix SDK only on its supported host;
+Mac still executes passive native configuration readback and the four other extra
+SDK assertions. Seven actual Hermes tests passed after this correction. A
+synthetic host assertion confirms the WSL SDK requirement remains strict; this is
+not a new WSL execution result. No production implementation or dependency pin
+was changed in this reconciliation.
+
+### Executed Mac checks
+
+- All three catalog checks passed: 77 Comms entries, 110 components, 237 skills,
+  zero unexplained catalog gaps.
+- Committed extension and HUD lockfiles installed in this worktree. Extension
+  typecheck/build passed. Full extension suite: **146 total, 143 passed, zero
+  failed, three skipped** (optional native OpenClaw custom-workspace fixture,
+  Linux-only service-timezone case, optional actual RAG fixture).
+- Full Python setup suite: **268 total, 261 passed, zero failed, seven skipped**.
+  Fresh component acquisition, owned Hermes acquisition, MCP 2.3 canary and the
+  exact cryptography 46.0.5 helper subsequently passed their separate opt-in runs.
+  The two disposable WSL systemd methods and optional Specify CLI fixture remain
+  unexecuted on this Mac pass. Separate runs do not rewrite the full-suite count.
+- Fresh actual Twilio/Zoom acquisition: three tests passed, covering four component
+  installs across two empty runtime homes. Actual native registry discovery
+  passed all four OpenClaw/Hermes × Twilio core/Zoom combinations with socket
+  denial and inert tool discovery. Voice dependency acquisition/routing contracts
+  passed; voice MCP native registry discovery is not claimed.
+- Both actual engines acquired their pinned runtime/dependencies and verified
+  eleven effects, including independent Slack and Discord configuration. They
+  paused after the first Comms checkpoint, rejected a changed target identity,
+  resumed explicitly without replaying settled runtime effects, and retained the
+  first channel's settings. Both stopped service activation with
+  `configuration_required` for empty sender access, with zero service artifacts;
+  final verification remained `unverified`. Runtime homes were 0700, environment
+  files 0600, and six selected neighboring fixture files per engine were unchanged.
+- Positive owned-service fixtures exercised shared configure/install/observe
+  functions for both runtimes, actual private plists/manifests/source indexes and
+  actual inert child lifetimes. Changed definitions and dead owned PIDs were
+  refused, and the neighboring child remained alive. Manager/inspector responses
+  and gateway/HUD child programs were synthetic; no provider transport is inferred.
+
+The private engine wrapper had a post-install report-import error after its
+installer assertions. Independent read-only postchecks established the existing
+journals' actual outcomes without replay, receipt fabrication or journal rewrite.
+That wrapper failure is retained separately from installer results in
+[evidence/mac-runtime-results.json](evidence/mac-runtime-results.json).
+
+Actual VS Code 1.109 acceptance passed all four OpenClaw/Hermes × Focused/Risk
+scenarios (five successful runs, one preliminary Focused run repeated with its
+real report). Checks covered WhatsApp/Twilio/Zoom search, keyboard multiselection,
+retained native non-secret settings after removal/cancel, Border/member ownership,
+panel reopening, actual window/extension-host reload, three themes/widths and
+200% zoom. Twelve neighboring editor-fixture files were unchanged; no runtime
+home was created by the editor previews. Both actual redacted engine reports were
+opened and inspected without editing. **The product report button/export dialog
+was not exercised**: its backend deliberately reads the OS account's shared setup
+state, whereas these qualification journals remain in separate private roots.
+No journal was moved into shared state and no backend was mocked to manufacture
+that result. Actual engine installation used controlled review authority, separately
+from the actual editor drafting/inspection checks.
+
+Preservation compared **8,012 primary files plus 469 supplemental application/export
+files**, **11 logical tables across six observed databases**, **20 existing
+editor/runtime process identities**, and **one separately selected live service**;
+all compared baselines were unchanged. One new audit-interpreter process appeared;
+existing identities were unchanged. Supplementary roots/service baselines were
+captured after private tests began and were not test targets. The original branch,
+HEAD and clean worktree status were unchanged. These are selected local baselines,
+not a claim about unobserved WSL identities or mutable session logs/caches.
+
+Detailed outcomes and limits are in [Mac editor evidence](evidence/mac-editor-results.json),
+[Mac preservation evidence](evidence/mac-preservation.json), and
+[Mac reconciliation results](evidence/mac-reconciliation-results.json). T047 is
+closed for this installer-only Mac scope. T050 records completed cross-artifact
+review, the corrected voice evidence, updated milestone draft and GAIT session
+closure. T048 remains open; the ledger is **49 of 50 tasks complete**, not 100%.
+
+### Remaining platform boundary
+
+WSL results remain **261 Python passes/seven skips**, and **137 extension passes,
+six failures/three skips**. Mac passes do not erase those six isolated
+service-manager failures. Genuine Windows-to-WSL remote-editor acceptance,
+isolated positive service acceptance and the documented remaining WSL fixtures
+remain open in [wsl-handoff.md](wsl-handoff.md) and
+[evidence/wsl-results.json](evidence/wsl-results.json). No generic Linux desktop
+window substitutes for the remote extension host.
+
+All evidence in this pass is installer-only. Configuration, authentication,
+transport, inbound and outbound remain distinct; provider readiness is unverified.
+No environment export, account pairing, message/call, model session, device read,
+meeting capture, enrollment/key reset, shared-policy change or coordinated network
+window ran. No merge, release, publication or existing-installation deployment is
+part of this reconciliation.
+
+GAIT session `spec155-mac-reconcile-20261025` recorded the final qualification and
+cross-artifact review at audit commit `38297391`; the session trail was displayed.
+Source commit/push is limited to the separate reconciliation branch.
