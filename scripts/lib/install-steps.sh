@@ -2926,13 +2926,22 @@ echo ""
 # ── Step 51: Twilio Voice MCP (NetClaw native) ──────────────────
 component_install_twilio() {
 log_step "Installing Twilio MCP Servers (core API + Voice)..."
-echo "  Core: @twilio-alpha/mcp — messaging, phone numbers, account resources (npx, Node.js 18+)"
+echo "  Core: pinned @twilio-alpha/mcp 0.7.0 — private environment credentials"
 echo "  Voice: built-in twilio-voice-mcp — inbound/outbound calls, emergency alerts"
 
-if command -v npx &> /dev/null; then
-    log_info "npx found — Twilio core MCP will auto-install on first use via: npx -y @twilio-alpha/mcp"
-else
-    log_warn "npx not found — Twilio core MCP requires Node.js 18+ with npx"
+if ! command -v node &> /dev/null || ! command -v npm &> /dev/null; then
+    log_warn "Twilio core MCP requires the selected Node.js and npm runtime"
+    return 1
+fi
+TWILIO_CORE_DIR="$NETCLAW_DIR/mcp-servers/twilio-env-mcp"
+if [ ! -f "$TWILIO_CORE_DIR/package-lock.json" ] || ! npm ci --prefix "$TWILIO_CORE_DIR" --ignore-scripts --no-audit --no-fund; then
+    log_warn "Pinned Twilio core MCP dependency installation failed"
+    return 1
+fi
+
+if [ "${NETCLAW_RUNTIME:-openclaw}" = hermes ]; then
+    log_info "Twilio core MCP installed; the existing OpenClaw voice gateway is not registered in Hermes"
+    return 0
 fi
 
 TWILIO_MCP_DIR="$NETCLAW_DIR/mcp-servers/twilio-voice-mcp"
@@ -2940,7 +2949,8 @@ TWILIO_MCP_DIR="$NETCLAW_DIR/mcp-servers/twilio-voice-mcp"
 if [ -f "$TWILIO_MCP_DIR/requirements.txt" ]; then
     log_info "Installing Twilio Voice MCP dependencies (twilio, flask, mcp, pytz)..."
     netclaw_pip_install -r "$TWILIO_MCP_DIR/requirements.txt" || {
-            log_warn "Twilio Voice MCP pip install failed — dependencies may need manual installation"
+            log_warn "Twilio Voice MCP pip install failed"
+            return 1
         }
     log_info "Twilio Voice MCP ready: $TWILIO_MCP_DIR/server.py"
     log_info "Webhook server: $TWILIO_MCP_DIR/webhook_server.py"
@@ -4109,6 +4119,7 @@ if [ -f "$ZOOM_RTMS_MCP_DIR/requirements.txt" ]; then
     log_info "Installing Zoom RTMS MCP dependencies..."
     netclaw_pip_install -r "$ZOOM_RTMS_MCP_DIR/requirements.txt" || {
             log_warn "Zoom RTMS MCP pip install failed — dependencies may need manual installation"
+            return 1
         }
     log_info "Zoom RTMS MCP ready: $ZOOM_RTMS_MCP_DIR"
     log_info "Zoom's official RTMS SDK is not bundled — install it separately per Zoom's"
@@ -4116,6 +4127,7 @@ if [ -f "$ZOOM_RTMS_MCP_DIR/requirements.txt" ]; then
     log_info "See docs/ZOOM-MEETING-INTELLIGENCE.md for Zoom Marketplace app setup."
 else
     log_warn "Zoom RTMS MCP requirements.txt not found at $ZOOM_RTMS_MCP_DIR"
+    return 1
 fi
 
 echo ""

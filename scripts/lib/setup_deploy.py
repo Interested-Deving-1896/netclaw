@@ -133,7 +133,7 @@ class Deployment:
         for raw in names:
             relative = Path(raw.decode('utf-8','strict'))
             # Documentation/test inputs do not belong in the runtime source.
-            if relative.parts[0] not in ('scripts','config','mcp-servers','workspace','ui','src','bin') and len(relative.parts) != 1 and relative.as_posix()!='tests/contract-suites.json':
+            if relative.parts[0] not in ('scripts','config','mcp-servers','workspace','ui','src','bin') and len(relative.parts) != 1 and relative.as_posix()!='tests/contract-suites.json' and not relative.as_posix().startswith('installer/native-comms/'):
                 continue
             if any(p in ('.env','.git','node_modules','.venv','__pycache__') or p.startswith('.env.') for p in relative.parts):
                 continue
@@ -283,7 +283,16 @@ class Deployment:
         selected={e['component'] for e in self.context['journal']['effects']
                   if e['owner']==self.claw['id'] and e['phase']=='components' and e['state']=='verified'} & requested
         generated={}
-        from setup_components import selected_servers,launcher_runtime
+        from setup_components import selected_servers,launcher_runtime,managed_comms_registration
+        if 'twilio' in selected:
+            from setup_secrets import child_environment
+            import shutil
+            node=shutil.which('node',path=child_environment(self.root,self.claw['harness'],
+                tool_directories=self.context.get('toolDirectories',()))['PATH'])
+            if not node:raise Conflict('comms_node_unavailable')
+            pointer=self.root/'.setup/comms-node.json'
+            self.write(effect,pointer,canonical({'command':node}),kind='runtime-record',
+                expected=latest.get(str(pointer),{}).get('sha256'))
         for component in sorted(selected):
             for name in selected_servers(component,self.claw,self.validator.components[component]):
                 if name not in template or name=='hermes-hud-mcp':
@@ -304,6 +313,7 @@ class Deployment:
                     # launcher references and inherits its selected runtime.
                     entry['env']={'NETCLAW_RUNTIME_ROOT':str(self.root/'python-runtimes'),
                                   'NETCLAW_RUNTIME_ENV':str(self.root/'.env')}
+                entry=managed_comms_registration(self,name,python) or entry
                 generated[name]=entry
         env_data=''.join(k+'='+_dotenv.quote(values[k])+'\n' for k in sorted(values)).encode()
         if hashlib.sha256(env_data).hexdigest()!=env_artifact['sha256']:
@@ -314,10 +324,20 @@ class Deployment:
         # Engine-owned initial Hermes config uses JSON, a YAML subset. Native
         # YAML edits require reconciliation, rather than a lossy hand parser.
         current=loads(data,8*1024*1024)
-        if self.claw['harness']=='hermes':
-            current['mcp_servers']=generated
-        else:
-            current.setdefault('mcp',{})['servers']=generated
+        existing=current.get('mcp_servers',{}) if self.claw['harness']=='hermes' else current.get('mcp',{}).get('servers',{})
+        prior_path=self.root/'netclaw-mcp-config.json'
+        if str(prior_path) in latest and revision(prior_path)!=latest[str(prior_path)]['sha256']:
+            raise Conflict('registration_changed')
+        prior=loads(guarded_read(prior_path,8*1024*1024,private=True))['mcpServers'] if str(prior_path) in latest else {}
+        merged=dict(existing)
+        for name,entry in generated.items():
+            if name in existing and existing[name] not in (entry,prior.get(name)):
+                raise Conflict('registration_changed')
+            merged[name]=entry
+        for name,entry in prior.items():
+            if name not in generated and merged.get(name)==entry:merged.pop(name)
+        if self.claw['harness']=='hermes':current['mcp_servers']=merged
+        else:current.setdefault('mcp',{})['servers']=merged
         self.write(effect,config,canonical(current)+b'\n',kind='configuration',expected=before)
         def expected(name):return latest.get(str(self.root/name),{}).get('sha256')
         self.write(effect,self.root/'netclaw-mcp-config.json',canonical({'mcpServers':generated})+b'\n',kind='registration',expected=expected('netclaw-mcp-config.json'))

@@ -1118,6 +1118,16 @@
           },
           "minItems": 1,
           "maxItems": 64
+        },
+        "commsIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,127}$",
+            "maxLength": 128
+          },
+          "maxItems": 2,
+          "uniqueItems": true
         }
       }
     },

@@ -18,6 +18,11 @@ Devices are defined in `testbed/testbed.yaml`. Update that file with your SSH-ac
 
 Credentials belong to the **selected installation's** private `.env`. The historical default is `~/.openclaw/.env`; a separate setup-owned OpenClaw or Hermes home has its own file. Verify the selected home and installation identity first. Never borrow another claw's credentials or put values in skill files, plans, reports or this document. [Spec153 setup](docs/GETTING-STARTED-VSCODE.md) ships in source 1.12.0 / extension 1.2.0. Publishing these artifacts does not install or change any existing local runtime.
 
+The source Comms installer distinguishes native conversation ingress, Twilio API
+and voice tools, and Zoom meeting services. Use [Comms setup](docs/COMMS-SETUP.md)
+for account preparation and exact owner placement. Installer discovery is inert;
+configuration, authentication, transport and message delivery retain separate results.
+
 ```
 ### Batfish Configuration Analysis (reference only — actual values in .env)
 - Batfish Host        → BATFISH_HOST (default: localhost)

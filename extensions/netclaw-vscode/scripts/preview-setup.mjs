@@ -1,5 +1,6 @@
 import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import net from 'node:net';import {spawn} from 'node:child_process';import {createHash} from 'node:crypto';import {fileURLToPath} from 'node:url';
-const {root,executable}=JSON.parse(fs.readFileSync('/tmp/netclaw153-preview.json'));
+const descriptor=process.env.NETCLAW_SETUP_PREVIEW_DESCRIPTOR||'/tmp/netclaw153-preview.json';
+const {root,executable}=JSON.parse(fs.readFileSync(descriptor));
 if(!path.basename(root).startsWith('netclaw153-preview-')||!root.startsWith(fs.realpathSync(os.tmpdir())+path.sep))throw Error('Isolated fixture root required.');
 const extension=fileURLToPath(new URL('../',import.meta.url)),observer=path.join(root,'observer');fs.mkdirSync(observer,{recursive:true});
 for(const name of ['error.txt','report.json','cdp.json'])if(fs.existsSync(path.join(root,name)))fs.unlinkSync(path.join(root,name));
@@ -15,7 +16,8 @@ fs.writeFileSync(path.join(observer,'index.cjs'),`const fs=require('node:fs'),vs
 // Chromium's test keychain is confined to this disposable preview. Never ask the
 // owner to reset the login keychain because a fixture uses a temporary HOME.
 const child=spawn(executable,['--user-data-dir',path.join(root,'user'),'--extensions-dir',path.join(root,'extensions'),...(process.platform==='darwin'?['--use-mock-keychain']:[]),'--skip-welcome','--skip-release-notes','--disable-extensions','--disable-telemetry','--remote-debugging-port='+port,'--extensionDevelopmentPath='+extension,'--extensionDevelopmentPath='+observer,path.join(root,'workspace')],
-  {env:{HOME:path.join(root,'home'),PATH:'/usr/bin:/bin:/usr/sbin:/sbin',LANG:'en_US.UTF-8',TMPDIR:path.join(root,'cache'),NETCLAW_SETUP_PREVIEW_ROOT:root,NETCLAW_SETUP_PREVIEW_PORT:String(port)},stdio:['ignore','pipe','pipe']});
+  {env:{HOME:path.join(root,'home'),PATH:'/usr/bin:/bin:/usr/sbin:/sbin',LANG:'en_US.UTF-8',TMPDIR:path.join(root,'cache'),NETCLAW_SETUP_PREVIEW_ROOT:root,NETCLAW_SETUP_PREVIEW_PORT:String(port),
+    ...(process.env.NETCLAW_SETUP_PLAYWRIGHT?{NETCLAW_SETUP_PLAYWRIGHT:process.env.NETCLAW_SETUP_PLAYWRIGHT}:{})},stdio:['ignore','pipe','pipe']});
 let output='';child.stdout.on('data',b=>{output=(output+b).slice(-100000);});child.stderr.on('data',b=>{output=(output+b).slice(-100000);});
 const exited=new Promise((resolve,reject)=>{child.once('error',reject);child.once('exit',resolve);});
 const timer=setTimeout(()=>child.kill(),180000);

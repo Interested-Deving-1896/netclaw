@@ -1,6 +1,8 @@
 """Optional verification; plan flags never substitute for native consent."""
 import time
 import uuid
+import hashlib
+from setup_schema import canonical
 from setup_engine import ReviewRefused
 from setup_report import outcome, summarize
 from setup_state import Conflict
@@ -12,7 +14,7 @@ class LiveVerification:
     def __init__(self,session,probes,context):
         self.session,self.probes,self.context=session,probes,context
 
-    def consent(self,tier,claw,details,attempt=''):
+    def consent(self,tier,claw,details,attempt='',*,configuration=None):
         key=claw['id']+':'+str(tier)+(':'+attempt if attempt else '')
         previous=self.context['journal'].get('liveAttempts',{}).get(key)
         binding={'operation':'verify-live','planHash':self.context['planHash'],'runId':self.context['runId'],
@@ -20,7 +22,20 @@ class LiveVerification:
         review=self.session.review_action(binding,'verify-live')
         if self.context['pause'].is_set():raise ReviewRefused('owner_disconnected')
         review.consume(binding,'verify-live')
-        self.context['journal'].setdefault('liveAttempts',{})[key]={'tier':tier,'state':'unknown','startedAt':int(time.time())}
+        if configuration is not None:
+            from setup_comms_evidence import configuration_binding
+            if configuration_binding(self.probes)!=configuration:raise ReviewRefused('channel_configuration_changed')
+        if previous:
+            history=self.context['journal'].setdefault('liveAttemptHistory',{}).setdefault(key,[])
+            if len(history)>=128:raise ReviewRefused('channel_attempt_history_limit')
+            history.append(previous)
+        sequence=self.context['journal'].get('liveAttemptSequence',0)
+        if type(sequence) is not int or not 0<=sequence<1000000:raise ReviewRefused('channel_attempt_history_limit')
+        self.context['journal']['liveAttemptSequence']=sequence+1
+        self.context['journal'].setdefault('liveAttempts',{})[key]={'tier':tier,'state':'unknown','startedAt':int(time.time()),
+            'sequence':sequence+1,
+            'attemptId':uuid.uuid4().hex,'scopeHash':hashlib.sha256(canonical(binding)).hexdigest(),
+            **({'configurationBinding':configuration} if configuration is not None else {})}
         self.context['save']()
         return key
 
@@ -80,37 +95,70 @@ class LiveVerification:
         tests=[t for t in context['plan']['verification']['channelTests'] if t['owner']==claw['id']]
         if not tests:return outcome('configuration_required','channel_unconfigured')
         from setup_channels import arguments,delivered,valid_destination
+        from setup_comms_evidence import record_message_observation,configuration_binding
         import json
         rows=[]
         for test in tests:
             if context['pause'].is_set():raise ReviewRefused('owner_disconnected')
+            if test.get('direction','outbound') != 'outbound':
+                # Inbound verification requires its own bounded observer. Never
+                # turn an imported inbound request into an outbound message.
+                record_message_observation(self.probes,context,claw,test['channel'],'inbound','unverified','unsupported')
+                rows.append(outcome('unverified','channel_unconfigured'));continue
             try:
                 selected={c['id'] for c in claw['channels']}
                 if test['channel'] not in selected:return outcome('configuration_required','channel_unconfigured')
                 binding={'operation':'channel-destination','planHash':context['planHash'],'owner':claw['id'],
-                         'channel':test['channel'],'destinationRef':test['destinationRef']}
+                         'runId':context['runId'],'channel':test['channel'],'direction':'outbound','account':'default',
+                         'destinationRef':test['destinationRef']}
                 destination=self.session.destination(binding)
                 if not valid_destination(test['channel'],destination):
                     rows.append(outcome('unverified','native_consent_required'));continue
                 message='NetClaw setup verification '+uuid.uuid4().hex+'. No action is required.'
                 argv=self.probes.harness.command()+arguments(claw['harness'],test['channel'],destination,message)
+                configured=configuration_binding(self.probes)
+                if configured is None:raise Conflict('channel_configuration_unbound')
                 credentials=self.probes.credentials()
+                if configuration_binding(self.probes)!=configured:raise Conflict('channel_configuration_changed')
                 key=self.consent(5,claw,{'title':'Send one channel test message','channel':test['channel'],
+                    'direction':'outbound','sender':{'account':'default','harness':claw['harness'],'installation':claw['id']},
+                    **({'smsSender':credentials.get('TWILIO_PHONE_NUMBER'),'smsAccount':credentials.get('TWILIO_ACCOUNT_SID')} if test['channel']=='sms' else {}),
                     'destination':destination,'message':message,'home':claw['runtimeHome'],
-                    'effects':'Sends exactly this message to this destination using the selected claw. No setup retry. A prior unknown attempt may already have delivered.'},
-                    attempt=test['channel']+':'+test['destinationRef'])
+                    'effects':'Sends exactly this message to this destination using the selected claw. SMS also performs one readonly lookup of the resulting message SID; it may still be pending. No setup retry. A prior unknown attempt may already have delivered.'},
+                    attempt=test['channel']+':'+test['destinationRef'],configuration=configured)
             except ReviewRefused:
+                record_message_observation(self.probes,context,claw,test['channel'],'outbound','cancelled','cancelled')
                 rows.append(outcome('unverified','native_consent_required'));continue
             except Exception:
                 rows.append(outcome('configuration_required','channel_unconfigured'));continue
             # A settled process without an affirmative receipt is uncertain:
             # do not retry or advance to another external message/device.
-            result=self.probes.harness.call(self.probes.effect,argv,credentials=credentials,capture=True,timeout=60)
-            try:accepted=result['returncode']==0 and delivered(claw['harness'],test['channel'],json.loads(result['stdout']))
+            record_message_observation(self.probes,context,claw,test['channel'],'outbound','unknown','attempt_unknown')
+            if context['pause'].is_set():raise WriterUncertain()
+            # Review-to-send races never authorize a different account/config.
+            if configured is not None and configuration_binding(self.probes)!=configured:raise WriterUncertain()
+            try:result=self.probes.harness.call(self.probes.effect,argv,credentials=credentials,capture=True,timeout=60)
+            except Exception:raise WriterUncertain() from None
+            try:
+                response=json.loads(result['stdout'])
+                accepted=result['returncode']==0 and delivered(claw['harness'],test['channel'],response)
             except Exception:accepted=False
             if not accepted:raise WriterUncertain()
+            if test['channel']=='sms':
+                from setup_comms_twilio import record_native_submission,fetch_recorded_receipt
+                try:record_native_submission(self.probes,context,claw,key,destination,response,credentials)
+                except Exception:raise WriterUncertain() from None
             context['journal']['liveAttempts'][key]['state']='verified';context['save']()
-            rows.append(outcome('verified','channel_verified'))
+            record_message_observation(self.probes,context,claw,test['channel'],'outbound','verified','submission_accepted')
+            delivery_state=None
+            if test['channel']=='sms' and not context['pause'].is_set():
+                fetched=fetch_recorded_receipt(self.probes,context,claw,key,credentials)
+                delivery=fetched['delivery']
+                if delivery['state'] in ('verified','failed','unknown'):
+                    record_message_observation(self.probes,context,claw,'sms','outbound',delivery['state'],delivery['code'])
+                    delivery_state=delivery['state']
+            rows.append(outcome('failed' if delivery_state=='failed' else 'unverified' if delivery_state=='unknown' else 'verified',
+                'channel_unconfigured' if delivery_state in ('failed','unknown') else 'channel_verified'))
         state=summarize(rows)
         return outcome(state,'channel_verified' if state=='verified' else 'native_consent_required')
 

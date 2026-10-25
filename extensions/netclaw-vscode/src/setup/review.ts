@@ -8,8 +8,10 @@ export async function reviewPlan(plan:any,binding:any,explanation:any):Promise<b
     downloads:explanation.downloadSizes,liveTiers:explanation.liveTiers,planHash:binding.planHash},null,2)});
   await vscode.window.showTextDocument(document,{preview:true,preserveFocus:false});
   const claws=plan.claws.map((claw:any)=>`${claw.displayName} · ${claw.harness} · ${claw.role}\nHome: ${claw.runtimeHome}\nProvider/model: ${claw.provider.id} / ${claw.provider.model}\nPorts: ${Object.values(claw.endpoints).join(', ')}\nService: ${claw.service.name} (${claw.service.mode})`).join('\n\n');
+  const comms=explanation.effects.filter((effect:any)=>effect.phase==='comms'||effect.startupEffects?.length)
+    .map((effect:any)=>`${effect.owner} · ${effect.channel||effect.component}: ${(effect.startupEffects||[]).join(', ')||'configuration only'}`).join('\n');
   const accepted=await vscode.window.showWarningMessage('Create these separate NetClaw installations?',{modal:true,
-    detail:`${claws}\n\nSource: ${plan.source.path}\nCommit: ${plan.source.commit}${plan.source.dirty?' · reviewed local changes':''}\nPosture: ${plan.posture.mode}\n${explanation.effects.length} disclosed phases, including downloads, private dependency builds, credentials and owned services. Agents can execute powerful tools. Live provider/channel/device tests require additional consent. Existing installations are preserved.\n\nPlan SHA-256: ${binding.planHash}`},'Apply reviewed plan');
+    detail:`${claws}${comms?'\n\nComms activation:\n'+comms+'\nReview sender/room access, callback endpoints and dependency sources in the opened plan. Empty allowlists grant no access.':''}\n\nSource: ${plan.source.path}\nCommit: ${plan.source.commit}${plan.source.dirty?' · reviewed local changes':''}\nPosture: ${plan.posture.mode}\n${explanation.effects.length} disclosed phases, including downloads, private dependency builds, credentials and owned services. Agents can execute powerful tools. Live provider/channel/device tests require additional consent. Existing installations are preserved.\n\nPlan SHA-256: ${binding.planHash}`},'Apply reviewed plan');
   return accepted==='Apply reviewed plan';
 }
 export async function reviewLive(plan:any,binding:any):Promise<boolean>{
@@ -19,7 +21,7 @@ export async function reviewLive(plan:any,binding:any):Promise<boolean>{
   return (await vscode.window.showWarningMessage('Run this optional verification?',{modal:true,detail:detail+(binding.previousOutcome==='unknown'?'\nAn earlier attempt has an unknown outcome. This creates a new attempt.':'')},'Run this check'))==='Run this check';
 }
 export async function channelDestination(binding:any):Promise<string|undefined>{
-  const patterns:Record<string,RegExp>={slack:/^[CDG][A-Z0-9]{8,31}$/,telegram:/^-?[1-9][0-9]{0,19}$/,discord:/^[1-9][0-9]{15,20}$/,webex:/^[A-Za-z0-9_-]{16,256}={0,2}$/};
+  const patterns:Record<string,RegExp>={slack:/^[CDG][A-Z0-9]{8,31}$/,telegram:/^-?[1-9][0-9]{0,19}$/,discord:/^[1-9][0-9]{15,20}$/,webex:/^[A-Za-z0-9_-]{16,256}={0,2}$/,sms:/^\+[1-9][0-9]{5,14}$/};
   const pattern=patterns[binding.channel];
   if(!pattern)throw Error('Unsupported channel destination.');
   return vscode.window.showInputBox({title:`${binding.channel} test destination · ${binding.destinationRef}`,

@@ -22,6 +22,7 @@ import {showReport,exportReport} from '../setup/reports';
 import {selectLocalModel} from '../setup/discovery';
 import {showAdvisor} from '../setup/advisor';
 import {writePresetReport} from '../setup/preset';
+import {CommsManifest,validateComms,discoverComms,selectChannels,channelFields,setZoomBinding,channelTestChoices,setChannelTests} from '../setup/comms';
 
 const choose=async(title:string,values:{id:string;title?:string;description?:string}[])=>
   (await vscode.window.showQuickPick(values.map(v=>({label:v.title||v.id,description:v.description,id:v.id})),{title}))?.id;
@@ -35,6 +36,7 @@ export class SetupWizard implements vscode.Disposable {
   private run?:any;
   private busy=false;
   private catalog:any;
+  private comms!:CommsManifest;
   private adapters:any;
   private runs:SetupRuns;
   private selectedHomes:{home:string}[]=[];
@@ -52,6 +54,7 @@ export class SetupWizard implements vscode.Disposable {
       if(path.basename(name)!==name||hash(fs.readFileSync(path.join(base,name)))!==digest)throw Error('Bundled setup policy changed. Rebuild or reinstall this extension.');
     }
     this.catalog=readData(path.join(base,'catalog.json'),16*1024*1024);this.adapters=readData(path.join(base,'harness-adapters.json'));
+    this.comms=readData(path.join(base,'comms.json'),4*1024*1024);validateComms(this.comms,readData(path.join(base,'comms.schema.json')));
     this.draft=new SetupDraft(readData(path.join(base,'claw-plan.schema.json')),this.catalog);
     const saved=this.local.get<any>('setup-draft',undefined);
     if(saved)this.draft.replace(saved,0);
@@ -76,6 +79,12 @@ export class SetupWizard implements vscode.Disposable {
       detection:'saved-bindings-known-defaults-and-selected-homes',networkChecks:'native-prerequisite-action-required'};
   }
   setupCatalog(args:any){
+    if(args.kind==='comms'||args.kind==='channel'){
+      this.initialize();const items=discoverComms(this.comms,args.query||'',args.harness).filter(e=>(args.kind!=='channel'||e.inventory==='channel')&&(!args.ids||args.ids.includes(e.id)));
+      return {items:items.map(e=>({id:e.id,title:e.name,channelId:e.channelId,nativeId:e.nativeId,harness:e.harness,kind:e.kind,
+        roles:e.roles,hosts:e.hosts,component:e.component,state:e.state,qualification:e.qualification,reason:e.setup.reason,
+        documentation:e.documentation,version:e.baseline.version,settings:e.setup.settings.map(f=>({key:f.key,classification:f.classification,required:f.required,help:f.help}))})),bounded:true};
+    }
     this.initialize();const source=args.kind==='skill'?this.catalog.skills:args.kind==='profile'?this.catalog.profiles:this.catalog.components;
     const selected=source.filter((item:any)=>(!args.ids||args.ids.includes(item.id))&&(!args.query||[item.id,item.title,item.description].join(' ').toLowerCase().includes(args.query.toLowerCase()))).slice(0,40);
     return {items:selected.map((item:any)=>({id:item.id,title:item.title||item.id,description:item.description||item.purpose||'',components:item.components||[],dependencies:item.dependencies||[],settings:(item.settings||[]).map((f:any)=>({key:f.key,classification:f.classification,required:f.required,help:f.help}))})),bounded:true};
@@ -150,6 +159,9 @@ export class SetupWizard implements vscode.Disposable {
     const snapshot=this.draft.snapshot(),bindings=this.local.get<any[]>('management-bindings',[]);
     const installations=detectInstallations(bindings.map(b=>({home:b.target.home,harness:b.target.kind,label:b.profile.label,installationId:b.target.installationId})),this.selectedHomes);
     await this.view.webview.postMessage({type:'snapshot',...snapshot,busy:this.busy,installations,run:this.run,
+      comms:this.comms.entries.map(e=>({id:e.id,title:e.name,channelId:e.channelId,harness:e.harness,kind:e.kind,aliases:e.aliases,
+        roles:e.roles,hosts:e.hosts,component:e.component,inventory:e.inventory,version:e.baseline.version,
+        disposition:e.setup.disposition,reason:e.setup.reason,qualification:e.qualification})),
       components:this.catalog.components.map((c:any)=>({id:c.id,title:c.title,category:c.category,description:c.description,
         skills:c.skills,dependencies:c.dependencies,links:c.links,native:c.installer.mode==='native',unavailable:this.adapters.unavailableComponents?.[c.id]?.reason,
         platforms:c.platforms,platformReason:c.platformReason,whenToChoose:c.whenToChoose,prerequisites:c.prerequisites,
@@ -161,6 +173,41 @@ export class SetupWizard implements vscode.Disposable {
     this.preparedTools();
     if(type==='connect-new'){await vscode.commands.executeCommand('netclaw.setupConnect');return;}
     const state=this.draft!.snapshot();let plan=state.answers;
+    if(type==='zoom-binding'){
+      const existing=(plan.commsBindings||[]).find((b:any)=>b.owner===message.owner);
+      const choice=await choose('Zoom input for this Risk',[{id:'none',title:'No Border binding',description:'Keep Zoom tools on this member.'},
+        {id:'bind',title:'Bind this member to the Border',description:'Replace manual channel settings with a dedicated secret and a same-host loopback port.'}]);
+      if(!choice)return;
+      let port:number|null=null;
+      if(choice==='bind'){
+        const value=await input('Zoom Border port','Loopback port, 1024–65535. No listener starts while drafting.',String(existing?.port||19876));
+        if(value===undefined)return;port=Number(value);
+      }
+      this.draft!.replace(setZoomBinding(plan,message.owner,port),state.revision);await this.persist();return;
+    }
+    if(type==='comms-guide'){
+      if(!plan.source){await vscode.window.showInformationMessage('Choose a source checkout to read the Comms setup guide.');return;}
+      const file=path.resolve(plan.source.path,'docs/COMMS-SETUP.md');realParents(file);
+      await vscode.window.showTextDocument(vscode.Uri.file(file));return;
+    }
+    if(type==='comms-documentation'){
+      const entry=this.comms.entries.find(e=>e.id===message.comms);if(!entry)throw Error('Select a known Comms option.');
+      await vscode.env.openExternal(vscode.Uri.parse(entry.documentation));return;
+    }
+    if(type==='comms-option'){
+      const claw=plan.claws?.find((c:any)=>c.id===message.owner),entry=this.comms.entries.find(e=>e.id===message.comms);
+      if(!claw||!entry||entry.harness!==claw.harness)throw Error('Select a Comms option for this claw.');
+      if(!entry.roles.includes(claw.role)||plan.host&&!entry.hosts.includes(plan.host.platform))throw Error('This Comms option requires a different owner role or host.');
+      const allowed=discoverComms(this.comms,'',claw.harness,claw,plan.host?.platform).find(e=>e.id===entry.id)!;
+      const selected=entry.component?allowed.selectable&&(claw.capabilities?.components||[]).includes(entry.component):(claw.channels||[]).some((c:any)=>c.id===entry.channelId);
+      if(!allowed.selectable&&!selected){
+        await vscode.window.showInformationMessage(entry.setup.reason,{modal:true});return;
+      }
+      if(entry.component){await this.action('component',{owner:claw.id,component:entry.component});return;}
+      const ids=(claw.channels||[]).map((c:any)=>c.id),next=ids.includes(entry.channelId)?ids.filter((id:string)=>id!==entry.channelId):[...ids,entry.channelId];
+      Object.assign(claw,selectChannels(claw,next,this.catalog,this.comms));
+      this.draft!.replace(plan,state.revision);await this.persist();return;
+    }
     if(type==='harness'||type==='provider'){await this.primaryChoice(type,message.owner);return;}
     if(type==='capabilities'){await this.configureClaw(message.owner);return;}
     if(type==='manage'){await vscode.commands.executeCommand('netclaw.selectConnection');return;}
@@ -212,17 +259,16 @@ export class SetupWizard implements vscode.Disposable {
     }
     if(type==='channel'){
       const claw=plan.claws?.find((c:any)=>c.id===message.owner);if(!claw||claw.role==='member')throw Error('Channels belong to the Focused claw or Border.');
-      const choices=this.catalog.choices.filter((c:any)=>c.kind==='channel'&&c.harnesses.includes(claw.harness));
-      const unavailable=this.adapters[claw.harness]?.unavailableChannels||{};
-      const channel=await choose('Conversation channel',choices.map((c:any)=>unavailable[c.id]?{...c,title:c.title+' · unavailable',description:unavailable[c.id].reason}:c));if(!channel)return;
-      if(unavailable[channel]){await vscode.window.showInformationMessage(unavailable[channel].reason,{modal:true});return;}
-      const descriptor=choices.find((c:any)=>c.id===channel);
-      const nextKeys=new Set(descriptor.settingKeys||[]);
-      for(const component of this.catalog.components.filter((c:any)=>claw.capabilities?.components?.includes(c.id)))for(const setting of component.settings)nextKeys.add(setting.key);
-      for(const field of this.catalog.choices.find((c:any)=>c.kind==='provider'&&c.id===claw.provider?.id)?.settings||[])nextKeys.add(field.key);
-      for(const old of claw.channels||[])for(const key of old.settingKeys||[])if(!nextKeys.has(key))delete claw.settings[key];
-      claw.channels=channel==='none'?[]:[{id:channel,settingKeys:descriptor.settingKeys}];
-      for(const field of descriptor.settings||[])if(field.classification==='secret'&&field.input==='user')claw.settings[field.key]={kind:'secret',key:field.key,owner:claw.id,source:'prompt'};
+      const entries=discoverComms(this.comms,'',claw.harness,claw,plan.host?.platform).filter(e=>e.inventory==='channel'||e.channelId==='webex');
+      const choices=[{label:'None',id:'none',description:'No conversation channels',picked:false},
+        ...entries.map(e=>({label:e.name,id:e.channelId,description:e.state==='typed'||e.state==='native'?'Guided setup':e.setup.reason,picked:claw.channels?.some((c:any)=>c.id===e.channelId)}))];
+      const picked=await vscode.window.showQuickPick(choices,{title:'Comms · conversation channels',placeHolder:'Select multiple channels, or choose None',canPickMany:true,matchOnDescription:true});if(!picked)return;
+      const ids=picked.map(p=>p.id);
+      for(const id of ids.filter(id=>id!=='none')){
+        const e=entries.find(e=>e.channelId===id)!;
+        if(!e.selectable&&!(['slack','telegram','discord'].includes(id)&&e.state==='incomplete-adapter')){await vscode.window.showInformationMessage(e.setup.reason,{modal:true});return;}
+      }
+      Object.assign(claw,selectChannels(claw,ids,this.catalog,this.comms));
       this.draft!.replace(plan,state.revision);await this.persist();return;
     }
     if(type==='ports'){
@@ -235,10 +281,20 @@ export class SetupWizard implements vscode.Disposable {
     }
     if(type==='verification'){
       const optional=[{label:'4 · One live model turn',description:'Configured provider; normal token costs; separate approval at execution.',tier:4},
-        {label:'5 · Channel delivery',description:'Separate approval for each message; unavailable adapters remain unverified.',tier:5},
+        {label:'5 · Channel message tests',description:'Choose channel requests; each message needs separate approval at execution.',tier:5},
         {label:'6 · Read-only device observation',description:'Selected inventory device only; separate native selection and approval.',tier:6}];
       const selected=await vscode.window.showQuickPick(optional.map(o=>({...o,picked:plan.verification?.tiers?.includes(o.tier)})),{title:'Optional verification (tiers 1–3 always run)',canPickMany:true});if(!selected)return;
       plan.verification={...(plan.verification||{risk:plan.shape==='risk',networkReadOnly:true,channelTests:[]}),tiers:[1,2,3,...selected.map(s=>s.tier)],costConsent:selected.some(s=>s.tier===4)};
+      if(selected.some(s=>s.tier===5)){
+        const choices=channelTestChoices(plan,this.comms);
+        if(choices.length){
+          const tests=await vscode.window.showQuickPick(choices.map(c=>({...c,
+            description:'Destination and exact content are reviewed privately before sending.'})),
+            {title:'Choose channel test requests; no messages are sent now',canPickMany:true});
+          if(!tests)return;
+          Object.assign(plan,setChannelTests(plan,tests.map(t=>t.key),this.comms));
+        }else await vscode.window.showInformationMessage('No selected channel currently has an available message-test adapter. Its message results will remain unverified.');
+      }
       this.draft!.replace(plan,state.revision);await this.persist();return;
     }
     if(type==='resolve'){
@@ -267,6 +323,7 @@ export class SetupWizard implements vscode.Disposable {
         const add=(id:string)=>{if(selected.has(id))return;selected.add(id);this.catalog.components.find((c:any)=>c.id===id)?.dependencies.forEach(add);};add(component.id);
       }
       claw.capabilities.components=[...selected];claw.capabilities.skills=claw.capabilities.skills.filter((id:string)=>this.catalog.skills.find((s:any)=>s.id===id)?.components.every((c:string)=>selected.has(c)));
+      if(remove&&component.id==='zoom-rtms')plan=setZoomBinding(plan,claw.id,null);
       this.draft!.replace(plan,state.revision);await this.persist();return;
     }
     if(type==='settings'){await this.configureSettings(message.owner);return;}
@@ -380,10 +437,11 @@ export class SetupWizard implements vscode.Disposable {
     }
     // Frontends use the chosen source's data once it is explicitly trusted.
     const catalog=readData(path.join(selected.path,'config/components/catalog.json'),16*1024*1024);
+    const comms=readData(path.join(selected.path,'config/components/comms.json'),4*1024*1024);validateComms(comms,readData(path.join(selected.path,'config/components/comms.schema.json')));
     const adapters=readData(path.join(selected.path,'config/components/harness-adapters.json'));
     const draft=new SetupDraft(readData(path.join(selected.path,'config/claw-plan.schema.json')),catalog);
     draft.replace(plan,0);this.engine?.dispose();this.engine=candidate;
-    this.catalog=catalog;this.adapters=adapters;this.draft=draft;await this.persist();
+    this.catalog=catalog;this.comms=comms;this.adapters=adapters;this.draft=draft;await this.persist();
   }
   private async primaryChoice(kind:'harness'|'provider',owner?:string){
     let state=this.draft!.snapshot(),plan=state.answers;
@@ -446,7 +504,13 @@ export class SetupWizard implements vscode.Disposable {
     const profile=await choose('Capability profile',profiles);if(!profile)return;const descriptor=profiles.find((p:any)=>p.id===profile);
     if(existing?.capabilities&&existing.capabilities.profile!==profile&&(await vscode.window.showWarningMessage('Replace this claw’s selected capabilities?',{modal:true,detail:'The selected profile replaces component and skill choices. Settings used only by removed capabilities are discarded. Other claws keep their profiles.'},'Replace capabilities'))!=='Replace capabilities')return;
     const components=role==='border'?['gait','protocol','n2n']: [...new Set([...descriptor.components,...(role==='member'?['n2n']:[])])];
-    const skills=role==='member'?descriptor.skills:this.catalog.skills.filter((s:any)=>s.availability==='supported'&&s.components.length&&s.components.every((id:string)=>components.includes(id))).map((s:any)=>s.id);
+    if(role==='member'&&profile==='comms'){
+      const tools=this.catalog.components.filter((c:any)=>['twilio','zoom-rtms'].includes(c.id));
+      const selected=await vscode.window.showQuickPick(tools.map((c:any)=>({label:c.title,description:c.description,id:c.id,picked:existing?.capabilities?.components?.includes(c.id)})),{title:'Comms member · select tools',canPickMany:true});
+      if(!selected?.length)return;components.push(...selected.map((c:any)=>c.id));
+    }
+    const skills=role==='member'?[...descriptor.skills]:this.catalog.skills.filter((s:any)=>s.availability==='supported'&&s.components.length&&s.components.every((id:string)=>components.includes(id))).map((s:any)=>s.id);
+    if(role==='member'&&profile==='comms')skills.push(...this.catalog.skills.filter((s:any)=>s.availability==='supported'&&s.components.length&&s.components.every((id:string)=>components.includes(id))).map((s:any)=>s.id));
     const mode=role==='member'?await choose('Member lifecycle',[{id:'hot',description:'Keep the member worker running.'},{id:'on-demand',description:'Start the worker when invoked; local management services stay available.'}]):'hot';if(!mode)return;
     const claw={id,displayName:name,role,runtimeHome:home,workspace:harness==='hermes'?home:path.join(home,'workspace'),harness,harnessChoice:selected==='inherit'?'inherit':'explicit',runtimeVersion:this.adapters[harness].versions[0],
       provider:{id:provider,kind,model,apiMode,endpoint,credentialKeys},channels:existing?.channels||[],capabilities:{profile,components,skills,trustDomain:id},
@@ -464,6 +528,7 @@ export class SetupWizard implements vscode.Disposable {
       for(const member of inherited){member.harness=harness;member.workspace=harness==='hermes'?member.runtimeHome:path.join(member.runtimeHome,'workspace');member.runtimeVersion=this.adapters[harness].versions[0];plan.unresolved=[...new Set([...(plan.unresolved||[]),'review-member-harness-'+hash(member.id).slice(0,12)])];}
     }
     plan.claws=plan.claws||[];plan.claws[index]=claw;plan.inventory=plan.inventory||[];plan.identity=plan.identity||[];
+    if(!claw.capabilities.components.includes('zoom-rtms')&&plan.commsBindings)plan.commsBindings=plan.commsBindings.filter((b:any)=>b.owner!==id);
     plan.verification={...(plan.verification||{tiers:[1,2,3],costConsent:false,networkReadOnly:true,channelTests:[]}),risk:plan.shape==='risk'};
     this.draft!.replace(plan,state.revision);await this.persist();
   }
@@ -471,7 +536,8 @@ export class SetupWizard implements vscode.Disposable {
     const state=this.draft!.snapshot(),plan=state.answers,claw=plan.claws?.find((c:any)=>c.id===owner);if(!claw)throw Error('Select a claw.');
     if(!claw.capabilities||!claw.settings)throw Error('Choose the claw profile again after the source change.');
     const entries=[...this.catalog.components.filter((c:any)=>claw.capabilities.components.includes(c.id)),
-      ...this.catalog.choices.filter((c:any)=>c.kind==='harness'&&c.id===claw.harness||c.kind==='provider'&&c.id===claw.provider.id||c.kind==='channel'&&claw.channels.some((channel:any)=>channel.id===c.id))];
+      ...this.catalog.choices.filter((c:any)=>c.kind==='harness'&&c.id===claw.harness||c.kind==='provider'&&c.id===claw.provider.id),
+      ...(claw.channels||[]).map((c:any)=>({settings:channelFields(claw,c.id,this.catalog,this.comms)}))];
     const fields=new Map<string,any>();for(const entry of entries)for(const field of entry.settings)if(field.input==='user'){
       const old=fields.get(field.key);if(!old||old.classification!=='secret')fields.set(field.key,field);
     }

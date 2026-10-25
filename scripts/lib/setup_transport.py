@@ -18,6 +18,17 @@ from setup_schema import Invalid, canonical, loads
 from setup_secrets import SecretInbox
 
 
+def validate_native_effect(context,effect):
+    """A private terminal belongs to one exact selected effect, never a shell."""
+    claw=next((c for c in context['plan']['claws'] if c['id']==effect.get('owner')),None)
+    if not claw:raise ReviewRefused('native_effect_unreviewed')
+    phase=effect.get('phase');identifier=effect.get('id');owner=claw['id']
+    permitted=(phase=='onboard' and identifier==owner+':onboard' or
+        phase=='components' and identifier in {owner+':components:'+c for c in claw['capabilities']['components']} or
+        phase=='comms' and identifier in {owner+':comms:'+c['id'] for c in claw.get('channels',[])})
+    if not permitted:raise ReviewRefused('native_effect_unreviewed')
+
+
 def emit(value):
     data=canonical(value)
     if len(data)>8*1024*1024:raise Invalid('document_size_limit')
@@ -81,6 +92,7 @@ class TerminalSession:
 
     def terminal(self,arguments,*,cwd,env,context,effect):
         from setup_native import terminal_terminal
+        validate_native_effect(context,effect)
         self.tty.write('\nNative setup for '+effect['owner']+'. Closing or cancelling requires reconciliation before continuing.\n')
         self.tty.flush()
         return terminal_terminal(self.tty,arguments,cwd=cwd,env=env,context=context,effect=effect)
@@ -195,6 +207,7 @@ class EditorSession:
 
     def terminal(self,arguments,*,cwd,env,context,effect):
         from setup_native import editor_terminal
+        validate_native_effect(context,effect)
         nonce=secrets.token_hex(24)
         binding={'planHash':context['planHash'],'owner':effect['owner'],'effectId':effect['id'],'phase':effect['phase']}
         self.stream.write(canonical({'protocol':1,'type':'native-terminal','requestId':nonce,'binding':binding})+b'\n')

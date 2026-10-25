@@ -14,6 +14,12 @@ Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one Ne
 
 **VS Code:** [Install NetClaw](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw) or [explore the VS Code Extension](#vs-code-extension): set up a separate NetClaw or mixed Risk from empty homes, or connect your existing installation for Chat, Canvas, RAG, Testbed management, per-MCP configuration and reviewed security controls.
 
+**Comms setup (source development):** select multiple runtime-specific channels,
+including the distinct WhatsApp paths, or choose None. Twilio tools/voice and Zoom
+appear with their eligible owners and separate prerequisites. See the
+[setup guide](docs/COMMS-SETUP.md) and [current installer evidence](specs/155-border-channel-setup/verification.md).
+Discovery, saved configuration, authentication, connection and delivery are separate results.
+
 **Reference:** [Architecture](#architecture) · [MCP servers](#mcp-servers-176) · [Skills](#skills-237) · [Workflows](#standard-workflows) · [Safety](#safety)
 
 ## Hermes or OpenClaw?

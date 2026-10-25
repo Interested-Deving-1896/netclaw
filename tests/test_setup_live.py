@@ -22,6 +22,9 @@ class Probe:
     def running(self):return {'state':'verified'}
 
 class LiveTests(unittest.TestCase):
+    def setUp(self):
+        binding=patch('setup_comms_evidence.configuration_binding',return_value=['a'*64,'b'*64])
+        binding.start();self.addCleanup(binding.stop)
     def context(self):return {'runId':'run-fixture','planHash':'a'*64,'plan':sample_plan(),'journal':{},'pause':threading.Event(),'save':lambda:None}
     def test_flags_and_native_refusal_never_invoke_provider(self):
         for enabled,session in [(False,Session()),(True,None),(True,Session(False))]:
@@ -109,6 +112,8 @@ class LiveTests(unittest.TestCase):
         self.assertEqual(arguments('hermes','slack','C0123456789','test'),['send','--to','slack:C0123456789','--json','test'])
         self.assertFalse(delivered('hermes','slack',{'success':True,'skipped':True}))
         self.assertFalse(delivered('openclaw','slack',{'action':'send','channel':'slack','dryRun':True,'messageId':'x'}))
-        self.assertTrue(delivered('hermes','slack',{'success':True}))
+        self.assertFalse(delivered('hermes','slack',{'success':True}))
+        self.assertTrue(delivered('hermes','slack',{'success':True,'message_id':'12345.12'}))
+        self.assertFalse(delivered('hermes','slack',{'success':True,'message_id':True}))
 
 if __name__=='__main__':unittest.main()

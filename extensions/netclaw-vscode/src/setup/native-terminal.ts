@@ -18,7 +18,8 @@ export class NativeTerminalSession {
     if(request.type==='native-terminal'){
       const b=request.binding,c=this.plan.claws.find((claw:any)=>claw.id===b?.owner);
       const permitted=c&&(b.phase==='onboard'&&b.effectId===`${c.id}:onboard`||
-        b.phase==='components'&&c.capabilities.components.some((id:string)=>b.effectId===`${c.id}:components:${id}`));
+        b.phase==='components'&&c.capabilities.components.some((id:string)=>b.effectId===`${c.id}:components:${id}`)||
+        b.phase==='comms'&&c.channels?.some((channel:any)=>b.effectId===`${c.id}:comms:${channel.id}`));
       if(this.active||!this.hook||!permitted||b.planHash!==hash(canonical(this.plan))||
         !/^[a-f0-9]{48}$/.test(request.requestId)||Object.keys(request).sort().join(',')!=='binding,protocol,requestId,type'||
         Object.keys(b).sort().join(',')!=='effectId,owner,phase,planHash')throw Error('Unreviewed native terminal.');

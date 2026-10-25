@@ -4,7 +4,7 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 fs.mkdirSync('dist/setup',{recursive:true});
 const setupFiles=['config/installer-runtime.json','config/installer-preflight.json','config/claw-plan.schema.json',
-  'config/setup-engine.json','config/components/catalog.json','config/components/schema.json',
+  'config/setup-engine.json','config/components/catalog.json','config/components/schema.json','config/components/comms.json','config/components/comms.schema.json',
   'config/components/security-policy.json','config/components/harness-adapters.json','docs/WINDOWS-WSL-PREREQUISITES.md'];
 const setupStamp={schema:1,files:{}};
 for(const source of setupFiles){

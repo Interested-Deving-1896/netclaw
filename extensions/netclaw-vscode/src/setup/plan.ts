@@ -78,9 +78,11 @@ export class SetupDraft {
         for(const key of prior?.settingKeys||[])if(claw.settings&&Object.hasOwn(claw.settings,key)){delete claw.settings[key];discarded.push(prefix+'/settings/'+key);}
       }else remove(claw,['settings'],prefix);
     }
-    if(change.path==='/host')remove(data,['source','claws'], '');
+    if(change.path==='/host')remove(data,['source','claws','commsBindings'], '');
+    if(change.path==='/source')remove(data,['commsBindings'],'');
     if(change.path==='/source'&&data.claws)for(const [index,claw] of data.claws.entries())remove(claw,['capabilities','settings'],'/claws/'+index);
     if(change.path==='/shape'&&data.claws?.length){
+      remove(data,['commsBindings'],'');
       // Harness/provider/channel precede shape in the decision tree. Keep the
       // primary choices, while making downstream membership/profile changes
       // explicit before removing them.
