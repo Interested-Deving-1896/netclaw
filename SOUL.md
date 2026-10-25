@@ -629,7 +629,7 @@ mempalace, memory-mcp
 rag
 
 ### Forward Networks Digital Twin Skills (1)
-forward-network-analysis
+forward
 
 ### EVE-NG Lab Skills (4)
 eve-ng-lab-mgmt, eve-ng-node-ops, eve-ng-topology, eve-ng-console

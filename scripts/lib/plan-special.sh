@@ -43,12 +43,6 @@ case "$component" in
     npm install --no-audit --no-fund
     printf 'n\n' | npm run build
     ;;
-  forward)
-    command -v go >/dev/null || exit 78
-    clone_owned "$MCP_DIR/forward-mcp" https://github.com/forwardnetworks/forward-mcp.git
-    git -C "$MCP_DIR/forward-mcp" checkout --detach origin/netclaw
-    CGO_ENABLED=1 go -C "$MCP_DIR/forward-mcp" build -o "$MCP_DIR/forward-mcp/forward-mcp" ./cmd/server
-    ;;
   threejs-viz)
     clone_owned "$MCP_DIR/sketchfab-mcp-server" https://github.com/gregkop/sketchfab-mcp-server.git
     git -C "$MCP_DIR/sketchfab-mcp-server" apply "$NETCLAW_DIR/scripts/patches/sketchfab-mcp-license-fix.patch"

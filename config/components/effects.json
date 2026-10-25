@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "sourceSha256": "76fb876b3c629776a5aa2dd38bb280c3f83d57151e44bcc689d004989694f475",
+  "sourceSha256": "012eb75d8c05cec3481d332dd2ed29e18f26e0729390a6c944c061191d2987f4",
   "components": [
     {
       "id": "hermes-hud",
@@ -515,12 +515,11 @@
     {
       "id": "forward",
       "function": "component_install_forward",
-      "sha256": "cbf6c8dcca09974ff2ab4364045b80b40f847ae978f3cccbb62eeff43a6559a3",
-      "adapter": "scoped-special",
-      "reason": "Dedicated dependency-only recipe; no legacy credential prompt, global package/service change, container start or API call.",
+      "sha256": "cc0f199d606c19300e76e089a079250a127f5b0da3d6e6fff0fe3b29b2eec96d",
+      "adapter": "isolated-shell",
+      "reason": "Owned source copy, isolated OS home, prefix/cache and component Python; no credentials during dependency installation.",
       "postcondition": "selected-registration-artifacts-and-discovery",
-      "source": "scripts/lib/install-steps.sh#component_install_forward",
-      "replacement": "scripts/lib/plan-special.sh"
+      "source": "scripts/lib/install-steps.sh#component_install_forward"
     },
     {
       "id": "suzieq",

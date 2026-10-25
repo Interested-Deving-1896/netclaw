@@ -2518,158 +2518,26 @@ fi
 echo ""
 }
 
-# ── Step 50h: Forward MCP Integration ───────────────────────────
+# ── Step 50h: Forward Networks (official MCP) ──────────────────
 component_install_forward() {
-log_step "Forward MCP Integration..."
-echo "  Source: https://github.com/forwardnetworks/forward-mcp"
-echo "  Snapshot assurance, path search, NQE, config search, config diffs"
-echo ""
+log_step "Enabling Forward Networks (official remote MCP)..."
+echo "  Served by Forward itself at <your-forward-host>/api/mcp (SaaS and self-hosted)"
+echo "  Read-only: path search, device/interface/VLAN/VRF/host lookups,"
+echo "  vulnerabilities, network complexity, NQE (AI-enabled orgs)."
 
-enable_forward=y  # selection handled by installer menu
+# Nothing to clone or build: the MCP server is part of Forward. "Installing"
+# is registration from config/openclaw.json; scripts/forward-enable.sh stores
+# and verifies the credential.
+log_info "Registered from config/openclaw.json (<FORWARD_URL>/api/mcp, HTTP Basic)"
+log_info "Set FORWARD_URL and FORWARD_AUTH_BASE64 in .env, or run scripts/forward-enable.sh (it verifies them)."
+log_info "  FORWARD_URL: your Forward base URL, e.g. https://fwd.app (no trailing /api/mcp)"
+log_info "  Mint an API token: Settings > Account > API tokens."
+log_info "  FORWARD_AUTH_BASE64: echo -n 'accessKey:secret' | base64"
+log_warn "The endpoint returns 403 if an admin disabled 'Enable MCP server' or the license expired."
 
-if [[ "$enable_forward" =~ ^[Yy]$ ]]; then
-    FORWARD_MCP_DIR="$MCP_DIR/forward-mcp"
-    FORWARD_MCP_BIN="$FORWARD_MCP_DIR/forward-mcp"
-    FORWARD_MCP_REPO="${FORWARD_MCP_REPO:-https://github.com/forwardnetworks/forward-mcp.git}"
-    FORWARD_MCP_REF="${FORWARD_MCP_REF:-netclaw}"
-    FORWARD_STATE_DIR="$RUNTIME_HOME/forward"
-    FORWARD_LOCK_DIR="$FORWARD_STATE_DIR/locks"
-    FORWARD_BLOOM_INDEX_PATH="$FORWARD_STATE_DIR/bloom-indexes"
-    FORWARD_CACHE_PATH="$FORWARD_STATE_DIR/cache"
-    OPENCLAW_ENV="$RUNTIME_ENV"
-
-    forward_set_env_var() {
-        local key="$1" val="$2"
-        [ -z "$val" ] && return 0
-        _set_env_var "$key" "$val"
-    }
-
-    forward_set_env_placeholder() {
-        local key="$1" val="$2"
-        if ! grep -q "^${key}=" "$OPENCLAW_ENV" 2>/dev/null; then
-            forward_set_env_var "$key" "$val"
-        fi
-    }
-
-    forward_go_major() {
-        go version | awk '{print $3}' | sed 's/^go//' | cut -d. -f1
-    }
-
-    forward_go_minor() {
-        go version | awk '{print $3}' | sed 's/^go//' | cut -d. -f2
-    }
-
-    forward_checkout_ref() {
-        local dir="$1" repo="$2" ref="$3"
-        if [ -d "$dir/.git" ]; then
-            log_info "Updating existing checkout at $dir"
-            git -C "$dir" remote set-url origin "$repo"
-            git -C "$dir" fetch origin --tags
-        else
-            log_info "Cloning forward-mcp into $dir"
-            git clone "$repo" "$dir"
-        fi
-
-        if git -C "$dir" rev-parse --verify --quiet "origin/$ref" >/dev/null; then
-            git -C "$dir" checkout -B "$ref" "origin/$ref"
-        else
-            git -C "$dir" checkout "$ref"
-        fi
-    }
-
-    if ! command -v go >/dev/null 2>&1; then
-        log_error "Go 1.25 or later is required for forward-mcp"
-        return 1
-    fi
-
-    forward_go_major_version="$(forward_go_major)"
-    forward_go_minor_version="$(forward_go_minor)"
-    if [ "$forward_go_major_version" -lt 1 ] || { [ "$forward_go_major_version" -eq 1 ] && [ "$forward_go_minor_version" -lt 25 ]; }; then
-        log_error "Go 1.25 or later is required for forward-mcp. Found: $(go version)"
-        return 1
-    fi
-
-    if [ "$(go env CGO_ENABLED)" = "0" ]; then
-        log_error "CGO must be enabled for forward-mcp"
-        return 1
-    fi
-
-    mkdir -p "$FORWARD_LOCK_DIR" "$FORWARD_BLOOM_INDEX_PATH" "$FORWARD_CACHE_PATH"
-
-    log_info "Using forward-mcp repo: $FORWARD_MCP_REPO"
-    log_info "Using forward-mcp ref: $FORWARD_MCP_REF"
-    forward_checkout_ref "$FORWARD_MCP_DIR" "$FORWARD_MCP_REPO" "$FORWARD_MCP_REF"
-
-    log_info "Building forward-mcp..."
-    if CGO_ENABLED=1 go -C "$FORWARD_MCP_DIR" build -o "$FORWARD_MCP_BIN" ./cmd/server; then
-        log_info "forward-mcp built: $FORWARD_MCP_BIN"
-    else
-        log_error "forward-mcp build failed"
-        return 1
-    fi
-
-    forward_set_env_var "FORWARD_LOCK_DIR" "$FORWARD_LOCK_DIR"
-    forward_set_env_var "FORWARD_BLOOM_ENABLED" "true"
-    forward_set_env_var "FORWARD_BLOOM_INDEX_PATH" "$FORWARD_BLOOM_INDEX_PATH"
-    forward_set_env_var "FORWARD_SEMANTIC_CACHE_ENABLED" "true"
-    forward_set_env_var "FORWARD_SEMANTIC_CACHE_DISK_PATH" "$FORWARD_CACHE_PATH"
-
-    read -r -p "Configure Forward credentials now? [y/N] " config_forward
-    if [[ "$config_forward" =~ ^[Yy]$ ]]; then
-        read -r -p "Forward API base URL (e.g., https://fwd.app): " forward_url
-        if [ -n "$forward_url" ]; then
-            forward_set_env_var "FORWARD_API_BASE_URL" "${forward_url%/}"
-            log_info "Set FORWARD_API_BASE_URL"
-        fi
-
-        read -r -p "Forward API key or username: " forward_key
-        if [ -n "$forward_key" ]; then
-            forward_set_env_var "FORWARD_API_KEY" "$forward_key"
-            log_info "Set FORWARD_API_KEY"
-        fi
-
-        read -r -sp "Forward API secret or password: " forward_secret
-        echo ""
-        if [ -n "$forward_secret" ]; then
-            forward_set_env_var "FORWARD_API_SECRET" "$forward_secret"
-            log_info "Set FORWARD_API_SECRET=***"
-        fi
-
-        read -r -p "Default Forward network ID (optional): " forward_network
-        forward_set_env_var "FORWARD_DEFAULT_NETWORK_ID" "$forward_network"
-
-        read -r -p "Default Forward snapshot ID (optional): " forward_snapshot
-        forward_set_env_var "FORWARD_DEFAULT_SNAPSHOT_ID" "$forward_snapshot"
-
-        read -r -p "Forward collection/admin network ID (optional): " forward_collection_network
-        forward_set_env_var "FORWARD_COLLECTION_NETWORK_ID" "$forward_collection_network"
-
-        read -r -p "Forward instance ID for local cache partitioning (optional): " forward_instance
-        forward_set_env_var "FORWARD_INSTANCE_ID" "$forward_instance"
-
-        read -r -p "Custom CA certificate path (optional): " forward_ca
-        forward_set_env_var "FORWARD_CA_CERT_PATH" "$forward_ca"
-
-        log_info "Forward credentials configured in $RUNTIME_ENV"
-    else
-        log_info "Skipping credential configuration. Set FORWARD_API_* variables in $RUNTIME_ENV later."
-        forward_set_env_placeholder "FORWARD_API_BASE_URL" "https://fwd.example.com"
-        forward_set_env_placeholder "FORWARD_API_KEY" "your-api-key-or-username"
-        forward_set_env_placeholder "FORWARD_API_SECRET" "your-api-secret-or-password"
-        forward_set_env_placeholder "FORWARD_INSTANCE_ID" "default"
-    fi
-
-    if python3 "$NETCLAW_DIR/scripts/mcp-call.py" \
-        "FORWARD_LOCK_DIR=$FORWARD_LOCK_DIR FORWARD_BLOOM_ENABLED=false FORWARD_SEMANTIC_CACHE_ENABLED=false $FORWARD_MCP_BIN" \
-        get_default_settings '{}' >/dev/null; then
-        log_info "forward-mcp responded to get_default_settings"
-    else
-        log_warn "forward-mcp smoke test failed; verify environment and run scripts/forward-enable.sh later"
-    fi
-
-    log_info "Forward integration enabled. Use /forward skill to query."
-else
-    log_info "Skipping Forward integration. Run scripts/forward-enable.sh later to enable."
+# Existing installs: the community forward-mcp server is no longer used.
+if [ -d "$MCP_DIR/forward-mcp" ]; then
+    log_warn "Legacy $MCP_DIR/forward-mcp found; it is unused and can be removed."
 fi
 
 echo ""
