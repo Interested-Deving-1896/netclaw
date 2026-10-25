@@ -142,13 +142,16 @@ class HostObservation:
     def check(self, plan, run=None):
         self.binding(plan)
         if run is None:
-            for claw in plan['claws']:
-                for port in claw['endpoints'].values():
-                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-                        try:
-                            probe.bind(('127.0.0.1', port))
-                        except OSError:
-                            raise Conflict('endpoint_occupied') from None
+            ports=[p for c in plan['claws'] for p in c['endpoints'].values()]
+            ports.extend(b['port'] for b in plan.get('commsBindings',[]))
+            from setup_comms import channel_listening_ports
+            ports.extend(channel_listening_ports(plan))
+            for port in ports:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+                    try:
+                        probe.bind(('127.0.0.1', port))
+                    except OSError:
+                        raise Conflict('endpoint_occupied') from None
         # Services/endpoints created by this run are verified by their adapters.
 
     def controls(self, plan, required):

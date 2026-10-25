@@ -8,6 +8,7 @@ from urllib.parse import urlsplit
 
 from setup_schema import Invalid, canonical, loads, validate
 from setup_state import guarded_read
+from setup_comms import CommsCatalog
 
 SECRET_PATTERN = re.compile(r'(?:-----BEGIN [A-Z ]*PRIVATE KEY-----|\b(?:sk-(?:ant-)?|gh[pousr]_|github_pat_|xox[baprs]-)[A-Za-z0-9_-]{8,}|\bAKIA[A-Z0-9]{16}\b|\bBearer\s+\S+|\bBasic\s+[A-Za-z0-9+/=]{12,}|\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)', re.I)
 BORDER_COMPONENTS = {'n2n', 'protocol', 'gait', 'mempalace', 'memory-mcp', 'humanrail', 'tts', 'hermes-hud', 'claw-certs', 'in2n-production'}
@@ -57,6 +58,7 @@ class PlanValidator:
         self.profiles = {p['id']: p for p in self.catalog['profiles']}
         self.members = {p['id']: p for p in self.catalog['memberProfiles']}
         self.adapters = loads(guarded_read(self.repository/'config/components/harness-adapters.json'))
+        self.comms = CommsCatalog(self.repository)
 
     def read(self, path, *, draft=False):
         try:
@@ -72,7 +74,16 @@ class PlanValidator:
     def fields(self, claw):
         entries = [self.components[c] for c in claw['capabilities']['components'] if c in self.components]
         entries += [self.choices[k] for k in [('harness', claw['harness']), ('provider', claw['provider']['id'])] if k in self.choices]
-        entries += [self.choices[('channel', c['id'])] for c in claw['channels'] if ('channel', c['id']) in self.choices]
+        for channel in claw['channels']:
+            descriptor = self.choices.get(('channel', channel['id']))
+            if not descriptor:
+                continue
+            try:
+                contract = self.comms.channel(claw['harness'], channel['id'])
+                fields = contract['setup']['settings']
+            except Invalid:
+                fields = []
+            entries.append({'settings': fields or descriptor['settings']})
         result = {}
         for entry in entries:
             for field in entry.get('settings', []):
@@ -162,6 +173,7 @@ class PlanValidator:
                 member = self.members.get(profile)
                 if not member or claw['harness'] not in member['harnesses']: bad(pointer+'/capabilities/profile', 'unsupported_member_profile')
                 elif not set(member['components']) <= chosen: bad(pointer+'/capabilities', 'member_profile_components_missing')
+                if profile=='comms' and not chosen.intersection({'twilio','zoom-rtms'}):bad(pointer+'/capabilities','comms_capability_required')
             elif profile not in self.profiles: bad(pointer+'/capabilities/profile', 'unknown_profile')
             if claw['role'] == 'border' and not chosen <= BORDER_COMPONENTS: bad(pointer+'/capabilities', 'border_domain_capability')
             for skill_id in claw['capabilities']['skills']:
@@ -178,6 +190,24 @@ class PlanValidator:
                 if not descriptor or claw['harness'] not in descriptor['harnesses']: bad(pointer+'/channels', 'unsupported_channel')
                 elif channel['id'] in adapter.get('unavailableChannels',{}):bad(pointer+'/channels','channel_plugin_api_incompatible')
                 elif not set(channel['settingKeys']) <= set(descriptor['settingKeys']): bad(pointer+'/channels', 'unknown_channel_setting')
+                if descriptor and claw['harness'] in descriptor['harnesses']:
+                    try:
+                        entry = self.comms.channel(claw['harness'], channel['id'])
+                        resolved = self.comms.resolve(entry['id'], role=claw['role'], host=host['platform'], version=claw['runtimeVersion'])
+                        state = resolved['state']
+                        # Legacy selections remain readable. Their new Comms
+                        # effect must still settle before service activation.
+                        legacy = channel['id'] in ('slack','telegram','discord') and state == 'incomplete-adapter'
+                        if not resolved['selectable'] and not legacy:
+                            bad(pointer+'/channels', 'channel_'+state.replace('-', '_'))
+                        from setup_comms import access_list
+                        for key in entry['setup']['access']:
+                            setting=claw['settings'].get(key,{})
+                            if setting.get('kind')=='value':
+                                try:access_list(setting['value'])
+                                except Invalid:bad(pointer+'/settings/*','invalid_comms_access')
+                    except Invalid:
+                        bad(pointer+'/channels', 'unsupported_channel')
             fields = self.fields(claw)
             for key, setting in claw['settings'].items():
                 field = fields.get(key)
@@ -205,6 +235,28 @@ class PlanValidator:
             provider_required={f['key'] for f in (provider or {}).get('settings',[]) if f['classification']=='secret' and f['required']=='always'}
             if not provider_required <= set(claw['provider']['credentialKeys']) <= provider_secrets: bad(pointer+'/provider', 'unknown_provider_credential')
             if any(key in claw['settings'] and key not in claw['provider']['credentialKeys'] for key in provider_secrets):bad(pointer+'/provider','unused_provider_credential')
+        binding_ids, binding_owners, binding_borders = set(), set(), set()
+        from setup_comms import channel_listening_ports
+        for port in channel_listening_ports(plan):
+            if type(port) is not int or not 1024<=port<=65535:bad('/claws/*/settings','invalid_channel_port')
+            elif port in ports:bad('/claws/*/settings','endpoint_collision')
+            else:ports.add(port)
+        for binding in plan.get('commsBindings', []):
+            pointer = '/commsBindings'
+            owner = next((c for c in claws if c['id'] == binding['owner']), None)
+            target = next((c for c in claws if c['id'] == binding['border']), None)
+            if plan['shape'] != 'risk' or not owner or not target or target['role'] != 'border' or owner['id'] == target['id']:
+                bad(pointer, 'comms_binding_owner_mismatch')
+            if owner and 'zoom-rtms' not in owner['capabilities']['components']:
+                bad(pointer, 'comms_binding_component_missing')
+            if binding['id'] in binding_ids or binding['owner'] in binding_owners or binding['border'] in binding_borders:
+                bad(pointer, 'duplicate_comms_binding')
+            binding_ids.add(binding['id']); binding_owners.add(binding['owner']);binding_borders.add(binding['border'])
+            if owner and any(k in owner['settings'] for k in ('N2N_ZOOM_CHANNEL_HOST','N2N_ZOOM_CHANNEL_PORT','N2N_ZOOM_CHANNEL_SECRET')):
+                bad(pointer,'comms_binding_setting_override')
+            if binding['port'] in ports:
+                bad(pointer, 'endpoint_collision')
+            ports.add(binding['port'])
         if not {1,2,3} <= set(plan['verification']['tiers']): bad('/verification/tiers', 'mandatory_tiers_missing')
         if plan['verification']['risk'] != (plan['shape'] == 'risk'): bad('/verification/risk', 'risk_verification_mismatch')
         if not plan['verification']['networkReadOnly']: bad('/verification/networkReadOnly', 'network_write_forbidden')
@@ -221,7 +273,7 @@ class PlanValidator:
         for channel in plan['verification']['channelTests']:
             owner=next((c for c in claws if c['id']==channel['owner']),None)
             if owner is None or channel['channel'] not in [c['id'] for c in owner['channels']]: bad('/verification/channelTests','channel_test_owner_mismatch')
-            key=(channel['owner'],channel['channel'],channel['destinationRef'])
+            key=(channel['owner'],channel['channel'],channel.get('direction','outbound'),channel['destinationRef'])
             if key in channel_tests:bad('/verification/channelTests','duplicate_channel_test')
             channel_tests.add(key)
         valid = not errors
@@ -240,15 +292,41 @@ class PlanValidator:
         report = self.inspect(plan)
         if not report['valid']: return report
         effects = []
-        for phase in ('home','runtime','credentials','onboard','components','skills','registration','inventory','identity','risk','services','verification'):
+        for phase in ('home','runtime','credentials','onboard','components','skills','registration','inventory','identity','comms','comms-binding','risk','services','verification'):
             for claw in plan['claws']:
                 if phase == 'risk' and plan['shape'] != 'risk': continue
+                if phase == 'comms':
+                    for channel in claw['channels']:
+                        entry = self.comms.channel(claw['harness'], channel['id'])
+                        effects.append({'id': claw['id']+':comms:'+channel['id'], 'owner': claw['id'],
+                            'phase': phase, 'component': None, 'channel': channel['id'],
+                            'scope': ['runtime-home'], 'startupEffects':entry['setup']['startupEffects'],
+                            'adapter':entry['setup']['adapter'],'dependencies':entry['setup']['dependencies'],
+                            'documentation':entry['documentation'],'nativeId':entry['nativeId'],
+                            'kind':entry['kind'],'setupExplanation':entry['setup']['reason'],
+                            'accessPolicy':'Explicit sender/room scope; empty allowlists grant no access. Adapter-enforced mention/signature rules remain enabled.',
+                            'callbackSettings':{f['key']:claw['settings'].get(f['key'],{'kind':'value','value':''})
+                                for f in entry['setup']['settings'] if f['classification']!='secret' and
+                                any(word in f['key'] for word in ('WEBHOOK','PUBLIC_URL','HTTP_URL','PORT'))},
+                            'access':{key:claw['settings'].get(key,{'kind':'value','value':''}) for key in entry['setup']['access']},
+                            'native': entry['setup']['method'] == 'native'})
+                    continue
+                if phase == 'comms-binding':
+                    for binding in plan.get('commsBindings', []):
+                        if binding['owner'] != claw['id']: continue
+                        effects.append({'id': claw['id']+':comms-binding:'+binding['id'], 'owner': claw['id'],
+                            'phase': phase, 'component': None, 'binding': binding['id'],
+                            'scope': ['runtime-home','paired-border-home','loopback-port'], 'native': False})
+                    continue
                 components = claw['capabilities']['components'] if phase == 'components' else [None]
                 for component in components:
                     effects.append({'id': claw['id']+':'+phase+(':'+component if component else ''),
                         'owner': claw['id'], 'phase': phase, 'component': component,
                         'scope': self.components[component]['installer']['effects'] if component else
                             ['runtime-home','user-service-manager','owned-service-files'] if phase=='services' else ['runtime-home'],
+                        **({'startupEffects':sorted({value for entry in self.comms.entries
+                            if entry['harness']==claw['harness'] and entry['component']==component
+                            for value in entry['setup']['startupEffects']})} if component in ('zoom-rtms','twilio') else {}),
                         'native': self.components[component]['installer']['mode']=='native' if component else phase=='onboard'})
         return {**report, 'effects': effects, 'posture': plan['posture']['mode'],
                 'reviewRequired': True, 'liveTiers': [t for t in plan['verification']['tiers'] if t>3],

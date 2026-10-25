@@ -55,10 +55,21 @@ class DraftBuilder:
         keys=[f['key'] for f in descriptor['settings'] if f['classification']=='secret' and (f['required']=='always' or self.choose(f['key']+' endpoint authentication',['key','none'])=='key')]
         channels=[]
         if primary is None:
-            unavailable=self.validator.adapters[harness].get('unavailableChannels',{})
-            title='Conversation channel'+(' (Unavailable: '+'; '.join(key+' — '+value['reason'] for key,value in unavailable.items())+')' if unavailable else '')
-            channel=self.choose(title,['none']+[c['id'] for c in self.validator.catalog['choices'] if c['kind']=='channel' and c['id']!='none' and harness in c['harnesses'] and c['id'] not in unavailable])
-            if channel!='none':channels=[{'id':channel,'settingKeys':self.validator.choices[('channel',channel)]['settingKeys']}]
+            entries=self.validator.comms.search(harness=harness)
+            choices={e['channelId']:e for e in entries if e['inventory']=='channel' or e['channelId']=='webex'}
+            listing='\n'.join(e['channelId']+' · '+e['name']+' · '+e['kind']+' · '+e['setup']['disposition']+' · '+e['documentation'] for e in entries)
+            prompt='Conversation channels / Comms (space-separated IDs, none, list for every option, or guide): '
+            while True:
+                answer=self.ask(prompt).strip()
+                if answer=='guide':prompt='Setup guide: '+str(self.repository/'docs/COMMS-SETUP.md')+'\nConversation channels / Comms: ';continue
+                if answer=='list':prompt=listing+'\nConversation channels / Comms: ';continue
+                ids=answer.replace(',',' ').split()
+                if ids==['none']:break
+                if not ids or len(set(ids))!=len(ids) or any(cid not in choices for cid in ids):continue
+                if any(choices[cid]['setup']['disposition'] not in ('typed','native') and cid not in ('slack','telegram','discord') for cid in ids):
+                    prompt='Selected Comms setup is not yet available in this runtime baseline. Choose another option or none: ';continue
+                channels=[{'id':cid,'settingKeys':[f['key'] for f in (choices[cid]['setup']['settings'] or self.validator.choices[('channel',cid)]['settings'])]} for cid in ids]
+                break
         return {'harness':harness,'harnessChoice':'inherit' if choice=='inherit' else 'explicit',
                 'runtimeVersion':self.validator.adapters[harness]['versions'][0],
                 'provider':{'id':provider,'kind':kind,'model':model,'apiMode':mode,'endpoint':endpoint,'credentialKeys':keys},'channels':channels}
@@ -93,6 +104,9 @@ class DraftBuilder:
             if role=='member':
                 profile=self.choose('Member capability profile',[p['id'] for p in self.validator.catalog['memberProfiles'] if harness in p['harnesses']])
                 entry=self.validator.members[profile];components=list(entry['components']);skills=list(entry['skills'])
+                if profile=='comms':
+                    components=self.choose('Comms member tools',['twilio','zoom-rtms','twilio zoom-rtms']).split()
+                    skills=[s['id'] for s in self.validator.catalog['skills'] if s['availability']=='supported' and s['components'] and set(s['components'])<=set(components)]
             else:
                 profile=self.choose('Capability profile',list(self.validator.profiles))
                 components=list(self.validator.profiles[profile]['components'])
@@ -126,6 +140,14 @@ class DraftBuilder:
                             value=answer.lower()=='true'
                         claw['settings'][key]={'kind':'value','value':value}
             plan['claws'].append(claw)
+        for claw in plan['claws']:
+            if shape!='risk' or claw['role']=='border' or 'zoom-rtms' not in claw['capabilities']['components']:continue
+            if self.choose('Zoom input from '+claw['displayName']+' to this Border',['none','bind'])=='bind':
+                from setup_comms import set_zoom_binding
+                while True:
+                    port=self.ask('Dedicated loopback Zoom Border port (1024–65535): ').strip()
+                    try:plan=set_zoom_binding(plan,claw['id'],int(port));break
+                    except (ValueError,Invalid):continue
         # Input content never enters the plan or terminal transcript. Each owner
         # receives an independently copied, exact-hash input at deployment.
         for claw in plan['claws']:
@@ -142,8 +164,10 @@ class DraftBuilder:
                 plan['verification']['tiers'].append(tier)
                 if tier==4:plan['verification']['costConsent']=True
                 if tier==5:
-                    for claw in plan['claws']:
-                        plan['verification']['channelTests'] += [{'owner':claw['id'],'channel':c['id'],'destinationRef':'native-test'} for c in claw['channels']]
+                    from setup_comms import channel_test_choices,set_channel_tests
+                    choices=channel_test_choices(plan,self.validator.comms.data)
+                    selected=[c['key'] for c in choices if self.choose(c['label']+' test request (destination reviewed before sending)',['no','yes'])=='yes']
+                    plan=set_channel_tests(plan,selected,self.validator.comms.data)
         return plan
 
 

@@ -97,6 +97,21 @@ class EngineTests(unittest.TestCase):
     def review(self,engine,plan=None):
         return self.Authority('test-native-session').approve(engine.review_binding(plan or self.plan))
 
+    def test_comms_manifest_is_bound_and_incomplete_setup_stops_activation(self):
+        self.plan['claws'][0]['channels']=[{'id':'discord','settingKeys':[]}]
+        def runner(effect,context):
+            result=self.runner(effect,context)
+            if effect['phase']=='comms':return {'state':'configuration_required'}
+            return result
+        engine=self.engine(runner)
+        import hashlib
+        self.assertEqual(hashlib.sha256((ROOT/'config/components/comms.json').read_bytes()).hexdigest(),
+                         engine.review_binding(self.plan)['commsHash'])
+        result=engine.apply(self.plan,self.review(engine))
+        self.assertEqual('configuration_required',result['state'])
+        self.assertTrue(any(':comms:' in c for c in self.calls))
+        self.assertFalse(any(c.endswith(':services') or c.endswith(':verification') for c in self.calls))
+
     def test_changed_plan_review_and_occupied_home_refused_before_effect(self):
         engine=self.engine();review=self.review(engine)
         self.plan['claws'][0]['displayName']='Changed'

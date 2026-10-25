@@ -69,6 +69,7 @@ class Engine:
         actual = self.observation.binding(plan)
         return {'planHash': explanation['hash'], 'observed': actual,
                 'catalogHash': hashlib.sha256(guarded_read(self.repository/'config/components/catalog.json', 16*1024*1024)).hexdigest(),
+                'commsHash': hashlib.sha256(guarded_read(self.repository/'config/components/comms.json', 4*1024*1024)).hexdigest(),
                 'policyHash': hashlib.sha256(guarded_read(self.repository/'config/components/security-policy.json')).hexdigest(),
                 'effectsHash': hashlib.sha256(canonical(explanation['effects'])).hexdigest()}
 
@@ -232,9 +233,9 @@ class Engine:
                     if claw['id'] in proposed['ownerBindings']:management.enter_context(management_lock(claw['runtimeHome'],run_id))
                 accepted=True
                 run.setdefault('preCleanupReports',copy.deepcopy(run.get('reports',{})))
+                from setup_report import invalidate_for_cleanup
                 for report in run.get('reports',{}).values():
-                    for row in report.get('tiers',[])+report.get('components',[]):
-                        if row.get('state')!='skipped':row.update(state='unverified',code='cleanup_started')
+                    invalidate_for_cleanup(report)
                 run['cleanup']={'state':'running','binding':binding};run['state']='configuration_required';self._save(run)
             try:
                 result=apply_cleanup(run,review,started=started,services=NativeCleanup(run,lock_fds=locks.fds));run['cleanup']={'state':result['state'],'result':result};self._save(run);return result
@@ -321,7 +322,7 @@ class Engine:
         for effect in run['effects']:
             if effect['state'] != 'pending':
                 # Resume must not step around a still-unsettled prerequisite.
-                if effect['phase'] in ('home','runtime','onboard') and effect['state'] != 'verified':
+                if effect['phase'] in ('home','runtime','onboard','comms','comms-binding') and effect['state'] != 'verified':
                     run['state'] = 'configuration_required' if effect['state']=='skipped' else effect['state']
                     break
                 continue
@@ -354,7 +355,7 @@ class Engine:
             # A partial/cancelled onboarding step may have changed the selected
             # configuration. Reconcile it before any component, registration or
             # service phase; a terminal exit or deferred input is not approval.
-            if effect['phase'] in ('home','runtime','onboard') and effect['state'] != 'verified':
+            if effect['phase'] in ('home','runtime','onboard','comms','comms-binding') and effect['state'] != 'verified':
                 run['state'] = 'configuration_required' if effect['state']=='skipped' else effect['state']; break
         else:
             states = {e['state'] for e in run['effects']}

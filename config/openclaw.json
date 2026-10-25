@@ -625,15 +625,9 @@
       }
     },
     "twilio-mcp": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@twilio-alpha/mcp",
-        "${TWILIO_ACCOUNT_SID}/${TWILIO_API_KEY_SID}:${TWILIO_API_SECRET}",
-        "--services",
-        "twilio_api_v2010",
-        "--tags",
-        "Api20100401Call,Api20100401Message"
+        "mcp-servers/twilio-env-mcp/server.mjs"
       ],
       "env": {
         "TWILIO_ACCOUNT_SID": "${TWILIO_ACCOUNT_SID}",

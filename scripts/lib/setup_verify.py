@@ -91,17 +91,28 @@ class Probes:
         if not artifact:raise Conflict('environment_ownership_missing')
         return read_owned_environment(self.home/'.env',artifact['sha256'])
 
+    def comms(self):
+        from setup_comms_evidence import observe
+        return observe(self)
+
     def installed(self):
         rows=[]
         for effect in self.context['journal']['effects']:
             if effect['owner']!=self.claw['id'] or effect['phase'] in ('services','verification','risk'):continue
             if effect['state']!='verified':rows.append(outcome(effect['state'],'effect_unsettled'));continue
             changed=any(revision(a['path'])!=self.latest[a['path']]['sha256'] for a in effect.get('artifacts',[]))
+            if effect['phase']=='comms' and effect.get('channel')=='whatsapp' and any(a.get('class')=='comms-auth' for a in effect.get('artifacts',[])):
+                from setup_comms_evidence import configuration
+                # Linked-device keys rotate in the owned runtime. Revalidate
+                # its account identity and native configuration, retaining
+                # immutable checks for every other artifact in the effect.
+                changed=any(revision(a['path'])!=self.latest[a['path']]['sha256'] for a in effect.get('artifacts',[]) if a.get('class')!='comms-auth')
+                changed=changed or configuration(self,'whatsapp')['state']!='verified'
             if effect['phase']=='components':
                 from setup_components import dependency_ready
                 component=effect['component']
                 try:
-                    changed=changed or not dependency_ready(component,self.deploy,self.harness)
+                    changed=changed or not dependency_ready(component,self.deploy,self.harness,effect=self.effect)
                     if component=='pyats':changed=changed or not self.harness.observe_pyats(self.effect)
                     if component in ('n2n','hermes-hud','claw-certs','gait'):changed=changed or not self.harness.observe_python_component(self.effect,component)
                 except WriterUncertain:raise
@@ -127,6 +138,10 @@ class Probes:
         if not servers:return outcome('verified','artifact_present')
         try:
             values=self.credentials();env=self.harness.environment(values)
+            if component=='zoom-rtms':
+                # Transient child-only discovery authority, never written to
+                # active MCP registration or the installation environment.
+                values={**values,'NETCLAW_MCP_DISCOVERY_ONLY':'1'}
             requirements=self.deploy.validator.inspect(self.context['plan'])['configurationRequired']
             if any(v['owner']==self.claw['id'] for v in requirements):return outcome('configuration_required','credentials_required')
             if self.claw['harness']=='openclaw':
@@ -134,8 +149,12 @@ class Probes:
                 rules=loads(guarded_read(self.deploy.source/'config/installer-access.json'))['components']
                 for server in servers:
                     if server=='hermes-hud-mcp':continue
-                    result=self.harness.call(self.effect,self.harness.command()+['mcp','probe',server,'--json'],
-                        credentials=values,capture=True,timeout=35)
+                    command=self.harness.command()+['mcp','probe',server,'--json']
+                    if component=='zoom-rtms':
+                        bootstrap=guarded_read(self.home/'.setup/python312',8192,private=True).decode().strip()
+                        command=[bootstrap,str(self.deploy.source/'scripts/setup-openclaw-comms-discovery.py')]
+                    result=self.harness.call(self.effect,command,credentials=values,capture=True,
+                        timeout=100 if component=='zoom-rtms' else 35)
                     if result['returncode'] or not readiness.native_result(json.loads(result['stdout']),server,rules.get(component,{}).get('expected_tools',[])):
                         return outcome('unverified','discovery_unverified')
                 return outcome('verified','discovery_verified')
@@ -243,6 +262,7 @@ def verify_installation(effect,context,deploy,harness,*,probes=None,live=None):
     report={'harness':deploy.claw['harness'],'version':deploy.claw['runtimeVersion'],'createdAt':int(time.time()),
             'identity':{'home':str(deploy.root),'source':str(deploy.source),'installationId':probes.identity,
                 'hudEndpoint':'http://127.0.0.1:'+str(deploy.claw['endpoints']['hudPort'])},'tiers':tiers,'components':components}
+    if deploy.claw.get('channels'):report['comms']=probes.comms()
     path=deploy.root/'.setup/verification.json'
     deploy.write(effect,path,canonical(report)+b'\n',kind='verification',expected=revision(path))
     context['journal'].setdefault('reports',{})[deploy.claw['id']]=report

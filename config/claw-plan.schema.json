@@ -71,6 +71,14 @@
       "minItems": 0,
       "maxItems": 128,
       "uniqueItems": true
+    },
+    "commsBindings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/commsBinding"
+      },
+      "maxItems": 32,
+      "uniqueItems": true
     }
   },
   "required": [
@@ -435,14 +443,14 @@
             "$ref": "#/$defs/channel"
           },
           "minItems": 0,
-          "maxItems": 32
+          "maxItems": 64
         },
         "capabilities": {
           "$ref": "#/$defs/capabilities"
         },
         "settings": {
           "type": "object",
-          "maxProperties": 256,
+          "maxProperties": 1024,
           "propertyNames": {
             "type": "string",
             "maxLength": 128,
@@ -657,6 +665,12 @@
                 "maxLength": 64,
                 "minLength": 1,
                 "pattern": "^[a-z][a-z0-9-]{0,63}$"
+              },
+              "direction": {
+                "enum": [
+                  "inbound",
+                  "outbound"
+                ]
               }
             },
             "required": [
@@ -666,7 +680,7 @@
             ]
           },
           "minItems": 0,
-          "maxItems": 32
+          "maxItems": 64
         }
       },
       "required": [
@@ -675,6 +689,45 @@
         "costConsent",
         "networkReadOnly",
         "channelTests"
+      ]
+    },
+    "commsBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9-]{0,63}$"
+        },
+        "integration": {
+          "const": "zoom"
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9-]{0,63}$"
+        },
+        "border": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9-]{0,63}$"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 65535
+        }
+      },
+      "required": [
+        "id",
+        "integration",
+        "owner",
+        "border",
+        "port"
       ]
     }
   }

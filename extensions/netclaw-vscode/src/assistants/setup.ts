@@ -1,7 +1,7 @@
 import {z} from 'zod';
 export const setupSchemas={
   netclaw_setup_observe:z.object({}).strict(),
-  netclaw_setup_catalog:z.object({query:z.string().max(120).optional(),kind:z.enum(['component','skill','profile']).optional(),ids:z.array(z.string().regex(/^[a-z][a-z0-9-]{0,100}$/)).max(110).optional()}).strict(),
+  netclaw_setup_catalog:z.object({query:z.string().max(120).optional(),kind:z.enum(['component','skill','profile','comms','channel']).optional(),harness:z.enum(['openclaw','hermes']).optional(),ids:z.array(z.string().regex(/^[a-z][a-z0-9-]{0,100}$/)).max(110).optional()}).strict(),
   netclaw_setup_draft:z.object({plan:z.record(z.string(),z.unknown())}).strict(),
   netclaw_setup_validate:z.object({planRef:z.string().regex(/^draft-[a-f0-9]{32}$/)}).strict(),
   netclaw_setup_explain:z.object({planRef:z.string().regex(/^draft-[a-f0-9]{32}$/)}).strict(),

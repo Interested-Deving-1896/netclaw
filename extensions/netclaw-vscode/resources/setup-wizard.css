@@ -12,3 +12,4 @@
 @media(forced-colors:active){.setup-claw.selected,.capability.chosen{outline:2px solid Highlight}}
 
 .setup-branches{border-left:2px solid var(--vscode-panel-border);padding-left:12px;display:grid;gap:8px}.setup-branches button{background:var(--vscode-button-secondaryBackground);color:var(--vscode-button-secondaryForeground)}.setup-branches small{display:block;margin-top:4px}.setup-tree details,.setup-branches{grid-column:1/-1}
+#setup-comms{scroll-margin-top:18px}#comms-count{min-height:1.6em;color:var(--vscode-descriptionForeground)}

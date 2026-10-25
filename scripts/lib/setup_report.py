@@ -15,6 +15,52 @@ CODES = frozenset(('artifact_present','artifact_missing','artifact_changed','run
     'channel_unconfigured','channel_verified','network_unconfigured','risk_unverified','risk_verified','probe_failed',
     'source_verified','source_changed','effect_unsettled','configured','unsupported','model_verified','model_unverified','network_verified','network_unverified','cleanup_started','certificate_verified'))
 
+COMMS_DIMENSIONS=('configuration','authentication','transport','inbound','outbound')
+COMMS_STATES=STATES|frozenset(('cancelled','blocked','unknown'))
+COMMS_CODES=frozenset(('configuration_valid','configuration_changed','configuration_required','dependency_unverified',
+    'authentication_verified','authentication_failed','transport_connected','transport_unverified','not_checked',
+    'not_requested','unsupported','consent_required','cancelled','attempt_unknown','submission_accepted','delivery_verified',
+    'delivery_failed','inbound_verified','receipt_unverified','policy_blocked','effect_unsettled','cleanup_started'))
+COMMS_CHECKERS=frozenset(('netclaw-setup','openclaw-config','hermes-config','hermes-gateway','native-send','twilio-callback'))
+COMMS_SUCCESS={'configuration':{'configuration_valid'},'authentication':{'authentication_verified'},
+    'transport':{'transport_connected'},'inbound':{'inbound_verified'},
+    'outbound':{'submission_accepted','delivery_verified'}}
+
+
+def comms_observation(state='unverified',code='not_checked',*,checker='netclaw-setup',observed_at=None):
+    result={'state':state if state in COMMS_STATES else 'unverified',
+        'code':code if code in COMMS_CODES else 'effect_unsettled',
+        'checker':checker if checker in COMMS_CHECKERS else 'netclaw-setup'}
+    if type(observed_at) is int and 946684800<=observed_at<=int(time.time())+5:result['observedAt']=observed_at
+    return result
+
+
+def project_comms(rows,catalog,harness):
+    allowed={c['id'] for c in catalog.get('choices',[]) if c.get('kind')=='channel' and harness in c.get('harnesses',[])}
+    result=[];seen=set()
+    if not isinstance(rows,list):return result
+    for row in rows[:64]:
+        if not isinstance(row,dict) or row.get('channel') not in allowed or row['channel'] in seen:continue
+        seen.add(row['channel'])
+        item={'channel':row['channel'],'account':'account-1'}
+        for dimension in COMMS_DIMENSIONS:
+            value=row.get(dimension,{})
+            if not isinstance(value,dict):value={}
+            item[dimension]=comms_observation(value.get('state'),value.get('code'),
+                checker=value.get('checker'),observed_at=value.get('observedAt'))
+            if item[dimension]['state']=='verified' and (item[dimension]['code'] not in COMMS_SUCCESS[dimension] or
+                'observedAt' not in item[dimension]):item[dimension]=comms_observation('unverified','effect_unsettled')
+        result.append(item)
+    return result
+
+
+def invalidate_for_cleanup(report):
+    for row in report.get('tiers',[])+report.get('components',[]):
+        if row.get('state')!='skipped':row.update(state='unverified',code='cleanup_started')
+    for channel in report.get('comms',[]):
+        for dimension in COMMS_DIMENSIONS:
+            channel[dimension]=comms_observation('unverified','cleanup_started')
+
 
 def outcome(state, code):
     return {'state':state if state in STATES else 'unverified',
@@ -46,6 +92,7 @@ def project(report, catalog, *, detailed=False):
         for component in row.get('components',[])[:200]:
             if not isinstance(component,dict) or component.get('id') not in components:continue
             item['components'].append({'id':component['id'],**outcome(component.get('state'),component.get('code'))})
+        if row.get('comms'):item['comms']=project_comms(row['comms'],catalog,item['harness'])
         # Default provenance identifies the checker and tier; not a filesystem
         # reference, raw error, URL, run ID, token hash or host-derived identity.
         item['provenance']={'checker':'netclaw-setup','protocol':1}

@@ -28,8 +28,14 @@ def main():
     # executable injection keys remain rejected by child_environment.
     env=child_environment(home,data['harness'],read_owned_environment(home/'.env',revision(home/'.env')),tool_directories=data['toolDirectories'])
     if args.role=='gateway':
-        if data['harness']!='openclaw':raise Conflict('service_role_unsupported')
-        command=[str(home/'.setup/prefix/bin/openclaw'),'gateway','run']
+        from setup_comms_services import verify_activation_binding
+        verify_activation_binding(home,data['harness'],data.get('commsBinding'))
+        from setup_risk import gateway_command
+        command=gateway_command(home,data['harness'])
+        if data['harness']=='hermes':
+            # No profile migration/multiplexing, global service installer or
+            # foreign gateway takeover from an installation-owned service.
+            env['GATEWAY_MULTIPLEX_PROFILES']='false'
     elif args.role=='hud':command=[data['node'],str(ROOT/'scripts/hud-launch.mjs'),'start','--runtime',data['harness'],'--home',str(home)]
     else:
         python=guarded_read(home/'python-runtimes/records/n2n',8192).decode().strip()

@@ -68,7 +68,7 @@ fs.writeFileSync(
       bytes: bytes.length,
       artifact: path.basename(packagePath),
       qualification:
-        "Spec153 separate-claw installer, extension 1.2.0 with source setup engine 1.12.0 and VS Code >=1.109. Mac installer acceptance is complete; Windows/WSL qualification remains partial. See specs/153-ide-installer/release-verification.md. Publication authorized by the owner on 2026-10-24. Packaging itself does not publish.",
+        "Spec155 Comms installer, extension 1.3.0 with source setup engine 1.13.0 and VS Code >=1.109. Mac installer acceptance is complete within recorded fixture/editor limits; WSL qualification remains partial (49/50 tasks). Provider readiness is separate. See specs/155-border-channel-setup/release-verification.md. Publication authorized by the owner on 2026-10-25. Packaging itself does not publish.",
     },
     null,
     2,

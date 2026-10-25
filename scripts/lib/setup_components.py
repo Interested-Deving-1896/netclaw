@@ -13,7 +13,17 @@ from setup_state import Conflict,guarded_read,directory
 
 def selected_servers(component,claw,descriptor):
     if component=='threejs-viz' and claw.get('settings',{}).get('NETCLAW_SKETCHFAB_ENABLED',{}).get('value') is not True:return []
+    # The existing voice gateway is OpenClaw-specific. Hermes still exposes
+    # the independent core API MCP; sharing a provider does not qualify voice.
+    if component=='twilio' and claw['harness']=='hermes':return ['twilio-mcp']
     return descriptor['servers']
+
+
+def managed_comms_registration(deploy,server,bootstrap):
+    if server not in ('twilio-mcp','twilio-voice-mcp','zoom-rtms-mcp'):return None
+    return {'command':bootstrap,'args':['-u',str(deploy.source/'scripts/setup-comms-launch.py'),server],
+        'cwd':str(deploy.source),'env':{'NETCLAW_RUNTIME_ROOT':str(deploy.root/'python-runtimes'),
+            'NETCLAW_RUNTIME_ENV':str(deploy.root/'.env')}}
 
 def gait_runtime(home):
     """Resolve only this home's managed GAIT generation, never a shared venv."""
@@ -66,7 +76,11 @@ def wrapper_ready(component,server,deploy,harness,runtime):
                 if file.is_symlink() or not file.is_file():return False
     return True
 
-def dependency_ready(component,deploy,harness):
+def dependency_ready(component,deploy,harness,*,effect=None):
+    if component in ('twilio','zoom-rtms'):
+        from setup_comms_tools import observe
+        if effect is None or not observe(component,effect,deploy,harness):return False
+    if component=='twilio' and not twilio_ready(deploy,harness,effect=effect):return False
     descriptor=deploy.validator.components[component]
     template=loads(guarded_read(deploy.source/'config/openclaw.json',8*1024*1024))['mcpServers']
     binder=helper(deploy.source,'install-mcp-config.py')
@@ -90,3 +104,27 @@ def dependency_ready(component,deploy,harness):
                 with directory(file.parent):
                     if file.is_symlink() or not file.is_file():return False
     return True
+
+
+def twilio_ready(deploy,harness,*,effect=None):
+    """Installed pinned tree, never a first-use download or provider probe."""
+    base=deploy.source/'mcp-servers/twilio-env-mcp'
+    try:
+        package=loads(guarded_read(base/'package.json'))
+        lock=loads(guarded_read(base/'package-lock.json',8*1024*1024))
+        if lock.get('packages',{}).get('',{}).get('dependencies')!=package['dependencies']:return False
+        for name,version in package['dependencies'].items():
+            installed=loads(guarded_read(base/'node_modules'/name/'package.json'))
+            if installed.get('version')!=version:return False
+        if package['dependencies'].get('@twilio-alpha/mcp')!='0.7.0':return False
+        env=harness.environment();npm=shutil.which('npm',path=env['PATH'])
+        node=shutil.which('node',path=env['PATH'])
+        if not npm or not node:return False
+        if effect is None:return False
+        result=harness.call(effect,[node,'--version'],capture=True,timeout=10)
+        version=result['stdout'].decode().strip().removeprefix('v').split('.')
+        if result['returncode'] or len(version)!=3 or not all(v.isdecimal() for v in version):return False
+        major,minor,patch=map(int,version)
+        if not (major==24 and (minor,patch)>=(19,0) or major==26 and minor>=1 or major>26):return False
+        return harness.call(effect,[npm,'ls','--omit=dev','--all','--offline'],cwd=base,timeout=30)['returncode']==0
+    except (OSError,ValueError):return False

@@ -7,6 +7,15 @@ const plan={claws:[{id:'one',capabilities:{components:['gait']}}]};
 const request={protocol:1,type:'native-terminal',requestId:'b'.repeat(48),binding:{planHash:hash(canonical(plan)),owner:'one',phase:'onboard',effectId:'one:onboard'}};
 const frame={protocol:1,planHash:request.binding.planHash,requestId:request.requestId};
 
+test('Comms terminal permits only a selected owner and exact channel effect',async()=>{
+  const selected={claws:[{id:'border',capabilities:{components:[]},channels:[{id:'whatsapp'}]}]};
+  const base={protocol:1,type:'native-terminal',requestId:'c'.repeat(48),binding:{planHash:hash(canonical(selected)),owner:'border',phase:'comms',effectId:'border:comms:whatsapp'}};
+  const session=()=>new NativeTerminalSession(selected,async()=>({write(){},dispose(){}}),()=>{},()=>{});
+  const valid=session();assert.equal(valid.accept(base),true);await Promise.resolve();valid.dispose();
+  for(const changes of [{owner:'member'},{effectId:'border:comms:discord'},{phase:'services'},{effectId:'border:comms:whatsapp:command'}])
+    assert.throws(()=>session().accept({...base,binding:{...base.binding,...changes}}));
+});
+
 test('native terminal is private, bound to the selected effect and waits for its visible view',async()=>{
   let input,resize;const sent=[],visible=[];let disposed=0,cancelled=0;
   const session=new NativeTerminalSession(plan,async(_b,onInput,_cancel,onResize)=>{

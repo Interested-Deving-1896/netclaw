@@ -74,6 +74,60 @@ class PlanTests(unittest.TestCase):
     def codes(self, plan):
         return {e['code'] for e in self.validator.inspect(plan)['errors']}
 
+    def test_comms_native_ids_unfinished_adapters_and_homeassistant_roles(self):
+        plan=sample_plan();claw=plan['claws'][0]
+        # Exercise an unfinished contract explicitly; SMS may now have a real
+        # typed adapter, so feature progress must not weaken this negative test.
+        next(e for e in self.validator.comms.entries if e['id']=='openclaw-sms')['setup']['disposition']='incomplete-adapter'
+        claw['channels']=[{'id':'sms','settingKeys':[]}]
+        self.assertIn('channel_incomplete_adapter',self.codes(plan))
+        claw['channels']=[{'id':'x','settingKeys':[]}]
+        self.assertIn('channel_unavailable_baseline',self.codes(plan))
+        claw['channels']=[{'id':'google_chat','settingKeys':[]}]
+        self.assertFalse(self.validator.inspect(plan)['valid'])
+
+    def test_comms_effects_precede_activation_and_keep_legacy_ids(self):
+        plan=sample_plan();plan['claws'][0]['channels']=[{'id':'discord','settingKeys':[]},{'id':'slack','settingKeys':[]}]
+        effects=self.validator.explain(plan)['effects']
+        ids=[e['id'] for e in effects]
+        self.assertLess(ids.index('fixture-claw:registration'),ids.index('fixture-claw:comms:discord'))
+        self.assertLess(ids.index('fixture-claw:comms:slack'),ids.index('fixture-claw:services'))
+        self.assertEqual([e['id'] for e in self.validator.explain(sample_plan())['effects']],
+                         [e['id'] for e in effects if e['phase']!='comms'])
+
+    def test_test_direction_is_additive_and_deduplicated(self):
+        plan=sample_plan();plan['claws'][0]['channels']=[{'id':'discord','settingKeys':[]}]
+        test={'owner':'fixture-claw','channel':'discord','destinationRef':'test-room'}
+        plan['verification']['channelTests']=[test,{**test,'direction':'outbound'}]
+        self.assertIn('duplicate_channel_test',self.codes(plan))
+        plan['verification']['channelTests'][1]['direction']='inbound'
+        self.assertTrue(self.validator.inspect(plan)['valid'])
+        plan['verification']['channelTests'][1]['direction']='execute'
+        self.assertFalse(self.validator.inspect(plan)['valid'])
+
+    def test_zoom_binding_never_accepts_unknown_owners_or_endpoint_collisions(self):
+        plan=sample_plan();plan['commsBindings']=[{'id':'zoom-link','integration':'zoom','owner':'fixture-claw','border':'neighbor','port':3001}]
+        self.assertTrue({'comms_binding_owner_mismatch','comms_binding_component_missing','endpoint_collision'}<=self.codes(plan))
+        plan['commsBindings'][0]['host']='remote.example'
+        self.assertFalse(self.validator.inspect(plan)['valid'])
+
+    def test_owned_zoom_binding_has_exact_effect_and_independent_credentials(self):
+        plan=sample_plan();border=plan['claws'][0]
+        border['role']='border';border['capabilities'].update(components=['n2n','protocol'],skills=[])
+        member=copy.deepcopy(border);member.update(id='comms-member',role='member',runtimeHome='/private/tmp/netclaw-fixture/member',workspace='/private/tmp/netclaw-fixture/member/workspace')
+        member['capabilities'].update(profile='comms',components=['n2n','zoom-rtms'],skills=[])
+        member['settings']['ANTHROPIC_API_KEY']['owner']=member['id']
+        member['endpoints']={k:v+100 for k,v in border['endpoints'].items()};member['service']['name']='netclaw-comms-member'
+        plan.update(shape='risk',claws=[border,member]);plan['verification']['risk']=True
+        plan['commsBindings']=[{'id':'zoom-link','integration':'zoom','owner':member['id'],'border':border['id'],'port':19000}]
+        result=self.validator.explain(plan)
+        self.assertTrue(result['valid'],result['errors'])
+        effects=result['effects'];binding=next(e for e in effects if e['phase']=='comms-binding')
+        self.assertEqual('comms-member:comms-binding:zoom-link',binding['id'])
+        self.assertLess(effects.index(binding),next(i for i,e in enumerate(effects) if e['phase']=='services'))
+        member['capabilities']['components']=['n2n']
+        self.assertIn('comms_capability_required',self.codes(plan))
+
     def test_unqualified_legacy_production_component_is_refused_before_effects(self):
         plan=sample_plan();plan['claws'][0]['capabilities']['components'].append('in2n-production')
         self.assertIn('component_production_adapter_unqualified',self.codes(plan))

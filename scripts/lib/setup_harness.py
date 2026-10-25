@@ -192,7 +192,8 @@ class Harness:
         if claw['harness']=='hermes':
             provider_id={'lm-studio':'lmstudio','openai':'openai-api','ollama':'custom:netclaw-selected','custom':'custom:netclaw-selected'}.get(provider['id'],provider['id'])
             transport={'openai':'chat_completions','openai-responses':'codex_responses','anthropic':'anthropic_messages'}[mode]
-            config={'model':{'provider':provider_id,'default':model,'api_mode':transport},'mcp_servers':{}}
+            config={'model':{'provider':provider_id,'default':model,'api_mode':transport},'mcp_servers':{},
+                    'gateway':{'multiplex_profiles':False}}
             if provider['endpoint']:config['model']['base_url']=provider['endpoint']
             if provider_id=='custom:netclaw-selected':
                 entry={'base_url':provider['endpoint'],'api_mode':transport,'default_model':model}
@@ -207,11 +208,7 @@ class Harness:
             'agents':{'defaults':{'workspace':claw['workspace'],'model':{'primary':primary},'models':{primary:{}}}},
             'models':{'providers':{}},'mcp':{'servers':{}},'channels':{}}
         config['models']['providers'][native_provider]={'api':self.policy['apiModes'][mode]}
-        # Built-in bot-token channels read the selected home's scoped env.
-        # Keep runtime pairing/allowlist defaults; never open inbound access.
-        for channel in claw['channels']:
-            if channel['id'] in ('slack','telegram','discord'):
-                config['channels'][channel['id']]={'enabled':True,'configWrites':False,'groupPolicy':'allowlist'}
+        # Comms effects configure channels after provider/MCP registration.
         if provider['endpoint']:
             config['models']['providers'][native_provider].update(baseUrl=provider['endpoint'],models=[{'id':model,'name':model}])
         if provider['credentialKeys']:
@@ -241,17 +238,6 @@ class Harness:
             check='import os,pathlib,hermes_yaml; p=pathlib.Path(os.environ["HERMES_HOME"])/"config.yaml"; c=hermes_yaml.safe_load(p.read_text()); assert isinstance(c.get("model"),dict) and c["model"].get("provider") and c["model"].get("default")'
             result=self.call(effect,[str(base/'venv/bin/python'),'-c',check],timeout=30)
             if result['returncode']:return {'state':'failed'}
-        if self.claw['channels']:
-            # This only proves local onboarding. Actual channel delivery is a
-            # separate optional tier with a destination/message-specific review.
-            if any(c['id']=='webex' for c in self.claw['channels']):return {'state':'configuration_required'}
-            from setup_risk import latest_environment
-            values,_=latest_environment(self.context,self.home)
-            selected={c['id'] for c in self.claw['channels']}
-            required={'slack':['SLACK_BOT_TOKEN','SLACK_APP_TOKEN'],'telegram':['TELEGRAM_BOT_TOKEN'],'discord':['DISCORD_BOT_TOKEN']}
-            if any(not values.get(k) for c in selected for k in required[c]):return {'state':'configuration_required'}
-            if self.claw['harness']=='hermes':
-                check='from gateway.config import load_gateway_config; c=load_gateway_config(); active={p.value for p in c.get_connected_platforms()}; assert set('+repr(sorted(selected))+') <= active'
-                result=self.call(effect,self.command()[:1]+['-c',check],credentials=values,timeout=30)
-                if result['returncode']:return {'state':'configuration_required'}
+        # Configuration/authentication/transport evidence belongs to each
+        # selected Comms effect; a configured-platform list is not a connection.
         return {'state':'verified'}

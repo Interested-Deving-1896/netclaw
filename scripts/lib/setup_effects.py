@@ -50,6 +50,12 @@ class EffectRunner:
         if phase=='skills':return deploy.skills(effect)
         if phase=='registration':return deploy.registration(effect)
         if phase in ('inventory','identity'):return deploy.inputs(effect)
+        if phase=='comms':
+            from setup_comms import configure_channel
+            return configure_channel(effect,context,deploy,harness,session=self.session)
+        if phase=='comms-binding':
+            from setup_comms import configure_zoom_binding
+            return configure_zoom_binding(effect,context,deploy)
         if phase=='risk':
             from setup_risk import configure_risk
             return configure_risk(effect,context,deploy,harness)
@@ -90,6 +96,9 @@ class EffectRunner:
             MCP_CALL=str(deploy.source/'scripts/mcp-call.py'))
         installation=loads(guarded_read(home/'netclaw-hud/installation.json'))['installationId']
         values.update(NETCLAW_INSTALLATION_ID=installation,NETCLAW_HUD_INSTALLATION_ID=installation)
+        if 'twilio' in claw['capabilities']['components']:
+            values['NETCLAW_COMMS_MANAGED']='1'
+            if claw['harness']=='openclaw':values['OPENCLAW_GATEWAY_URL']='http://127.0.0.1:'+str(claw['endpoints']['gatewayPort'])
         values.update(HF_HOME=str(home/'.setup/cache/huggingface'),HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1')
         from setup_generated import generated
         python=guarded_read(home/'.setup/python312',8192).decode().strip()
@@ -117,6 +126,9 @@ class EffectRunner:
     def component(self,effect,context,deploy,harness):
         self.audit.verify()
         item=self.audit.components[effect['component']]
+        if effect['component'] in ('twilio','zoom-rtms'):
+            from setup_comms_tools import install
+            return install(effect['component'],effect,context,deploy,harness)
         if effect['component']=='pyats':
             return {'state':'verified' if harness.install_pyats(effect) else 'failed'}
         if effect['component'] in ('n2n','hermes-hud'):
@@ -158,7 +170,7 @@ class EffectRunner:
             if effect['component']!='gait':
                 context['artifactIntent'](effect['id'],[deploy.artifact(record,guarded_read(record),'runtime-record')])
         from setup_components import dependency_ready
-        return {'state':'verified' if dependency_ready(effect['component'],deploy,harness) else 'unverified'}
+        return {'state':'verified' if dependency_ready(effect['component'],deploy,harness,effect=effect) else 'unverified'}
 
     def observe(self,effect,context):
         if effect['state']=='pending':return 'not_applied'
@@ -174,6 +186,12 @@ class EffectRunner:
         # Later owned revisions supersede earlier versions of a file within the
         # same run. Operator edits never inherit this ownership.
         latest={a['path']:a for e in context['journal']['effects'] for a in e.get('artifacts',[])}
+        if effect['phase']=='comms-binding':
+            from setup_comms import observe_zoom_binding
+            return observe_zoom_binding(effect,context,deploy)
+        if effect['phase']=='comms':
+            from setup_comms_services import observe_channel_effect
+            return observe_channel_effect(effect,context,deploy,Harness(self.repository,claw,context,deploy,tool_directories=self.tool_directories))
         artifacts=effect.get('artifacts',[])
         for artifact in artifacts:
             expected=latest[artifact['path']]['sha256']
@@ -199,7 +217,7 @@ class EffectRunner:
             component=effect['component']
             if component=='pyats' and not harness.observe_pyats(effect):return 'conflict'
             if component in ('n2n','hermes-hud','gait') and not harness.observe_python_component(effect,component):return 'conflict'
-            return 'completed' if dependency_ready(component,deploy,harness) else 'conflict'
+            return 'completed' if dependency_ready(component,deploy,harness,effect=effect) else 'conflict'
         if effect['phase']=='components' and effect['state']=='failed':
             # A settled nonzero dependency process in the audited owned build
             # area is retryable after exact artifact and writer rechecks. An

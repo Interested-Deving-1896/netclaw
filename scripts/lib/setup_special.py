@@ -45,4 +45,4 @@ def install_special(effect,context,deploy,harness):
     prerequisites={'nmap':['nmap'],'packet-buddy':['tshark'],'aws':['uvx'],
                    'nsm':['docker'],'elastic':['docker'],'github':['docker']}.get(component,[])
     if any(not shutil.which(tool,path=env['PATH']) for tool in prerequisites):return {'state':'configuration_required'}
-    return {'state':'verified' if dependency_ready(component,deploy,harness) else 'unverified'}
+    return {'state':'verified' if dependency_ready(component,deploy,harness,effect=effect) else 'unverified'}

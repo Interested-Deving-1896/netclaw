@@ -6,6 +6,7 @@ selected components must prove discovery in the pinned native Hermes registry.
 Cached schemas alone do not establish a live connection.
 """
 import json
+import copy
 import os
 from pathlib import Path
 import sys
@@ -37,20 +38,35 @@ def discover(component):
     catalog=json.loads(guarded_read(ROOT/'config/components/catalog.json',4*1024*1024))
     descriptor=next(row for row in catalog['components'] if row['id']==component)
     rule=rules.get(component,{})
-    servers=descriptor['servers']
+    servers=['twilio-mcp'] if component=='twilio' else descriptor['servers']
     if not servers or any(s not in config.get('mcp_servers',{}) for s in servers):return False
     source=home/'python-runtimes/hermes-hud-agent/source'
     sys.path.insert(0,str(source))
     from tools import mcp_tool as core
+    from tools import mcp_tool_config as native_config
     from tools.mcp_tool_discovery import discover_mcp_tools
     from tools.mcp_tool_lifecycle import shutdown_mcp_servers
     from tools.mcp_tool_schema import mcp_prefixed_tool_name
     from tools.registry import registry
+    original_loader=native_config._load_mcp_config
+    before=guarded_read(home/'config.yaml',8*1024*1024,private=True)
+    if component=='zoom-rtms':
+        # Native Hermes drops arbitrary parent env values. Scope the override
+        # to this process's selected native registry snapshot, never config.yaml.
+        def selected_config():
+            snapshot=original_loader()
+            if any(s not in snapshot for s in servers):raise ValueError('registration_changed')
+            result={s:copy.deepcopy(snapshot[s]) for s in servers}
+            for entry in result.values():entry.setdefault('env',{})['NETCLAW_MCP_DISCOVERY_ONLY']='1'
+            return result
+        native_config._load_mcp_config=selected_config
     try:
         names=set(discover_mcp_tools(allowed_mcp_names=servers))
-        return all(live_registered(s,rule.get('expected_tools',[]),names,core._servers,registry,mcp_prefixed_tool_name) for s in servers)
+        return (guarded_read(home/'config.yaml',8*1024*1024,private=True)==before and
+            all(live_registered(s,rule.get('expected_tools',[]),names,core._servers,registry,mcp_prefixed_tool_name) for s in servers))
     finally:
         shutdown_mcp_servers()
+        native_config._load_mcp_config=original_loader
 
 
 if __name__=='__main__':

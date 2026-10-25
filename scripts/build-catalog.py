@@ -5,8 +5,61 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import copy
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'scripts/lib'))
+from setup_comms import CommsCatalog
+
+
+def comms_choices(catalog, comms):
+    """Project channel discovery, preserving existing component and skill data."""
+    result = copy.deepcopy(catalog)
+    previous = {c['id']: c for c in catalog['choices'] if c['kind'] == 'channel'}
+    groups = {}
+    for entry in comms.entries:
+        if entry['inventory'] == 'channel' or entry['channelId'] == 'webex':
+            groups.setdefault(entry['channelId'], []).append(entry)
+    choices = [c for c in result['choices'] if c['kind'] != 'channel']
+    for cid, entries in groups.items():
+        first = entries[0]
+        choice = copy.deepcopy(previous.get(cid))
+        if choice is None:
+            choice = {'id': cid, 'kind': 'channel', 'title': first['name'],
+                'purpose': 'Configure this Comms option in the selected installation.',
+                'whenToChoose': first['setup']['reason'],
+                'harnesses': [], 'versionRange': 'Exact runtime contract is in the Comms catalog.',
+                'platforms': [], 'prerequisites': [], 'settingKeys': [], 'settings': [],
+                'links': [{'role': 'vendor', 'target': first['documentation'], 'unavailableReason': ''}],
+                'availability': 'unsupported', 'reason': first['setup']['reason'],
+                'provenance': [{'source': first['documentation'], 'checkedAt': first['checkedAt'],
+                                'note': 'Documented option; implementation and qualification are separate.'}]}
+        choice['harnesses'] = sorted({e['harness'] for e in entries})
+        choice['platforms'] = sorted({h for e in entries for h in e['hosts']})
+        choice['commsIds'] = [e['id'] for e in entries]
+        # Fields are merged only for classification/discovery. Runtime-specific
+        # settings and requirements are resolved from the selected contract.
+        current_keys={field['key'] for entry in entries for field in entry['setup']['settings']}
+        # The Comms manifest is authoritative for its current fields. Preserve
+        # legacy-only keys, but do not treat stale generated metadata as a
+        # second runtime contract when a reviewed field type is corrected.
+        fields = {f['key']: f for f in choice['settings'] if f['key'] not in current_keys}
+        for entry in entries:
+            for field in entry['setup']['settings']:
+                old = fields.get(field['key'])
+                if old and old['classification'] != field['classification']:
+                    raise ValueError('Comms setting classification conflict')
+                fields[field['key']] = copy.deepcopy(field)
+        choice['settings'] = list(fields.values())
+        choice['settingKeys'] = list(fields)
+        choices.append(choice)
+    choices.append(copy.deepcopy(previous['none']))
+    result['choices'] = choices
+    comms_member={'id':'comms','components':[],'skills':[],'servers':[],
+        'harnesses':['openclaw','hermes'],
+        'qualification':'Choose Twilio and/or Zoom explicitly. Installer and provider readiness require separate evidence.'}
+    result['memberProfiles']=[p for p in result['memberProfiles'] if p['id']!='comms']+[comms_member]
+    return result
 
 
 def quote(text):
@@ -62,7 +115,14 @@ def main():
     parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
     output = ROOT / 'scripts/lib/catalog.sh'
-    catalog = json.loads((ROOT / 'config/components/catalog.json').read_text())
+    catalog_file = ROOT / 'config/components/catalog.json'
+    original = json.loads(catalog_file.read_text())
+    catalog = comms_choices(original, CommsCatalog(ROOT))
+    if args.check and catalog != original:
+        print('Comms catalog projection differs; run python3 scripts/build-catalog.py', file=sys.stderr)
+        return 1
+    if not args.check:
+        catalog_file.write_text(json.dumps(catalog, indent=2, ensure_ascii=False)+'\n')
     rendered = render(catalog)
     env_map = {a['surface']: {'env': a['fieldKeys'], 'files': a['files'], 'notes': a['reason']} for a in catalog['surfaceAliases']}
     # HUD deployments copy this module. Keep its catalog projection alongside the

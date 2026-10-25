@@ -16,10 +16,14 @@ from setup_secrets import read_owned_environment, _dotenv
 ROLES=('gateway','hud','federation')
 
 
-def latest_environment(context,home):
+def latest_environment(context,home,*,effect=None):
     artifacts=[a for e in context['journal']['effects'] for a in e.get('artifacts',[]) if a['path']==str(home/'.env')]
     if not artifacts:raise Conflict('environment_ownership_missing')
-    return read_owned_environment(home/'.env',artifacts[-1]['sha256']),artifacts[-1]['sha256']
+    expected=artifacts[-1]['sha256']
+    if effect is not None:
+        from setup_comms_services import observed_owned_revision
+        expected=observed_owned_revision(context,home/'.env',effect=effect)
+    return read_owned_environment(home/'.env',expected),expected
 
 
 def configure_risk(effect,context,deploy,harness):
@@ -65,9 +69,18 @@ def service_root(platform, user_home):
 
 def roles(claw,shape):
     result=['hud']
-    if claw['harness']=='openclaw':result.insert(0,'gateway')
+    if claw['harness']=='openclaw' or claw.get('channels'):result.insert(0,'gateway')
     if shape=='risk':result.append('federation')
     return result
+
+
+def gateway_command(home,harness):
+    """Foreground commands only; the owned native manager handles restarts."""
+    home=Path(home)
+    if harness=='openclaw':return [str(home/'.setup/prefix/bin/openclaw'),'gateway','run']
+    if harness=='hermes':return [str(home/'python-runtimes/hermes-hud-agent/venv/bin/python'),
+        '-m','hermes_cli.main','gateway','run','--external-supervisor']
+    raise Conflict('service_role_unsupported')
 
 
 def service_hot(claw,role):
@@ -112,28 +125,42 @@ def native_call(harness,effect,arguments,*,capture=True):
         lock_fds=harness.context['lockFds'],started=lambda identity:harness.context['writerStarted'](effect['id'],identity))
 
 
-def native_observe(harness,effect,platform,item):
+def native_service_pid(harness,effect,platform,item):
     if revision(item['file'])!=item['sha256']:raise Conflict('service_definition_changed')
     if platform=='macos':
         result=native_call(harness,effect,['/bin/launchctl','print','gui/'+str(os.getuid())+'/'+item['label']])
-        if result['returncode']:return False
+        if result['returncode']:return None
         value=result['stdout'].decode('utf-8','strict')
         args=re.search(r'\n\s*arguments = \{\n([\s\S]*?)\n\s*\}',value)
-        return bool('path = '+item['file'] in value and args and
+        pid=re.search(r'\n\s*pid = ([1-9][0-9]*)\b',value)
+        valid=bool('path = '+item['file'] in value and args and
             [a.strip() for a in args[1].splitlines() if a.strip()]==item['arguments'] and
-            re.search(r'\n\s*pid = [1-9][0-9]*\b',value))
+            pid and int(pid[1])>1)
+        return int(pid[1]) if valid else None
     result=native_call(harness,effect,['/usr/bin/systemctl','--user','show',Path(item['file']).name,'--no-pager',
         '--property=ActiveState,MainPID,FragmentPath,NeedDaemonReload,DropInPaths'])
-    if result['returncode']:return False
+    if result['returncode']:return None
     fields=dict(line.split('=',1) for line in result['stdout'].decode().splitlines() if '=' in line)
     from setup_systemd import observe_argv
-    return (fields.get('ActiveState')=='active' and fields.get('MainPID','0').isdigit() and int(fields['MainPID'])>1 and
+    valid=(fields.get('ActiveState')=='active' and fields.get('MainPID','0').isdigit() and int(fields['MainPID'])>1 and
         fields.get('FragmentPath')==item['file'] and fields.get('NeedDaemonReload')=='no' and not fields.get('DropInPaths') and
         observe_argv(lambda args:native_call(harness,effect,args),item))
+    return int(fields['MainPID']) if valid else None
+
+
+def native_observe(harness,effect,platform,item):
+    return native_service_pid(harness,effect,platform,item) is not None
 
 
 def install_services(effect,context,deploy,harness,*,user_home=None):
     platform=context['plan']['host']['platform'];claw=deploy.claw
+    from setup_comms_services import activation_gate,verify_activation_binding
+    try:comms_binding=activation_gate(effect,context,deploy,harness)
+    except Conflict as error:
+        # This known pre-activation prerequisite runs before any manager or
+        # service write. It is incomplete configuration, not an uncertain start.
+        if str(error)=='comms_access_scope_required':return {'state':'configuration_required'}
+        raise
     account=Path(user_home) if user_home is not None else Path(pwd.getpwuid(os.getuid()).pw_dir).resolve()
     env=harness.environment();node=shutil.which('node',path=env['PATH']);npm=shutil.which('npm',path=env['PATH'])
     if not node or not npm:return {'state':'configuration_required'}
@@ -148,6 +175,7 @@ def install_services(effect,context,deploy,harness,*,user_home=None):
         'platform':platform,'userHome':str(account),'role':claw['role'],'services':[]}
     data['installationId']=loads(guarded_read(deploy.root/'netclaw-hud/installation.json'))['installationId']
     data['endpoints']=dict(claw['endpoints'])
+    if comms_binding is not None:data['commsBinding']=comms_binding
     from setup_service_binding import capture
     source_index=capture(deploy.source,claw['id'],context['journal'])
     index=deploy.write(effect,deploy.root/'.setup/service-source.json',canonical(source_index),kind='service-source')
@@ -176,6 +204,7 @@ def install_services(effect,context,deploy,harness,*,user_home=None):
                 os.symlink(item['file'],link.name,dir_fd=parent);os.fsync(parent)
     if platform=='wsl2' and native_call(harness,effect,['/usr/bin/systemctl','--user','daemon-reload'])['returncode']:return {'state':'unknown'}
     verified=True
+    verify_activation_binding(deploy.root,claw['harness'],comms_binding)
     for item,_ in definitions:
         if not item['hot']:continue
         command=['/bin/launchctl','bootstrap','gui/'+str(os.getuid()),item['file']] if platform=='macos' else ['/usr/bin/systemctl','--user','start',Path(item['file']).name]

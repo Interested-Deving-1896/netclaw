@@ -1,11 +1,14 @@
 import * as vscode from 'vscode';
 import {SetupEngine} from './engine';
 import {RunReference} from './runs';
+import {commsReportSummary} from './comms';
 
 export async function showReport(engine:SetupEngine,reference:RunReference){
   const report=await engine.read('report',undefined,reference.runId);
   const doc=await vscode.workspace.openTextDocument({language:'json',content:JSON.stringify(report,null,2)});
-  await vscode.window.showTextDocument(doc,{preview:true});return report;
+  await vscode.window.showTextDocument(doc,{preview:true});
+  const summary=commsReportSummary(report);if(summary)await vscode.window.showInformationMessage(summary);
+  return report;
 }
 
 export async function exportReport(engine:SetupEngine,reference:RunReference,detailed=false){
