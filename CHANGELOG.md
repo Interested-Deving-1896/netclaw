@@ -2,6 +2,10 @@
 
 NetClaw source releases use `1.x.y`. Feature specs increment the minor version and reset the patch; fixes, documentation and maintenance increment the patch. Every release records its numbered specs. Component and mobile distribution versions are independent.
 
+## [1.13.0] - 2026-10-25
+
+Spec [155-border-channel-setup](specs/155-border-channel-setup/spec.md). See [release notes](docs/releases/1.13.0.md).
+
 ## [1.12.0] - 2026-10-24
 
 - Install separate Focused NetClaws and mixed OpenClaw/Hermes Risks from VS Code, CLI or assistant-guided plans, with exact native review and independent homes/credentials.

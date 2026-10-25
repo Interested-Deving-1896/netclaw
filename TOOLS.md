@@ -16,7 +16,7 @@ Devices are defined in `testbed/testbed.yaml`. Update that file with your SSH-ac
 
 ## Platform Credentials
 
-Credentials belong to the **selected installation's** private `.env`. The historical default is `~/.openclaw/.env`; a separate setup-owned OpenClaw or Hermes home has its own file. Verify the selected home and installation identity first. Never borrow another claw's credentials or put values in skill files, plans, reports or this document. [Spec153 setup](docs/GETTING-STARTED-VSCODE.md) ships in source 1.12.0 / extension 1.2.0. Publishing these artifacts does not install or change any existing local runtime.
+Credentials belong to the **selected installation's** private `.env`. The historical default is `~/.openclaw/.env`; a separate setup-owned OpenClaw or Hermes home has its own file. Verify the selected home and installation identity first. Never borrow another claw's credentials or put values in skill files, plans, reports or this document. [Separate-claw setup](docs/GETTING-STARTED-VSCODE.md) includes Spec155 Comms in source 1.13.0 / extension 1.3.0. Publishing these artifacts does not install or change any existing local runtime.
 
 The source Comms installer distinguishes native conversation ingress, Twilio API
 and voice tools, and Zoom meeting services. Use [Comms setup](docs/COMMS-SETUP.md)

@@ -1,6 +1,6 @@
 # Set up a separate NetClaw from VS Code
 
-This workflow is included in **extension 1.2.0**, using **NetClaw source 1.12.0 or later**. See [verification and remaining qualification](../specs/153-ide-installer/verification.md). It requires VS Code 1.109 or later; upgrading the extension does not upgrade an existing claw.
+This workflow is included in **extension 1.3.0**, using **NetClaw source 1.13.0 or later** for Comms setup. See [Comms setup](COMMS-SETUP.md), [current release qualification](../specs/155-border-channel-setup/release-verification.md) and [underlying installer qualification](../specs/153-ide-installer/verification.md). It requires VS Code 1.109 or later; upgrading the extension does not upgrade an existing claw.
 
 ```mermaid
 flowchart LR

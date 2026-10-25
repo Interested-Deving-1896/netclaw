@@ -390,3 +390,14 @@ part of this reconciliation.
 GAIT session `spec155-mac-reconcile-20261025` recorded the final qualification and
 cross-artifact review at audit commit `38297391`; the session trail was displayed.
 Source commit/push is limited to the separate reconciliation branch.
+
+
+## Subsequent production authorization
+
+After the reconciliation push, the owner explicitly authorized commit/PR/merge,
+completed-branch cleanup, return to main and production publication. This supersedes
+the earlier release hold without changing the observed qualification outcomes.
+See [release verification](release-verification.md). Source 1.13.0 / extension 1.3.0
+retain T048, 49/50 tasks and all WSL/provider/editor scope limits. Release preparation
+also adds the ordinary Python installer/Comms family to CI; native opt-in checks
+remain separate. Existing runtime installations are not upgraded by publication.

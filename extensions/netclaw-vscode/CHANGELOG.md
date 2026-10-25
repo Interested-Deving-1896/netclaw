@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0 — guided Comms setup
+
+- Search all 77 documented runtime-specific Comms entries, including WhatsApp, Teams, Discord, Slack, Webex dispositions, Twilio and Zoom.
+- Select multiple channels with private native settings, restrictive access and retained choices across cancellation/reload. Keep Border ingress and Focused/member tools separate.
+- Add pinned acquisition, native readback/discovery, owned-service checks and explicit configuration/authentication/transport/delivery evidence.
+- Require source 1.13.0+ and VS Code 1.109+. Existing runtime homes are unchanged by the extension upgrade.
+- Mac installer acceptance passed within recorded fixture boundaries. WSL remains partial, with six service-manager failures and the genuine remote-editor gate open; provider readiness is unverified. See Spec155 release verification.
+
 ## 1.2.0 — reviewed new-claw setup
 
 - Add **Set Up a New NetClaw** without an existing HUD: bootstrap a reviewed source, choose a Focused claw or mixed OpenClaw/Hermes Risk, and use new empty homes.

@@ -170,3 +170,5 @@ The extension now has local source-development cards/forms, testbed YAML/JSON/CS
 Spec151 repository merge was explicitly authorized on2026-10-11 after local completion. Commit/push/PR/merge may proceed; packaging, deployment and release/Marketplace publication remain held.
 
 Spec152 production release was explicitly authorized on 2026-10-16 after the WSL inspection. Fetch/commit/PR/merge, completed-branch cleanup and production publication may proceed with verification. Historical release holds for Spec152 are superseded.
+
+Spec155 production publication was explicitly authorized on 2026-10-25 after Mac reconciliation. Commit/PR/merge, versioned source and Marketplace publication, completed-branch cleanup and return to main may proceed. This supersedes earlier Spec155 source-only holds. The release retains T048 and overall 49/50 qualification; six WSL service-manager failures, genuine remote-editor acceptance and documented fixture limits remain visible. Existing installations and provider/model/device operations remain outside release scope. See specs/155-border-channel-setup/release-verification.md.
