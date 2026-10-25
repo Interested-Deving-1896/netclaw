@@ -8910,9 +8910,28 @@ export const COMPONENT_SETTINGS = {
   ],
   "forward": [
     {
-      "key": "FORWARD_API_BASE_URL",
-      "label": "Forward Api Base Url",
-      "help": "FORWARD_API_BASE_URL is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
+      "key": "FORWARD_AUTH_BASE64",
+      "label": "Forward Auth Base64",
+      "help": "Base64 of 'accessKey:secret' for a Forward API token (Settings > Account > API tokens), sent as HTTP Basic to /api/mcp. The token's user decides which networks the MCP can reach. `echo -n 'accessKey:secret' | base64`, or run scripts/forward-enable.sh.",
+      "classification": "secret",
+      "valueType": "string",
+      "required": "always",
+      "condition": null,
+      "example": "",
+      "sharedWith": [],
+      "input": "user",
+      "provenance": [
+        {
+          "source": "config/openclaw.json#forward-official-mcp",
+          "checkedAt": "2026-10-25",
+          "note": "Exact selected registration substitutions."
+        }
+      ]
+    },
+    {
+      "key": "FORWARD_URL",
+      "label": "Forward Url",
+      "help": "Forward base URL without a path (e.g. https://fwd.app or your self-hosted host). NetClaw appends /api/mcp. A 403 means an admin turned off 'Enable MCP server' or the license expired.",
       "classification": "private",
       "valueType": "url",
       "required": "always",
@@ -8922,182 +8941,9 @@ export const COMPONENT_SETTINGS = {
       "input": "user",
       "provenance": [
         {
-          "source": "config/openclaw.json#forward-mcp",
-          "checkedAt": "2026-10-17",
+          "source": "config/openclaw.json#forward-official-mcp",
+          "checkedAt": "2026-10-25",
           "note": "Exact selected registration substitutions."
-        },
-        {
-          "source": "ui/netclaw-visual/env-map.js",
-          "checkedAt": "2026-10-17",
-          "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-        }
-      ]
-    },
-    {
-      "key": "FORWARD_API_KEY",
-      "label": "Forward Api Key",
-      "help": "FORWARD_API_KEY is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-      "classification": "secret",
-      "valueType": "string",
-      "required": "always",
-      "condition": null,
-      "example": "",
-      "sharedWith": [],
-      "input": "user",
-      "provenance": [
-        {
-          "source": "config/openclaw.json#forward-mcp",
-          "checkedAt": "2026-10-17",
-          "note": "Exact selected registration substitutions."
-        },
-        {
-          "source": "ui/netclaw-visual/env-map.js",
-          "checkedAt": "2026-10-17",
-          "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-        }
-      ]
-    },
-    {
-      "key": "FORWARD_API_SECRET",
-      "label": "Forward Api Secret",
-      "help": "FORWARD_API_SECRET is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-      "classification": "secret",
-      "valueType": "string",
-      "required": "always",
-      "condition": null,
-      "example": "",
-      "sharedWith": [],
-      "input": "user",
-      "provenance": [
-        {
-          "source": "config/openclaw.json#forward-mcp",
-          "checkedAt": "2026-10-17",
-          "note": "Exact selected registration substitutions."
-        },
-        {
-          "source": "ui/netclaw-visual/env-map.js",
-          "checkedAt": "2026-10-17",
-          "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-        }
-      ]
-    },
-    {
-      "key": "FORWARD_BLOOM_INDEX_PATH",
-      "label": "Forward Bloom Index Path",
-      "help": "FORWARD_BLOOM_INDEX_PATH is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-      "classification": "private",
-      "valueType": "path",
-      "required": "optional",
-      "condition": null,
-      "example": "",
-      "sharedWith": [],
-      "input": "user",
-      "provenance": [
-        {
-          "source": "config/openclaw.json#forward-mcp",
-          "checkedAt": "2026-10-17",
-          "note": "Exact selected registration substitutions."
-        },
-        {
-          "source": "ui/netclaw-visual/env-map.js",
-          "checkedAt": "2026-10-17",
-          "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-        }
-      ]
-    },
-    {
-      "key": "FORWARD_DEFAULT_NETWORK_ID",
-      "label": "Forward Default Network Id",
-      "help": "FORWARD_DEFAULT_NETWORK_ID is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-      "classification": "private",
-      "valueType": "string",
-      "required": "optional",
-      "condition": null,
-      "example": "",
-      "sharedWith": [],
-      "input": "user",
-      "provenance": [
-        {
-          "source": "config/openclaw.json#forward-mcp",
-          "checkedAt": "2026-10-17",
-          "note": "Exact selected registration substitutions."
-        },
-        {
-          "source": "ui/netclaw-visual/env-map.js",
-          "checkedAt": "2026-10-17",
-          "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-        }
-      ]
-    },
-    {
-      "key": "FORWARD_INSTANCE_ID",
-      "label": "Forward Instance Id",
-      "help": "FORWARD_INSTANCE_ID is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-      "classification": "private",
-      "valueType": "string",
-      "required": "optional",
-      "condition": null,
-      "example": "",
-      "sharedWith": [],
-      "input": "user",
-      "provenance": [
-        {
-          "source": "config/openclaw.json#forward-mcp",
-          "checkedAt": "2026-10-17",
-          "note": "Exact selected registration substitutions."
-        },
-        {
-          "source": "ui/netclaw-visual/env-map.js",
-          "checkedAt": "2026-10-17",
-          "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-        }
-      ]
-    },
-    {
-      "key": "FORWARD_LOCK_DIR",
-      "label": "Forward Lock Dir",
-      "help": "FORWARD_LOCK_DIR is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-      "classification": "private",
-      "valueType": "path",
-      "required": "optional",
-      "condition": null,
-      "example": "",
-      "sharedWith": [],
-      "input": "user",
-      "provenance": [
-        {
-          "source": "config/openclaw.json#forward-mcp",
-          "checkedAt": "2026-10-17",
-          "note": "Exact selected registration substitutions."
-        },
-        {
-          "source": "ui/netclaw-visual/env-map.js",
-          "checkedAt": "2026-10-17",
-          "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-        }
-      ]
-    },
-    {
-      "key": "FORWARD_SEMANTIC_CACHE_DISK_PATH",
-      "label": "Forward Semantic Cache Disk Path",
-      "help": "FORWARD_SEMANTIC_CACHE_DISK_PATH is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-      "classification": "private",
-      "valueType": "path",
-      "required": "optional",
-      "condition": null,
-      "example": "",
-      "sharedWith": [],
-      "input": "user",
-      "provenance": [
-        {
-          "source": "config/openclaw.json#forward-mcp",
-          "checkedAt": "2026-10-17",
-          "note": "Exact selected registration substitutions."
-        },
-        {
-          "source": "ui/netclaw-visual/env-map.js",
-          "checkedAt": "2026-10-17",
-          "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
         }
       ]
     }

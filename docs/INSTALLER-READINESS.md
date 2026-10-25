@@ -26,8 +26,7 @@ export NETCLAW_PY="$(brew --prefix python@3.12)/bin/python3.12"
 ```
 
 `uv` supplies managed pyATS/GAIT environments; no specific uv release is pinned.
-Forward additionally requires Go 1.25+, CGO and a working C compiler/Apple Command
-Line Tools. `--all` includes Linux-only components; inspect preflight on macOS and
+`--all` includes Linux-only components; inspect preflight on macOS and
 select compatible components. The prerequisite report lists all known blockers.
 
 For npm 11.16+ the installer uses the narrow `--allow-scripts=openclaw` option;

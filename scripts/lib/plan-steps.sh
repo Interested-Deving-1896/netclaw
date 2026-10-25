@@ -74,6 +74,7 @@ case "$component" in
   servicenow) function_name=component_install_servicenow ;;
   gitlab) function_name=component_install_gitlab ;;
   jenkins) function_name=component_install_jenkins ;;
+  forward) function_name=component_install_forward ;;
   atlassian) function_name=component_install_atlassian ;;
   msgraph) function_name=component_install_msgraph ;;
   halo) function_name=component_install_halo ;;

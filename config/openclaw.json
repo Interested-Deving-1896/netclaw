@@ -31,20 +31,14 @@
     "mode": "hobby"
   },
   "mcpServers": {
-    "forward-mcp": {
-      "command": "mcp-servers/forward-mcp/forward-mcp",
+    "forward-official-mcp": {
+      "url": "${FORWARD_URL}/api/mcp",
+      "headers": {
+        "Authorization": "Basic ${FORWARD_AUTH_BASE64}"
+      },
       "env": {
-        "FORWARD_API_BASE_URL": "${FORWARD_API_BASE_URL}",
-        "FORWARD_API_KEY": "${FORWARD_API_KEY}",
-        "FORWARD_API_SECRET": "${FORWARD_API_SECRET}",
-        "FORWARD_INSTANCE_ID": "${FORWARD_INSTANCE_ID}",
-        "FORWARD_DEFAULT_NETWORK_ID": "${FORWARD_DEFAULT_NETWORK_ID}",
-        "FORWARD_DEFAULT_QUERY_LIMIT": "10000",
-        "FORWARD_LOCK_DIR": "${FORWARD_LOCK_DIR}",
-        "FORWARD_BLOOM_ENABLED": "true",
-        "FORWARD_BLOOM_INDEX_PATH": "${FORWARD_BLOOM_INDEX_PATH}",
-        "FORWARD_SEMANTIC_CACHE_ENABLED": "true",
-        "FORWARD_SEMANTIC_CACHE_DISK_PATH": "${FORWARD_SEMANTIC_CACHE_DISK_PATH}"
+        "FORWARD_URL": "${FORWARD_URL}",
+        "FORWARD_AUTH_BASE64": "${FORWARD_AUTH_BASE64}"
       }
     },
     "suzieq-mcp": {
