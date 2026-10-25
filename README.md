@@ -184,12 +184,12 @@ explicit selections and profiles fail with all detected blockers rather than
 silently dropping components. A full selection can therefore be blocked on macOS.
 
 ```bash
-./scripts/install.sh --runtime hermes --preflight --components "forward panorama zabbix zoom-rtms"
+./scripts/install.sh --runtime hermes --preflight --components "panorama zabbix zoom-rtms"
 ./scripts/install.sh --preflight --all             # report all declared prerequisites; no installation
 ```
 
-Preflight checks declared Python bounds, native SDK platforms, external commands,
-Forward's Go/CGO toolchain and Docker daemon availability. It does not prove package
+Preflight checks declared Python bounds, native SDK platforms, external commands
+and Docker daemon availability. It does not prove package
 resolution or vendor connectivity. Existing Python 3.12 is preferred for component
 runtimes unless `NETCLAW_PY` is explicitly set; `python3` on PATH must still be 3.10+.
 See [Python compatibility and prerequisites](docs/PYTHON-RUNTIME-MIGRATION.md).
@@ -866,7 +866,7 @@ The HUD's fourth Chat interface, **Avatar**, offers selectable local John and Lo
 | 78 | Atlassian | [sooperset/mcp-atlassian](https://github.com/sooperset/mcp-atlassian) | stdio (Python, uvx) | Jira and Confluence — issues, projects, pages, spaces (72 tools) |
 | 79 | Jenkins | Jenkins MCP Server Plugin (official) | Streamable HTTP (Java, in-JVM) | CI/CD — job monitoring, build triggering, log analysis, SCM tracking (16 tools across 5 categories) |
 | 80 | Claroty xDome | Built-in (`claroty-mcp`), wraps [Claroty xDome](https://claroty.com/industrial-cybersecurity/xdome) | stdio (Python) | OT/IoT/IoMT asset visibility and threat detection — device inventory, communication maps, alerts, Purdue-level classification (21 tools: 15 read-only + 6 ITSM-gated writes) |
-| 81 | Forward Networks | Built-in (`forward-mcp`) | stdio (Go) | Digital twin and Network Query Engine (NQE) — path analysis, intent verification, semantic cache and knowledge-graph memory (54 tools + 6 workflow prompts) |
+| 81 | Forward Networks | Forward's official MCP (served at `/api/mcp`) | Streamable HTTP (remote) | Digital twin, **read-only** — path search, device/interface/VLAN/VRF/host and subnet lookups, CVE exposure, network complexity, NQE generation and docs search (up to 14 tools, depending on license and AI). API token as HTTP Basic; every call needs a `networkId`. See [docs/FORWARD.md](docs/FORWARD.md) |
 | 82 | Twilio | [@twilio-alpha/mcp](https://www.npmjs.com/package/@twilio-alpha/mcp) | stdio (Node) | Core Twilio API access — messaging, phone numbers, account resources |
 | 83 | Twilio Voice | Built-in (`twilio-voice-mcp`) | stdio/HTTP (Node + Python) | Universal voice interface — inbound/outbound calls, proactive PagerDuty/Datadog alerts, per-caller context via Memory MCP, natural speech formatting |
 | 84 | Twitter/X | Built-in (`twitter-mcp`), via tweepy | stdio (Python) | Post tweets/threads/media, monitor and reply to mentions, content guardrails (blocks IPs/credentials/customer names) |
@@ -1423,7 +1423,7 @@ Questions are authored dynamically; none of these skills executes a network chan
 
 | Skill | Purpose |
 |-------|---------|
-| **forward** | Forward Networks snapshot assurance, path search, app-aware path search, NQE, checks, vulnerabilities, diffs, configuration, lifecycle, and topology workflows |
+| **forward** | Read-only Forward Networks analysis through Forward's official MCP: path search, device/interface/VLAN/VRF/host and subnet lookups, vulnerabilities, network complexity, and NQE generation and documentation search |
 
 ### GitLab & Jenkins Skills (2)
 

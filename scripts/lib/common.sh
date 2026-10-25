@@ -188,7 +188,6 @@ define_paths() {
     MEMPALACE_MCP_DIR="$MCP_DIR/mempalace"
     HUMANRAIL_MCP_DIR="$MCP_DIR/humanrail-mcp-server"
     CHECKPOINT_MCP_DIR="$MCP_DIR/checkpoint-mcp-servers"
-    FORWARD_MCP_DIR="$MCP_DIR/forward-mcp"
 
     # Bundled with the NetClaw repo (prefer in-repo copy)
     SUZIEQ_MCP_DIR="$MCP_DIR/suzieq-mcp"

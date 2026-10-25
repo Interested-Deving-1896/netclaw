@@ -340,7 +340,7 @@
       "forward",
       "Observability",
       "Forward Networks",
-      "Snapshot assurance, path search, NQE (Go 1.25+, interactive)"
+      "Forward's official MCP — read-only path search, device/interface/VLAN/VRF/host lookups, vulnerabilities, NQE (remote HTTP, no install)"
     ],
     [
       "suzieq",

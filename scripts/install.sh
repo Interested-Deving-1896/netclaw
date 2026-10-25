@@ -417,7 +417,7 @@ printf 'Host: %s %s / %s\nBash: %s\nComponent Python: %s\nSelected: %s\n' \
     > "$INSTALL_LOG_DIR/run-info.txt"
 NETCLAW_RUNTIME_ROOT="$RUNTIME_HOME/python-runtimes"
 export NETCLAW_RUNTIME_ROOT
-INTERACTIVE_COMPONENTS=" checkpoint forward ipfabric threejs-viz jev "
+INTERACTIVE_COMPONENTS=" checkpoint ipfabric threejs-viz jev "
 
 run_component() {
     # $1 = component id, $2 = function name, $3 = display name
@@ -608,13 +608,12 @@ verify_component() {
         fwrule)          verify_dir  "$name" "$FWRULE_MCP_DIR" ;;
         aws)             verify_runner "$name" uvx "6 servers run via uvx" ;;
         azure)           verify_dir  "$name" "$AZURE_NET_MCP_DIR" ;;
-        gcp|cloudflare|terraform|vault|zscaler|datadog|jenkins|kubeshark|ue5)
+        gcp|cloudflare|terraform|vault|zscaler|datadog|jenkins|kubeshark|ue5|forward)
                          verify_remote "$name" ;;
         grafana)         verify_runner "$name" uvx "runs via uvx mcp-grafana" ;;
         prometheus)      verify_runner "$name" prometheus-mcp-server "pip CLI entry point" ;;
         te-community)    verify_file "$name" "$TE_COMMUNITY_MCP_DIR/src/server.py" ;;
         te-official)     verify_runner "$name" npx "remote HTTP via npx mcp-remote" ;;
-        forward)         verify_dir  "$name" "$FORWARD_MCP_DIR" ;;
         suzieq)          verify_dir  "$name" "$SUZIEQ_MCP_DIR" ;;
         gtrace)          verify_runner "$name" gtrace "standalone Go binary" ;;
         cml)             verify_cmd_or_module "$name" cml-mcp cml_mcp "requires Python 3.12+, pip3 install cml-mcp" ;;

@@ -12533,8 +12533,8 @@
       "id": "forward",
       "category": "Observability",
       "title": "Forward Networks",
-      "description": "Snapshot assurance, path search, NQE (Go 1.25+, interactive)",
-      "whenToChoose": "Digital twin and Network Query Engine (NQE) — path analysis, intent verification, semantic cache and knowledge-graph memory (54 tools + 6 workflow prompts)",
+      "description": "Forward's official MCP — read-only path search, device/interface/VLAN/VRF/host lookups, vulnerabilities, NQE (remote HTTP, no install)",
+      "whenToChoose": "Forward Networks digital twin through Forward's own MCP server at `<forward-host>/api/mcp` — read-only path search, device/interface/VLAN/VRF/host and subnet lookups, CVE exposure, network complexity, and NQE generation/search where the org has AI enabled (up to 14 tools, depending on license and AI). Every call needs a `networkId`. Remote HTTP with a Forward API token as HTTP Basic; nothing to build or run locally",
       "order": 56,
       "platforms": [
         "macos",
@@ -12549,23 +12549,40 @@
         "function": "component_install_forward",
         "mode": "scoped",
         "effects": [
-          "runtime-home",
-          "owned-source",
-          "download"
+          "runtime-home"
         ],
-        "reason": "Dedicated dependency-only recipe; no legacy credential prompt, global package/service change, container start or API call."
+        "reason": "Uses the fixed component function with owned source/runtime paths; execution requires the scoped bridge and postcondition checks."
       },
       "servers": [
-        "forward-mcp"
+        "forward-official-mcp"
       ],
       "skills": [
         "forward"
       ],
       "settings": [
         {
-          "key": "FORWARD_API_BASE_URL",
-          "label": "Forward Api Base Url",
-          "help": "FORWARD_API_BASE_URL is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
+          "key": "FORWARD_AUTH_BASE64",
+          "label": "Forward Auth Base64",
+          "help": "Base64 of 'accessKey:secret' for a Forward API token (Settings > Account > API tokens), sent as HTTP Basic to /api/mcp. The token's user decides which networks the MCP can reach. `echo -n 'accessKey:secret' | base64`, or run scripts/forward-enable.sh.",
+          "classification": "secret",
+          "valueType": "string",
+          "required": "always",
+          "condition": null,
+          "example": "",
+          "sharedWith": [],
+          "input": "user",
+          "provenance": [
+            {
+              "source": "config/openclaw.json#forward-official-mcp",
+              "checkedAt": "2026-10-25",
+              "note": "Exact selected registration substitutions."
+            }
+          ]
+        },
+        {
+          "key": "FORWARD_URL",
+          "label": "Forward Url",
+          "help": "Forward base URL without a path (e.g. https://fwd.app or your self-hosted host). NetClaw appends /api/mcp. A 403 means an admin turned off 'Enable MCP server' or the license expired.",
           "classification": "private",
           "valueType": "url",
           "required": "always",
@@ -12575,182 +12592,9 @@
           "input": "user",
           "provenance": [
             {
-              "source": "config/openclaw.json#forward-mcp",
-              "checkedAt": "2026-10-17",
+              "source": "config/openclaw.json#forward-official-mcp",
+              "checkedAt": "2026-10-25",
               "note": "Exact selected registration substitutions."
-            },
-            {
-              "source": "ui/netclaw-visual/env-map.js",
-              "checkedAt": "2026-10-17",
-              "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-            }
-          ]
-        },
-        {
-          "key": "FORWARD_API_KEY",
-          "label": "Forward Api Key",
-          "help": "FORWARD_API_KEY is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-          "classification": "secret",
-          "valueType": "string",
-          "required": "always",
-          "condition": null,
-          "example": "",
-          "sharedWith": [],
-          "input": "user",
-          "provenance": [
-            {
-              "source": "config/openclaw.json#forward-mcp",
-              "checkedAt": "2026-10-17",
-              "note": "Exact selected registration substitutions."
-            },
-            {
-              "source": "ui/netclaw-visual/env-map.js",
-              "checkedAt": "2026-10-17",
-              "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-            }
-          ]
-        },
-        {
-          "key": "FORWARD_API_SECRET",
-          "label": "Forward Api Secret",
-          "help": "FORWARD_API_SECRET is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-          "classification": "secret",
-          "valueType": "string",
-          "required": "always",
-          "condition": null,
-          "example": "",
-          "sharedWith": [],
-          "input": "user",
-          "provenance": [
-            {
-              "source": "config/openclaw.json#forward-mcp",
-              "checkedAt": "2026-10-17",
-              "note": "Exact selected registration substitutions."
-            },
-            {
-              "source": "ui/netclaw-visual/env-map.js",
-              "checkedAt": "2026-10-17",
-              "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-            }
-          ]
-        },
-        {
-          "key": "FORWARD_BLOOM_INDEX_PATH",
-          "label": "Forward Bloom Index Path",
-          "help": "FORWARD_BLOOM_INDEX_PATH is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-          "classification": "private",
-          "valueType": "path",
-          "required": "optional",
-          "condition": null,
-          "example": "",
-          "sharedWith": [],
-          "input": "user",
-          "provenance": [
-            {
-              "source": "config/openclaw.json#forward-mcp",
-              "checkedAt": "2026-10-17",
-              "note": "Exact selected registration substitutions."
-            },
-            {
-              "source": "ui/netclaw-visual/env-map.js",
-              "checkedAt": "2026-10-17",
-              "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-            }
-          ]
-        },
-        {
-          "key": "FORWARD_DEFAULT_NETWORK_ID",
-          "label": "Forward Default Network Id",
-          "help": "FORWARD_DEFAULT_NETWORK_ID is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-          "classification": "private",
-          "valueType": "string",
-          "required": "optional",
-          "condition": null,
-          "example": "",
-          "sharedWith": [],
-          "input": "user",
-          "provenance": [
-            {
-              "source": "config/openclaw.json#forward-mcp",
-              "checkedAt": "2026-10-17",
-              "note": "Exact selected registration substitutions."
-            },
-            {
-              "source": "ui/netclaw-visual/env-map.js",
-              "checkedAt": "2026-10-17",
-              "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-            }
-          ]
-        },
-        {
-          "key": "FORWARD_INSTANCE_ID",
-          "label": "Forward Instance Id",
-          "help": "FORWARD_INSTANCE_ID is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-          "classification": "private",
-          "valueType": "string",
-          "required": "optional",
-          "condition": null,
-          "example": "",
-          "sharedWith": [],
-          "input": "user",
-          "provenance": [
-            {
-              "source": "config/openclaw.json#forward-mcp",
-              "checkedAt": "2026-10-17",
-              "note": "Exact selected registration substitutions."
-            },
-            {
-              "source": "ui/netclaw-visual/env-map.js",
-              "checkedAt": "2026-10-17",
-              "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-            }
-          ]
-        },
-        {
-          "key": "FORWARD_LOCK_DIR",
-          "label": "Forward Lock Dir",
-          "help": "FORWARD_LOCK_DIR is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-          "classification": "private",
-          "valueType": "path",
-          "required": "optional",
-          "condition": null,
-          "example": "",
-          "sharedWith": [],
-          "input": "user",
-          "provenance": [
-            {
-              "source": "config/openclaw.json#forward-mcp",
-              "checkedAt": "2026-10-17",
-              "note": "Exact selected registration substitutions."
-            },
-            {
-              "source": "ui/netclaw-visual/env-map.js",
-              "checkedAt": "2026-10-17",
-              "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
-            }
-          ]
-        },
-        {
-          "key": "FORWARD_SEMANTIC_CACHE_DISK_PATH",
-          "label": "Forward Semantic Cache Disk Path",
-          "help": "FORWARD_SEMANTIC_CACHE_DISK_PATH is consumed by the selected Forward Networks registration. Leave unset only when using the documented native/default configuration.",
-          "classification": "private",
-          "valueType": "path",
-          "required": "optional",
-          "condition": null,
-          "example": "",
-          "sharedWith": [],
-          "input": "user",
-          "provenance": [
-            {
-              "source": "config/openclaw.json#forward-mcp",
-              "checkedAt": "2026-10-17",
-              "note": "Exact selected registration substitutions."
-            },
-            {
-              "source": "ui/netclaw-visual/env-map.js",
-              "checkedAt": "2026-10-17",
-              "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
             }
           ]
         }
@@ -12758,8 +12602,8 @@
       "links": [
         {
           "role": "upstream",
-          "target": "https://github.com/forwardnetworks/forward-mcp",
-          "unavailableReason": ""
+          "target": "",
+          "unavailableReason": "Served by Forward itself at /api/mcp; there is no separate upstream repository."
         },
         {
           "role": "netclaw",
@@ -12769,7 +12613,7 @@
         {
           "role": "vendor",
           "target": "",
-          "unavailableReason": "Project/upstream documentation is authoritative for this integration; no separate vendor guide is declared."
+          "unavailableReason": "Forward's MCP server page was not published on docs.fwd.app when checked (2026-10-25); docs/FORWARD.md carries the endpoint, auth and tool reference."
         }
       ],
       "verification": {
@@ -12778,31 +12622,21 @@
         "reason": "Verify this component through its selected-harness registration; artifact presence alone is insufficient."
       },
       "estimate": {
-        "schemas": null,
-        "method": "unknown",
-        "source": "README.md#mcp-servers-176",
-        "reason": "No current schema count is published in this component entry; include unknown coverage in the advisor."
+        "schemas": 14,
+        "method": "documented",
+        "source": "workspace/skills/forward/SKILL.md",
+        "reason": "Documented count (upper bound; license and AI enablement narrow it); a live tools/list against a Forward build on 2026-10-25 returned the same 14 tools."
       },
       "provenance": [
         {
           "source": "scripts/lib/install-steps.sh#component_install_forward",
-          "checkedAt": "2026-10-17",
+          "checkedAt": "2026-10-25",
           "note": "Existing installer implementation and effect inventory."
         },
         {
-          "source": "config/installer-preflight.json",
-          "checkedAt": "2026-10-17",
-          "note": "Declared platform/interpreter prerequisites."
-        },
-        {
           "source": "README.md#mcp-servers-176",
-          "checkedAt": "2026-10-17",
+          "checkedAt": "2026-10-25",
           "note": "Integration documentation."
-        },
-        {
-          "source": "scripts/lib/plan-special.sh",
-          "checkedAt": "2026-10-17",
-          "note": "Plan-engine dependency adapter; legacy interactive installer remains separate."
         }
       ],
       "kind": "mcp-integration",
@@ -24435,14 +24269,14 @@
     {
       "id": "forward",
       "title": "forward",
-      "description": "Forward snapshot assurance, path search, app-aware path search, NQE, checks, vulnerabilities, diffs, configuration, lifecycle, collection, and topology workflows through the upstream forward-mcp server.",
+      "description": "Read-only Forward Networks analysis through Forward's official MCP server: trace packet paths, look up devices, interfaces, VLANs, VRFs, hosts, cloud objects and subnet locations, check CVE exposure, summarize network complexity, and generate NQE queries. Use when a question is about what Forward's digital twin of the network says. Every call needs a networkId.",
       "path": "workspace/skills/forward/SKILL.md",
-      "sha256": "59c8e7ca353e6c69bf9976037a5818e1648e9305a69fc68b8e93f17647f00d97",
+      "sha256": "f61f59c2c953336a2da42c0ae4d3835ae05e671390e7a0c2c00191632e43d44e",
       "components": [
         "forward"
       ],
       "servers": [
-        "forward-mcp"
+        "forward-official-mcp"
       ],
       "availability": "supported",
       "reason": "Requires the explicitly listed components and their configured backends; discovery is verified separately.",
@@ -29268,7 +29102,7 @@
         "forward"
       ],
       "servers": [
-        "forward-mcp"
+        "forward-official-mcp"
       ],
       "harnesses": [
         "openclaw"

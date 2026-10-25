@@ -6,7 +6,7 @@ import re
 from setup_components import dependency_ready
 from setup_state import Conflict,guarded_read
 
-SUPPORTED=frozenset(('nsm','elastic','checkpoint','nmap','aws','ipfabric','forward','batfish',
+SUPPORTED=frozenset(('nsm','elastic','checkpoint','nmap','aws','ipfabric','batfish',
                      'github','packet-buddy','threejs-viz','comfyui-viz','worldlabs-marble','rag-mcp','gtrace'))
 
 
