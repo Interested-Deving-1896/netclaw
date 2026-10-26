@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "pnpm": "11.2.2"
+    "pnpm": "11.11.0"
   }
 }
