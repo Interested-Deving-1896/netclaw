@@ -91,3 +91,23 @@ test('owned request routes reject foreign owners before upstream and recheck aft
  assert.equal((await fetch(url,{headers:{Cookie:'nc_hud='+foreign}})).status,404);assert.equal(calls,0);
  revoke=true;const response=await fetch(url,{headers:{Cookie:'nc_hud='+cookie}});assert.equal(response.status,503);assert.ok(!(await response.text()).includes('PRIVATE'));
 });
+
+test('reviewed conversation recovery validates owner and explicit boolean; history restores only owned identity',async t=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'capacity-159-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+ const bindings=new Bindings(dir,Date.now,{kind:'hermes',installationId:'A'}),cookie=bindings.create(),foreign=bindings.create();
+ const task=bindings.task(cookie,'old','hermes'),request=bindings.request(cookie,task.id,'n','hash');bindings.requestState(cookie,request.id,'unknown');
+ let revoke=false;const calls=[];
+ const runtime={call:async(name,args)=>{calls.push([name,args]);if(revoke)bindings.revoke(cookie);return name==='history'?{messages:[]}:{state:'open'};}};
+ const app=express();app.use(express.json());mountHermesChat(app,{runtime,bindings});const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(()=>server.close());
+ const url=`http://127.0.0.1:${server.address().port}/api/chat/conversations`;
+ const post=(body,owner=cookie,suffix='')=>fetch(url+suffix,{method:'POST',headers:{Cookie:'nc_hud='+owner,'Content-Type':'application/json'},body:JSON.stringify(body)});
+ for(const body of [{releaseUncertainCapacity:true},{acknowledgedUncertainRequestId:request.id,releaseUncertainCapacity:'true'}])assert.equal((await post(body)).status,409);
+ const review={acknowledgedUncertainRequestId:request.id,releaseUncertainCapacity:true};
+ assert.equal((await post(review,foreign)).status,409);assert.equal(calls.length,0);
+ assert.equal((await post(review)).status,201);assert.equal(calls[0][1].releaseUncertainCapacity,true);assert.equal(calls[0][1].acknowledgedUncertainRequestId,request.id);
+ assert.equal((await post({acknowledgedUncertainRequestId:request.id})).status,201);assert.equal(calls[1][1].releaseUncertainCapacity,undefined);
+ const history=await post({},cookie,`/${task.id}/open`);assert.equal(history.status,200);
+ assert.deepEqual((await history.json()).pendingRequest,{requestId:request.id,state:'unknown'});
+ const before=calls.length;assert.equal((await post({},foreign,`/${task.id}/open`)).status,404);assert.equal(calls.length,before);
+ revoke=true;assert.equal((await post(review)).status,409);
+});

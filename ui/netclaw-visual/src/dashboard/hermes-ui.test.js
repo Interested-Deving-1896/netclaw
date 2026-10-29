@@ -76,3 +76,29 @@ test('recovery handles untouched, cleared and already-loaded native history draf
   } finally {w.closeChat();w.close();}
  }
 });
+
+test('owned historical uncertainty can release capacity after tab storage loss with separate confirmation',async t=>{
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost:3000',runScripts:'outside-only',pretendToBeVisual:true});
+ const w=dom.window,doc=w.document,calls=[];let accept=false,confirmText='';
+ w.AbortSignal=AbortSignal;w.AbortController=AbortController;w.TextEncoder=TextEncoder;Object.defineProperty(w.crypto,'subtle',{value:webcrypto.subtle});
+ w.confirm=text=>{confirmText=text;return accept;};
+ w.fetch=async(url,options={})=>{
+  calls.push([url,options]);return {ok:true,json:async()=>url==='/api/runtime'?{kind:'hermes',installationId:'11111111-1111-4111-8111-111111111111',readiness:{ready:true}}:
+   url==='/api/chat/models'?{models:[],selectionSupported:false}:
+   url==='/api/chat/conversations'&&options.method==='POST'?{thread:'fresh'}:
+   url==='/api/chat/conversations'?{conversations:[{id:'old',thread:'old-thread',title:'Old unknown'}],sourceAvailable:true}:
+   url==='/api/chat/conversations/old/open'?{thread:'old-thread',messages:[],pendingRequest:{requestId:'old-request',state:'unknown'}}:
+   url==='/api/chat/requests/old-request'?{requestId:'old-request',state:'unknown',capacityReleaseEligible:true}:{}};
+ };
+ w.eval(built.outputFiles[0].text);t.after(()=>{w.closeChat();w.close();});
+ await until(()=>doc.querySelector('#previous-chat option[value=old]'));
+ const select=doc.querySelector('#previous-chat');select.value='old';select.dispatchEvent(new w.Event('change',{bubbles:true}));
+ await until(()=>button(doc,'Check status'));button(doc,'Check status').click();await until(()=>button(doc,'Release slot and start new chat'));
+ button(doc,'Release slot and start new chat').click();await wait();assert.match(confirmText,/outcome stays unknown/);
+ assert.equal(calls.filter(([u,o])=>u==='/api/chat/conversations'&&o.method==='POST').length,0);
+ accept=true;button(doc,'Release slot and start new chat').click();await until(()=>!button(doc,'Check status'));
+ const opens=calls.filter(([u,o])=>u==='/api/chat/conversations'&&o.method==='POST');assert.equal(opens.length,1);
+ assert.deepEqual(JSON.parse(opens[0][1].body),{acknowledgedUncertainRequestId:'old-request',releaseUncertainCapacity:true});
+ assert.equal(calls.some(([u,o])=>u==='/api/chat/requests'&&o.method==='POST'),false);
+ const receipt=Object.keys(w.sessionStorage).find(k=>k.endsWith('pending.old-thread'));assert.ok(receipt);assert.match(w.sessionStorage.getItem(receipt),/unknown/);
+});

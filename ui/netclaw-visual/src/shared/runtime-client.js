@@ -43,18 +43,28 @@ export async function verifyRuntime() {
   if (!response.ok || value.installationId!==current.installationId || value.kind!==current.kind) throw Error('The selected runtime changed. Reload the HUD before sending or recovering work. Your saved conversation is preserved.');
   return current;
 }
-export async function newConversation(thread) {
+export async function newConversation(thread,{releaseCapacity=false}={}) {
   await verifyRuntime();
   const pending=pendingRequest(thread);
   const uncertain=pending && !['completed','failed','cancelled','interrupted'].includes(pending.state);
-  if (uncertain && !window.confirm('The earlier request may have executed. Starting a new conversation does not cancel or undo it. Acknowledge and continue?')) return null;
-  const response=await fetch('/api/chat/conversations',{method:'POST',headers:{'Content-Type':'application/json','X-NetClaw-Installation':current.installationId},body:JSON.stringify(uncertain ? {acknowledgedUncertainRequestId:pending.requestId} : {})});
+  if(releaseCapacity && (!uncertain || !pending.requestId || !pending.capacityReleaseEligible))throw Error('Check the owned unknown request status before releasing its slot.');
+  const confirmation=releaseCapacity
+    ? 'Review this request’s history and tool evidence first. Releasing its HUD admission slot does not cancel or undo it; its outcome stays unknown. It may still run alongside new work. Accept this risk, release its slot and start a new chat?'
+    : 'The earlier request may have executed. Starting a new conversation does not cancel or undo it. Acknowledge and continue?';
+  if (uncertain && !window.confirm(confirmation)) return null;
+  const response=await fetch('/api/chat/conversations',{method:'POST',headers:{'Content-Type':'application/json','X-NetClaw-Installation':current.installationId},body:JSON.stringify(uncertain ? {acknowledgedUncertainRequestId:pending.requestId,...(releaseCapacity ? {releaseUncertainCapacity:true} : {})} : {})});
   if (!response.ok) throw Error('Check the unresolved request status before starting another conversation.');
   return response.json();
 }
 const store = () => runtimeStorage(window.sessionStorage);
 export function pendingRequest(thread) { try { return JSON.parse(store().getItem('pending.'+thread) || 'null'); } catch { return null; } }
 const remember = (thread,value) => store().setItem('pending.'+thread,JSON.stringify(value));
+export function restoreOwnedRequest(thread,value) {
+  if(!value || typeof value.requestId!=='string' || !/^[A-Za-z0-9_.:-]{1,128}$/.test(value.requestId))throw Error('Owned request identity unavailable.');
+  const saved=pendingRequest(thread);
+  const record={...(saved?.requestId===value.requestId ? saved : {}),requestId:value.requestId,state:value.state};
+  remember(thread,record);return record;
+}
 const settled = new Set(['completed','failed','cancelled','interrupted','unknown']);
 export async function observeRequest(thread, onProgress = () => {}) {
   await verifyRuntime();

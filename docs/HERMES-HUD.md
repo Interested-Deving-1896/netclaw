@@ -90,3 +90,30 @@ legacy pending record without original submission evidence produces guidance to
 open owned history, leaving transcript and draft unchanged. It never guesses the
 question from current text. Completed Standard Chat receipts survive refresh until
 the next reconciled submission; Canvas/classic keep their existing cleanup behavior.
+
+### Recovering admission capacity after a lost response
+
+Four unresolved admissions without native run IDs can fill the HUD's admission
+limit. Ordinary acknowledgment, restarting, checking status and requesting stop
+do not release these slots or prove that the operations stopped.
+
+In Chat (also shared by local Avatar), open the affected conversation from
+**Previous chats**, then **Check status**. For an eligible unknown admission,
+**Release slot and start new chat** offers a separate confirmation. Review the
+conversation and tool evidence before accepting: the earlier operation may still
+run alongside new work. This releases only its HUD admission reservation; it does
+not cancel, undo, mark successful or replay the operation. Native runtime limits
+still apply. A known native run must use normal status/stop reconciliation.
+
+The private ledger records the release once, retains unknown outcome, original
+nonce and evidence, and keeps the original conversation blocked for new work.
+Restart and repeated confirmation do not grant additional slots. Failed new-chat
+setup can leave an already recorded release; retry does not replay the old work.
+Opening owned history recovers unresolved request identity even after tab storage
+loss, without inventing its original question. Missing bridge admissions cannot
+release a slot they never held. Federation reservations are excluded.
+
+Upgrade the HUD and private bridge source together for this optional argument;
+older bridges refuse it safely. The ledger adds its private audit table on open;
+no deletion, reset or manual database edit is needed. Source fixtures cover the
+accounting and UI workflow; this does not broaden live provider/platform support.

@@ -19,12 +19,15 @@ export function mountHermesChat(app, { runtime, bindings }) {
   app.post('/api/chat/conversations', async (req,res) => {
     try {
       const cookie=cookieFrom(req), acknowledgment=req.body?.acknowledgedUncertainRequestId;
+      const releaseCapacity=req.body?.releaseUncertainCapacity ?? false;
+      if(typeof releaseCapacity!=='boolean' || (releaseCapacity && !acknowledgment))throw Error();
       bindings.read(cookie);
       if (acknowledgment) bindings.ownedRequest(cookie,acknowledgment);
       const thread='chat-'+randomUUID(), task=bindings.task(cookie,thread,'hermes');
       bindings.requireAcknowledgment(cookie,task.id,acknowledgment);
-      await runtime.call('conversation_open',{conversationId:task.id,...(acknowledgment ? {acknowledgedUncertainRequestId:acknowledgment} : {})});
+      await runtime.call('conversation_open',{conversationId:task.id,...(acknowledgment ? {acknowledgedUncertainRequestId:acknowledgment} : {}),...(releaseCapacity ? {releaseUncertainCapacity:true} : {})});
       bindings.ownedChat(cookie,task.id,'hermes');
+      if(acknowledgment)bindings.ownedRequest(cookie,acknowledgment);
       bindings.acknowledge(cookie,acknowledgment);
       res.status(201).json({id:task.id,thread});
     } catch { res.status(409).json({error:'Conversation cannot be opened. Check the owned request status.'}); }
@@ -42,7 +45,11 @@ export function mountHermesChat(app, { runtime, bindings }) {
       const cookie=cookieFrom(req), task=bindings.ownedChat(cookie,req.params.id,'hermes');
       const history=await runtime.call('history',{ conversationId:task.id });
       bindings.ownedChat(cookie,task.id,'hermes');
-      res.json({ id:task.id,thread:bindings.resumeChat(cookie,task.id,'hermes').publicThread,messages:history.messages,chatModel:'',chatEffort:'',truncated:history.hasMore });
+      // Owned durable identity remains recoverable when tab receipts were lost.
+      // Never reconstruct a submitted prompt from transcript text.
+      const unresolved=Object.values(task.requests || {}).findLast(r=>!['completed','failed','cancelled','interrupted'].includes(r.state));
+      res.json({ id:task.id,thread:bindings.resumeChat(cookie,task.id,'hermes').publicThread,messages:history.messages,chatModel:'',chatEffort:'',truncated:history.hasMore,
+        ...(unresolved ? {pendingRequest:{requestId:unresolved.id,state:unresolved.state}} : {}) });
     } catch { res.status(404).json({ error:'Owned Hermes transcript unavailable.' }); }
   });
   const submit = async (req,res) => {
