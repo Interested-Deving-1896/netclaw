@@ -1,5 +1,6 @@
 import { runtimeInfo, runtimeStorage, sendChat, observeRequest, pendingRequest, newConversation, requestControl } from '../shared/runtime-client.js';
 import { loadChat, saveChat, loadChatArchive, archiveChat } from './chat-storage.js';
+import { recoveryAnchor, mergeRecoveredTurn, recoveredDraft } from './chat-recovery.js';
 import ChatUsage from './ChatUsage.jsx';
 import { randomId } from '../shared/random-id.js';
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
@@ -105,6 +106,7 @@ export default function StandardChat({ preview = false, active = true, pal = fal
         target = { ...target, draft: local?.draft || '', interrupted: target.active === true || local?.interrupted || false };
       }
       thread.current = target.thread; setMessages(target.messages); setDraft(target.draft || '');
+      inFlight.current=null;setRequestState(null);
       setPalReply(null);
       setChatModel(target.chatModel || ''); setChatEffort(target.chatEffort || '');
       setUncertain(target.interrupted === true); setRemoteActive(target.active === true); setOpenedChat(value);
@@ -118,6 +120,8 @@ export default function StandardChat({ preview = false, active = true, pal = fal
     event.preventDefault();
     const prompt = draft.trim();
     if (!prompt || sending.current || preview || loadingChat || remoteActive) return;
+    const receipt=pendingRequest(thread.current);
+    if (selectedRuntime?.kind==='hermes' && uncertain && receipt && !['failed','cancelled','interrupted'].includes(receipt.state)) {setError('Check the unresolved request status or start a new conversation before submitting more work.');return;}
     if (pal) palVoice.current?.prepareForReply();
     sending.current = true; setPending(true); setError('');
     const before = messages, context = [...messages, { role: 'user', content: prompt }];
@@ -127,25 +131,32 @@ export default function StandardChat({ preview = false, active = true, pal = fal
     try {
       const session = await fetch('/api/hud/session', { method: 'POST', credentials: 'same-origin', cache: 'no-store' });
       if (!session.ok) throw Error('The private HUD session is unavailable. Your draft has been restored.');
-      const data = await sendChat({ message: prompt, messages: context.slice(-40).map(({role,content}) => ({role,content})), hudThread: thread.current, chatModel, chatEffort }, setRequestState);
+      const anchor=selectedRuntime?.kind==='hermes' ? await recoveryAnchor(before) : undefined;
+      const data = await sendChat({ message: prompt, messages: context.slice(-40).map(({role,content}) => ({role,content})), hudThread: thread.current, chatModel, chatEffort }, setRequestState, anchor);
       if (data.fromGateway !== true) throw Error((typeof data.gatewayIssue === 'string' ? data.gatewayIssue : 'The gateway did not return a confirmed reply.') + ' Your draft has been restored.');
       if (typeof data.response !== 'string' || !data.response.trim()) throw Error('The gateway returned an empty reply. Check the gateway before retrying; your draft has been restored.');
       const assessmentRefs = (Array.isArray(data.assessmentRefs) ? data.assessmentRefs : [])
         .filter(ref => validId(ref?.taskRef) && validId(ref?.assessmentId)).slice(0, 20);
+      const completed = selectedRuntime?.kind==='hermes' ? await mergeRecoveredTurn(before,data)
+        : [...context, { role: 'assistant', content: data.response, assessmentRefs }];
       setUncertain(false);
-      const completed = [...context, { role: 'assistant', content: data.response, assessmentRefs }];
       persist({ messages: completed, draft: '', interrupted: false });
       setMessages(completed);
       setPalReply({ id: randomId(), text: data.response });
     } catch (err) {
       setMessages(before); setDraft(prompt);
       setError(err instanceof TypeError || err instanceof SyntaxError ? 'The reply could not be received. Your draft has been restored. The gateway may still be working; check before retrying.' : err.message || 'Chat unavailable. Your draft has been restored.');
-    } finally { sending.current = false; setPending(false); refreshChats(); }
+    } finally { inFlight.current=null; sending.current = false; setPending(false); refreshChats(); }
   };
   const recover = async () => {
     if (sending.current) return;
     sending.current=true; setPending(true); setError('');
-    try { const data=await observeRequest(thread.current,setRequestState); const completed=[...messages,{role:'user',content:draft},{role:'assistant',content:data.response || data.output}]; setMessages(completed); setDraft(''); setUncertain(false); persist({messages:completed,draft:'',interrupted:false}); }
+    try {
+      const data=await observeRequest(thread.current,setRequestState);
+      const completed=await mergeRecoveredTurn(messages,data), nextDraft=recoveredDraft(draft,data.submission.prompt);
+      if (!persist({messages:completed,draft:nextDraft,interrupted:false})) throw Error('Recovered reply could not be saved. Check status again; your draft is unchanged.');
+      setMessages(completed);setDraft(nextDraft);setUncertain(false);
+    }
     catch (error) { setError(error.message); }
     finally { sending.current=false; setPending(false); }
   };
@@ -160,6 +171,7 @@ export default function StandardChat({ preview = false, active = true, pal = fal
       catch(error) { setError(error.message); return; }
     }
     thread.current = nextThread; setOpenedChat(''); setRemoteActive(false); setUncertain(false);
+    inFlight.current=null;setRequestState(null);
     setPalReply(null);
     persist({ messages: [], draft: '', interrupted: false }); setMessages([]); setDraft(''); setError('');
     refreshChats(); composer.current?.focus();

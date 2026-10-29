@@ -75,3 +75,18 @@ Bindings created before this fix have no retained prefix. They remain usable,
 but original ancestry cannot be reconstructed from later messages. After a
 known pre-admission failure on such a binding, create a new branch from the
 intended ancestor point. Do not replay an uncertain admitted operation.
+
+### Recovering a Standard Chat reply
+
+Check status uses the original saved submission, not the editable composer. An
+unsent edited or cleared draft remains unchanged; the untouched restored original
+is cleared once its answer is recovered. Both displayed messages retain the request
+identity so repeated status checks do not append duplicate turns. The pending
+receipt and draft remain scoped to this installation's browser storage.
+
+If native history has no request identities, recovery requires the exact original
+position and complete prior-message fingerprint. Changed/truncated history or a
+legacy pending record without original submission evidence produces guidance to
+open owned history, leaving transcript and draft unchanged. It never guesses the
+question from current text. Completed Standard Chat receipts survive refresh until
+the next reconciled submission; Canvas/classic keep their existing cleanup behavior.

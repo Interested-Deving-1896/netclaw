@@ -27,3 +27,27 @@ test('open tab refuses a changed runtime before submission and keeps the origina
  meta={kind:'hermes',installationId:idB};await assert.rejects(api.sendChat({hudThread:'t',message:'private A'}),/selected runtime changed/);assert.equal(posts,0);
  await api.bootstrapRuntime();assert.equal(bound.getItem('draft'),'private A');assert.equal(api.runtimeStorage(storage).getItem('draft'),null);
 });
+
+test('Standard Chat receipt preserves original identity across lost admission, refresh and repeated recovery',async t=>{
+ const oldFetch=globalThis.fetch,oldWindow=globalThis.window;t.after(()=>{globalThis.fetch=oldFetch;globalThis.window=oldWindow;});
+ globalThis.window={sessionStorage:memory()};let posts=0;const anchor={count:0,sha256:'a'.repeat(64)};
+ globalThis.fetch=async(url,options={})=>{
+  if(url==='/api/runtime')return {ok:true,json:async()=>({kind:'hermes',installationId:idA})};
+  if(options.method==='POST'){
+   posts++;assert.equal(JSON.parse(options.body).submission,undefined);
+   if(posts===1)throw TypeError('lost admission response');
+   return {ok:true,json:async()=>({requestId:'second',state:'queued'})};
+  }
+  if(url.startsWith('/api/chat/requests?'))return {ok:true,json:async()=>({requestId:'owned',submission:{prompt:'forged'}})};
+  return {ok:true,json:async()=>({requestId:posts===1?'owned':'second',state:'completed',response:'answer',submission:{prompt:'forged'},nonce:'forged'})};
+ };
+ const api=await moduleFor();await api.bootstrapRuntime();
+ await assert.rejects(api.sendChat({hudThread:'t',message:'ORIGINAL'},undefined,anchor),/lost admission/);
+ assert.equal(api.pendingRequest('t').submission.prompt,'ORIGINAL');
+ const refreshed=await moduleFor();await refreshed.bootstrapRuntime();const result=await refreshed.observeRequest('t');
+ assert.equal(result.submission.prompt,'ORIGINAL');assert.deepEqual(result.submission.anchor,anchor);
+ assert.notEqual(result.submission.nonce,'forged');assert.equal(refreshed.pendingRequest('t').state,'completed');
+ assert.equal((await refreshed.observeRequest('t')).requestId,'owned');assert.equal(posts,1);
+ await refreshed.sendChat({hudThread:'t',message:'NEXT'},undefined,anchor);assert.equal(posts,2);
+ assert.equal(refreshed.pendingRequest('t').submission.prompt,'NEXT');
+});
