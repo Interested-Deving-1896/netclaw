@@ -4,6 +4,8 @@ Set up a **new NetClaw or mixed Risk**, or manage your **existing NetClaw or Ris
 inspect operations, converse with its configured runtime, search RAG knowledge and
 review supported settings without leaving your editor.
 
+**Patch 1.3.1:** Includes the optional MCP-default catalog/resolver in exact setup source review (Spec 156). Use source 1.13.1 for the coordinated minor fixes; see [release notes](../../docs/releases/1.13.1.md).
+
 **New in 1.3.0:** Search the OpenClaw and Hermes **Comms** inventory, choose multiple channels, configure private credentials and access, and discover Twilio/Zoom tools with explicit Focused/member ownership. Requires source setup engine **1.13.0 or later** and VS Code **1.109+**. Read [Comms setup](../../docs/COMMS-SETUP.md), [new-claw setup](../../docs/GETTING-STARTED-VSCODE.md) and [release qualification](../../specs/155-border-channel-setup/release-verification.md). Existing installations remain independent; installing the extension does not upgrade or activate their runtimes.
 
 NetClaw remains your runtime. Opening the extension changes no runtime. Explicitly reviewed setup actions can install selected isolated MCP runtimes, register canonical OpenClaw MCPs or restart the owned federation service using existing NetClaw helpers.

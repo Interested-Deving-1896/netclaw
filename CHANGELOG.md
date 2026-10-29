@@ -2,6 +2,17 @@
 
 NetClaw source releases use `1.x.y`. Feature specs increment the minor version and reset the patch; fixes, documentation and maintenance increment the patch. Every release records its numbered specs. Component and mobile distribution versions are independent.
 
+## [1.13.1] - 2026-10-29
+
+Minor fixes, addressed oldest to newest:
+
+- #262 / [Spec156](specs/156-openclaw-env-defaults/spec.md): resolve optional MCP defaults during installation for qualified native runtimes; preserve operator overrides and required inputs.
+- #300 / [Spec157](specs/157-hermes-canvas-retry/spec.md): retain Canvas ancestor context across Hermes conversation-setup retries.
+- #301 / [Spec158](specs/158-hermes-chat-recovery/spec.md): recover the original submitted question while preserving edited or cleared drafts and preventing duplicate transcript entries.
+- #302 / [Spec159](specs/159-hermes-uncertain-capacity/spec.md): explicitly release a reviewed unknown admission reservation without erasing uncertainty or replaying work.
+
+See [release notes](docs/releases/1.13.1.md) for upgrade guidance and verification limits.
+
 ## [1.13.0] - 2026-10-25
 
 Spec [155-border-channel-setup](specs/155-border-channel-setup/spec.md). See [release notes](docs/releases/1.13.0.md).
