@@ -55,10 +55,10 @@ export function mountHermesChat(app, { runtime, bindings }) {
       if (!Array.isArray(context) || context.length>200 || context.some(m => !['user','assistant'].includes(m?.role) || typeof m.content !== 'string') || JSON.stringify(context).length>1048576) throw Error();
       text=req.body.message || [...context].reverse().find(m => m.role==='user')?.content;
       if (typeof text !== 'string' || !text.trim() || text.length>65536) throw Error();
-      task=bindings.task(cookie,req.body.hudThread,'hermes');
       // Fork seed is immutable and used only for the new conversation's first turn.
       seed=context.map(({role,content})=>({role,content}));
       if (seed.at(-1)?.role==='user') seed.pop();
+      task=bindings.task(cookie,req.body.hudThread,'hermes',seed);
       release=bindings.begin(cookie,task.id);
       const acknowledgment=req.body.acknowledgedUncertainRequestId;
       if (acknowledgment) bindings.ownedRequest(cookie,acknowledgment);
@@ -67,7 +67,10 @@ export function mountHermesChat(app, { runtime, bindings }) {
       bindings.describeChat(cookie,task.id,'hermes',{title:text});
     } catch { release(); return res.status(409).json({ error:'Private conversation unavailable, invalid or busy.' }); }
     try {
-      await runtime.call('conversation_open',{ conversationId:task.id, ...(task.newlyCreated ? {seed} : {}), ...(req.body.acknowledgedUncertainRequestId ? {acknowledgedUncertainRequestId:req.body.acknowledgedUncertainRequestId} : {}) });
+      // Browser binding creation is not proof of bridge initialization. Reuse
+      // the original seed even after a failed/lost open response or restart.
+      // Pre-fix bindings omit it: never invent ancestry from a later turn.
+      await runtime.call('conversation_open',{ conversationId:task.id, ...(task.hermesSeed !== undefined ? {seed:task.hermesSeed} : {}), ...(req.body.acknowledgedUncertainRequestId ? {acknowledgedUncertainRequestId:req.body.acknowledgedUncertainRequestId} : {}) });
       bindings.ownedRequest(cookie,request.id);
       admissionAttempted=true;
       let value=await runtime.call('submit',{ conversationId:task.id,requestId:request.id,clientNonce:request.nonce,text,deadlineMs });

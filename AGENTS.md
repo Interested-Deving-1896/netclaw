@@ -157,6 +157,8 @@ When unsure about severity or approach: escalate. Say "I'd recommend verifying t
 - Non-secret schema-1 plans; private per-installation environment/configuration; existing external setup-run journal and owned artifact records. No bulk environment import or credential values in frontend state. (155-border-channel-setup)
 - Python 3.10+ standard library; existing TypeScript 5.9 extension. + Existing JSON, dotenv writer, installer and native config contracts. (156-openclaw-env-defaults)
 - Source JSON defaults; existing private runtime configuration and environment. (156-openclaw-env-defaults)
+- Existing JavaScript ESM/Node24.19.0. + Express and existing private atomic writer. (157-hermes-canvas-retry)
+- Existing owner-private JSON bindings,30-day expiry,8MiB read/write bound. (157-hermes-canvas-retry)
 
 - Spec 148 implementation: JavaScript ESM/Express/React HUD; HUD Node >=24.19 <25 or >=26.1; isolated bridge/tool Python 3.12 and companion Python 3.14; official MCP Node client 2.3.1 and isolated FastMCP 4.0.11/MCP Python SDK 2.3.0. General OpenClaw installer Node policy remains >=24.16 <25 or >=26.1.
 - Qualified Hermes baseline: v0.21.6, source 818c13be1dc4fd28987e1e881a9408224afd4535. Private MCP bridge/protected companion, schema-2 owned HUD bindings, SQLite admission/evidence records and installation-scoped browser storage. Mac and Ubuntu 26.04 WSL live/browser qualification is recorded in specs/148-hermes-hud-integration/closure.md; broader tool and platform qualification is not implied.

@@ -62,3 +62,16 @@ Actual tool dispatch/result records carry the owning request identity independen
 OpenClaw retains the historical repository `.env` fallback. To move that dependency explicitly, use `python3 scripts/import-env.py --help` and its literal import mode; selected-home values win. Back up selected configuration and browser work before changing installation roots. Rollback keeps original browser keys/IndexedDB and `.v1-backup` bindings; never copy another installation's identity file or downgrade a v2 binding in place.
 
 See [private server contract](../mcp-servers/hermes-hud-mcp/README.md), [validation](../specs/148-hermes-hud-integration/validation.md), and [WSL handoff](../specs/148-hermes-hud-integration/validation-handoff.md).
+
+### Canvas setup retries
+
+A new Canvas branch retains its original ancestor prefix in the private browser
+binding before Hermes preparation. A known setup failure submits no agent work;
+retrying the same branch reuses that prefix across HUD restarts and cannot replace
+it with later context. Unknown admitted outcomes still require observation and
+must not be replayed. Context expires with the binding and is bounded in UTF-8 bytes.
+
+Bindings created before this fix have no retained prefix. They remain usable,
+but original ancestry cannot be reconstructed from later messages. After a
+known pre-admission failure on such a binding, create a new branch from the
+intended ancestor point. Do not replay an uncertain admitted operation.

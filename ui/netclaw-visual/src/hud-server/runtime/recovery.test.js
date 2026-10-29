@@ -7,6 +7,51 @@ import express from 'express';
 import { Bindings } from '../bindings.js';
 import { mountHermesChat } from './routes.js';
 import { mountHermesIntent } from './intent.js';
+
+test('Canvas setup retry after binding restart retains original seed through later turns',async t=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'canvas-157-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+ const installation={kind:'hermes',installationId:'seed-fixture'};
+ let bindings=new Bindings(dir,Date.now,installation);const cookie=bindings.create();
+ const prefix=[{role:'user',content:'ancestor question'},{role:'assistant',content:'ancestor answer'}];
+ const opens=[],submits=[];let fail=true;
+ const runtime={call:async(name,args)=>{
+  if(name==='conversation_open'){opens.push(structuredClone(args));if(fail){fail=false;throw Error('before bridge');}return {state:'open'};}
+  if(name==='submit'){submits.push(args);return {state:'completed',output:'answer',requestId:args.requestId};}
+  throw Error(name);
+ }};
+ const handlers=()=>{const routes={};const app={get(){},post:(route,fn)=>routes[route]=fn};mountHermesChat(app,{runtime,bindings});return routes;};
+ const send=async(nonce,context)=>{
+  const res={statusCode:200,status(code){this.statusCode=code;return this;},json(body){this.body=body;return this;}};
+  await handlers()['/api/chat/requests']({path:'/api/chat/requests',headers:{cookie:'nc_hud='+cookie},body:{hudThread:'canvas:branch',clientNonce:nonce,context:[...context,{role:'user',content:'follow-up'}]}},res);
+  return res;
+ };
+ const first=await send('first',prefix);assert.equal(first.statusCode,503);assert.equal(first.body.mayHaveExecuted,false);assert.equal(submits.length,0);
+ bindings=new Bindings(dir,Date.now,installation);
+ const retry=await send('retry',[{role:'user',content:'changed unsent ancestry'}]);
+ assert.equal(retry.statusCode,200);assert.equal(submits.length,1);
+ assert.deepEqual(opens.map(o=>o.seed),[prefix,prefix]);
+ await send('later',[...prefix,{role:'user',content:'later history'}]);
+ assert.deepEqual(opens[2].seed,prefix);assert.equal(submits.length,2);
+ assert.equal(new Set(opens.map(o=>o.conversationId)).size,1);
+});
+
+test('Hermes seed is immutable, owner-scoped, byte-bounded and absent on legacy tasks',t=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'seed-157-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+ const bindings=new Bindings(dir),cookie=bindings.create(),foreign=bindings.create();
+ const seed=[{role:'user',content:'original'}],task=bindings.task(cookie,'new','hermes',seed);
+ seed[0].content='mutated';assert.deepEqual(bindings.ownedChat(cookie,task.id,'hermes').hermesSeed,[{role:'user',content:'original'}]);
+ assert.throws(()=>bindings.ownedChat(foreign,task.id,'hermes'));
+ assert.equal(bindings.task(cookie,'empty','hermes',[]).hermesSeed.length,0);
+ const legacy=bindings.task(cookie,'legacy','hermes');
+ assert.equal(bindings.task(cookie,'legacy','hermes',seed).hermesSeed,undefined);
+ assert.equal(bindings.ownedChat(cookie,legacy.id,'hermes').hermesSeed,undefined);
+ assert.throws(()=>bindings.task(cookie,'wrong','main',[]));
+ assert.throws(()=>bindings.task(cookie,'oversize','hermes',[{role:'user',content:'🔥'.repeat(300000)}]));
+ assert.throws(()=>bindings.task(cookie,'system','hermes',[{role:'system',content:'invalid'}]));
+ const original=fs.readFileSync(bindings.file(cookie));const state=bindings.read(cookie);state.extra='x'.repeat(8*1024*1024);
+ assert.throws(()=>bindings.save(cookie,state));assert.deepEqual(fs.readFileSync(bindings.file(cookie)),original);
+ assert.equal(fs.statSync(bindings.file(cookie)).mode&0o077,0);
+});
 test('v2 binding rejects another installation and migrates legacy OpenClaw only', t=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'bindings-148-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
  const legacy=new Bindings(dir),cookie=legacy.create();legacy.task(cookie,'old');

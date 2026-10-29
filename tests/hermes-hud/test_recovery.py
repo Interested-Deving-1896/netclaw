@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import sys
 import tempfile
 import unittest
@@ -7,6 +8,27 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'mcp-servers/hermes-hu
 from bridge import Bridge
 from ledger import HudError
 class RecoveryTests(unittest.TestCase):
+    def test_setup_retry_retains_seed_in_first_native_run_without_replay(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            seed=[{'role':'user','content':'ancestor question'}, {'role':'assistant','content':'ancestor answer'}]
+            calls=[]
+            def transport(request):
+                calls.append((request.url.path,json.loads(request.content)))
+                if request.url.path=='/api/sessions':
+                    if len(calls)==1:raise httpx.ConnectError('setup unavailable')
+                    return httpx.Response(200,json={'session':{'id':'native'}})
+                return httpx.Response(200,json={'id':'run'})
+            client=httpx.Client(base_url='http://127.0.0.1',transport=httpx.MockTransport(transport))
+            bridge=Bridge(tmp,'i',key='k'*32,client=client)
+            with self.assertRaises(HudError):bridge.open('c',seed)
+            restarted=Bridge(tmp,'i',key='k'*32,client=client)
+            restarted.open('c',seed)
+            restarted.submit('c','r','n','follow-up')
+            restarted.submit('c','r','n','follow-up')
+            runs=[body for path,body in calls if path=='/v1/runs']
+            self.assertEqual(len(runs),1)
+            self.assertEqual(runs[0]['conversation_history'],seed)
+            self.assertEqual(runs[0]['input'],'follow-up')
     def test_lost_post_restart_and_nonce_never_replay(self):
         with tempfile.TemporaryDirectory() as tmp:
             posts=[]
