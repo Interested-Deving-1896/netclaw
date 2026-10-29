@@ -117,3 +117,28 @@ The original reports did not include six named macOS failures or a reproducible 
 spawn trace. Those remain evidence gaps. Use a harmless authorized read against your
 actual target after discovery; neither synthetic fixtures nor CI certify every
 external service or package/OS combination.
+
+## Optional environment defaults and older OpenClaw versions
+
+The canonical `config/openclaw.json` is a source template. Generate selected
+registrations through the installer or `scripts/install-mcp-config.py`; do not
+copy it directly into an existing runtime. `config/mcp-env-defaults.json` records
+optional defaults by integration, also documented in `.env.example`. This keeps
+registrations compatible with the qualified OpenClaw 2026.7.1-2 pin, which does
+not expand shell-style defaults. Newer upstream versions have different support.
+
+Missing or empty optional settings receive literal defaults. Nonempty overrides
+remain native references, and missing optional secrets stay empty. Required
+credentials remain configuration-required. No shell expression is evaluated.
+After adding a previously absent override to the selected home's private `.env`,
+regenerate that component's registration before a separately requested restart;
+a previously materialized literal does not dynamically read the new variable.
+
+The legacy registration merge repairs exact known old fallback expressions and
+retains custom values, unrelated servers, private backups and revision checks.
+Unknown custom fallback expressions require manual reconciliation. Nautobot's
+historical implicit lab default is corrected to `false`, matching explicit
+opt-in policy and `.env.example`; an explicit operator value still wins.
+Setup preparation and source tests do not migrate or restart existing homes.
+Readiness continues to inspect actual installed values rather than silently
+supplying source defaults to hide an uncorrected registration.

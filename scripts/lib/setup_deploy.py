@@ -303,6 +303,8 @@ class Deployment:
                 entry=installer.bind_entry(template[name],self.source,runtime)
                 if self.claw['harness']=='openclaw':
                     from setup_registration import native_environment
+                    from mcp_environment import native_entry
+                    entry=native_entry(name,entry,values,self.repository)
                     entry['env']=native_environment(name,entry.get('env',{}),values)
                 entry.setdefault('env',{}).update({'NETCLAW_RUNTIME_ROOT':str(self.root/'python-runtimes'),
                     'NETCLAW_RUNTIME_ENV':str(self.root/'.env'),'NETCLAW_RUNTIME':self.claw['harness'],
