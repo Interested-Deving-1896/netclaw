@@ -37,3 +37,9 @@ publish its source release after tag validation. Reply to and close #262, #300,
 is not claimed by this preparation file; final URLs/receipts belong in local
 memory and GAIT. No live provider/device qualification or Marketplace release is
 implied. Existing platform limits and HUD chunk-size advisory remain.
+
+Initial PR307 CI:34/35checks passed, including six real pinned-Hermes controlled-
+provider tests, HUD383tests and extension packaging. The remaining unit failure
+was an old fallback-string expectation in test_installer_followups.py; corrected
+under Spec156 and rerun without bypassing CI. Official MCP stdio also verified
+all eight tools and the optional boolean recovery argument; no runtime tool ran.
