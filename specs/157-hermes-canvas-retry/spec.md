@@ -1,8 +1,11 @@
 # Feature Specification: Preserve Canvas Context Across Hermes Setup Retry
 
-**Feature Branch**: `157-hermes-canvas-retry`  
-**Created**: 2026-10-29  
-**Status**: Accepted under the owner's chronological four-issue SDD request  
+**Feature Branch**: `157-hermes-canvas-retry`
+
+**Created**: 2026-10-29
+
+**Status**: Accepted under the owner's chronological four-issue SDD request
+
 **Input**: [Issue #300](https://github.com/automateyournetwork/netclaw/issues/300), created2026-10-18T04:02:41Z; follows completed issue262/spec156.
 
 ## User Scenarios & Testing

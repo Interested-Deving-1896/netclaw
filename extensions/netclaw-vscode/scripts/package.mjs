@@ -68,7 +68,7 @@ fs.writeFileSync(
       bytes: bytes.length,
       artifact: path.basename(packagePath),
       qualification:
-        "Spec155 Comms installer, extension 1.3.0 with source setup engine 1.13.0 and VS Code >=1.109. Mac installer acceptance is complete within recorded fixture/editor limits; WSL qualification remains partial (49/50 tasks). Provider readiness is separate. See specs/155-border-channel-setup/release-verification.md. Publication authorized by the owner on 2026-10-25. Packaging itself does not publish.",
+        "Extension 1.3.1 setup-review fix (Spec156), coordinated source 1.13.1 minor fixes (Specs156–159), and Spec155 Comms installer; VS Code >=1.109. Mac installer acceptance is complete within recorded fixture/editor limits; WSL qualification remains partial (49/50 tasks). Provider readiness is separate. See specs/155-border-channel-setup/release-verification.md. Source patch/history and issue closure authorized on 2026-10-29. Marketplace distribution is separate; packaging itself does not publish.",
     },
     null,
     2,

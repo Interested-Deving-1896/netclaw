@@ -1,7 +1,9 @@
 # Specification Quality Checklist: Supported OpenClaw Environment Defaults
 
-**Purpose**: Validate readiness for planning.  
-**Created**: 2026-10-29  
+**Purpose**: Validate readiness for planning.
+
+**Created**: 2026-10-29
+
 **Feature**: [spec.md](../spec.md)
 
 ## Content Quality

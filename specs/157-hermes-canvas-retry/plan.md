@@ -8,14 +8,22 @@ Capture the normalized initial prefix in the same private binding write that cre
 
 ## Technical Context
 
-**Language/Version**: Existing JavaScript ESM/Node24.19.0.  
-**Primary Dependencies**: Express and existing private atomic writer.  
-**Storage**: Existing owner-private JSON bindings,30-day expiry,8MiB read/write bound.  
-**Testing**: Node test runner, real Express routes/Bindings and controlled bridge; Python bridge MockTransport.  
-**Target Platform**: Existing HUD server platforms; isolated Mac verification.  
-**Project Type**: HUD recovery defect fix.  
-**Performance Goals**: No added upstream call; one existing binding write retains seed.  
-**Constraints**:1MiB UTF-8 seed,200messages,role/content only; no runtime/provider/device access.  
+**Language/Version**: Existing JavaScript ESM/Node24.19.0.
+
+**Primary Dependencies**: Express and existing private atomic writer.
+
+**Storage**: Existing owner-private JSON bindings,30-day expiry,8MiB read/write bound.
+
+**Testing**: Node test runner, real Express routes/Bindings and controlled bridge; Python bridge MockTransport.
+
+**Target Platform**: Existing HUD server platforms; isolated Mac verification.
+
+**Project Type**: HUD recovery defect fix.
+
+**Performance Goals**: No added upstream call; one existing binding write retains seed.
+
+**Constraints**:1MiB UTF-8 seed,200messages,role/content only; no runtime/provider/device access.
+
 **Scale/Scope**: One task creation path, Hermes submission route, regression suites.
 
 ## Constitution Check

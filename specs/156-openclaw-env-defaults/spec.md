@@ -1,8 +1,11 @@
 # Feature Specification: Supported OpenClaw Environment Defaults
 
-**Feature Branch**: `156-openclaw-env-defaults`  
-**Created**: 2026-10-29  
-**Status**: Accepted for implementation under the owner's four-issue SDD request  
+**Feature Branch**: `156-openclaw-env-defaults`
+
+**Created**: 2026-10-29
+
+**Status**: Accepted for implementation under the owner's four-issue SDD request
+
 **Input**: Address [issue #262](https://github.com/automateyournetwork/netclaw/issues/262), created 2026-09-16T00:44:06Z, first in the requested chronological sequence.
 
 ## User Scenarios & Testing

@@ -8,14 +8,22 @@ Retain immutable submitted prompt, nonce and a full-prefix recovery anchor befor
 
 ## Technical Context
 
-**Language/Version**: JavaScript ESM/React18; Node24.19 tests.  
-**Primary Dependencies**: Existing React, Web Crypto SHA-256, esbuild/JSDOM test harness.  
-**Storage**: Existing installation-scoped sessionStorage pending record and sanitized chat/archive.  
-**Testing**: Actual bundled StandardChat with controlled fetch, plus pure storage/recovery/runtime tests.  
-**Target Platform**: Existing secure-context HUD browsers; isolated Mac fixtures.  
-**Project Type**: Chat recovery correctness fix.  
-**Performance Goals**: One local transcript digest at submission/recovery, no extra POST.  
-**Constraints**: No draft-based attribution, no text-only deduplication, no network/provider operations in tests.  
+**Language/Version**: JavaScript ESM/React18; Node24.19 tests.
+
+**Primary Dependencies**: Existing React, Web Crypto SHA-256, esbuild/JSDOM test harness.
+
+**Storage**: Existing installation-scoped sessionStorage pending record and sanitized chat/archive.
+
+**Testing**: Actual bundled StandardChat with controlled fetch, plus pure storage/recovery/runtime tests.
+
+**Target Platform**: Existing secure-context HUD browsers; isolated Mac fixtures.
+
+**Project Type**: Chat recovery correctness fix.
+
+**Performance Goals**: One local transcript digest at submission/recovery, no extra POST.
+
+**Constraints**: No draft-based attribution, no text-only deduplication, no network/provider operations in tests.
+
 **Scale/Scope**: StandardChat, runtime-client, chat-storage and new small recovery helper.
 
 ## Constitution Check

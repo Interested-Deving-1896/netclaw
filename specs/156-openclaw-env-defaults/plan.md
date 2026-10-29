@@ -8,14 +8,22 @@ Replace shell fallback syntax in the canonical registration template with bare r
 
 ## Technical Context
 
-**Language/Version**: Python 3.10+ standard library; existing TypeScript 5.9 extension.  
-**Primary Dependencies**: Existing JSON, dotenv writer, installer and native config contracts.  
-**Storage**: Source JSON defaults; existing private runtime configuration and environment.  
-**Testing**: Python unittest/pytest; actual pinned OpenClaw substitution module in an isolated pure probe.  
-**Target Platform**: Existing Mac/Linux/WSL installation paths; native Windows qualification is not added.  
-**Project Type**: Configuration and installer defect correction.  
-**Performance Goals**: One small catalog read per operation; no network calls.  
-**Constraints**: No shell evaluation, secret serialization in source/logs, new permissions or runtime mutation.  
+**Language/Version**: Python 3.10+ standard library; existing TypeScript 5.9 extension.
+
+**Primary Dependencies**: Existing JSON, dotenv writer, installer and native config contracts.
+
+**Storage**: Source JSON defaults; existing private runtime configuration and environment.
+
+**Testing**: Python unittest/pytest; actual pinned OpenClaw substitution module in an isolated pure probe.
+
+**Target Platform**: Existing Mac/Linux/WSL installation paths; native Windows qualification is not added.
+
+**Project Type**: Configuration and installer defect correction.
+
+**Performance Goals**: One small catalog read per operation; no network calls.
+
+**Constraints**: No shell evaluation, secret serialization in source/logs, new permissions or runtime mutation.
+
 **Scale/Scope**: 159 expressions, 120 source variables, 64 registrations at baseline.
 
 ## Constitution Check

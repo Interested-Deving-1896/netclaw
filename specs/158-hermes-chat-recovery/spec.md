@@ -1,8 +1,11 @@
 # Feature Specification: Preserve Submitted Questions and Drafts During Recovery
 
-**Feature Branch**:`158-hermes-chat-recovery`  
-**Created**:2026-10-29  
-**Status**:Accepted under the owner's chronological four-issue SDD request  
+**Feature Branch**:`158-hermes-chat-recovery`
+
+**Created**:2026-10-29
+
+**Status**:Accepted under the owner's chronological four-issue SDD request
+
 **Input**:[Issue #301](https://github.com/automateyournetwork/netclaw/issues/301), created2026-10-18T04:02:46Z; follows completed specs156/157.
 
 ## User Scenarios & Testing

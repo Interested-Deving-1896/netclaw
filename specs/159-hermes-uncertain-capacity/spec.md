@@ -1,8 +1,11 @@
 # Feature Specification: Reviewed recovery of Hermes admission capacity
 
-**Feature Branch**: `159-hermes-uncertain-capacity`  
-**Created**: 2026-10-29  
-**Status**: Approved for implementation by the owner's four-issue SDD request  
+**Feature Branch**: `159-hermes-uncertain-capacity`
+
+**Created**: 2026-10-29
+
+**Status**: Approved for implementation by the owner's four-issue SDD request
+
 **Input**: Issue #302, fourth in chronological order after #262, #300 and #301.
 
 ## User Scenarios & Testing

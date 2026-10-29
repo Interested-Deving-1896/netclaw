@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.1 — minor setup fix
+
+- Include the optional MCP-default catalog and resolver in exact source review inputs (Spec 156 / issue #262).
+- Use source 1.13.1 for the coordinated MCP-default and Hermes recovery fixes in Specs 156–159. Existing runtime upgrades remain explicit.
+
 ## 1.3.0 — guided Comms setup
 
 - Search all 77 documented runtime-specific Comms entries, including WhatsApp, Teams, Discord, Slack, Webex dispositions, Twilio and Zoom.
