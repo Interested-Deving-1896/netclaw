@@ -12,6 +12,8 @@ Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one Ne
 
 **Project:** [Source version 1.14.0](VERSION) · [Release notes](docs/releases/1.14.0.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 
+**New in 1.14.0 — testbeds on demand:** choose Static or Dynamic in VS Code or terminal setup, then compose scoped inventory from 14 source routes with the new [pyATS MCP](https://github.com/automateyournetwork/pyATS_MCP). Review, validate and explicitly activate the candidate before using it. [How it works](docs/DYNAMIC-TESTBEDS.md) · [Community announcement](docs/blog/2026-10-30-dynamic-pyats-testbeds.md) · [Tested scope](specs/160-dynamic-pyats-testbeds/verification.md).
+
 **VS Code:** [Install NetClaw](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw) or [explore the VS Code Extension](#vs-code-extension): set up a separate NetClaw or mixed Risk from empty homes, or connect your existing installation for Chat, Canvas, RAG, Testbed management, per-MCP configuration and reviewed security controls.
 
 **Comms setup (source development):** select multiple runtime-specific channels,
