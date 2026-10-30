@@ -76,7 +76,11 @@ export class SetupDraft {
       }else if(clawMatch[2]==='provider'){
         const prior=this.catalog.choices.find((c:any)=>c.kind==='provider'&&c.id===claw.provider?.id);
         for(const key of prior?.settingKeys||[])if(claw.settings&&Object.hasOwn(claw.settings,key)){delete claw.settings[key];discarded.push(prefix+'/settings/'+key);}
-      }else {remove(claw,['settings'],prefix);if(!change.value?.components?.includes('pyats'))remove(claw,['testbed'],prefix);}
+      }else {
+        remove(claw,['settings'],prefix);
+        const components=change.value&&typeof change.value==='object'&&'components' in change.value?change.value.components:undefined;
+        if(!Array.isArray(components)||!components.includes('pyats'))remove(claw,['testbed'],prefix);
+      }
     }
     if(change.path==='/host')remove(data,['source','claws','commsBindings'], '');
     if(change.path==='/source')remove(data,['commsBindings'],'');

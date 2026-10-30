@@ -28,3 +28,28 @@ public version must match it before publication is reported complete.
 
 Final source commit, PR/CI, tag, package digest and publication receipts are retained
 in release assets and local memory/GAIT so this tested source/package stays immutable.
+
+Release preparation caught a strict TypeScript error missed by the earlier esbuild
+bundle: `DraftChange.value` is unknown, so capability invalidation must narrow the
+object and its component array before inspection. The release fixes that type and
+runtime boundary and repeats the extension check/suite before packaging.
+
+Six release-helper tests and 143 spec artifact records pass. All six declaration
+surfaces pass in a clean committed worktree. The owner's original working checkout
+also contains an untracked HumanRail clone whose upstream `mcp>=1.0.0` declaration
+triggers the local dependency scan; it is not part of this release. The managed
+installer already pins MCP 2.3.0 and has reviewed external patches. That clone was
+not edited, and no claim is made that its installed runtime has been repaired.
+Extension audit meets the high-severity gate with one reported moderate `qs`
+advisory (GHSA-6pq8-jhm2-2vcw); publisher credential verification succeeds.
+
+Strict TypeScript checking and all four focused dynamic-testbed controller tests
+pass after the narrowing fix. The repeated local full suite reports 144 passes,
+three existing skips and three host-blocked failures: two fixtures invoke
+`/usr/bin/git` and the Hermes launcher fixture invokes `/usr/bin/python3`; all hit
+this Mac's newly pending Xcode license agreement. The latter is confirmed in its
+private synthetic HUD log. The earlier qualified full run remains recorded in
+verification.md. No license was accepted and no test/security boundary was weakened.
+Release requires the full Ubuntu CI suite on the final source to pass; these Mac
+failures are not relabeled as successes. Task commands use the separately installed
+Command Line Tools through a process-local developer-directory selection.
