@@ -53,3 +53,11 @@ verification.md. No license was accepted and no test/security boundary was weake
 Release requires the full Ubuntu CI suite on the final source to pass; these Mac
 failures are not relabeled as successes. Task commands use the separately installed
 Command Line Tools through a process-local developer-directory selection.
+
+The first catalog CI run exposed a test assumption: native Ubuntu is deliberately
+unsupported by the new-claw host gate (macOS / qualified Ubuntu WSL2). The real PTY
+test now checks that unsupported hosts refuse without saving a draft, while still
+exercising selected-runtime `setup.sh` prompts there. Supported hosts retain the
+complete new-plan prompt/readback assertions; no production host gate changed.
+Packaging also detected stale local `node_modules` (Zod 4.2.0 versus locked 4.6.7).
+`npm ci` restored the exact locked dependencies before producing the verified VSIX.

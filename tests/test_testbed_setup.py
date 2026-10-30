@@ -17,6 +17,8 @@ import unittest
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts/lib'))
 from setup_cli import DraftBuilder
+from setup_observation import host_identity
+from setup_state import Conflict
 
 
 class TestbedSetupTests(unittest.TestCase):
@@ -51,7 +53,7 @@ class TestbedSetupTests(unittest.TestCase):
         self.assertIn('NETCLAW_TESTBED_MODE=static',self.env.read_text());self.assertEqual(static.read_text(),'devices: {}\n')
         self.assertEqual(self.env.stat().st_mode&0o077,0)
 
-    def terminal(self,args,steps):
+    def terminal(self,args,steps,expected_code=0):
         master,slave=pty.openpty()
         def control():os.setsid();fcntl.ioctl(slave,termios.TIOCSCTTY,0)
         process=subprocess.Popen(args,stdin=slave,stdout=slave,stderr=slave,cwd=ROOT,preexec_fn=control,
@@ -70,8 +72,9 @@ class TestbedSetupTests(unittest.TestCase):
                 if index<len(steps) and steps[index][0].encode() in output:
                     os.write(master,(steps[index][1]+'\n').encode());index+=1;output=b''
             process.wait(timeout=5)
-            self.assertEqual(process.returncode,0,output.decode(errors='replace'))
+            self.assertEqual(process.returncode,expected_code,output.decode(errors='replace'))
             self.assertEqual(index,len(steps))
+            return output.decode(errors='replace')
         finally:
             os.close(master)
             if process.poll() is None:process.kill();process.wait()
@@ -86,10 +89,22 @@ class TestbedSetupTests(unittest.TestCase):
             ('ANTHROPIC_API_KEY','later'),('Testbed mode','dynamic'),('Dynamic testbed sources','cml netbox'),
             ('soul absolute',''),('user absolute',''),('identity absolute',''),('Posture','testing'),
             ('One live','no'),('Separately reviewed','no'),('One read-only','no')]
-        self.terminal(['/bin/bash',str(ROOT/'scripts/install.sh'),'--emit-plan',str(plan)],steps)
-        value=json.loads(plan.read_text());self.assertEqual(value['claws'][0]['testbed'],{'mode':'dynamic','sources':['cml','netbox']})
-        self.assertEqual(value['inventory'],[]);self.assertFalse((self.root/'new-home').exists())
-        self.assertEqual(plan.stat().st_mode&0o077,0)
+        command=['/bin/bash',str(ROOT/'scripts/install.sh'),'--emit-plan',str(plan)]
+        try:
+            host_identity()
+        except Conflict as exc:
+            # The new-claw engine supports macOS and qualified Ubuntu WSL2,
+            # not a native Linux CI host. Exercise its real refusal instead of
+            # fabricating a supported host or weakening the production gate.
+            self.assertIn(str(exc),('unsupported_host','unknown_wsl_distribution'))
+            output=self.terminal(command,[],expected_code=2)
+            self.assertIn('draft_not_saved',output);self.assertNotIn('Harness',output)
+            self.assertFalse(plan.exists())
+        else:
+            self.terminal(command,steps)
+            value=json.loads(plan.read_text());self.assertEqual(value['claws'][0]['testbed'],{'mode':'dynamic','sources':['cml','netbox']})
+            self.assertEqual(value['inventory'],[]);self.assertFalse((self.root/'new-home').exists())
+            self.assertEqual(plan.stat().st_mode&0o077,0)
         self.terminal(['/bin/bash',str(ROOT/'scripts/setup.sh'),'--testbed-only'],
             [('Testbed mode','dynamic'),('Source IDs','cml netbox'),('Save','y')])
         self.assertIn('NETCLAW_TESTBED_MODE=dynamic',self.env.read_text())
