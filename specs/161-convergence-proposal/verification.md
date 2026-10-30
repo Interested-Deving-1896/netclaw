@@ -64,3 +64,36 @@ records precise coverage and the separate inherited fork-wide CI failures.
 Reviewed the author-supplied [standalone repository](https://github.com/byrn-baker/Convergence/tree/fff81b52fdd9b792e375208abfa8d091adf9949a), README and MIT license on 30 October 2026. Recorded its exact copyright notice and separated observability-stack ancestry from API ancestry. Confirmed this PR includes the numbered `specs/161-convergence-proposal/` directory with specification, research, plan, tasks and verification; the lowercase `specs/` layout follows CONTRIBUTING.md. This follow-up changes documentation only.
 
 Validation: local Markdown links and `git diff --check` PASS. Spec artifact check PASS: 144 specs, four existing legacy exceptions. No runtime tests were rerun for these documentation changes.
+
+## Focused milestone revision — 30 October 2026
+
+The contributor revised this proposal after assessing the likely maintenance/scope
+questions; no maintainer feedback or approval is implied. The single requested
+scope decision is now an optional read-only retained-flow ranking/evidence workflow.
+
+Inspected actual upstream skills, server access/session middleware, navigation and
+MCP helper call site at `b18d51c0`, plus the fork's flow routes, archive implementation,
+auth middleware and mixed read/write case MCP at `09748c37`. The research document
+links those sources and distinguishes existing paths from proposed new files.
+
+The new scope excludes importing the service, its storage/charts, case mutations and
+investigations. The concrete future tool/HUD contracts and negative/lifecycle/browser
+acceptance are proposed requirements, not implemented or tested behavior. Historical
+fork qualification above remains feasibility evidence only. In particular, the core
+Docker trial does not by itself provide a retained-flow archive for the new workflow.
+
+Revision validation: `python3 scripts/verify-spec-artifacts.py` PASS (144 specs, four existing exceptions); all six declaration reconciliation surfaces PASS; 13 local links across five proposal documents PASS; `git diff --check` PASS. No runtime implementation was added or exercised for this revision.
+
+## Focused scope re-review
+
+Independent review verified the source comparison and ownership boundary, then
+identified two ambiguities. The proposal now explicitly labels address evidence in
+both directions and requires a mixed-direction fixture; failed-refresh stale data
+is distinguished from receipt age and collector health. No hypothetical maintainer
+feedback is represented as actual feedback. Runtime implementation remains absent.
+
+Focused re-review: both evidence-direction and freshness findings resolved; no
+remaining blocker to scope review. Spec artifacts PASS (144 specs, four existing
+exceptions), all six reconciliation surfaces PASS, relative links and whitespace
+PASS. Marking this proposal ready asks for a scope decision, not implementation
+approval or production acceptance.

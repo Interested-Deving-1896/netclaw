@@ -1,22 +1,22 @@
-# Tasks: Convergence scope proposal
+# Tasks: focused Convergence proposal
 
-## Proposal preparation
+## Scope proposal
 
-- [x] T001 Inspect current upstream, contribution policy, existing fork boundaries and spec collisions.
-- [x] T002 Record user scenarios, requirements, delivery alternatives and maintainer decisions.
-- [x] T003 Record isolated fork prototype evidence and distinguish unqualified platforms/layers.
-- [x] T004 Run proposal artifact/declaration checks and publish a draft for scope review.
-- [ ] T005 Obtain maintainer agreement on scope, sequence and required qualification matrix.
+- [x] T001 Inspect upstream contribution policy, source and existing observability integrations.
+- [x] T002 Compare Grafana/Prometheus/IPFIX/HUD capabilities with retained Convergence flow evidence.
+- [x] T003 Recommend external service ownership and one read-only observation-to-records workflow.
+- [x] T004 Document concrete proposed files/dependencies, acceptance and platform limits; preserve provenance.
+- [ ] T005 Obtain maintainer agreement on this bounded flow-evidence integration.
 
-## Implementation gates after agreement
+## Implementation only after agreement
 
-- [ ] T006 Coordinate numbered specs and API/case contracts; verify provenance and third-party notices.
-- [ ] T007 Port the smallest agreed API/persistence slice with failure and recovery coverage.
-- [ ] T008 Port portable deployment/docs/skill with actual fresh-install, restart, upgrade and restore evidence.
-- [ ] T009 Adapt optional HUD integration to current upstream boundaries and verify browser/access behavior.
-- [ ] T010 Review selected telemetry, investigation and IDS slices independently.
-- [ ] T011 Complete required platform qualification, release preparation and maintainer review.
+- [ ] T006 Coordinate the implementation spec, pinned external revision, tool/response/error contracts and notices.
+- [ ] T007 Implement the optional two-tool connector with auth, scope, bounds and negative contract tests.
+- [ ] T008 Add isolated installation/registration, read-only operator skill and connection documentation.
+- [ ] T009 Adapt the upstream HUD route/view and prove same-window evidence, ownership and unavailable-source behavior.
+- [ ] T010 Run actual connector-to-HUD acceptance, lifecycle and supported-platform checks; record gaps honestly.
+- [ ] T011 Complete independent review, coherence checks and implementation release metadata.
 
-Dependencies: T005 precedes upstream implementation. T006 precedes T007–T010;
-T011 depends on the agreed implementation scope. Existing fork work does not mark
-these upstream port tasks complete.
+T005 gates T006–T011. No case/server/storage/chart/IDS/automated-investigation port
+is implied or approved by this milestone. Fork maintenance and acceptance work may
+continue independently, but cannot mark upstream implementation tasks complete.

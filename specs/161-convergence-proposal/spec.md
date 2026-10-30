@@ -1,129 +1,136 @@
-# Feature Specification: Optional Convergence monitoring for NetClaw
+# Feature Specification: Read-only Convergence flow evidence in NetClaw
 
-**Feature Branch**: `161-convergence-proposal`
-**Created**: 2026-10-30
-**Status**: Draft — maintainer scope review requested; no implementation in this PR
-**Input**: Propose Convergence as an optional NetClaw add-on with a documented K3s/Helm deployment, a local Docker trial, an operator setup skill and separately verified network observations, cases and investigations.
+**Feature Branch:** `161-convergence-proposal` · **Created:** 2026-10-30
+**Status:** Proposed scope for maintainer review; this PR contains no implementation.
 
-## Problem
+## Recommendation and decision requested
 
-Operators need a persistent place to collect network observations and retain case
-history alongside NetClaw. A working prototype exists in a fork, but importing
-that fork wholesale would couple the feature to personal deployment settings,
-unrelated extensions and unqualified installation assumptions. New users need a
-clear path from an empty environment to verified core services before connecting
-network devices or enabling investigations.
+Accept one optional integration: **select a retained traffic observation in NetClaw
+and inspect the matching flow records that support it**. Convergence remains a
+separately deployed service. NetClaw receives a small read-only MCP connector and
+one focused HUD view; it does not acquire an observability platform to operate.
 
-This PR requests agreement on the product boundary and contribution sequence.
-It does not ship Convergence or claim its fork implementation is upstream-ready.
+**Maintainer decision:** Does this bounded read-only flow-evidence integration,
+with the ownership and acceptance criteria below, belong in NetClaw?
 
-## User Scenarios & Testing
+The broader Convergence roadmap is context, not part of this scope request. A later
+implementation PR must qualify this integration against upstream; the existing fork
+is not proposed for wholesale merge.
 
-### User Story 1 — Install persistent monitoring (Priority: P1)
+## Problem and distinct value
 
-An operator installs an isolated release on an existing K3s cluster, with their
-own context, namespace, site, image source and storage class. They understand
-what each service stores, how to reach it and how to recover it.
+NetClaw already provides Grafana/Loki queries, direct Prometheus queries and live
+IPFIX/NetFlow reception. Those remain the preferred interfaces for their purposes.
+The proposed addition presents an existing Convergence archive's **site/exporter-
+scoped traffic ranking with the same observation window and supporting retained
+records**, without asking users to construct a query or run a new collector inside
+NetClaw. Upstream's IPFIX receiver documents in-memory storage lost on restart;
+Convergence's existing flow API reads retained VictoriaLogs records. See the
+[source comparison](research.md) for the actual interfaces and their limits.
 
-**Independent Test**: From a clean checkout and empty namespace, install without
-an existing Grafana or site-specific configuration, query a synthetic observation
-and case, then restart and upgrade while retaining credentials and data.
+Example: select a destination ranked by exported bytes over the last hour, open
+its latest flow records involving that address in either direction for the same
+window, and see each record’s direction, exporter, receipt times, sampling and
+coverage limitations. These address records are context for the observation, not
+a directional reconstruction of its ranking total. This is evidence inspection, not a threat
+verdict, application identification or automatic investigation.
 
-**Acceptance Scenarios**:
+## Ownership
 
-1. Given a supported cluster and storage class, when the operator follows the
-   guide, then the core services become ready and authenticated site access works.
-2. Given repeated setup with the same identity, when preparation runs again,
-   then credentials remain unchanged; mismatches stop with actionable recovery.
-3. Given uninstall without data removal, then retained data and credentials can
-   be reused by a documented reinstall procedure.
+| Concern | Owner in the proposed first milestone |
+|---|---|
+| Collection, retention, VictoriaMetrics/Logs, Loki, Grafana, alerting, case API and service credentials | Independently deployed Convergence; configured and operated by its operator |
+| Two read-only flow tools, bounded response adaptation and optional HUD view | NetClaw integration |
+| Endpoint, fixed site and scoped read credential on the NetClaw host | Operator configuration; private, server-side |
+| Deployment, upgrades, backups and migrations of the observability stack | Convergence project; outside this upstream implementation |
+| Integration tests, upstream access conventions and connector compatibility documentation | NetClaw contribution, initially maintained by contributor Brian Baker |
 
-### User Story 2 — Try locally without device/model credentials (Priority: P1)
+Installation guidance connects an existing service and links to its independently
+maintained setup instructions. K3s is the Convergence project's persistent path;
+Docker is its smaller trial. Neither chart nor container stack is imported here.
 
-An operator starts a smaller Docker trial and sees a basic health dashboard before
-connecting NetClaw or granting access to devices.
+## User scenarios and acceptance
 
-**Independent Test**: Use a new project, non-default site/ports and paths containing
-spaces. Verify authenticated cases and datasource queries, reject wrong-site
-access, stop/start and recover the same canary.
+### US1 — Inspect an observation and its evidence (P1)
 
-**Acceptance Scenarios**:
+An operator enables the connector for one site, opens the optional Convergence
+view, selects a ranking window and destination, then inspects matching records.
 
-1. Given a local Linux-container daemon, when the trial starts, then only its
-   selected services start and its endpoints bind to loopback by default.
-2. Given exported host settings, when setup runs, then they cannot silently
-   override the generated project's credentials or activate unrelated profiles.
-3. Given no device feeds, then empty network observations remain unknown rather
-   than appearing as proof of a healthy network.
+1. A summary displays source identity, site, configured exporters, exact start/end,
+   read time, last received time, observed bytes/packets and limitations.
+2. Selecting an address requests evidence using the summary's fixed start/end and
+   exporter selection, not a new rolling window. At most 100 recent records involving
+   that address as source OR destination are displayed, with direction relative to
+   the selected address labeled. This subset can include reverse-direction traffic;
+   it is not presented as reproducing a source/destination ranking or full aggregate.
+3. The view distinguishes valid empty results, disabled/unconfigured source,
+   unauthorized access and backend unavailability. A failed refresh marks previously
+   successful data as stale cached data; it never becomes a fresh zero. Show receipt
+   age separately: quiet/old traffic does not by itself establish collector failure
+   or degraded capture coverage.
 
-### User Story 3 — Ask NetClaw for setup and scoped observations (Priority: P2)
+### US2 — Connect without exposing credentials or changing services (P1)
 
-An operator asks NetClaw to install or complete Convergence. A setup skill discovers
-existing resources, uses the same documented helpers and hands over verified
-capabilities. Optional HUD integration follows upstream's existing runtime,
-authentication and navigation conventions.
+1. Setup adds one optional isolated MCP component and connection settings. It
+   preserves existing runtime/model credentials, Grafana ownership and deployments.
+2. The endpoint and site are fixed in server configuration. Browser/tool arguments
+   cannot select another URL or site, request arbitrary paths or supply raw queries.
+3. A viewer credential restricted to the selected site remains on the server and
+   absent from browser responses, logs, rendered errors and tracked files. Responses
+   with another site are rejected even if the service credential has broader access.
+4. Both tools are read-only; no collector configuration, case write, notification,
+   firewall action, model call or investigation is available through this component.
 
-**Independent Test**: Exercise skill-guided setup against a fresh and an existing
-fixture; verify preservation, explicit target selection and honest partial readiness.
+### US3 — Upgrade or disable the integration predictably (P1)
 
-**Acceptance Scenarios**:
+1. The connector documents the exact tested, publicly reproducible Convergence source/image revision and
+   validates its expected response shape; unsupported/malformed responses are explicit
+   compatibility errors. No stable versioned API is assumed from the prototype.
+2. NetClaw upgrade preserves private connection settings. Disabling/removing the
+   connector stops its requests and removes/marks the optional view unavailable;
+   it leaves all Convergence data and services intact.
+3. An integration smoke check requires no LLM or production device credentials.
+   First qualification targets Linux x86_64/ARM64 with an OpenClaw HUD and standalone
+   MCP invocation. macOS/WSL2 and Hermes execution remain explicitly unqualified until
+   exercised under upstream's existing runtime/platform rules.
 
-1. Given an existing runtime, setup preserves its credentials, models and settings.
-2. Given a request for monitoring only, no automatic investigation, public exposure
-   or device configuration is enabled implicitly.
-3. Given unavailable telemetry or models, the HUD and handover distinguish those
-   gaps from core service failures.
+## Functional requirements
 
-### Edge Cases
+- **FR-001:** Expose only proposed `convergence_flow_summary(range, exporter?)` and
+  `convergence_flow_evidence(address, start, end, exporter?)` MCP tools. Their names
+  are proposed; source HTTP paths already exist and are documented in [plan](plan.md).
+- **FR-002:** Allow only 15m/1h/6h/24h summary windows, valid IP evidence addresses,
+  ordered ISO timestamps spanning at most 24h, and service-configured exporters.
+  Bound remote requests to 20 seconds and decoded responses to 1 MiB; propagate
+  truncation/limits and reject invalid or mismatched-site payloads.
+- **FR-003:** Use operator-configured HTTPS with certificate verification; permit
+  HTTP only for an explicitly configured loopback development/port-forward target.
+  Reject URL credentials and redirects; never derive an endpoint from observed text.
+- **FR-004:** HUD routes retain trusted-origin/interface checks and require an owned
+  installation-bound HUD session. Server-side calls use the same MCP tools, not a
+  second unrestricted HTTP proxy. Escape observed strings; preserve provenance.
+- **FR-005:** Keep the view optional and default disabled. An unconfigured integration
+  must not fail HUD startup, slow unrelated views or change existing tool behavior.
+- **FR-006:** Add regression/contract/browser evidence for the scenarios above,
+  including wrong site/token, missing session, cross-origin requests, timeout,
+  malformed/oversized response, failed-refresh/empty data, evidence-window continuity,
+  and mixed-direction records that cannot be equated with directional ranking totals.
+- **FR-007:** Include installer/catalog/configuration/skill/HUD documentation and tests
+  required by the constitution. Preserve applicable source notices for derived code.
 
-Wrong context; missing storage; mixed CPU architectures; private registry access;
-occupied local ports; remote Docker daemon; existing PostgreSQL data with missing
-credentials; read-only Kubernetes permission; unavailable Grafana plugin; interrupted
-installation; stale feeds; duplicate delivery; rollback across schema changes.
+## Success criteria
 
-## Requirements
+A fresh upstream checkout can install and configure the optional connector, inspect
+one synthetic retained flow observation and its same-window records, then upgrade
+and disable it without altering the external stack. Negative access and unavailable-
+source cases pass automated tests; real browser interaction proves the stated
+behavior. Historical fork installation tests are feasibility evidence only.
 
-### Functional Requirements
+## Explicit exclusions
 
-- **FR-001**: One entry point MUST explain K3s as the persistent path and Docker as
-  a smaller trial, with prerequisites, exact commands, expected results and recovery.
-- **FR-002**: Every deployment MUST bind an explicit identity and preserve credentials,
-  data and unrelated resources on rerun; secrets MUST stay out of values, Git and reports.
-- **FR-003**: Optional telemetry adapters, IDS capture, external notifications and
-  investigations MUST remain separately enabled and verified capabilities.
-- **FR-004**: Core access MUST enforce authentication, site scope and mutation roles;
-  eventual HUD integration MUST retain upstream access controls and token secrecy.
-- **FR-005**: Setup MUST distinguish service readiness, collection freshness, actual
-  capture coverage and investigation completion, with no universal compatibility claim.
-- **FR-006**: Each implementation slice MUST include clean-checkout, restart, upgrade,
-  recovery and relevant platform evidence; unsupported combinations remain explicit.
-- **FR-007**: Shared Grafana and existing monitoring MUST retain their configuration
-  owner; a new release MUST not replace another project's defaults.
-- **FR-008**: The contribution MUST preserve attribution and exclude private topology,
-  live profiles, unrelated fork changes and generated operational state.
-
-### Key Entities
-
-Deployment identity; private credential bundle; site; telemetry source and freshness;
-case and version history; optional investigation request; capability verification.
-Detailed wire/data contracts belong to agreed implementation slices.
-
-## Success Criteria
-
-- **SC-001**: A fresh installation can be completed using only the chosen guide and
-  declared prerequisites, without developer intervention or inherited home settings.
-- **SC-002**: Automated checks and a recorded live canary prove core function and
-  persistence through restart/upgrade; restoration is exercised independently.
-- **SC-003**: The operator can identify every enabled layer and every unverified gap.
-- **SC-004**: Each implementation PR is reviewable independently against its numbered
-  spec, with platform limits and license provenance clearly documented.
-
-## Maintainer decisions requested
-
-1. Is an optional monitoring/case workspace within NetClaw's desired scope?
-2. Is K3s/Helm plus a smaller local Docker trial the preferred deployment boundary?
-3. Should delivery begin with the API/case contract, then deployment/skill, then HUD?
-4. Which runtime/platform combinations must pass before the first supported release?
-
-The specification number is proposed after checking current main, branches and
-open PRs; it remains subject to maintainer coordination.
+No Convergence API/server import, PostgreSQL schema, Helm chart, storage deployment,
+collector, IDS capture, case mutation, autonomous investigation, model/provider
+change, notification, shared Grafana adoption, fork module loader, personal profile
+or network-device configuration. Existing Grafana/Prometheus/IPFIX integrations
+remain independent. Case workflows and other observation types require later scope
+proposals; this decision does not approve that roadmap.
