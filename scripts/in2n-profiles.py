@@ -55,8 +55,8 @@ PROFILE_MATCHERS = {
     "containerlab": {"prefixes": ["clab-"], "requires_env": ["CLAB_MCP_SCRIPT"],
                      "desc": "Containerlab environment"},
     # ── test ──
-    "pyats":    {"prefixes": ["pyats-"], "requires_env": ["PYATS_MCP_SCRIPT", "PYATS_TESTBED_PATH"],
-                 "desc": "pyATS network test/validation"},
+    "pyats":    {"prefixes": ["pyats-"], "requires_env": ["PYATS_MCP_SCRIPT"],
+                 "desc": "pyATS static/dynamic inventory; validate and activate inventory separately"},
     # ── assurance / analysis (each dedicated) ──
     "ipfabric": {"exact": ["ipfabric"], "requires_env": ["IPFABRIC_HOST"],
                  "desc": "IP Fabric network assurance"},

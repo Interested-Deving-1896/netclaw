@@ -41,6 +41,19 @@ class DraftBuilder:
             value=self.ask(title+' ['+' / '.join(options)+']: ').strip()
             if value in options:return value
 
+    def testbed(self,label):
+        from pyats_testbeds import catalog, policy, TestbedError
+        mode=self.choose('Testbed mode for '+label,['static','dynamic'])
+        if mode=='static':return {'mode':'static','sources':[]}
+        choices=catalog()
+        listing='\n'.join(s['id']+' · '+s['label']+' · '+s['help'] for s in choices)
+        prompt='Dynamic testbed sources (space-separated IDs; list for routes and prerequisites): '
+        while True:
+            value=self.ask(prompt).strip()
+            if value=='list':prompt=listing+'\nDynamic testbed sources: ';continue
+            try:return policy({'mode':'dynamic','sources':value.replace(',',' ').split()})
+            except TestbedError:prompt='Choose one or more known source IDs; list for options: '
+
     def runtime(self,primary=None):
         choice=self.choose('Harness',['inherit','openclaw','hermes'] if primary else ['openclaw','hermes'])
         harness=primary['harness'] if choice=='inherit' else choice
@@ -151,7 +164,9 @@ class DraftBuilder:
         # Input content never enters the plan or terminal transcript. Each owner
         # receives an independently copied, exact-hash input at deployment.
         for claw in plan['claws']:
-            kind=self.choose('Inventory for '+claw['displayName'],['none','testbed-yaml','testbed-json','testbed-csv'])
+            if 'pyats' in claw['capabilities']['components']:
+                claw['testbed']=self.testbed(claw['displayName'])
+            kind='none' if claw.get('testbed',{}).get('mode')=='dynamic' else self.choose('Inventory for '+claw['displayName'],['none','testbed-yaml','testbed-json','testbed-csv'])
             if kind!='none':
                 item=self.file_input(claw['id'],kind)
                 if item:plan['inventory'].append(item)

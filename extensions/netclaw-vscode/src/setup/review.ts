@@ -7,7 +7,7 @@ export async function reviewPlan(plan:any,binding:any,explanation:any):Promise<b
   const document=await vscode.workspace.openTextDocument({language:'json',content:JSON.stringify({plan,effects:explanation.effects,
     downloads:explanation.downloadSizes,liveTiers:explanation.liveTiers,planHash:binding.planHash},null,2)});
   await vscode.window.showTextDocument(document,{preview:true,preserveFocus:false});
-  const claws=plan.claws.map((claw:any)=>`${claw.displayName} · ${claw.harness} · ${claw.role}\nHome: ${claw.runtimeHome}\nProvider/model: ${claw.provider.id} / ${claw.provider.model}\nPorts: ${Object.values(claw.endpoints).join(', ')}\nService: ${claw.service.name} (${claw.service.mode})`).join('\n\n');
+  const claws=plan.claws.map((claw:any)=>`${claw.displayName} · ${claw.harness} · ${claw.role}\nHome: ${claw.runtimeHome}\nProvider/model: ${claw.provider.id} / ${claw.provider.model}\nTestbed: ${claw.testbed?.mode||'static'} · ${(claw.testbed?.sources||[]).join(', ')||'reviewed file'} (configuration only)\nPorts: ${Object.values(claw.endpoints).join(', ')}\nService: ${claw.service.name} (${claw.service.mode})`).join('\n\n');
   const comms=explanation.effects.filter((effect:any)=>effect.phase==='comms'||effect.startupEffects?.length)
     .map((effect:any)=>`${effect.owner} · ${effect.channel||effect.component}: ${(effect.startupEffects||[]).join(', ')||'configuration only'}`).join('\n');
   const accepted=await vscode.window.showWarningMessage('Create these separate NetClaw installations?',{modal:true,

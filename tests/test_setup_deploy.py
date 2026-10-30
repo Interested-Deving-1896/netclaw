@@ -50,6 +50,30 @@ class DeployTests(unittest.TestCase):
         with self.assertRaises(Conflict):deploy.inputs(effect)
         self.assertEqual(target.read_text(),'devices: {owned: {}}\n')
 
+    def test_dynamic_policy_has_private_recoverable_output_and_preserves_static_file(self):
+        from setup_deploy import Deployment
+        from setup_generated import generated
+        from setup_plan import PlanValidator
+        self.claw['capabilities']['components'].append('pyats')
+        self.claw['testbed']={'mode':'dynamic','sources':['netbox','cml']}
+        deploy=Deployment(ROOT,self.claw,self.context);deploy.home({'id':'home','artifacts':[]})
+        static=Path(self.claw['workspace'])/'testbed.yaml'
+        effect={'id':'inventory','phase':'inventory','state':'applying','artifacts':[]}
+        self.assertEqual(deploy.observe_files(effect),'retry_owned')
+        deploy.inputs(effect);self.assertFalse(static.exists())
+        path=Path(self.claw['runtimeHome'])/'testbeds/policy.json'
+        self.assertEqual(json.loads(path.read_text())['sources'],['cml','netbox'])
+        self.assertEqual(path.stat().st_mode&0o077,0)
+        effect['artifacts']=[a for a in self.intents if a['path']==str(path)]
+        self.assertEqual(deploy.observe_files(effect),'completed')
+        static.write_text('operator-owned')
+        deploy.inputs(effect);self.assertEqual(static.read_text(),'operator-owned')
+        env=generated(self.claw,PlanValidator(ROOT),'/fixture/python')
+        self.assertEqual(env['PYATS_TESTBED_PATH'],'')
+        self.assertEqual(env['NETCLAW_TESTBED_SOURCES'],'cml,netbox')
+        path.write_text('{}')
+        self.assertEqual(deploy.observe_files(effect),'conflict')
+
     def test_shell_audit_covers_every_component_and_rejects_drift(self):
         from setup_deploy import EffectAudit
         audit=EffectAudit(ROOT)
@@ -98,7 +122,7 @@ class DeployTests(unittest.TestCase):
         from setup_secrets import child_environment
         self.claw['capabilities']['components']=['subnet-calc','pyats','gait','document','fortinet']
         result=generated(self.claw,PlanValidator(ROOT),str(self.root/'claw/python/bin/python'))
-        self.assertTrue(all(str(self.root/'claw') in v for v in result.values()))
+        self.assertTrue(all(str(self.root/'claw') in v for k,v in result.items() if k not in ('NETCLAW_TESTBED_MODE','NETCLAW_TESTBED_SOURCES','PYATS_MCP_DYNAMIC_ONLY')))
         self.assertEqual(result['PYATS_TESTBED_PATH'],str(Path(self.claw['workspace'])/'testbed.yaml'))
         self.assertEqual(result['GAIT_VENV'],str(self.root/'claw/gait-venv'))
         self.assertIn('component-launch.py',result['FORTINET_MCP_CMD'])

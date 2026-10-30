@@ -23,6 +23,7 @@ import {selectLocalModel} from '../setup/discovery';
 import {showAdvisor} from '../setup/advisor';
 import {writePresetReport} from '../setup/preset';
 import {CommsManifest,validateComms,discoverComms,selectChannels,channelFields,setZoomBinding,channelTestChoices,setChannelTests} from '../setup/comms';
+import {TestbedSource,setTestbed} from '../setup/testbeds';
 
 const choose=async(title:string,values:{id:string;title?:string;description?:string}[])=>
   (await vscode.window.showQuickPick(values.map(v=>({label:v.title||v.id,description:v.description,id:v.id})),{title}))?.id;
@@ -37,6 +38,7 @@ export class SetupWizard implements vscode.Disposable {
   private busy=false;
   private catalog:any;
   private comms!:CommsManifest;
+  private testbedSources!:TestbedSource[];
   private adapters:any;
   private runs:SetupRuns;
   private selectedHomes:{home:string}[]=[];
@@ -54,6 +56,7 @@ export class SetupWizard implements vscode.Disposable {
       if(path.basename(name)!==name||hash(fs.readFileSync(path.join(base,name)))!==digest)throw Error('Bundled setup policy changed. Rebuild or reinstall this extension.');
     }
     this.catalog=readData(path.join(base,'catalog.json'),16*1024*1024);this.adapters=readData(path.join(base,'harness-adapters.json'));
+    this.testbedSources=readData(path.join(base,'pyats-testbed-sources.json')).sources;
     this.comms=readData(path.join(base,'comms.json'),4*1024*1024);validateComms(this.comms,readData(path.join(base,'comms.schema.json')));
     this.draft=new SetupDraft(readData(path.join(base,'claw-plan.schema.json')),this.catalog);
     const saved=this.local.get<any>('setup-draft',undefined);
@@ -324,9 +327,26 @@ export class SetupWizard implements vscode.Disposable {
       }
       claw.capabilities.components=[...selected];claw.capabilities.skills=claw.capabilities.skills.filter((id:string)=>this.catalog.skills.find((s:any)=>s.id===id)?.components.every((c:string)=>selected.has(c)));
       if(remove&&component.id==='zoom-rtms')plan=setZoomBinding(plan,claw.id,null);
+      if(remove&&component.id==='pyats')delete claw.testbed;
       this.draft!.replace(plan,state.revision);await this.persist();return;
     }
     if(type==='settings'){await this.configureSettings(message.owner);return;}
+    if(type==='testbed'){
+      const owner=plan.claws?.find((c:any)=>c.id===message.owner);if(!owner?.capabilities?.components?.includes('pyats'))throw Error('Select pyATS first.');
+      const mode=await choose('Testbed mode · '+owner.displayName,[{id:'static',description:'Reviewed YAML, JSON or CSV file; existing behavior.'},{id:'dynamic',description:'Compose selected source inventory through MCP; review and activate later.'}]);
+      if(!mode)return;
+      let sources:string[]=[];
+      if(mode==='dynamic'){
+        const picked=await vscode.window.showQuickPick(this.testbedSources.map(s=>({id:s.id,label:s.label,
+          description:s.upstreamNative?'Upstream native source · managed composition':'MCP or reviewed export',detail:s.help,
+          picked:owner.testbed?.sources?.includes(s.id)})),{title:'Dynamic testbed sources · no source fetch or device connection during setup',canPickMany:true,ignoreFocusOut:true});
+        if(!picked)return;if(!picked.length)throw Error('Select at least one dynamic source.');sources=picked.map(s=>s.id);
+        if((plan.inventory||[]).some((i:any)=>i.owner===owner.id)&&
+          (await vscode.window.showWarningMessage('Replace this claw’s planned static import with dynamic inventory?',{modal:true,detail:'The source file stays unchanged. The new plan will configure selected dynamic sources; build, validation and activation happen later.'},'Use dynamic inventory'))!=='Use dynamic inventory')return;
+      }
+      plan=setTestbed(plan,owner.id,{mode:mode as 'static'|'dynamic',sources},this.testbedSources);
+      this.draft!.replace(plan,state.revision);await this.persist();return;
+    }
     if(type==='cleanup'){
       const reference=this.runs.saved();if(!reference)throw Error('No setup run is saved.');
       const engine=this.engine||(this.engine=new SetupEngine('python3',reference.source));
@@ -342,6 +362,7 @@ export class SetupWizard implements vscode.Disposable {
     }
     if(type==='inventory'||type==='identity'){
       const owner=plan.claws?.find((c:any)=>c.id===message.owner);if(!owner)throw Error('Select a claw first.');
+      if(type==='inventory'&&owner.testbed?.mode==='dynamic')throw Error('Choose Static in Testbed mode before importing a file. Dynamic sources are composed after setup.');
       const chosen=await vscode.window.showOpenDialog({canSelectMany:false,canSelectFiles:true,canSelectFolders:false,title:type==='inventory'?'Choose reviewed YAML, JSON or CSV inventory':'Choose identity, user or soul Markdown'});
       if(!chosen?.[0])return;const file=chosen[0].fsPath;realParents(file);const info=fs.lstatSync(file);
       if(!info.isFile()||info.size>(type==='inventory'?256*1024:64*1024))throw Error(type==='inventory'?'Choose an inventory file no larger than 256 KiB.':'Choose an identity file no larger than 64 KiB.');
@@ -512,13 +533,14 @@ export class SetupWizard implements vscode.Disposable {
     const skills=role==='member'?[...descriptor.skills]:this.catalog.skills.filter((s:any)=>s.availability==='supported'&&s.components.length&&s.components.every((id:string)=>components.includes(id))).map((s:any)=>s.id);
     if(role==='member'&&profile==='comms')skills.push(...this.catalog.skills.filter((s:any)=>s.availability==='supported'&&s.components.length&&s.components.every((id:string)=>components.includes(id))).map((s:any)=>s.id));
     const mode=role==='member'?await choose('Member lifecycle',[{id:'hot',description:'Keep the member worker running.'},{id:'on-demand',description:'Start the worker when invoked; local management services stay available.'}]):'hot';if(!mode)return;
-    const claw={id,displayName:name,role,runtimeHome:home,workspace:harness==='hermes'?home:path.join(home,'workspace'),harness,harnessChoice:selected==='inherit'?'inherit':'explicit',runtimeVersion:this.adapters[harness].versions[0],
+    const claw:any={id,displayName:name,role,runtimeHome:home,workspace:harness==='hermes'?home:path.join(home,'workspace'),harness,harnessChoice:selected==='inherit'?'inherit':'explicit',runtimeVersion:this.adapters[harness].versions[0],
       provider:{id:provider,kind,model,apiMode,endpoint,credentialKeys},channels:existing?.channels||[],capabilities:{profile,components,skills,trustDomain:id},
       settings:{...existing?.settings,...Object.fromEntries(credentialKeys.map((key:string)=>[key,{kind:'secret',key,owner:id,source:'prompt'}]))},
       endpoints:existing?.endpoints||{gatewayPort:18789+index*20,hudPort:3001+index*20,hudUiPort:3000+index*20,companionPort:8643+index*20,bgpApiPort:8179+index*20,bgpPort:1179+index*20,federationPort:8000+index*20},service:{name:'netclaw-'+id,mode}};
     if(existing&&existing.harness===harness&&existing.provider?.id===provider&&existing.capabilities?.profile===profile){
       claw.settings={...existing.settings,...claw.settings};claw.channels=existing.channels;claw.capabilities=existing.capabilities;
     }
+    if(claw.capabilities.components.includes('pyats')&&existing?.testbed)claw.testbed=existing.testbed;
     const retained=new Set<string>([...credentialKeys,...claw.channels.flatMap((c:any)=>c.settingKeys||[]),
       ...this.catalog.components.filter((c:any)=>claw.capabilities.components.includes(c.id)).flatMap((c:any)=>c.settings.map((f:any)=>f.key))]);
     for(const key of Object.keys(claw.settings))if(!retained.has(key))delete claw.settings[key];

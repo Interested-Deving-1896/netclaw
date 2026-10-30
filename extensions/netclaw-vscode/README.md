@@ -4,6 +4,8 @@ Set up a **new NetClaw or mixed Risk**, or manage your **existing NetClaw or Ris
 inspect operations, converse with its configured runtime, search RAG knowledge and
 review supported settings without leaving your editor.
 
+**New in 1.4.0:** Choose **Static or Dynamic testbeds** per claw, with 14 source routes, native source selection, explicit plan review and preserved cancellation/reload. Dynamic setup requires source **1.14.0**. Read the [dynamic testbed guide](../../docs/DYNAMIC-TESTBEDS.md) and [Spec160 verification](../../specs/160-dynamic-pyats-testbeds/verification.md). Setup configures policy; source access, schema validation, activation and device execution are separate steps.
+
 **Patch 1.3.1:** Includes the optional MCP-default catalog/resolver in exact setup source review (Spec 156). Use source 1.13.1 for the coordinated minor fixes; see [release notes](../../docs/releases/1.13.1.md).
 
 **New in 1.3.0:** Search the OpenClaw and Hermes **Comms** inventory, choose multiple channels, configure private credentials and access, and discover Twilio/Zoom tools with explicit Focused/member ownership. Requires source setup engine **1.13.0 or later** and VS Code **1.109+**. Read [Comms setup](../../docs/COMMS-SETUP.md), [new-claw setup](../../docs/GETTING-STARTED-VSCODE.md) and [release qualification](../../specs/155-border-channel-setup/release-verification.md). Existing installations remain independent; installing the extension does not upgrade or activate their runtimes.

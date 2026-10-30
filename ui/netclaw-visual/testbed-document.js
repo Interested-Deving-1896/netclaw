@@ -432,7 +432,7 @@ export function createTestbedDocument({
       content,
       backups: backups(),
       limits: { sourceBytes: LIMIT, maskedBytes: MASK_LIMIT },
-      note: "This is the HUD-configured testbed. A running pyATS MCP may use a different PYATS_TESTBED_PATH. Other installations may share this file. Validation is structural; no device connection or pyATS loader runs.",
+      note: "This is the HUD static testbed, separate from an in-memory dynamic pyATS MCP testbed. MCP activation does not change this file, collector grants or Terminal Intent access. A static MCP may use another PYATS_TESTBED_PATH; other installations may share this file. Validation here is structural; no device connection or pyATS loader runs.",
     };
   }
   function prepare(req) {

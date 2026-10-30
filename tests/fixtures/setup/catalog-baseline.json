@@ -10,7 +10,7 @@
       "pyats",
       "Device Automation",
       "Cisco pyATS",
-      "Cisco device CLI + Genie parsers (core device automation)"
+      "Device CLI, Genie parsers and reviewed static/dynamic testbeds"
     ],
     [
       "junos",
@@ -340,7 +340,7 @@
       "forward",
       "Observability",
       "Forward Networks",
-      "Forward's official MCP — read-only path search, device/interface/VLAN/VRF/host lookups, vulnerabilities, NQE (remote HTTP, no install)"
+      "Forward's official MCP \u2014 read-only path search, device/interface/VLAN/VRF/host lookups, vulnerabilities, NQE (remote HTTP, no install)"
     ],
     [
       "suzieq",

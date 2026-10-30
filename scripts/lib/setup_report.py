@@ -93,6 +93,13 @@ def project(report, catalog, *, detailed=False):
             if not isinstance(component,dict) or component.get('id') not in components:continue
             item['components'].append({'id':component['id'],**outcome(component.get('state'),component.get('code'))})
         if row.get('comms'):item['comms']=project_comms(row['comms'],catalog,item['harness'])
+        if isinstance(row.get('testbed'),dict):
+            from pyats_testbeds import policy,TestbedError
+            try:
+                value=row['testbed'];selection=policy({key:value.get(key) for key in ('mode','sources')})
+                item['testbed']={**selection,'sourceAccess':'unverified','candidate':'not_built',
+                                 'activation':'not_observed','execution':'not_checked'}
+            except TestbedError:pass
         # Default provenance identifies the checker and tier; not a filesystem
         # reference, raw error, URL, run ID, token hash or host-derived identity.
         item['provenance']={'checker':'netclaw-setup','protocol':1}

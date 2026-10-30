@@ -2616,19 +2616,25 @@ for mdfile in SOUL.md AGENTS.md IDENTITY.md USER.md TOOLS.md HEARTBEAT.md; do
     fi
 done
 
-# Symlink testbed into the workspace so the agent can find it
-mkdir -p "$RUNTIME_WORKSPACE/testbed"
-if [ ! -e "$RUNTIME_WORKSPACE/testbed/testbed.yaml" ] && [ ! -L "$RUNTIME_WORKSPACE/testbed/testbed.yaml" ]; then
-    ln -s "$NETCLAW_DIR/testbed/testbed.yaml" "$RUNTIME_WORKSPACE/testbed/testbed.yaml"
-    log_info "Symlinked testbed.yaml into $RUNTIME_WORKSPACE/testbed/"
-else
-    log_info "Preserved operator workspace testbed"
+# Dynamic policy never creates a static placeholder or changes operator inventory.
+local testbed_mode
+testbed_mode="$(python3 "$NETCLAW_DIR/scripts/configure-testbed.py" --env "$RUNTIME_ENV" --show-mode)" || return 1
+if [ "$testbed_mode" != "dynamic" ]; then
+    mkdir -p "$RUNTIME_WORKSPACE/testbed"
+    if [ ! -e "$RUNTIME_WORKSPACE/testbed/testbed.yaml" ] && [ ! -L "$RUNTIME_WORKSPACE/testbed/testbed.yaml" ]; then
+        ln -s "$NETCLAW_DIR/testbed/testbed.yaml" "$RUNTIME_WORKSPACE/testbed/testbed.yaml"
+        log_info "Symlinked testbed.yaml into $RUNTIME_WORKSPACE/testbed/"
+    else
+        log_info "Preserved operator workspace testbed"
+    fi
 fi
 
 # Set ALL environment variables in the runtime .env
 OPENCLAW_ENV="$RUNTIME_ENV"
 # Use common.sh's literal, atomic, private writer throughout deployment.
-_set_env_default "PYATS_TESTBED_PATH"   "$RUNTIME_WORKSPACE/testbed/testbed.yaml"
+if [ "$testbed_mode" != "dynamic" ]; then
+    _set_env_default "PYATS_TESTBED_PATH" "$RUNTIME_WORKSPACE/testbed/testbed.yaml"
+fi
 _set_env_var "PYATS_MCP_SCRIPT"         "$PYATS_SCRIPT"
 _set_env_var "MCP_CALL"                 "$NETCLAW_DIR/scripts/mcp-call.py"
 _set_env_var "NETCLAW_RUNTIME_ROOT"     "$NETCLAW_RUNTIME_ROOT"

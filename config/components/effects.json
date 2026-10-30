@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "sourceSha256": "27c69ecf95bdec0cac4320ffbb4edd7ee70eb85985ccaa9b523c87a71eb9334c",
+  "sourceSha256": "dfaab879869e5229466c626f3c25c4e21493a75829fd0bb46ecc1547b61cf5e6",
   "components": [
     {
       "id": "hermes-hud",

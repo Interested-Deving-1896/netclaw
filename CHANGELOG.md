@@ -2,6 +2,14 @@
 
 NetClaw source releases use `1.x.y`. Feature specs increment the minor version and reset the patch; fixes, documentation and maintenance increment the patch. Every release records its numbered specs. Component and mobile distribution versions are independent.
 
+## [1.14.0] - 2026-10-30
+
+- Add static/dynamic testbed choice and source selection to VS Code, new-plan terminal setup and `setup.sh`.
+- Pin upstream pyATS MCP dynamic tooling and compose reviewed inventories through a managed build/validate/activate lifecycle.
+- Add source contracts, examples and fixture coverage for 12 named platforms plus structured/REST exports; preserve static inventory and existing change controls.
+
+Spec [160-dynamic-pyats-testbeds](specs/160-dynamic-pyats-testbeds/spec.md). See [release notes](docs/releases/1.14.0.md).
+
 ## [1.13.1] - 2026-10-29
 
 Minor fixes, addressed oldest to newest:

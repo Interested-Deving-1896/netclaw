@@ -112,8 +112,7 @@ class EffectRunner:
                           OPENCLAW_GATEWAY_TOKEN=values.get('OPENCLAW_GATEWAY_TOKEN') or secrets.token_hex(32))
         if 'pyats' in claw['capabilities']['components']:
             values.update(PYATS_VENV=str(home/'pyats-venv'),PYATS_MCP_SCRIPT=str(deploy.source/'scripts/pyats-stdio.py'),
-                PYATS_UPSTREAM_SCRIPT=str(home/'pyats-venv/upstream/pyats_mcp_server.py'),
-                PYATS_TESTBED_PATH=str(Path(claw['workspace'])/'testbed.yaml'))
+                PYATS_UPSTREAM_SCRIPT=str(home/'pyats-venv/upstream/pyats_mcp_server.py'))
         # No source/neighbor env reads. Serialized values go directly to the
         # guarded writer, while the journal gets only a private content hash.
         from setup_secrets import _dotenv
@@ -177,6 +176,8 @@ class EffectRunner:
         claw=next(c for c in context['plan']['claws'] if c['id']==effect['owner'])
         deploy=Deployment(self.repository,claw,context)
         if effect['phase'] in ('home','skills','identity'):
+            return deploy.observe_files(effect)
+        if effect['phase']=='inventory' and claw.get('testbed',{}).get('mode')=='dynamic':
             return deploy.observe_files(effect)
         if effect['phase']=='runtime' and effect.get('runtimeStage')=='source' and effect['state']!='verified':
             return deploy.observe_source_copy(effect)
