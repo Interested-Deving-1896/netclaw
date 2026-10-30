@@ -58,6 +58,9 @@ def generated(claw,validator,python):
            'GAIT_VENV':home/'gait-venv','GTRACE_MCP_BIN':home/'.setup/prefix/bin/gtrace',
            'K8S_MCP_CMD':source/'mcp-servers/k8s-mcp/kubernetes-mcp-server','HERMES_HOME':home}
     values.update({k:str(v) for k,v in paths.items() if k in keys})
+    if 'pyats' in claw['capabilities']['components']:
+        from pyats_testbeds import policy_environment
+        values.update(policy_environment(claw.get('testbed'),Path(claw['workspace'])/'testbed.yaml'))
     # Data/cache paths must stay local even when upstream's default is a global
     # .openclaw path. Operator-reviewed explicit settings remain authoritative.
     for component,key,directory in [('nsm','NSM_HOME','nsm'),('rag-mcp','RAG_DATA_DIR','rag'),

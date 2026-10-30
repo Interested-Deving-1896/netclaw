@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.0 — dynamic pyATS testbeds
+
+- Choose Static or Dynamic per claw, then select from 14 source routes in native installer prompts. Cancel, reload and neighboring member choices remain independent.
+- Show inventory policy in exact plan review; dynamic setup creates no placeholder YAML and does not fetch, activate or connect to devices.
+- Label the existing Testbed editor as static inventory, separate from process-local dynamic candidates.
+- Dynamic setup requires source 1.14.0; see Spec160 verification for actual Mac and synthetic-source acceptance. Existing runtime upgrades remain explicit.
+
 ## 1.3.1 — minor setup fix
 
 - Include the optional MCP-default catalog and resolver in exact source review inputs (Spec 156 / issue #262).

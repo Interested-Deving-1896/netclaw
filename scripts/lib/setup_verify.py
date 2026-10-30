@@ -263,6 +263,10 @@ def verify_installation(effect,context,deploy,harness,*,probes=None,live=None):
             'identity':{'home':str(deploy.root),'source':str(deploy.source),'installationId':probes.identity,
                 'hudEndpoint':'http://127.0.0.1:'+str(deploy.claw['endpoints']['hudPort'])},'tiers':tiers,'components':components}
     if deploy.claw.get('channels'):report['comms']=probes.comms()
+    if 'pyats' in deploy.claw['capabilities']['components']:
+        from pyats_testbeds import policy
+        report['testbed']={**policy(deploy.claw.get('testbed')),'sourceAccess':'unverified',
+                           'candidate':'not_built','activation':'not_observed','execution':'not_checked'}
     path=deploy.root/'.setup/verification.json'
     deploy.write(effect,path,canonical(report)+b'\n',kind='verification',expected=revision(path))
     context['journal'].setdefault('reports',{})[deploy.claw['id']]=report

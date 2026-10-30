@@ -175,8 +175,8 @@
       "id": "pyats",
       "category": "Device Automation",
       "title": "Cisco pyATS",
-      "description": "Cisco device CLI + Genie parsers (core device automation)",
-      "whenToChoose": "Device CLI, Genie parsers, config push, dynamic test execution",
+      "description": "Device CLI, Genie parsers and reviewed static/dynamic testbeds",
+      "whenToChoose": "Device automation with static inventory or scoped on-demand source composition",
       "order": 1,
       "platforms": [
         "macos",
@@ -227,7 +227,7 @@
         {
           "key": "NETCLAW_ENABLE_PASSWORD",
           "label": "Netclaw Enable Password",
-          "help": "Device credentials are referenced by testbed.yaml via %ENV{} syntax. Click \"Edit Testbed\" below to view/modify device inventory.",
+          "help": "Device login reference for static and dynamic testbeds. Separate from inventory-source credentials; missing references block dynamic activation.",
           "classification": "secret",
           "valueType": "string",
           "required": "optional",
@@ -251,7 +251,7 @@
         {
           "key": "NETCLAW_PASSWORD",
           "label": "Netclaw Password",
-          "help": "Device credentials are referenced by testbed.yaml via %ENV{} syntax. Click \"Edit Testbed\" below to view/modify device inventory.",
+          "help": "Device login reference for static and dynamic testbeds. Separate from inventory-source credentials; missing references block dynamic activation.",
           "classification": "secret",
           "valueType": "string",
           "required": "optional",
@@ -275,7 +275,7 @@
         {
           "key": "NETCLAW_USERNAME",
           "label": "Netclaw Username",
-          "help": "Device credentials (used by pyATS testbed via %ENV{} syntax)",
+          "help": "Device login reference for static and dynamic testbeds. Separate from inventory-source credentials; missing references block dynamic activation.",
           "classification": "private",
           "valueType": "string",
           "required": "optional",
@@ -323,7 +323,7 @@
         {
           "key": "PYATS_TESTBED_PATH",
           "label": "Pyats Testbed Path",
-          "help": "Generated for this selected installation by the scoped adapter. pyATS paths (set automatically by install.sh) Installer-managed path/binding; shown for review, not a credential prompt.",
+          "help": "Static inventory path, used only in static mode. Dynamic MCP candidates are separate from the HUD static editor and collector.",
           "classification": "private",
           "valueType": "path",
           "required": "optional",
@@ -403,6 +403,63 @@
               "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
             }
           ]
+        },
+        {
+          "key": "NETCLAW_TESTBED_MODE",
+          "label": "Testbed mode",
+          "help": "Static file or dynamic MCP inventory. Change through installer Testbed mode, not this generated field.",
+          "classification": "public",
+          "valueType": "string",
+          "required": "optional",
+          "condition": null,
+          "example": "static",
+          "sharedWith": [],
+          "input": "generated",
+          "provenance": [
+            {
+              "source": "scripts/lib/pyats_testbeds.py",
+              "checkedAt": "2026-10-30",
+              "note": "Selected installation policy; source access and active inventory are separate."
+            }
+          ]
+        },
+        {
+          "key": "NETCLAW_TESTBED_SOURCES",
+          "label": "Dynamic source selection",
+          "help": "Selected source IDs. Existing source MCP or reviewed export; no fetch or activation during setup.",
+          "classification": "public",
+          "valueType": "string",
+          "required": "optional",
+          "condition": null,
+          "example": "netbox,cml",
+          "sharedWith": [],
+          "input": "generated",
+          "provenance": [
+            {
+              "source": "scripts/lib/pyats_testbeds.py",
+              "checkedAt": "2026-10-30",
+              "note": "Selected installation policy; source access and active inventory are separate."
+            }
+          ]
+        },
+        {
+          "key": "PYATS_MCP_DYNAMIC_ONLY",
+          "label": "Dynamic-only runtime",
+          "help": "Managed from mode. Dynamic child clears static path and requires explicit build, validation and activation.",
+          "classification": "public",
+          "valueType": "string",
+          "required": "optional",
+          "condition": null,
+          "example": "1",
+          "sharedWith": [],
+          "input": "generated",
+          "provenance": [
+            {
+              "source": "scripts/lib/pyats_testbeds.py",
+              "checkedAt": "2026-10-30",
+              "note": "Selected installation policy; source access and active inventory are separate."
+            }
+          ]
         }
       ],
       "links": [
@@ -428,10 +485,10 @@
         "reason": "Expected access path is recorded in installer-access.json."
       },
       "estimate": {
-        "schemas": null,
-        "method": "unknown",
-        "source": "workspace/skills/evpn-vxlan-fabric/SKILL.md",
-        "reason": "No current schema count is published in this component entry; include unknown coverage in the advisor."
+        "schemas": 35,
+        "method": "documented",
+        "source": "specs/160-dynamic-pyats-testbeds/verification.md",
+        "reason": "34 pinned upstream tools plus NetClaw managed composition; discovery is not live device qualification."
       },
       "provenance": [
         {
@@ -24053,7 +24110,7 @@
       "title": "evpn-vxlan-fabric",
       "description": "EVPN/VXLAN fabric audit and troubleshooting — VTEPs, VNIs, route types, multihoming, underlay/overlay validation. Use when troubleshooting VXLAN overlay reachability, auditing leaf-spine fabric health, debugging silent hosts or asymmetric flooding, or validating anycast gateway and ESI multihoming state.",
       "path": "workspace/skills/evpn-vxlan-fabric/SKILL.md",
-      "sha256": "d1d2bc6164c3d3dd64798cbb21194098a4f178cc9cc03a03b794a05f613152a7",
+      "sha256": "98d09797b0e9c8ca8db5068c3193245da4527cdd4270ef1d1669ddc4707b354a",
       "components": [
         "pyats"
       ],
@@ -26582,7 +26639,7 @@
       "title": "pyats-asa-firewall",
       "description": "Cisco ASA firewall operations via pyATS — VPN sessions, failover state, interfaces, routing, service policies, resource usage, AnyConnect monitoring. Use when checking ASA failover status, monitoring VPN sessions, auditing ASA security, or troubleshooting AnyConnect connectivity.",
       "path": "workspace/skills/pyats-asa-firewall/SKILL.md",
-      "sha256": "06da18b4cdfae15b9188d4199720eec2e5c0cf9d6f2d6aa9f5650fdd3e89557a",
+      "sha256": "492cef3151f3e735f7420771377fe4ad49090e1c4269de232dc85871524e65ab",
       "components": [
         "pyats"
       ],
@@ -26610,7 +26667,7 @@
       "title": "pyats-config-mgmt",
       "description": "Direct, pyATS-based network change management - pre-change baselines, configuration deployment, post-change verification, rollback procedures, and compliance validation. Use when pushing config to a device, planning a network change, rolling back a configuration, or running compliance checks outside of a governed workflow platform. When the change should go through Itential's golden-config/compliance engine instead, use `itential-automation`.",
       "path": "workspace/skills/pyats-config-mgmt/SKILL.md",
-      "sha256": "b93dd60dc478a27fd6120c9eef3628b92c24a66b17830b9f7d6fe357b5af90c4",
+      "sha256": "07c33be5e29e704703ecabd655358da875719a92b94eba6823910e2debf2cb0d",
       "components": [
         "pyats"
       ],
@@ -26638,7 +26695,7 @@
       "title": "pyats-dynamic-test",
       "description": "Generate and execute deterministic pyATS aetest validation scripts - interface state, OSPF neighbors, BGP paths, ping matrices, and custom compliance tests. Use when writing a network test, validating post-change state, running pass/fail checks, or building automated regression tests. For Arista EOS devices, prefer `anta-validation`'s pre-built 208-test catalog over writing a custom script here. For simply running the resulting test (not authoring it), `pyats-network` can also invoke it.",
       "path": "workspace/skills/pyats-dynamic-test/SKILL.md",
-      "sha256": "520555139cd1ff9a0232173788a9476102d00697aa03ddd77ec431cc0f7c7076",
+      "sha256": "6b60d77ceea2d117cb216d84582d7e789753577579057604a3167e9d427c71b0",
       "components": [
         "pyats"
       ],
@@ -26666,7 +26723,7 @@
       "title": "pyats-f5-ltm",
       "description": "F5 BIG-IP LTM/GTM operations via pyATS iControl REST — virtual servers, pools, nodes, monitors, profiles, iRules, persistence, GTM wide IPs, DNS, data groups. Use when the device is only reachable through the pyATS testbed, or for LTM/GTM configuration detail (iRules, persistence, GTM wide IPs/DNS, data groups) that `f5-health-check`/`f5-troubleshoot` don't cover. For routine health checks or active-incident troubleshooting, use those skills instead.",
       "path": "workspace/skills/pyats-f5-ltm/SKILL.md",
-      "sha256": "ef6c262f5bf3790322fc6b91042de08156e84894efe4f1d797a282449c93c2dc",
+      "sha256": "c8e65fd38f27407f7c94e96a10400e4f1db08369aef46c57bca3665f6176cf0c",
       "components": [
         "pyats"
       ],
@@ -26694,7 +26751,7 @@
       "title": "pyats-f5-platform",
       "description": "F5 BIG-IP platform operations via pyATS iControl REST — system, networking, HA/CM, auth, analytics, security, APM, live-update, ADC certs, file management. Use when checking BIG-IP system health, verifying HA sync status, auditing certificates, or inspecting F5 platform resources.",
       "path": "workspace/skills/pyats-f5-platform/SKILL.md",
-      "sha256": "04c9e553bce611b7f4e11e3baa0fa5b5c4719e4cb1f70e379093d87075e57634",
+      "sha256": "161120247eca192929bba6bf14114a8019b2317f7b5ce4bceac4ab2e5b3b58e1",
       "components": [
         "pyats"
       ],
@@ -26722,7 +26779,7 @@
       "title": "pyats-health-check",
       "description": "Comprehensive cross-platform network device health monitoring - CPU, memory, interfaces, hardware, NTP, logging, environment, and uptime analysis. Use when running a device health check, monitoring CPU or memory usage, checking interface errors, or validating NTP sync. For Juniper-specific deep system operations (firewall counters, DDoS protection, chassis alarms, services accounting), use `pyats-junos-system` instead.",
       "path": "workspace/skills/pyats-health-check/SKILL.md",
-      "sha256": "4e54b3b64cd2556203793f6a38c9545ba0b3eebcb98c533d013fd960d37effe2",
+      "sha256": "ddaced4c2615dad89a2ea146468a1197aa4d3f73dcf6c4c52dc327a985e06308",
       "components": [
         "pyats"
       ],
@@ -26750,7 +26807,7 @@
       "title": "pyats-junos-interfaces",
       "description": "JunOS interface operations via pyATS — physical/logical interfaces, LACP, CoS, LLDP, ARP, BFD, IPv6 neighbors, traffic monitoring, optics diagnostics. Use when checking Juniper interface status, auditing LACP members, inspecting optics power levels, or reviewing ARP and LLDP neighbors.",
       "path": "workspace/skills/pyats-junos-interfaces/SKILL.md",
-      "sha256": "5a3e48803143d05a9c9dd9b7167cbca5d0bdfae30203b67f52c0f05171f7f5d8",
+      "sha256": "575ef6f8ae5ea9de1ccee5c12af32a1077d2d47f173218d13b4243845e62ac34",
       "components": [
         "pyats"
       ],
@@ -26778,7 +26835,7 @@
       "title": "pyats-junos-routing",
       "description": "JunOS routing operations via pyATS — OSPF/OSPFv3, BGP, route table, MPLS/LDP/RSVP, TED, PFE, ping, traceroute across Juniper devices. Use when checking Juniper OSPF neighbors, viewing BGP summary, inspecting MPLS LSPs, tracing routes, or auditing the JunOS route table.",
       "path": "workspace/skills/pyats-junos-routing/SKILL.md",
-      "sha256": "ec93e0e6bfb6db36b88a59cb07ac24186038a4c5491e9c7d26694d1769b02f29",
+      "sha256": "b5b0791b07ed29adc8d0df303ef8a6d20e5207718242d80c1293cb5a50c09531",
       "components": [
         "pyats"
       ],
@@ -26806,7 +26863,7 @@
       "title": "pyats-junos-system",
       "description": "JunOS system operations via pyATS — chassis health, hardware inventory, system info, NTP, SNMP, files/logs, firewall counters, DDoS protection, services accounting. Use when checking Juniper chassis alarms, auditing hardware inventory, reviewing system uptime, or inspecting JunOS firewall counters. For basic cross-platform CPU/memory/interface health checks, `pyats-health-check` covers Juniper too and is the simpler starting point.",
       "path": "workspace/skills/pyats-junos-system/SKILL.md",
-      "sha256": "3126ee6f25ce32e8cf36be0756a615ec51182dd680e3bb861cd74917157c73e2",
+      "sha256": "c6d18a93ab32345f559cc85e4898075ff63369e706c4df744a30e087d140f4b1",
       "components": [
         "pyats"
       ],
@@ -26834,7 +26891,7 @@
       "title": "pyats-linux-network",
       "description": "Linux host network operations via pyATS — interface configuration, routing tables, network connections, and multi-table route inspection across fleet hosts. Use when checking Linux interface status, viewing routing tables, auditing host network config, or comparing routes across hosts.",
       "path": "workspace/skills/pyats-linux-network/SKILL.md",
-      "sha256": "d61af507ef145727f0c6f640991f6e9dcf5ebc2b45237395ffbf20640b4ae868",
+      "sha256": "98c5a10fc3f114a3687d1fc0860e919b0fc320d74275f0b020f605eefb8e5980",
       "components": [
         "pyats"
       ],
@@ -26862,7 +26919,7 @@
       "title": "pyats-linux-system",
       "description": "Linux host system operations via pyATS — process monitoring, filesystem inspection, Docker container stats, package/tool verification across fleet hosts. Use when checking running processes, monitoring Docker containers, inspecting log files, or verifying system tools on Linux hosts.",
       "path": "workspace/skills/pyats-linux-system/SKILL.md",
-      "sha256": "6459dc5d83e5ca3b3404c812a34e6d2bd2e95acfcc131ff7979d4516ac400553",
+      "sha256": "64fb5794cf64fd147db12522753fedd7afb583a20adcf64e9ca9dba452665a0a",
       "components": [
         "pyats"
       ],
@@ -26890,7 +26947,7 @@
       "title": "pyats-linux-vmware",
       "description": "VMware ESXi host operations via pyATS — VM inventory, snapshot management, hypervisor inspection across ESXi hosts in the testbed. Use when listing VMs on ESXi, checking snapshot age, auditing VMware inventory, or verifying pre-change snapshots exist.",
       "path": "workspace/skills/pyats-linux-vmware/SKILL.md",
-      "sha256": "c01ba103c57e257b08e485f4e62dc420e2d1786aac6af2e35fb656b4f86d2cf3",
+      "sha256": "52876c53fa2581d373846abf30110b7f54a535eac906256e2eadca85049a5394",
       "components": [
         "pyats"
       ],
@@ -26918,7 +26975,7 @@
       "title": "pyats-network",
       "description": "Network device automation via pyATS - run show commands, ping, apply config, learn config/logging, list devices, run Linux commands on Cisco IOS-XE/NX-OS devices. Use when running CLI commands on routers or switches, checking interface status, applying configuration changes, or collecting device data via pyATS. To author or design a new aetest validation script (rather than execute an existing one), use `pyats-dynamic-test` instead.",
       "path": "workspace/skills/pyats-network/SKILL.md",
-      "sha256": "bab1d79ce0f937ef52a4bcbbe40fc5c499cb42edb24775321d25aad44c760f2f",
+      "sha256": "a66e68b8ffdcb87582760a87f5603873e926f5dd05a641a8732a20e0a05221f8",
       "components": [
         "pyats"
       ],
@@ -26946,7 +27003,7 @@
       "title": "pyats-parallel-ops",
       "description": "Fleet-wide parallel device operations: concurrent health checks, config audits, routing snapshots, severity-sorted reporting, and failure-isolated multi-device automation. Use when checking multiple devices or collecting fleet baselines through pyATS MCP.",
       "path": "workspace/skills/pyats-parallel-ops/SKILL.md",
-      "sha256": "fd1acbf55f12bcfa29c2115cf773988614a25ee95a0ed3b1a382733b61a37541",
+      "sha256": "3b9139cf05f09933428b0f1f7f224f5010c368fcc2c74fce22f204897a98a2c1",
       "components": [
         "pyats"
       ],
@@ -26974,7 +27031,7 @@
       "title": "pyats-routing",
       "description": "CCIE-level routing protocol analysis for Cisco IOS/IOS-XE/NX-OS devices - OSPF, BGP, EIGRP, IS-IS, static routes, RIB/FIB verification, redistribution audit, and convergence validation. Use when analyzing routing tables, debugging OSPF neighbors, checking BGP peering, verifying route redistribution, or validating convergence after changes on Cisco devices. For Juniper devices, use `pyats-junos-routing` instead. This reads existing router state via CLI; to have NetClaw itself participate as a BGP/OSPF speaker (inject/withdraw routes), use `protocol-participation`.",
       "path": "workspace/skills/pyats-routing/SKILL.md",
-      "sha256": "d58dea4b0c6101ab0fbe17b1d23de318d73ace22e5ce82bad8be9ebbde58361f",
+      "sha256": "8c80ebc8c135b21c09fad8ccbe2a3d5ec9ffc1d589787996077dc883f4bd45b6",
       "components": [
         "pyats"
       ],
@@ -27002,7 +27059,7 @@
       "title": "pyats-security",
       "description": "Network security audit - ACLs, AAA, control plane policing, management plane hardening, encryption, port security, and CIS benchmark checks. Use when auditing device security posture, checking compliance, hardening a router or switch, reviewing access lists, or investigating unauthorized access.",
       "path": "workspace/skills/pyats-security/SKILL.md",
-      "sha256": "da449f304d6a82b3318ca87203c1e423463401687ace1d2e4512a8ede402e487",
+      "sha256": "f9a88a61c4a2914aa85098ec4b3b522ad124789115d4abd28e3ef93049b63572",
       "components": [
         "pyats"
       ],
@@ -27030,7 +27087,7 @@
       "title": "pyats-topology",
       "description": "Network topology discovery via CDP/LLDP neighbors, ARP tables, routing peers, and interface mapping to build complete network maps. Use when mapping the network, building a diagram, discovering what is connected to what, or documenting device neighbors and links.",
       "path": "workspace/skills/pyats-topology/SKILL.md",
-      "sha256": "3da738d71618843f6a055edb77d38d13d588aae64ade4c5bb27d16f55f76a697",
+      "sha256": "477d9d2078fa91d5a6977823d2dbb548867d5a766edd9145903afa6f9d5c2c91",
       "components": [
         "pyats"
       ],
@@ -27058,7 +27115,7 @@
       "title": "pyats-troubleshoot",
       "description": "Systematic network troubleshooting - connectivity, routing, interface, protocol, and performance issues using structured OSI-layer and divide-and-conquer methodology, via direct CLI/pyATS access. Use when something is broken, a device is unreachable, a link is flapping, users report slow performance, or an OSPF/BGP adjacency is down. For a device managed by Catalyst Center, start with `catc-troubleshoot`'s controller/assurance view instead. Once a fault is isolated to routing specifically, `pyats-routing` covers RIB/FIB, redistribution, and convergence in more depth.",
       "path": "workspace/skills/pyats-troubleshoot/SKILL.md",
-      "sha256": "58ab7838a003b74807909ed2f5428a3c04fd353d79206173a58012f580c2ac84",
+      "sha256": "e20b3afbb064fd7c7a7589ac1b0c496060fe567fd61ce30e7f45461f43c7a40a",
       "components": [
         "pyats"
       ],

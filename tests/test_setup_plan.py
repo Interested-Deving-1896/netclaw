@@ -74,6 +74,29 @@ class PlanTests(unittest.TestCase):
     def codes(self, plan):
         return {e['code'] for e in self.validator.inspect(plan)['errors']}
 
+    def test_dynamic_testbed_policy_is_additive_and_scoped(self):
+        plan=sample_plan();claw=plan['claws'][0]
+        self.assertNotIn('testbed_requires_pyats',self.codes(plan))
+        claw['testbed']={'mode':'dynamic','sources':['cml','netbox']}
+        self.assertIn('testbed_requires_pyats',self.codes(plan))
+        claw['capabilities']['components'].append('pyats')
+        self.assertTrue(self.validator.inspect(plan)['valid'])
+        plan['inventory']=[{'owner':claw['id'],'kind':'testbed-yaml','path':'/tmp/fixture.yaml','sha256':'a'*64}]
+        self.assertIn('dynamic_static_input_conflict',self.codes(plan))
+        plan['inventory']=[];claw['testbed']['sources']=[]
+        self.assertIn('testbed_mode_sources_mismatch',self.codes(plan))
+        claw['testbed']['sources']=['unknown-source']
+        self.assertFalse(self.validator.inspect(plan)['valid'])
+
+    def test_testbed_change_changes_review_hash_and_disclosure(self):
+        plan=sample_plan();claw=plan['claws'][0];claw['capabilities']['components'].append('pyats')
+        before=self.validator.explain(plan)
+        claw['testbed']={'mode':'dynamic','sources':['gns3']}
+        after=self.validator.explain(plan)
+        self.assertNotEqual(before['hash'],after['hash'])
+        effect=next(e for e in after['effects'] if e['phase']=='inventory')
+        self.assertEqual(effect['testbed'],claw['testbed'])
+
     def test_comms_native_ids_unfinished_adapters_and_homeassistant_roles(self):
         plan=sample_plan();claw=plan['claws'][0]
         # Exercise an unfinished contract explicitly; SMS may now have a real

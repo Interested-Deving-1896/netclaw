@@ -67,20 +67,24 @@ export class SetupDraft {
     if(clawMatch){
       const index=Number(clawMatch[1]),claw=data.claws[index],prefix='/claws/'+index;
       if(clawMatch[2]==='harness'){
-        remove(claw,['runtimeVersion','provider','channels','capabilities','settings'],prefix);
+        remove(claw,['runtimeVersion','provider','channels','capabilities','settings','testbed'],prefix);
         if(claw.role==='border')data.claws.forEach((member:any,i:number)=>{
           if(member.role==='member'&&member.harnessChoice==='inherit'){
-            member.harness=change.value;remove(member,['runtimeVersion','provider','channels','capabilities','settings'],'/claws/'+i);
+            member.harness=change.value;remove(member,['runtimeVersion','provider','channels','capabilities','settings','testbed'],'/claws/'+i);
           }
         });
       }else if(clawMatch[2]==='provider'){
         const prior=this.catalog.choices.find((c:any)=>c.kind==='provider'&&c.id===claw.provider?.id);
         for(const key of prior?.settingKeys||[])if(claw.settings&&Object.hasOwn(claw.settings,key)){delete claw.settings[key];discarded.push(prefix+'/settings/'+key);}
-      }else remove(claw,['settings'],prefix);
+      }else {
+        remove(claw,['settings'],prefix);
+        const components=change.value&&typeof change.value==='object'&&'components' in change.value?change.value.components:undefined;
+        if(!Array.isArray(components)||!components.includes('pyats'))remove(claw,['testbed'],prefix);
+      }
     }
     if(change.path==='/host')remove(data,['source','claws','commsBindings'], '');
     if(change.path==='/source')remove(data,['commsBindings'],'');
-    if(change.path==='/source'&&data.claws)for(const [index,claw] of data.claws.entries())remove(claw,['capabilities','settings'],'/claws/'+index);
+    if(change.path==='/source'&&data.claws)for(const [index,claw] of data.claws.entries())remove(claw,['capabilities','settings','testbed'],'/claws/'+index);
     if(change.path==='/shape'&&data.claws?.length){
       remove(data,['commsBindings'],'');
       // Harness/provider/channel precede shape in the decision tree. Keep the
@@ -89,7 +93,7 @@ export class SetupDraft {
       const primary=data.claws[0];
       if(data.claws.length>1)discarded.push('/claws/members');
       data.claws=[primary];primary.role=change.value==='risk'?'border':'focused';
-      remove(primary,['capabilities'],'/claws/0');
+      remove(primary,['capabilities','testbed'],'/claws/0');
       const keep=new Set<string>([
         ...(this.catalog.choices.find((c:any)=>c.kind==='provider'&&c.id===primary.provider?.id)?.settingKeys||[]),
         ...(primary.channels||[]).flatMap((c:any)=>c.settingKeys||[])]);

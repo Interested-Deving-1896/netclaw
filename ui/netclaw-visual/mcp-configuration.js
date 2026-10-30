@@ -110,6 +110,7 @@ function field(key, id, mapping, values) {
     kind = canonical.classification === "secret" ? "secret" : ({integer: "number", boolean: "boolean", url: "url", path: "path"}[canonical.valueType] || "text");
     requirement = canonical.required === "always" ? "required" : canonical.required;
   }
+  if(id==='pyats'&&key==='PYATS_TESTBED_PATH')requirement=values.NETCLAW_TESTBED_MODE==='dynamic'?'optional':'required';
   return {
     key,
     label: key

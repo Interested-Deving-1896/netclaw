@@ -1064,3 +1064,22 @@ Full selected-installation controls include verified owned gateway/engine, HUD/c
 Source preview and acceptance: `specs/152-workspace-claw-controls/verification.md`. The owner subsequently authorized packaging and feature-branch push for an isolated WSL preview connected to real NetClaw. See `specs/152-workspace-claw-controls/WSL-HANDOFF.md`. Merge, live deployment and Marketplace publication remain held.
 
 Spec152 production authorization (2026-10-16) supersedes its prior holds. WSL corrected native OpenClaw home/tilde resolution; follow-up systemd discovery isolates explicit foreign installations and qualifies private literal gateway.systemd.env. Symlink files remain refused, and live WSL lifecycle was not exercised. See specs/152-workspace-claw-controls/release-verification.md.
+
+## Dynamic pyATS testbeds (Spec160)
+
+The managed isolated pyATS server pins upstream 4a3c1e3404d5ed7a78cb094bf26d2a49065497d9
+and exposes 35 tools: 34 upstream plus `netclaw_testbed_compose`. Select static or
+dynamic per installation in either installer. Compose scoped read-only source MCP
+output/export, review provenance/endpoints, validate with real pyATS and environment
+credential references, then explicitly activate. No console-to-SSH inference, raw
+source fetch/credential merge, silent fallback or inventory-based device authority.
+All twelve requested lab/CMDB/SoT/assurance sources plus structured/REST exports have
+contracts and synthetic tests; service access is separately qualified. ServiceNow
+needs a verified CMDB reader/export, and lab console-only rows need management facts.
+
+The registry lasts one owned MCP process. Use a persistent native client for device
+operations or `scripts/pyats-testbed-session.py` for one-process preview/activate/list.
+Separate MCP_CALL invocations cannot share dynamic state. HUD static inventory,
+Terminal Intent and collector grants remain separate. See `docs/DYNAMIC-TESTBEDS.md`
+and `specs/160-dynamic-pyats-testbeds/verification.md`. No owner device/source service
+was contacted during synthetic qualification.

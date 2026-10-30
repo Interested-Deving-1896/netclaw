@@ -13,6 +13,14 @@ from setup_verify import verify_installation,HudProbe
 
 
 class VerificationTests(unittest.TestCase):
+    def test_testbed_export_projects_selection_without_source_inventory_or_claims(self):
+        report={'installations':[{'harness':'hermes','testbed':{'mode':'dynamic','sources':['netbox','cml'],
+            'scope':'private-host','records':[{'password':'private-password'}],'execution':'verified','sourceAccess':'verified'}}]}
+        value=project(report,{'components':[]})['installations'][0]['testbed']
+        self.assertEqual(value,{'mode':'dynamic','sources':['cml','netbox'],'sourceAccess':'unverified',
+            'candidate':'not_built','activation':'not_observed','execution':'not_checked'})
+        self.assertNotIn('private',json.dumps(value))
+
     def test_startup_polling_waits_for_readiness_but_not_failures_or_cancellation(self):
         from setup_verify import wait_for_readiness
         class Pause:

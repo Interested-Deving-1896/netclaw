@@ -132,8 +132,8 @@ class Deployment:
         pending = []
         for raw in names:
             relative = Path(raw.decode('utf-8','strict'))
-            # Documentation/test inputs do not belong in the runtime source.
-            if relative.parts[0] not in ('scripts','config','mcp-servers','workspace','ui','src','bin') and len(relative.parts) != 1 and relative.as_posix()!='tests/contract-suites.json' and not relative.as_posix().startswith('installer/native-comms/'):
+            # Include the operational dynamic-testbed contract referenced by skills.
+            if relative.parts[0] not in ('scripts','config','mcp-servers','workspace','ui','src','bin') and len(relative.parts) != 1 and relative.as_posix() not in ('tests/contract-suites.json','docs/DYNAMIC-TESTBEDS.md') and not relative.as_posix().startswith('installer/native-comms/'):
                 continue
             if any(p in ('.env','.git','node_modules','.venv','__pycache__') or p.startswith('.env.') for p in relative.parts):
                 continue
@@ -160,6 +160,9 @@ class Deployment:
 
     def file_outputs(self,phase):
         """Expected bytes for the closed, deterministic file-only phases."""
+        if phase=='inventory' and self.claw.get('testbed',{}).get('mode')=='dynamic':
+            from pyats_testbeds import policy
+            return [(self.root/'testbeds/policy.json',canonical({'schema':1,**policy(self.claw['testbed'])}),'inventory-policy')]
         if phase=='home':
             marker={'schema':1,'runId':self.context['runId'],'installationId':self.claw['id'],'planHash':self.context['planHash']}
             installation=str(uuid.uuid5(uuid.NAMESPACE_URL,'netclaw:'+self.context['runId']+':'+self.claw['id']))
@@ -241,8 +244,14 @@ class Deployment:
         if effect['phase']!='inventory':raise Conflict('input_phase_invalid')
         names={'testbed-yaml':'testbed.yaml','testbed-json':'testbed.json','testbed-csv':'testbed.csv'}
         selected=[i for i in self.context['plan'][effect['phase']] if i['owner']==self.claw['id']]
+        from pyats_testbeds import policy
+        testbed=policy(self.claw.get('testbed'))
+        if testbed['mode']=='dynamic':
+            if selected:raise Conflict('dynamic_static_input_conflict')
+            for target,data,kind in self.file_outputs('inventory'):self.write(effect,target,data,kind=kind)
+            return {'state':'verified'}
         if not selected and 'pyats' in self.claw['capabilities']['components']:
-            # Native pyATS requires a testbed at startup. No selected inventory
+            # Static pyATS requires a testbed at startup. No selected inventory
             # means zero devices, never a source/neighbor testbed or guessed host.
             self.write(effect,Path(self.claw['workspace'])/'testbed.yaml',b'devices: {}\n',kind='inventory')
         for item in selected:

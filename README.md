@@ -10,7 +10,9 @@ Work from chat, the visual HUD, your phone, or a Zoom meeting. Start with one Ne
 
 **Start here:** [Choose a runtime](#hermes-or-openclaw) · [Install](#quick-install) · [Capabilities](#what-it-does) · [RAG](#rag--answers-grounded-in-your-documents) · [GCF](#gcf--compact-network-evidence) · [Mobile](#netclaw-mobile--your-network-in-your-pocket) · [Zoom](#zoom--network-investigations-in-the-meeting) · [VS Code](#vs-code-extension) · [HUD](#visual-hud) · [Jev](#optional-jev-science-officer)
 
-**Project:** [Source version 1.13.1](VERSION) · [Release notes](docs/releases/1.13.1.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
+**Project:** [Source version 1.14.0](VERSION) · [Release notes](docs/releases/1.14.0.md) · [Contributing — numbered specs + Spec Kit](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
+
+**New in 1.14.0 — testbeds on demand:** choose Static or Dynamic in VS Code or terminal setup, then compose scoped inventory from 14 source routes with the new [pyATS MCP](https://github.com/automateyournetwork/pyATS_MCP). Review, validate and explicitly activate the candidate before using it. [How it works](docs/DYNAMIC-TESTBEDS.md) · [Community announcement](docs/blog/2026-10-30-dynamic-pyats-testbeds.md) · [Tested scope](specs/160-dynamic-pyats-testbeds/verification.md).
 
 **VS Code:** [Install NetClaw](https://marketplace.visualstudio.com/items?itemName=NetClaw.netclaw) or [explore the VS Code Extension](#vs-code-extension): set up a separate NetClaw or mixed Risk from empty homes, or connect your existing installation for Chat, Canvas, RAG, Testbed management, per-MCP configuration and reviewed security controls.
 
@@ -969,7 +971,7 @@ Questions are authored dynamically; none of these skills executes a network chan
 
 | Skill | What the Agent Knows |
 |-------|---------------------|
-| **pyats-network** | All 8 pyATS MCP tools: `show commands` with Genie structured parsing (100+ IOS-XE parsers), `ping` from device, `configure`, `running-config`, `logging`, `device list`, `Linux commands`, `dynamic AEtest scripts`. Direct Python pyATS with Genie Learn (34 features) and Genie Diff for state comparison. |
+| **pyats-network** | Managed static/dynamic inventory and selected pyATS device tools: `show commands` with Genie structured parsing (100+ IOS-XE parsers), `ping` from device, `configure`, `running-config`, `logging`, `device list`, `Linux commands`, `dynamic AEtest scripts`. Direct Python pyATS with Genie Learn (34 features) and Genie Diff for state comparison. |
 | **pyats-health-check** | 8-step health procedure with threshold tables and severity ratings. Cross-references NetBox for expected vs actual interface state. Fleet-wide parallel execution via pCall. GAIT audit trail. |
 | **pyats-routing** | Full routing table analysis with route source codes and ECMP. OSPF: neighbor states, LSA types 1-7, LSDB analysis, SPF runs. BGP: 11-step best path selection, NOTIFICATION error codes, policy verification. EIGRP: DUAL states, SIA detection. Redistribution audit. |
 | **pyats-security** | 9-step CIS-style audit: management plane, AAA, ACLs, CoPP, routing auth, infrastructure security, encryption, SNMP. Integrates ISE NAD verification and NVD CVE vulnerability scanning (CVSS >= 7.0). Fleet-wide pCall. GAIT audit trail. |
@@ -2841,6 +2843,10 @@ The installer is an interactive TUI (pure bash — works over SSH, degrades grac
 ---
 
 ## Testbed Configuration
+
+Choose **Static** or **Dynamic** in VS Code’s **Testbed mode & sources**, the terminal new-claw plan, or `./scripts/setup.sh --testbed-only`. Dynamic mode composes scoped Itential, CML, containerlab, EVE-NG, GNS3, ServiceNow, Catalyst Center, NetBox, Nautobot, OpsMill Infrahub, IP Fabric and Forward inventory, plus structured/REST exports. The managed server exposes 35 tools (34 upstream + composition), requires review, actual schema/credential validation and explicit activation, and creates no placeholder YAML. Source selection is not live access. [Dynamic testbeds guide and source matrix](docs/DYNAMIC-TESTBEDS.md).
+
+Dynamic inventory lives in one MCP process. Use a persistent client or the one-process preview/activate/list helper; separate `MCP_CALL` calls do not share it. The HUD static editor, collector grants and Terminal Intent inventory remain separate.
 
 Edit `testbed/testbed.yaml` to define your network devices:
 

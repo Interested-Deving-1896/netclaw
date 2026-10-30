@@ -160,6 +160,12 @@ class PlanValidator:
             if claw['provider']['kind'] == 'local' and not endpoint: bad(pointer+'/provider', 'local_endpoint_required')
             if claw['provider']['id']=='custom' and not endpoint:bad(pointer+'/provider','custom_endpoint_required')
             chosen = set(claw['capabilities']['components'])
+            from pyats_testbeds import policy, TestbedError
+            try:
+                testbed = policy(claw.get('testbed'))
+                if 'testbed' in claw and 'pyats' not in chosen:bad(pointer+'/testbed','testbed_requires_pyats')
+                if testbed['mode']=='dynamic' and any(i['owner']==claw['id'] for i in plan['inventory']):bad(pointer+'/testbed','dynamic_static_input_conflict')
+            except TestbedError as exc:bad(pointer+'/testbed',str(exc))
             if plan['shape']=='risk' and ('n2n' not in chosen or claw['role']=='border' and 'protocol' not in chosen):bad(pointer+'/capabilities','risk_runtime_components_missing')
             for component in chosen:
                 descriptor = self.components.get(component)
@@ -322,6 +328,9 @@ class PlanValidator:
                 for component in components:
                     effects.append({'id': claw['id']+':'+phase+(':'+component if component else ''),
                         'owner': claw['id'], 'phase': phase, 'component': component,
+                        **({'testbed':claw.get('testbed',{'mode':'static','sources':[]}),
+                            'setupExplanation':'Configure inventory policy only; source access, candidate validation and activation are separate.'}
+                           if phase=='inventory' and 'pyats' in claw['capabilities']['components'] else {}),
                         'scope': self.components[component]['installer']['effects'] if component else
                             ['runtime-home','user-service-manager','owned-service-files'] if phase=='services' else ['runtime-home'],
                         **({'startupEffects':sorted({value for entry in self.comms.entries

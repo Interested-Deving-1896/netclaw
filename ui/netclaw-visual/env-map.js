@@ -1263,7 +1263,7 @@ export const COMPONENT_SETTINGS = {
     {
       "key": "NETCLAW_ENABLE_PASSWORD",
       "label": "Netclaw Enable Password",
-      "help": "Device credentials are referenced by testbed.yaml via %ENV{} syntax. Click \"Edit Testbed\" below to view/modify device inventory.",
+      "help": "Device login reference for static and dynamic testbeds. Separate from inventory-source credentials; missing references block dynamic activation.",
       "classification": "secret",
       "valueType": "string",
       "required": "optional",
@@ -1287,7 +1287,7 @@ export const COMPONENT_SETTINGS = {
     {
       "key": "NETCLAW_PASSWORD",
       "label": "Netclaw Password",
-      "help": "Device credentials are referenced by testbed.yaml via %ENV{} syntax. Click \"Edit Testbed\" below to view/modify device inventory.",
+      "help": "Device login reference for static and dynamic testbeds. Separate from inventory-source credentials; missing references block dynamic activation.",
       "classification": "secret",
       "valueType": "string",
       "required": "optional",
@@ -1311,7 +1311,7 @@ export const COMPONENT_SETTINGS = {
     {
       "key": "NETCLAW_USERNAME",
       "label": "Netclaw Username",
-      "help": "Device credentials (used by pyATS testbed via %ENV{} syntax)",
+      "help": "Device login reference for static and dynamic testbeds. Separate from inventory-source credentials; missing references block dynamic activation.",
       "classification": "private",
       "valueType": "string",
       "required": "optional",
@@ -1359,7 +1359,7 @@ export const COMPONENT_SETTINGS = {
     {
       "key": "PYATS_TESTBED_PATH",
       "label": "Pyats Testbed Path",
-      "help": "Generated for this selected installation by the scoped adapter. pyATS paths (set automatically by install.sh) Installer-managed path/binding; shown for review, not a credential prompt.",
+      "help": "Static inventory path, used only in static mode. Dynamic MCP candidates are separate from the HUD static editor and collector.",
       "classification": "private",
       "valueType": "path",
       "required": "optional",
@@ -1437,6 +1437,63 @@ export const COMPONENT_SETTINGS = {
           "source": "ui/netclaw-visual/env-map.js",
           "checkedAt": "2026-10-17",
           "note": "Existing card field inventory; requirement and classification reconciled into this catalog."
+        }
+      ]
+    },
+    {
+      "key": "NETCLAW_TESTBED_MODE",
+      "label": "Testbed mode",
+      "help": "Static file or dynamic MCP inventory. Change through installer Testbed mode, not this generated field.",
+      "classification": "public",
+      "valueType": "string",
+      "required": "optional",
+      "condition": null,
+      "example": "static",
+      "sharedWith": [],
+      "input": "generated",
+      "provenance": [
+        {
+          "source": "scripts/lib/pyats_testbeds.py",
+          "checkedAt": "2026-10-30",
+          "note": "Selected installation policy; source access and active inventory are separate."
+        }
+      ]
+    },
+    {
+      "key": "NETCLAW_TESTBED_SOURCES",
+      "label": "Dynamic source selection",
+      "help": "Selected source IDs. Existing source MCP or reviewed export; no fetch or activation during setup.",
+      "classification": "public",
+      "valueType": "string",
+      "required": "optional",
+      "condition": null,
+      "example": "netbox,cml",
+      "sharedWith": [],
+      "input": "generated",
+      "provenance": [
+        {
+          "source": "scripts/lib/pyats_testbeds.py",
+          "checkedAt": "2026-10-30",
+          "note": "Selected installation policy; source access and active inventory are separate."
+        }
+      ]
+    },
+    {
+      "key": "PYATS_MCP_DYNAMIC_ONLY",
+      "label": "Dynamic-only runtime",
+      "help": "Managed from mode. Dynamic child clears static path and requires explicit build, validation and activation.",
+      "classification": "public",
+      "valueType": "string",
+      "required": "optional",
+      "condition": null,
+      "example": "1",
+      "sharedWith": [],
+      "input": "generated",
+      "provenance": [
+        {
+          "source": "scripts/lib/pyats_testbeds.py",
+          "checkedAt": "2026-10-30",
+          "note": "Selected installation policy; source access and active inventory are separate."
         }
       ]
     }
