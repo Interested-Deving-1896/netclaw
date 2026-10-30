@@ -31,11 +31,18 @@ support should be inferred from a successful home deployment.
 classic UI, model controls or SSH terminal to obtain a Convergence view. Adapt a
 focused HUD integration to upstream navigation, runtime contracts and access policy.
 
-**Preserve provenance.** The API declares MIT licensing and credits Brian Baker. The
-author confirmed that its predecessor `network-guardian-web` was his own code and
-was not separately released. A later port must retain the MIT notice and attribution;
-surrounding NetClaw contributions retain the repository's Apache-2.0 terms. Audit
-bundled chart/dashboard licenses before importing those assets.
+**Preserve provenance.** Brian Baker identified
+[byrn-baker/Convergence](https://github.com/byrn-baker/Convergence/tree/fff81b52fdd9b792e375208abfa8d091adf9949a) as the original standalone observability project.
+The tree, README and [MIT license](https://github.com/byrn-baker/Convergence/blob/fff81b52fdd9b792e375208abfa8d091adf9949a/LICENSE)
+were reviewed on 30 October 2026; preserve its exact notice,
+`Copyright (c) 2026 Convergence Project`, for copied or substantially derived assets.
+It contains the collector/storage/dashboard stack and Nautobot discovery, but no
+copy of the NetClaw API. The API separately declares MIT licensing, credits Brian
+Baker and identifies `network-guardian-web` as its predecessor; the author confirmed
+ownership of that code. Do not conflate those two source histories. A later port
+must retain the applicable notices and attribution; surrounding NetClaw contributions
+retain the repository's Apache-2.0 terms. Audit each imported asset and bundled
+chart/dashboard license before porting.
 
 ## Alternatives considered
 

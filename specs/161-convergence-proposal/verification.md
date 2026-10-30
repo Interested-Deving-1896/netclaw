@@ -58,3 +58,9 @@ upgrade and PostgreSQL restart persistence. This remains fork feasibility eviden
 not acceptance of an upstream implementation or of macOS/WSL2/mixed-node behavior.
 The [current fork qualification matrix](https://github.com/byrn-baker/netclaw-convergence/blob/1009-convergence-onboarding/docs/convergence/verification.md)
 records precise coverage and the separate inherited fork-wide CI failures.
+
+## Source and specification follow-up
+
+Reviewed the author-supplied [standalone repository](https://github.com/byrn-baker/Convergence/tree/fff81b52fdd9b792e375208abfa8d091adf9949a), README and MIT license on 30 October 2026. Recorded its exact copyright notice and separated observability-stack ancestry from API ancestry. Confirmed this PR includes the numbered `specs/161-convergence-proposal/` directory with specification, research, plan, tasks and verification; the lowercase `specs/` layout follows CONTRIBUTING.md. This follow-up changes documentation only.
+
+Validation: local Markdown links and `git diff --check` PASS. Spec artifact check PASS: 144 specs, four existing legacy exceptions. No runtime tests were rerun for these documentation changes.
