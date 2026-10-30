@@ -36,8 +36,8 @@ Observed passes:
 This evidence supports feasibility only. It does not qualify a clean upstream
 port, public exposure, arbitrary migrations, real-device coverage, automatic
 investigations, full disaster recovery or every OS/architecture. macOS Desktop,
-WSL2 and ARM64 runtime execution remain to be qualified. Available ARM64 image
-manifests are not runtime tests. The existing upstream installer platform limits
+WSL2 and mixed-architecture scheduling remain to be qualified. Available image
+manifests alone are not runtime tests. The existing upstream installer platform limits
 remain applicable too.
 
 ## Audit and attribution
@@ -47,3 +47,14 @@ commands were unavailable. A private local GAIT CLI record and Git/spec history
 record proposal preparation. No network-device operations or live-runtime changes
 were needed. API provenance was confirmed by its author; a later implementation
 must retain the MIT notice and review third-party chart/dashboard licenses.
+
+## Follow-up architecture evidence
+
+[Dedicated fork acceptance run 41097779673](https://github.com/byrn-baker/netclaw-convergence/actions/runs/41097779673)
+passed all four Docker/K3s jobs on native Ubuntu x86_64 and ARM64 runners at fork
+commit `95482b37`. The K3s jobs use v1.37.1-k3s1 with Helm 3.19.0 and exercise fresh
+installation, authenticated site access, Grafana datasource queries, canaries,
+upgrade and PostgreSQL restart persistence. This remains fork feasibility evidence,
+not acceptance of an upstream implementation or of macOS/WSL2/mixed-node behavior.
+The [current fork qualification matrix](https://github.com/byrn-baker/netclaw-convergence/blob/1009-convergence-onboarding/docs/convergence/verification.md)
+records precise coverage and the separate inherited fork-wide CI failures.
